@@ -1,0 +1,103 @@
+MAP:	MAP_101c.fits   # An input file comment.
+COMMENT:A map comment to be placed in the FITS primary image.
+COMMENT:Another map comment.
+COMMENT:Yet another map comment.
+XCOMMENT:A grid comment to be placed in the FITS image extension.
+XCOMMENT:Another map comment.
+	BODY:	Jupiter			# This is an end of line comment.
+  # This is a one line comment.
+		EQ_RAD:		71492 # Kilometers
+		POL_RAD:	66854
+		ROTATION:	PROGRADE
+	DATA_TYPE:		SHORT
+	GRID:			YES
+	TYPE:	SIMPLE_C
+		OPTIONS:	GRAPHIC_LAT
+				LO_LAT:		-38 # PlanetoCENTRIC is default
+				HI_LAT:		-8
+				LO_LON:		282 # West since prograde
+				HI_LON:		337
+	SAMPLES:	800
+	LINES:		400
+	PLANE:
+		IMAGE:		s0349605600.fits
+			#	NIBBLE:			5
+	# The above "NIBBLE" has been commented out !!!!
+	# The "NIBBLE" keyword sets all of the below NIBBLEs to the same value.
+				NIBBLE_LEFT:		10
+				NIBBLE_RIGHT:		2
+				NIBBLE_TOP:		5
+				NIBBLE_BOTTOM:		3
+				INTERPOLATE:		NO
+				SAMPLE_CENTER:		2756.684
+				LINE_CENTER:		1293.4014
+				FLAT_FIELD:		101_410flat.big.fits 
+				GEOM_CORRECT:		YES
+				SUB_OBSERV_LAT:		-3.62 
+				SUB_OBSERV_LON:		15.20 E
+				POSITION_ANGLE:		-183.182
+				SUB_SOLAR_LAT:		-1.80
+				SUB_SOLAR_LON:		65.84 E
+				RANGE:			1820388 KM
+				FOCAL_LENGTH:		1501.039
+				PIXEL_SCALE:		65.6168
+		IMAGE:		s0349605622.fits
+				INTERPOLATE:		NO
+				SAMPLE_CENTER:		2073.767
+				LINE_CENTER:		1284.2759
+				FLAT_FIELD:		101_410flat.big.fits
+				GEOM_CORRECT:		YES
+				SUB_OBSERV_LAT:		-3.62
+				SUB_OBSERV_LON:		15.05 E
+				POSITION_ANGLE:		-183.203
+				SUB_SOLAR_LAT:		-1.80
+				SUB_SOLAR_LON:		65.69 E
+				RANGE:			1820266 KM
+				FOCAL_LENGTH:		1501.039
+				PIXEL_SCALE:		65.6168
+
+	PLANE:
+		IMAGE:		s0349605745.fits
+				INTERPOLATE:		NO
+				SAMPLE_CENTER:		2788.453
+				LINE_CENTER:		1295.195
+				FLAT_FIELD:		101_756flat.big.fits 
+				GEOM_CORRECT:		YES
+				SUB_OBSERV_LAT:		-3.61
+				SUB_OBSERV_LON:		14.30 E
+				POSITION_ANGLE:		-183.183
+				SUB_SOLAR_LAT:		-1.80
+				SUB_SOLAR_LON:		64.92 E
+				RANGE:			1819651 KM
+				FOCAL_LENGTH:		1501.039
+				PIXEL_SCALE:		65.6168
+		IMAGE:		s0349605768.fits
+				INTERPOLATE:		NO
+				SAMPLE_CENTER:		2117.652
+				LINE_CENTER:		1289.763
+				FLAT_FIELD:		101_756flat.big.fits
+				GEOM_CORRECT:		YES
+				SUB_OBSERV_LAT:		-3.61
+				SUB_OBSERV_LON:		14.15 E
+				POSITION_ANGLE:		-183.203
+				SUB_SOLAR_LAT:		-1.80
+				SUB_SOLAR_LON:		64.77 E
+				RANGE:			1819528 KM
+				FOCAL_LENGTH:		1501.039
+				PIXEL_SCALE:		65.6168
+
+	PLANE:
+		MU:		SUB_OBSERV_LAT:		-3.62
+				SUB_OBSERV_LON:		14.45 E
+		# RANGE defaults to units of Kilometers
+				RANGE:			1819712.917
+				SUB_SOLAR_LAT:		-1.80
+				SUB_SOLAR_LON:		65.07 E
+		
+	PLANE:
+		MU0:		SUB_OBSERV_LAT:		3.62 S
+				SUB_OBSERV_LON:		14.45 E
+				RANGE:			1819712.917 KM
+				SUB_SOLAR_LAT:		-1.80
+				SUB_SOLAR_LON:		65.07 E
+

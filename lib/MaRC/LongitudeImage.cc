@@ -1,0 +1,19 @@
+// $Id: LongitudeImage.cc,v 1.2 2004/08/04 00:11:12 othman Exp $
+
+#include "LongitudeImage.h"
+#include "Constants.h"
+
+bool
+MaRC::LongitudeImage::read_data_i (const double & /* lat */,
+                                   const double & lon,
+                                   double & data) const
+{
+  data = lon / C::degree;  // Convert radians to degrees.
+
+  if (data < 0)
+    data += 360;
+  else if (data >= 360)
+    data -= 360;
+
+  return true;
+}

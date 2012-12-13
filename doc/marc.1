@@ -1,0 +1,33 @@
+.\" Process this file with
+.\" groff -man -Tascii marc.1
+.\"
+.TH MaRC 1 "JUNE 1998" "Data Visualization" "User Manuals"
+.SH NAME
+MaRC \- Map Reprojections and Conversions
+.SH SYNOPSIS
+.B marc 
+.I inputfile1 
+.B [
+.I inputfile2
+.B ...]
+.SH DESCRIPTION
+.B MaRC
+is a program designed to produce maps from digital images or from computed
+values of incidence, emission or phase angles, and latitudes and
+longitudes.  Multi-plane maps can be created with digital image data
+in several planes and incidence, emission, phase angles, latitudes and
+longitudes in other planes.  Placement of data in a given plane is
+completely arbitrary.  The user decides in what plane to place a given
+set of data.  Created maps are stored in FITS (Flexible Image
+Transport System) format.
+.SH FILES
+.I ~/.marc
+.RS
+Per user configuration file. See
+.BR MaRC_input
+manual for further details.
+.SH BUGS
+Conformal and equivalent projects have not been well tested or
+verified.
+.SH AUTHOR
+Ossama Othman <ossama@dre.vanderbilt.edu>

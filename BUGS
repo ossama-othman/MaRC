@@ -1,0 +1,8 @@
+1.	Variables are not parsed in mathematical expressions.
+2.	Domain checking is not performed when parsing a mathematical function.
+3.	Alber's equivalent projections do not work properly.
+4.	New weighted averaging scheme caused significant drop in performance.
+	Will be addressed in future releases.
+5.	Not all grid projection routines are working.
+6.	EllipseIntersection routine does not check for overflow during
+	computations.

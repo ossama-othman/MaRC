@@ -1,0 +1,2750 @@
+This is MaRC_input.info, produced by makeinfo version 4.8 from
+MaRC_input.texi.
+
+   This is Edition {No value for `EDITION'}, last updated {No value for
+`UPDATED'}, of `The MaRC Manual', for `MaRC', version {No value for
+`VERSION'}.
+
+   Copyright (C) 1997-1999, 2003, 2004  Ossama Othman
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.2 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with no Front-Cover Texts,
+     and with no Back-Cover Texts.  A copy of the license is included
+     in the section entitled "GNU Free Documentation License".
+
+
+File: MaRC_input.info,  Node: Top,  Next: Overview,  Up: (dir)
+
+MaRC Input Files
+****************
+
+This is Edition {No value for `EDITION'}, last updated {No value for
+`UPDATED'}, of `The MaRC Manual', for `MaRC', version {No value for
+`VERSION'}.
+
+   Copyright (C) 1997-1999, 2003, 2004  Ossama Othman
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.2 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with no Front-Cover Texts,
+     and with no Back-Cover Texts.  A copy of the license is included
+     in the section entitled "GNU Free Documentation License".
+
+* Menu:
+
+* Overview::              The form and purpose of a MaRC input
+                          file and the user defaults file.
+* Input Files::           This chapter described how to create
+                          and setup a MaRC input file.
+* User Defaults Files::   This chapter describes hot to create
+                          and setup a MaRC user defaults file.
+* Copying This Manual::   How to make copies of this manual.
+* Concept Index::
+
+
+File: MaRC_input.info,  Node: Overview,  Next: Input Files,  Prev: Top,  Up: Top
+
+1 Overview
+**********
+
+The MaRC input file structure was designed to double as both a set of
+instructions on how to create one map or more and as a hierarchical list
+of information of what the map contains.  The input file follows a
+category hierarchy.  Each category in the input file has its own set of
+sub-categories or information to be used during map creation.  MaRC
+input files have one or more output map descriptions or entries, where
+each entry has the following required sections, each of which will be
+described later on in this document:
+
+   * Map Entry Sections
+
+   * Map Output File Comments
+
+   * Observed Body Data
+
+   * Output Data Information
+
+   * Latitude/Longitude Grid Options
+
+   * Map Projection Selection and Options
+
+   * Map Size
+
+   * Map Plane Information
+
+   The user defaults file allows the user to set standard values for all
+maps, planes and input images.  The form of the information entered into
+this file is much simpler than that of the input file.  However, the
+detailed descriptions of the information entered into the user defaults
+file can be found in the input files section since entries in the user
+defaults file have much in common with their input file counterparts.
+
+
+File: MaRC_input.info,  Node: Input Files,  Next: User Defaults Files,  Prev: Overview,  Up: Top
+
+2 Input Files
+*************
+
+* Menu:
+
+* Comments::              Placing comments in input files.
+* Keywords::              Input file keywords and keyword values.
+* Angle & Range::         Angle and range conventions.
+* Map Entries::           Setting up a map entry/description.
+* Map File Comments::     Creating map output file comments.
+* Body Data::             Entering characteristics of the
+                          observed body.
+* Output Data::           Output data information.
+* Lat/Lon Grid::          Latitude / Longitude grid options.
+* Projections::           Map projection selection and options.
+* Map Size::              Specifying map dimensions.
+* Map Planes::            Define what is in each map plane.
+* Sample Input File::     A functional and complete sample input file.
+
+
+File: MaRC_input.info,  Node: Comments,  Next: Keywords,  Prev: Input Files,  Up: Input Files
+
+2.1 Input File Comments
+=======================
+
+The MaRC input file scanner ignores any text to the right of a pound
+(`#') sign.  Comments may be placed anywhere in the input file.  The
+user should be aware that placing a comment before a desired keyword or
+value will cause that keyword or value to be ignored by the parser.
+
+
+File: MaRC_input.info,  Node: Keywords,  Next: Angle & Range,  Prev: Comments,  Up: Input Files
+
+2.2 Keywords and Keyword Values
+===============================
+
+Information is conveyed to MaRC through the use of a specific set of
+keywords in the input file.  Each keyword has a value type associated
+with it.  The format used in the input file is:
+
+     KEYWORD: keyword value
+
+Notice the use of the colon to delimit the end of the keyword and the
+beginning of the keyword value.  The keyword value will also be referred
+to as the _semantic value_ for a given keyword.  For example, MaRC may
+expect a mathematical expression to be used as the semantic value for a
+given keyword.  Currently there are three type of keyword values MaRC
+supports.  They are strings, keyword tokens and mathematical
+expressions.  
+
+   MaRC is not case sensitive when parsing keywords.  String keyword
+values, however, are interpreted by MaRC as string literals.  Whatever
+string is passed to MaRC remains unchanged in terms of case or content.
+Keyword tokens are simply strings MaRC expects after some keywords, and
+are interpreted by MaRC as switches that enable a given feature MaRC may
+have.  A mathematical expression is evaluated by the input file parser.
+If the computed value is valid for a given keyword, that value is then
+passed to MaRC.  Mathematical expressions may contain a single number or
+any valid combination of the following mathematical operators and
+functions:
+
+   * Operators
+
+    `+'
+          Addition
+
+    `-'
+          Subtraction or Negation
+
+    `*'
+          Multiplication
+
+    `/'
+          Division
+
+    `^'
+          Exponentiation
+
+    `( )'
+          Arbitrary depth parenthetical expressions
+
+   * Functions { Example of usage: `sin(3 * 3.1415 / 2)' }
+    `sin'
+          The trigonometric sine of a mathematical expression.
+
+    `cos'
+          The trigonometric cosine of a mathematical expression.
+
+    `tan'
+          The trigonometric tangent of a mathematical expression.
+
+    `asin'
+          The arcsine (inverse sine) of a mathematical expression.
+
+    `acos'
+          The arcsine (inverse cosine) of a mathematical expression.
+
+    `atan'
+          The arctangent (inverse tangent) of a mathematical expression.
+
+    `exp'
+          Raises the number "e" to a given value (exponential function).
+
+    `ln'
+          The natural logarithm of a given expression.
+
+    `sqrt'
+          The square root of a mathematical expression.
+
+
+Note that the arguments for the trigonometric functions `sin', `cos'
+and `tan' should be in radians, *NOT* degrees.
+
+
+File: MaRC_input.info,  Node: Angle & Range,  Next: Map Entries,  Prev: Keywords,  Up: Input Files
+
+2.3 Angle and Range Entries
+===========================
+
+Special cases of keyword entries that expect mathematical expressions as
+their semantic values exists when specifying latitudes, longitudes,
+position angles and ranges.  Here is an example of a latitude and
+longitude entry, the keywords will be discussed later on:
+
+     SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+     SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+
+Notice the letters after the numbers.  For latitudes `N' denotes north
+latitude.  Similarly `S' denotes south latitude.  If neither `N' nor
+`S' is used then the sign of the mathematical expression entered for
+the latitude determines the hemisphere of the sub-observation latitude.
+A positive value indicates the northern hemisphere, where a negative
+value indicates the southern hemisphere.  The letter `C' after `N' in
+this example denotes a bodycentric latitude.  The letter `G' may be
+used to denote a bodygraphic latitude.  If neither `C' nor `G' is used
+then a bodycentric latitude will be assumed.  A space must be placed
+between the hemisphere and latitude type letters.  Longitudes can be
+denoted by the letters `E' and `W' for east and west longitude,
+respectively.  If neither is specified, then the direction of rotation
+of the body determines whether the longitude is east or west longitude.
+Prograde rotation causes the longitude to be west by default, whereas a
+retrograde rotation defaults to east longitude.
+
+   A similar expression may be entered for the position angle as
+follows: 
+
+     POSITION_ANGLE:  57.32 CW  # 57.32 degrees measured clockwise from vert.
+
+Here the token `CW' specifies that the position angle is measured
+clockwise from the vertical ("up") direction of the image.  To specify
+an angle measured counter-clockwise use the token `CCW' instead of the
+`CW'.  If neither `CW' nor `CCW' is used then MaRC will assume a
+counter-clockwise positive angle is being entered.
+
+   MaRC allows the user to specify the distance unit of a mathematical
+expression used in a range entry, as follows: 
+
+     RANGE:  1820388 KM      # Kilometers
+
+   or:
+
+     RANGE:  0.0121685 AU    # Astronomical Units
+
+Both are equivalent.  Currently, only units of kilometers (`KM') and
+astronomical units (`AU') may be used.  If no unit is entered,
+kilometers will be used as the default unit.  The `RANGE' keyword will
+be described later (*note Image Geometry::).
+
+
+File: MaRC_input.info,  Node: Map Entries,  Next: Map File Comments,  Prev: Angle & Range,  Up: Input Files
+
+2.4 Map Entries
+===============
+
+An input file can contain more than one map description to facilitate
+batch jobs.  Alternatively, map descriptions may be placed in separate
+files and then passed to MaRC as a of command line arguments, each
+argument being an input file.  The latter has the advantage of occupying
+less memory while MaRC is running, but also has the disadvantage that
+input files are not parsed immediately.  Any combination of these two
+methods of creating maps may be used.
+
+   A map entry begins with the `MAP' keyword.  Each map entry in the
+input file begins with this keyword.  The semantic value of the `MAP'
+keyword is the name of the output file where the map is to be stored.
+An example of how a map entry begins follows:
+
+     MAP: map01.fits
+
+This states that the name of the file where the map described in the
+rest of the map entry is called "map01.fits."  Currently all maps are
+stored in the Flexible Image Transport System (FITS) format.
+
+
+File: MaRC_input.info,  Node: Map File Comments,  Next: Body Data,  Prev: Map Entries,  Up: Input Files
+
+2.5 Map Output File Comments
+============================
+
+The FITS file format allows comments to be placed in the primary array
+header, the section of the FITS file where the map is stored, and in the
+image extension header, the section of the FITS file where the
+latitude/longitude grid stored.  Comments for the map that are to be
+placed in the output file are specified by using the `COMMENT' and
+`XCOMMENT' keywords for the primary array (map) and the image extension
+(grid image), respectively.  The string value for comment keywords
+should not be longer than 70 characters, can be comprised of any ASCII
+character and must end with carriage return.  Any number of `COMMENT'
+and `XCOMMENT' entries can be used.  However, the `XCOMMENT' entries
+must come after the `COMMENT' entries.  An example of usage is:
+
+     COMMENT:This is a primary array comment.
+     COMMENT: Placing a space immediately following the colon will also place
+     COMMENT: a space in the output file comments, but is unnecessary since
+     COMMENT: the FITS routines that MaRC uses places a space before a
+     COMMENT: comment (part of the FITS standard).  However, extra spacing
+     COMMENT: may be used, if so desired.
+     XCOMMENT:This is an image extension comment.    Tabs may also be used in
+     XCOMMENT:both comment entries.  Again any ASCII character may be used.
+     XCOMMENT:Remember, each comment entry must end with a carriage return.
+
+
+File: MaRC_input.info,  Node: Body Data,  Next: Output Data,  Prev: Map File Comments,  Up: Input Files
+
+2.6 Observed Body Data
+======================
+
+Information of the body being mapped is needed.  The name of the body,
+its geometry and direction of rotation are used in the input file as
+follows, also notice the use of input file comments:
+
+     BODY:   Jupiter  #Name of the body to be stored in the map file header.
+             EQ_RAD:         71492   # The equatorial radius. (Kilometers)
+             POL_RAD:        66854   # The polar radius.
+             ROTATION:       PROGRADE  # e.g.: Venus would be RETROGRADE.
+
+The body is modeled as an oblate spheroid.  Alternatively, the geometry
+may be specified by using the flattening of the body, the ratio of the
+difference of the equatorial radius and the polar radius and the
+equatorial radius (i.e. `(a-c)/a') may be used with either the
+equatorial radius or the polar radius instead, as follows:
+
+             EQ_RAD:         71492
+             FLATTENING:     0.06487
+
+or:
+
+             POL_RAD:        66854
+             FLATTENING:     0.06487
+
+The body entry must follow the above order, where the name of the body
+is first, then the geometry, and then the direction of rotation.
+
+
+File: MaRC_input.info,  Node: Output Data,  Next: Lat/Lon Grid,  Prev: Body Data,  Up: Input Files
+
+2.7 Output Data Information
+===========================
+
+The data stored in the output file can be stored in several formats.
+Data being mapped may have been transformed in some way.  Only linear
+transformations may be specified in the input file.  MaRC provides two
+optional keywords to specify how the data was transformed.  They are the
+`DATA_OFFSET' and `DATA_SCALE' keywords.  Both of these keywords expect
+a mathematical expression as their semantic value.  Data described by
+these keywords would be of the form:
+
+     (Actual Data) = DATA_OFFSET + DATA_SCALE * (Stored Data)
+
+The `DATA_OFFSET' and `DATA_SCALE' keywords are analogous to the
+`BZERO' and `BSCALE' keywords defined by the FITS standard.  Using
+either one of the `DATA_OFFSET' or `DATA_SCALE' keywords, or both,
+causes MaRC to place `BZERO' and `BSCALE' entries in the output file
+primary array header (text that precedes the map data).  Both, the
+`DATA_OFFSET' and `DATA_SCALE' keywords, are optional.  Either one of
+the two or both may be used.  By default, `DATA_OFFSET' is set to zero
+and `DATA_SCALE' is set to one.  Specifying these two keywords does
+*NOT* modify the data being stored in the output file in anyway.  It
+may, however, cause other applications that read the output file to
+transform the data to their proper values.  The `DATA_OFFSET' entry
+must be entered immediately before the `DATA_SCALE' entry.  Immediately
+following these two keywords is the `DATA_TYPE' keyword.  The
+`DATA_TYPE' keyword is required.  It specifies the number format that
+the mapped data will be stored as.  Available data types are: 
+
+    `BYTE'
+          1 byte (8  bits) unsigned integer
+
+    `SHORT'
+          2 byte (16 bits) signed integer
+
+    `LONG'
+          4 byte (32 bits) signed integer
+
+    `FLOAT'
+          4 byte (32 bits) floating point number
+
+    `DOUBLE'
+          8 byte (64 bits) floating point number
+
+
+Be aware, for example, that a `DOUBLE' type map will occupy four times
+as much memory and storage space then a `SHORT' type map of the same
+dimensions.  An example of how all three keywords are used follows:
+
+     DATA_OFFSET:    -1.3        # This is optional.  The default is zero.
+     DATA_SCALE:     0.0001      # This is optional.  The default is one.
+     DATA_TYPE:      SHORT       # This is required.
+
+
+File: MaRC_input.info,  Node: Lat/Lon Grid,  Next: Projections,  Prev: Output Data,  Up: Input Files
+
+2.8 Latitude/Longitude Grid Options
+===================================
+
+A latitude/longitude grid image may be generated by MaRC if desired.
+The grid image is stored in a separate part of the output file called
+the image extension.  It is left to the user to determine how to overlay
+the grid image on the map.  The grid image is comprised of zeroes and
+ones, in terms of intensity.  Actually it is stored in an unsigned
+integer (8 bits) format.  As such, the minimum value is zero and the
+maximum value is 255.  Grid points and lines have an intensity value of
+255.  It is also possible to specify the interval between points of
+constant latitude and of constant longitude.  By default the interval
+between grid points is 10 degrees (bodycentric where applicable ).
+Both are used in the following fashion: 
+
+     GRID:           YES     # This is required.  Enter "YES" or "NO."
+     GRID_INTERVAL:  5       # This is optional.
+
+The `GRID' keyword must come before the `GRID_INTERVAL' keyword.
+
+
+File: MaRC_input.info,  Node: Projections,  Next: Map Size,  Prev: Lat/Lon Grid,  Up: Input Files
+
+2.9 Map Projection Selection and Options
+========================================
+
+* Menu:
+
+* Proj Overview::       Summary of available projections
+* Averaging::           Averaging techniques for overlap regions
+* Poles::               Pole selection for some projections
+* Std and Max Lats::    Notes about standard and maximum latitudes
+* Lambert Con 1::       Conformal with one standard parallel
+* Lambert Con 2::       Conformal with two standard parallels
+* Mercator::            Conformal transverse
+* Polar Stereo::        Conformal polar stereographic
+* Albers Eqv 1::        Equivalent with one standard parallel
+* Albers Eqv 2::        Equivalent with two standard parallels
+* Lambert Cyl::         Cylindrical normal equivalent
+* Lambert Pol::         Polar azimuthal equivalent
+* Sinusoidal::          Sanson-Flamsteed equivalent
+* Identity::            Identity projection
+* Orthographic::        Perspective (point -> infinity)
+* Perspective::         Perspective (point -> finite)
+* Simple Cyl::          Simple cylindrical
+
+
+File: MaRC_input.info,  Node: Proj Overview,  Next: Averaging,  Prev: Projections,  Up: Projections
+
+2.9.1 Map Projection Overview
+-----------------------------
+
+The type of map being created must be specified.  There are several
+types of map projections available.  They are conformal, equivalent and
+miscellaneous projections.  A projection is selected using the `TYPE'
+keyword in a given input file.
+
+   Conformal map projections are projections that preserve shape, but
+not necessarily size.  Currently, MaRC supports four conformal map
+projections:
+
+   * Normal Conformal Conical Lambert Projection - One Standard Parallel
+
+   * Normal Conformal Conical Lambert Projection - Two Standard
+     Parallels
+
+   * Transverse Mercator Projection
+
+   * Polar Stereographic Projection
+
+Equivalent map projections are projections that preserve area, but not
+necessarily shape.  MaRC supports five equivalent map projections:
+
+   * Normal Equivalent Albers Projection  - One Standard Parallel
+
+   * Normal Equivalent Albers Projection  - Two Standard Parallels
+
+   * Lambert's Cylindrical Normal Equivalent Projection
+
+   * Lambert's Polar Azimuthal Equivalent Projection
+
+   * Sanson-Flamsteed (Sinusoidal) Equivalent Projection
+
+The miscellaneous map projections are simply projections that do not fit
+in the conformal or equivalent projection categories.  The three
+available projections in this category are:
+
+   * Orthographic Projection
+
+   * Perspective Projection
+
+   * Simple Cylindrical Projection
+
+
+File: MaRC_input.info,  Node: Averaging,  Next: Poles,  Prev: Proj Overview,  Up: Projections
+
+2.9.2 Averaging Techniques
+--------------------------
+
+MaRC is capable of mapping several images on to one map plane.
+Sometimes, there exist regions of overlap between images.  Data in these
+overlap regions are averaged.  The user has the option of specifying an
+averaging technique to use in overlap regions.  Currently, there are two
+averaging techniques available to the user: unweighted averages (weights
+are equal) and weighted averages (weights are unequal).
+
+   Unweighted averages are performed simply by taking the sum of all
+data involved and dividing by the total number of data elements
+involved in the sum.  In weighted averaging, data is first multiplied
+by a weight and then added to form a sum.  That weighted sum is then
+divided by the sum of the weights.
+
+   Regions of overlap on a map sometimes contain seams.  Taking the
+average may help to remove seams.  The best way to keep seams from
+appearing is by using the weighted average technique with the sky
+removal feature that are both offered by MaRC (*note Sky Removal::).
+
+   Averaging techniques in overlap regions are selected using the
+`AVERAGING' keyword under the `OPTIONS' entry for a given projection
+(*note Projections::).  To enable _unweighted_ averages use the
+`UNWEIGHTED' semantic value.  To enable _weighted_ averages instead use
+the `WEIGHTED' semantic value.  It is also possible to entirely disable
+averaging in overlap regions by using the `NONE' semantic value.
+Disabling averaging simply causes the data from the first contributing
+image to be mapped within a given map pixel.  For example, if there are
+three images that would normally contribute to the average in a map
+pixel, disabling averaging would force data only from the first image
+to be mapped in that pixel.  It should be noted that even though there
+may be four images in a given map, for example, it is not necessarily
+the case that all four images contribute to all of the map pixels.  For
+instance, only two of the four images may overlap in a given map pixel.
+
+To enable unweighted averages use the following:
+
+     AVERAGING:  UNWEIGHTED   # Perform unweighted averaging
+
+The `OPTIONS' entry would look like:
+
+     OPTIONS:
+               AVERAGING:  UNWEIGHTED
+                 .
+                 .   other projection options
+                 .
+
+It is important that the `AVERAGING' keyword appear before any other
+projection specific options.  The `AVERAGING' keyword entry is optional.
+By default, MaRC uses weighted averaging in overlap regions.
+
+
+File: MaRC_input.info,  Node: Poles,  Next: Std and Max Lats,  Prev: Averaging,  Up: Projections
+
+2.9.3 North and South Pole Selection For Some Projections
+---------------------------------------------------------
+
+Polar projections such as the Conical projections place one of the poles
+(North/South) at the center of the map.  For these projections, a pole
+to be placed at the center of the map can be selected.  By default,
+MaRC places the North Pole at the center.  However, projections which
+allow the user to set standard parallels (*note Standard Parallels and
+Maximum Latitudes: Std and Max Lats.)  must set the pole at the center
+of the map prior to selecting standard parallels.  A pole can be set
+with the `POLE' keyword with the form:
+
+     POLE:    NORTH
+
+Valid values for the `POLE' keyword are `NORTH' and `SOUTH'.  `NORTH'
+and `SOUTH' can be abbreviated with `N' and `S', respectively.
+
+
+File: MaRC_input.info,  Node: Std and Max Lats,  Next: Lambert Con 1,  Prev: Poles,  Up: Projections
+
+2.9.4 Standard Parallels and Maximum Latitudes
+----------------------------------------------
+
+Several of the available projections allow the user to set standard
+parallels and maximum latitudes.  Standard parallels are simply
+latitudes along which there is no distortion.  The closer a feature is
+to a standard parallel, the less distorted it is.  Note that the pole to
+be placed at the center of the map (*note Poles::) must be set before
+any standard parallels are set.  For maps with one standard parallel,
+the entry used to set the value for the standard parallel is of the
+form:
+
+     STD_LAT:  30 N
+
+Maps with two standard parallels can have an entry of the form:
+
+     STD_LAT_1:  60 N
+     STD_LAT_2:  20 S
+
+   There are restrictions to the standard parallels a user can select.
+For maps with one standard parallel, if the North pole is to be placed
+at the center (e.g. *note Lambert Con 1::) then the standard parallel
+should be greater than zero and less than 90.  Maps with the South pole
+at the center must have the standard parallel less than zero and greater
+than -90 (90 `S').  Maps that allow two standard parallels to be set
+have the same restrictions for the first standard parallel as stated
+above for the single standard parallel maps.  The second standard
+parallel has the restriction that its absolute value must be less than
+the absolute value of the first standard parallel.  Similarly, the
+second standard parallel cannot be 90 `N' or 90 `S'.  Furthermore, the
+absolute values of the first and second standard parallels cannot be
+equal.
+
+   The conformal maps allow the user to set a maximum latitude at the
+smallest dimension of the map since conformal maps theoretically extend
+on to infinity as latitudes move from the pole at the center of the map
+to the other pole at the extremities of the map (yes, the pole is no
+longer a point at the extremities of the map!).  For example, on a map
+with 800 samples, 400 lines and a maximum latitude at 45 degrees North,
+the 45 degree maximum latitude will be placed at line 1 and line 400
+since there are less lines than there are samples.  Maximum latitudes
+are set with the `MAX_LAT' keyword, as follows:
+
+     MAX_LAT:  30 N
+
+Note that a negative (south) maximum latitude on a map with the North
+pole at the center of the map will be "greater" than the northern
+latitudes since the southern latitudes lie further out radially.  The
+same goes for maps with the South pole at the center: northern latitudes
+lie further out radially than the southern latitudes.
+
+
+File: MaRC_input.info,  Node: Lambert Con 1,  Next: Lambert Con 2,  Prev: Std and Max Lats,  Up: Projections
+
+2.9.5 The Normal Conformal Conical Lambert Projection - One Std. Parallel
+-------------------------------------------------------------------------
+
+Lambert's Normal Conformal Conical projection with one standard parallel
+allows the user to specify a standard parallel.  A pole to place at the
+center of the map must also be chosen.  A maximum latitude can also be
+set.  Here is an example of a MaRC input file entry for this projection:
+
+     TYPE:   LAMCNF1
+             OPTIONS:
+                         AVERAGING:  NONE
+                         POLE:       SOUTH
+                         STD_LAT:    30 S
+                         MAX_LAT:    20 N
+
+Note that the standard latitude is in the southern hemisphere since the
+South pole is at the center of the map.  The order of the keywords must
+follow the order illustrated in the above example.
+
+
+File: MaRC_input.info,  Node: Lambert Con 2,  Next: Mercator,  Prev: Lambert Con 1,  Up: Projections
+
+2.9.6 The Normal Conformal Conical Lambert Projection -Two Std. Parallels
+-------------------------------------------------------------------------
+
+Lambert's Normal Conformal Conical projection with two standard
+parallels allows the user to specify two standard parallels.  A pole to
+place at the center of the map must also be chosen.  A maximum latitude
+can also be set.  Here is an example of a MaRC input file entry for this
+projection:
+
+     TYPE:   LAMCNF2
+             OPTIONS:
+                         AVERAGING:  UNWEIGHTED
+                         POLE:       NORTH
+                         STD_LAT_1:  70 N
+                         STD_LAT_2:  10 S
+                         MAX_LAT:    30 S
+
+The order of the keywords must follow the order illustrated in the above
+example.
+
+
+File: MaRC_input.info,  Node: Mercator,  Next: Polar Stereo,  Prev: Lambert Con 2,  Up: Projections
+
+2.9.7 The Transverse Mercator Projection
+----------------------------------------
+
+The Mercator projection is selected using the `MERCATOR' keyword token.
+Currently there are no options available for this projection.  The
+input file entry would look something like:
+
+     TYPE:   MERCATOR
+
+
+File: MaRC_input.info,  Node: Polar Stereo,  Next: Albers Eqv 1,  Prev: Mercator,  Up: Projections
+
+2.9.8 The Polar Stereographic Projection
+----------------------------------------
+
+The Polar Stereographic projection is selected using the `P_STEREO'
+keyword token.  Available options are the pole at center of the map
+using the `POLE' keyword and the maximum latitude using the `MAX_LAT'
+keyword.  An example of an input file entry for this projection is:
+
+     TYPE:   P_STEREO
+             OPTIONS:
+                         AVERAGING:  WEIGHTED
+                         POLE:       NORTH
+                         MAX_LAT:    30 S
+
+The order of the keywords must follow the order illustrated in the above
+example.
+
+
+File: MaRC_input.info,  Node: Albers Eqv 1,  Next: Albers Eqv 2,  Prev: Polar Stereo,  Up: Projections
+
+2.9.9 The Normal Equivalent Albers Projection - One Standard Parallel
+---------------------------------------------------------------------
+
+The Normal Equivalent Albers projection with one standard parallel
+allows the user to specify a standard parallel.  A pole to place at the
+center of the map must also be chosen.  Here is an example of a MaRC
+input file entry for this projection:
+
+     TYPE:   ALBEQV1
+             OPTIONS:
+                         AVERAGING:  NONE
+                         POLE:       SOUTH
+                         STD_LAT:    30 S
+
+Note that the standard latitude is in the southern hemisphere since the
+South pole is at the center of the map.  The order of the keywords must
+follow the order illustrated in the above example.
+
+
+File: MaRC_input.info,  Node: Albers Eqv 2,  Next: Lambert Cyl,  Prev: Albers Eqv 1,  Up: Projections
+
+2.9.10 The Normal Equivalent Albers Projection - Two Standard Parallels
+-----------------------------------------------------------------------
+
+The Normal Equivalent Albers projection with two standard parallels
+allows the user to specify two standard parallels.  A pole to place at
+the center of the map must also be chosen.  Here is an example of a MaRC
+input file entry for this projection:
+
+     TYPE:   ALBEQV2
+             OPTIONS:
+                         POLE:      NORTH
+                         STD_LAT_1: 70 N
+                         STD_LAT_2: 20 N
+
+The order of the keywords must follow the order illustrated in the above
+example.
+
+
+File: MaRC_input.info,  Node: Lambert Cyl,  Next: Lambert Pol,  Prev: Albers Eqv 2,  Up: Projections
+
+2.9.11 Lambert's Cylindrical Normal Equivalent Projection
+---------------------------------------------------------
+
+Lambert's Cylindrical Normal Equivalent projection is selected using the
+`LAMCYLEQ' keyword token.  Currently there are no options available for
+this projecton.  The input file entry would look something like:
+
+     TYPE:   LAMCYLEQ
+
+
+File: MaRC_input.info,  Node: Lambert Pol,  Next: Sinusoidal,  Prev: Lambert Cyl,  Up: Projections
+
+2.9.12 Lambert's Polar Azimuthal Equivalent Projection
+------------------------------------------------------
+
+Lambert's Polar Azimuthal Equivalent projection is selected using the
+`LAMPOLEQ' keyword token.  The pole at the center of the map may be set
+using the `POLE' keyword.  A sample input file entry would be:
+
+     TYPE:   LAMPOLEQ
+             OPTIONS:
+                         AVERAGING:  NONE
+                         POLE:       NORTH
+
+
+File: MaRC_input.info,  Node: Sinusoidal,  Next: Identity,  Prev: Lambert Pol,  Up: Projections
+
+2.9.13 Sanson-Flamsteed (Sinusoidal) Equivalent Projection
+----------------------------------------------------------
+
+The Sanson-Flamsteed (Sinusoidal) Equivalent projection is selected
+using the `SINUSOID' keyword token.  The input file entry would look
+something like:
+
+     TYPE:   SINUSOID
+             OPTIONS:
+                          AVERAGING:   UNWEIGHTED
+
+
+File: MaRC_input.info,  Node: Identity,  Next: Orthographic,  Prev: Sinusoidal,  Up: Projections
+
+2.9.14 Identity Projection
+--------------------------
+
+The Identity projection is a projection that does not modify the
+supplied map image array.  It simply returns exactly what it is given.
+This project is useful for testing purposes or for "practicing" with
+MaRC.
+
+   The Identity projection is selected using the `IDENTITY' keyword
+token.  Its input file entry would look something like:
+
+     TYPE:   IDENTITY
+
+
+File: MaRC_input.info,  Node: Orthographic,  Next: Perspective,  Prev: Identity,  Up: Projections
+
+2.9.15 The Orthographic Projection
+----------------------------------
+
+The orthographic projection is a projection whose perspective point
+approaches infinity.  This projection is a good approximation to images
+that are observed from Earth, for example.  It can produce what the
+observed body would look like at a given viewing geometry.  An
+orthographic projection can be defined in several ways in MaRC.  In
+general, the user enters the viewing geometry and the desired
+resolution.
+
+* Menu:
+
+* Viewing Geometry::
+* Scale::
+* Ortho Entry::
+
+
+File: MaRC_input.info,  Node: Viewing Geometry,  Next: Scale,  Prev: Orthographic,  Up: Orthographic
+
+2.9.15.1 Viewing Geometry
+.........................
+
+The viewing geometry is comprised of what will be referred to as the
+sub-observer point (analogous to the sub-earth point), the position
+angle, which is the direction that the projection of the north pole in
+the image plane points, measured counter clockwise positive from the
+"up" direction in the image, and the body center location.
+
+   The sub-observer point is the point on the surface of the body which
+a line connecting the center of the observer (a spacecraft, for example)
+and the center of the body passes through.  The sub-observer point is
+set by using the `SUB_OBSERV_LAT' and `SUB_OBSERV_LON' keywords as
+follows:
+
+     SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+     SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+
+   The position angle, sometimes referred to as the north angle is
+specified by the following keyword entry:
+
+     POSITION_ANGLE: -20  # 20 degrees clockwise from North in the projection
+
+Again, by convention, positive values are measured counter-clockwise
+from the vertical ("up") direction in the map, unless the `CW' or the
+`CCW' tokens are used, as described earlier (*note Angle & Range::).
+An equivalent expression for the above example would be:
+
+     POSITION_ANGLE: 20 CW  # 20 degrees clockwise from North (in projection)
+
+   It is also possible to choose where to place the center of the
+projected body.  Two methods exist.  The user can either enter where
+the center, relative to the lower left corner of the map image, is in
+the map image, or specify what latitude and longitude are at the center
+of the map image, from which the center of the planet will be
+automatically computed.  To specify the center of the planet, the user,
+for example, would enter:
+
+     SAMPLE_CENTER:  -23  # Center in pixels measured from the left edge.
+     LINE_CENTER:    400  # Center in pixels measured from the bottom edge.
+
+If the latitude and longitude at the center of the image are to be
+specified, then the input file would contain an entry similar to the
+following:
+
+     LAT_AT_CENTER:  45 N  # Lat. to place at the center of the map image.
+     LON_AT_CENTER:  34 E  # Long. to place at the center of the map image.
+
+Note that only one of these two methods of specifying centers can be
+used in a given orthographic projection.  If neither is specified, than
+MaRC places the center of the projected body at the center of the map
+image.
+
+
+File: MaRC_input.info,  Node: Scale,  Next: Ortho Entry,  Prev: Viewing Geometry,  Up: Orthographic
+
+2.9.15.2 Resolution or Scale
+............................
+
+The resolution determines how many kilometers per pixel are to be used
+in the projection.  The higher the number of kilometers per pixel the
+lower the resolution.  However, the resolution can only be as good as
+the resolution of the images used to create the map.  If the number of
+kilometers per pixel for the orthographic projection is not specified,
+MaRC will compute the number of kilometers per pixel that would cause
+the entire projection to take up 90% of the shortest dimension of the
+image.  Kilometers per pixel are entered in the following manner:
+
+     KM_PER_PIXEL:   31.5    # Valid values are greater than zero.
+
+
+File: MaRC_input.info,  Node: Ortho Entry,  Prev: Scale,  Up: Orthographic
+
+2.9.15.3 The Orthographic Projection Input File Entry
+.....................................................
+
+The orthographic projection is selected by using `TYPE' keyword and the
+`ORTHO' keyword token in the input file.  Combining all of the
+previously described options, an example of how an orthographic
+projection entry would look in the input file is:
+
+     TYPE:   ORTHO
+             OPTIONS:
+                             AVERAGING:              WEIGHTED
+                             SUB_OBSERV_LAT:         3.73 S G
+                             SUB_OBSERV_LON:         303.54 W
+                             POSITION_ANGLE:         -181.51
+                             KM_PER_PIXEL:           300
+                             SAMPLE_CENTER:          250
+                             LINE_CENTER:            250
+
+This keyword order must be followed.
+
+
+File: MaRC_input.info,  Node: Perspective,  Next: Simple Cyl,  Prev: Orthographic,  Up: Projections
+
+2.9.16 The Perspective Projection
+---------------------------------
+
+Of all the available projections in MaRC, the perspective projection
+most closely reproduces what a given instrument actually "sees."  The
+finite distance between the observer and the target is taken into
+account when creating the projection, meaning that this projection is a
+true perspective projection.  Many of the options available for the
+orthographic projection are also available for the perspective
+projection.
+
+* Menu:
+
+* Viewing Geom::
+* Pers. Range::
+* Pers. Scale::
+* Pers. Entry::
+
+
+File: MaRC_input.info,  Node: Viewing Geom,  Next: Pers. Range,  Prev: Perspective,  Up: Perspective
+
+2.9.16.1 Perspective Viewing Geometry
+.....................................
+
+The viewing geometry is comprised of the body center location, what will
+be referred to as the sub-observer point (analogous to the sub-earth
+point), and the position angle, which is the direction that the
+projection of the north pole in the image plane points, measured counter
+clockwise positive from the vertical ("up") direction.
+
+   It is possible to choose where to place the center of the projected
+body.  Two methods exist.  The user can either enter where the center,
+relative to the lower left corner of the map image, is in the map image,
+or specify what latitude and longitude are at the center of the map
+image, from which the center of the planet will be automatically
+computed.  To specify the center of the planet, the user, for example,
+would enter:
+
+     SAMPLE_CENTER:  -23  # Center in pixels measured from the left edge.
+     LINE_CENTER:    400  # Center in pixels measured from the bottom edge.
+
+If the latitude and longitude at the center of the image are to be
+specified, then the input file would contain an entry similar to the
+following:
+
+     LAT_AT_CENTER:  45 N  # Lat. to place at the center of the map image.
+     LON_AT_CENTER:  34 E  # Long. to place at the center of the map image.
+
+Note that only one of these two methods of specifying centers can be
+used in a given perspective projection.  If neither is specified, than
+MaRC places the center of the projected body at the center of the map
+image.
+
+   The sub-observer point is the point on the surface of the body which
+a line connecting the center of the observer (a spacecraft, for example)
+and the center of the body passes through.  The sub-observer point is
+set by using the `SUB_OBSERV_LAT' and `SUB_OBSERV_LON' keywords as
+follows:
+
+     SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+     SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+
+   The position angle, sometimes referred to as the north angle is
+specified by the following keyword entry:
+
+     POSITION_ANGLE: -20  # 20 degrees clockwise from North in the projection
+
+Again, by convention, positive values are measured counter-clockwise
+from the vertical ("up") direction in the map, unless the `CW' or the
+`CCW' tokens are used, as described earlier (*note Angle & Range::).
+An equivalent expression for the above example would be:
+
+     POSITION_ANGLE: 20 CW  # 20 degrees clockwise from North (in projection)
+
+
+File: MaRC_input.info,  Node: Pers. Range,  Next: Pers. Scale,  Prev: Viewing Geom,  Up: Perspective
+
+2.9.16.2 Perspective Projection Range
+.....................................
+
+The range is the distance from the observer to the center of the target
+being observed (line of sight passing through sub-observer point on the
+surface of the body).  Range can be specified either in Kilometers or
+Astronomical units, as explained earlier, in the _Keywords and Keyword
+Values_ section.  The keyword used to enter the range is `RANGE', as
+follows:
+
+     RANGE:     1820266 KM
+
+To specify Astronomical Units, use the `AU' keyword token instead.
+
+
+File: MaRC_input.info,  Node: Pers. Scale,  Next: Pers. Entry,  Prev: Pers. Range,  Up: Perspective
+
+2.9.16.3 Perspective Resolution or Scale
+........................................
+
+The resolution determines how many kilometers per pixel are to be used
+in the projection.  The higher the number of kilometers per pixel the
+lower the resolution.  However, the resolution can only be as good as
+the resolution of the images used to create the map.  If the number of
+kilometers per pixel for the perspective projection is not specified,
+MaRC will compute the number of kilometers per pixel that would cause
+the entire projection to take up 90% of the shortest dimension of the
+image.  Kilometers per pixel are entered in the following manner:
+
+     KM_PER_PIXEL:   31.5    # Valid values are greater than zero.
+
+   Other ways of specifying the perspective projection scale are by
+using the `ARCSEC_PER_PIX' keyword to set the number of arcseconds per
+pixel or by using the `FOCAL_LENGTH' and the `PIXEL_SCALE' keywords to
+set the focal length and the pixel scale lens attributes, respectively.
+
+   The number of arcseconds per pixel is an optical characteristic of
+the instrument used to observe the body.  To set the number of
+arcseconds per pixel, use:
+
+     ARCSEC_PER_PIX: 0.125   # This number must be greater than zero.
+
+A valid number of arcseconds per pixel must be greater than zero.
+
+   If the lens geometry is to be specified, the focal length and the
+pixel scale at the focal plane of the instrument must be set.  An
+example of how to set these values is:
+
+     FOCAL_LENGTH:   1501.039        # Millimeters
+     PIXEL_SCALE:    65.6168         # Pixels per millimeter
+
+Units are not specified here.  However, the distance units used in both
+entries must be the same.  In this example, the unit for focal length
+was millimeters.  As such, the units for the pixel scale *MUST* be
+pixels per millimeter and *NOT* pixels per centimeter, for example.  If
+a conversion was needed, a mathematical expression could be entered to
+perform the conversion.  Remember that mathematical expressions are
+valid for any keyword that is expecting a numerical value.
+
+
+File: MaRC_input.info,  Node: Pers. Entry,  Prev: Pers. Scale,  Up: Perspective
+
+2.9.16.4 The Perspective Projection Input File Entry
+....................................................
+
+The Perspective projection is selected by using `TYPE' keyword and the
+`PERSPECTIVE' keyword token in the input file.  Combining all of the
+previously described options, an example of how a perspective
+projection entry would look in the input file is:
+
+     TYPE:   PERSPECTIVE
+             OPTIONS:
+                             AVERAGING:              NONE
+                             LAT_AT_CENTER:          -23 S
+                             LON_AT_CENTER:          77 E
+                             SUB_OBSERV_LAT:         3.73 S G
+                             SUB_OBSERV_LON:         303.54 W
+                             POSITION_ANGLE:         -181.51
+                             RANGE:                  1.3 AU
+                             FOCAL_LENGTH:           1500 # cm
+                             PIXEL_SCALE:            3.5  # pixels/cm
+
+This keyword order must be followed.
+
+
+File: MaRC_input.info,  Node: Simple Cyl,  Prev: Perspective,  Up: Projections
+
+2.9.17 The Simple Cylindrical Projection
+----------------------------------------
+
+The simple cylindrical projection is a projection that simply maps
+latitudes as horizontal lines and longitudes as vertical lines.  Pixel
+distances between latitude lines are uniform throughout the map, and
+similarly for longitudes.  It is possible to map data using either
+bodycentric or bodygraphic latitudes.  Also, latitude and longitude
+ranges to be mapped can also be specified.  The latitude type is set
+using the `LATITUDE_TYPE' keyword.  To choose a bodycentric latitude
+map, the keyword token `CENTRIC_LAT' is used.  Bodygraphic latitudes
+are selected by using the `GRAPHIC_LAT' keyword token. The latitude
+range is set by using the `LO_LAT' and `HI_LAT' keywords, while the
+longitude range is set by using the `LO_LON' and `HI_LON' keywords.  The
+latitude and longitude options as described earlier (*note Angle &
+Range::) also hold for these latitude/longitude range keywords.  Both
+latitude range keywords must be used if setting a latitude range and
+similarly for the longitude range.  However, the latitude and longitude
+range keywords need not always be used.  If the latitude range is not
+specified MaRC will then default to the full latitude range, and
+similarly for the longitude range.  The following is an example of how a
+simple cylindrical projection is entered in to a MaRC input file:
+
+     TYPE:   SIMPLE_C
+             OPTIONS:
+                             AVERAGING:      UNWEIGHTED
+                             LATITUDE_TYPE:  GRAPHIC_LAT # or CENTRIC_LAT
+                             LO_LAT:         38 S  # CENTRIC lat. by default
+                             HI_LAT:         8 S
+                             LO_LON:         282 W
+                             HI_LON:         337 W
+
+Note that it is valid to enter a value for `LO_LON' that is greater
+than `HI_LON', if so desired.
+
+
+File: MaRC_input.info,  Node: Map Size,  Next: Map Planes,  Prev: Projections,  Up: Input Files
+
+2.10 Map Size
+=============
+
+In general most maps have only two dimensions: the number of _samples_
+and the number of _lines_.  Each of these dimensions are set with the
+`SAMPLES' and `LINES' keywords, respectively.  The keyword `SAMPLES'
+refers to the number of columns in a map.  The `LINES' keyword refers
+to the number of rows in a map.  An example of a map size entry is:
+
+     SAMPLES:        800     # In units of pixels
+     LINES:          400     # In units of pixels
+
+   MaRC can also create multi-plane maps.  Such a map or "map cube"
+would have several planes each with a different set of data.  Both
+single plane maps and multi-plane maps are defined using the same
+keywords, the only difference being more than one _plane_ (*note Map
+Planes::) definition in the multi-plane map case.  Note that a map must
+have at least one plane.
+
+
+File: MaRC_input.info,  Node: Map Planes,  Next: Sample Input File,  Prev: Map Size,  Up: Input Files
+
+2.11 Map Plane Information
+==========================
+
+Multiple planes, each containing a different set of data for the map
+projection, may exist.  This section describes how different types map
+planes may be configured.  A map plane may either contain data retrieved
+from a static source (e.g. an image file) or data dynamically computed
+at run-time.
+
+* Menu:
+
+* Beginning a Plane::     How to begin a plane entry.
+* Input Images::          Specifying static input images to be mapped.
+* Virtual Images::        Mapping dynamically computed data.
+* Plane Entry::
+
+
+File: MaRC_input.info,  Node: Beginning a Plane,  Next: Input Images,  Prev: Map Planes,  Up: Map Planes
+
+2.11.1 Beginning a Plane
+------------------------
+
+If there is more than one plane in a map, simply place another map plane
+entry immediately following the previous entry.  Map plane entries will
+now be described.  Each map plane entry contains the range of valid
+values that can be mapped and a description of what is being mapped.  A
+plane entry begins with the `PLANE' keyword.  Following this is an
+optional entry for the valid data range.  The data range is specified
+by the `DATA_MIN' and `DATA_MAX' keywords.  All data greater than
+`DATA_MIN' and less than `DATA_MAX' will be mapped.  If one or both of
+these keywords are not specified then they are assigned the smallest
+and largest possible values, a given platform may have for double
+precision floating point numbers (usually on the order of 1E+300 or
+more), respectively.  Here is an example of the beginning of a plane
+entry:
+
+     PLANE:
+             DATA_MIN:       -3.14   # This is optional.
+             DATA_MAX:       300     # This is optional.
+
+Next, the data set must be specified.  Data sets may be made up of a set
+of images or may be the dynamically computed values of the `cosine' of
+the incidence, emission or phase angle at given latitudes and
+longitudes.  For example, one map plane could contain a map of a set of
+images and the next plane could be a map of the cosines of the incidence
+angles.  The supported plane types are defined by the `IMAGE', `MU',
+`MU0', `PHASE', `LATITUDE' and `LONGITUDE' entries.  
+
+
+File: MaRC_input.info,  Node: Input Images,  Next: Virtual Images,  Prev: Beginning a Plane,  Up: Map Planes
+
+2.11.2 The Image Entry
+----------------------
+
+This section describes how images containing static data, such as those
+found in an image file, may be mapped.
+
+* Menu:
+
+* Image Overview::   Introduction to map source images
+* Nibbling::         Cut off bad pixels from source images
+* Image Inversion::  Inverting source images vertically and horizontally
+* Interpolation::
+* Sky Removal::      Removing the sky from input images
+* Body Center::      Pixel center of the body in the source image
+* Optical Axis::     Optical axis or boresight of the observing instrument
+* Flat Field::       Image to subtract from source image prior to mapping
+* Photo Correct::    Correct for ``limb darkening'' effects
+* Geom Correct::     Correct for lens aberration on Galileo spacecraft
+* Emi Ang Cutoff::   Emission angle cut-off
+* Terminator::       Avoid data beyond terminator when mapping
+* Image Geometry::   Viewing geometry of source image
+* Image Scale::      Viewing resolution of source image
+* Sample Entry::     What the IMAGE entry should like
+
+
+File: MaRC_input.info,  Node: Image Overview,  Next: Nibbling,  Prev: Input Images,  Up: Input Images
+
+2.11.2.1 Image Overview
+.......................
+
+A given plane can be made up of several images.  Where each image is
+placed in the map is determined by the information in each image entry.
+An image entry is made up of the input image filename, the image type
+and the input image geometry.  If there is more than one image per plane
+simply place other image entries immediately after the previous one
+(*note Sample Entry:: and *Note Sample Input File::).  There are several
+options which may be specified for an image entry, including a flat
+field image, pixel interpolation and geometric lens aberration
+correction.  An image entry begins with the `IMAGE' keyword.  Its
+semantic value is the filename of the input image, as follows: 
+     IMAGE: orbit1/frame002.fits    # absolute or relative paths
+
+   _NOTE: MaRC expects images to be read in upside down._
+
+
+File: MaRC_input.info,  Node: Nibbling,  Next: Image Inversion,  Prev: Image Overview,  Up: Input Images
+
+2.11.2.2 Nibbling
+.................
+
+Following the input image filename, is the _nibbling_ setup. Some times
+it is desirable to ignore or to not map pixels on the edges of an input
+image since they are prone to being "bad pixels," pixels with invalid
+or unwanted data.  This is called "nibbling" in MaRC and other image
+processing programs.  MaRC allows the user to either set the same
+nibbling value for all sides of an input image or to set the nibble
+value for each side individually.  The 
+
+   `NIBBLE' keyword is used when setting the same nibble value for all
+sides, while the `NIBBLE_LEFT', `NIBBLE_RIGHT', `NIBBLE_TOP' and
+`NIBBLE_BOTTOM' keywords are used to set the nibble value for the left,
+right, top and bottom sides, respectively.  The `NIBBLE' keyword cannot
+be used with the individual nibble keywords, and vice versa.  An
+example of how to use `NIBBLE' keyword is:
+
+     NIBBLE: 10      # Ignore all pixels within 10 pixels of each edge.
+
+where as the individual nibbling keywords are used as follows:
+
+     NIBBLE_LEFT:    10
+     NIBBLE_RIGHT:   6
+     NIBBLE_TOP:     14
+     NIBBLE_BOTTOM:  20
+
+_Note: `NIBBLE_BOTTOM' refers to the number of pixels to be ignored on
+the top of a properly oriented (i.e. not upside-down) image, and
+similarly for `NIBBLE_TOP'_
+
+Any combination of the individual nibbling entries may be used.  For
+example, if the user wishes only to ignore pixels on the right edge and
+the top edge, then only the `NIBBLE_RIGHT' and `NIBBLE_TOP' keywords
+need to be used.
+
+
+File: MaRC_input.info,  Node: Image Inversion,  Next: Interpolation,  Prev: Nibbling,  Up: Input Images
+
+2.11.2.3 Image Inversion
+........................
+
+Some source images are written with the data inverted horizontally,
+vertically or both.  Since MaRC needs images to be oriented with sample
+(column) numbers increasing left to right and line (row) numbers
+increasing top to bottom, MaRC provides a keyword that forces MaRC to
+invert a given source image prior to any image processing.  This keyword
+is the `INVERT' keyword.  Allowable values for this keyword are
+`HORIZONTAL', `VERTICAL' and `BOTH'.  `HORIZONTAL' causes MaRC to
+invert a given source image over its central vertical axis.  Similarly,
+`VERTICAL' causes MaRC to invert a given source image over the central
+horizontal axis.  Using the value `BOTH' causes MaRC to invert over
+both horizontal and vertical axes.  Here is an example of how the
+`INVERT' keyword is used:
+
+     INVERT:    VERTICAL     # Invert over central horizontal axis
+
+
+File: MaRC_input.info,  Node: Interpolation,  Next: Sky Removal,  Prev: Image Inversion,  Up: Input Images
+
+2.11.2.4 Interpolation
+......................
+
+Since all data being mapped is discretized data, the data value between
+two points is not know.  Normally this problems is resolved by taking
+the value of the nearest point.  However, it may sometimes be desirable
+to estimate the value between to points by interpolating between them.
+MaRC performs bilinear interpolation between the four surrounding pixels
+around a desired point.  To enable this feature, use the following:
+
+     INTERPOLATE:    YES   # Enter "NO" to disable.  The default is "NO."
+
+If the `INTERPOLATE' keyword is not used, the default setting of `NO'
+is used.
+
+
+File: MaRC_input.info,  Node: Sky Removal,  Next: Body Center,  Prev: Interpolation,  Up: Input Images
+
+2.11.2.5 Removing the Sky From Input Images
+...........................................
+
+MaRC has the ability to perform weighted averages in regions of overlap
+when mapping.  A high quality map shows little or no seams where input
+images overlap.  In general, the highest quality maps occur when using
+weighted averaging in conjunction with MaRC's sky removal feature.  The
+sky removal feature fills pixels in the image that are not part of the
+target with "invalid" data.  These invalid points will not be used when
+determining the weights for a given pixel during weighted averaging.
+
+   By default, the sky removal feature is enabled.  To disable sky
+removal, set the `REMOVE_SKY' keyword to `NO'.  Disabling sky removal
+also cuts down on the time it takes to complete a map since an input
+image that has sky removal disabled does not have to scan for and remove
+the sky.  If so desired, the user can also explicitly enable sky removal
+by setting the `REMOVE_SKY' keyword to `YES'; however, this is
+unnecessary since sky removal is enabled by default.
+
+Here is what an input file entry to disable sky removal would look like:
+
+     REMOVE_SKY:   NO     # Do not scan for sky.
+
+
+File: MaRC_input.info,  Node: Body Center,  Next: Optical Axis,  Prev: Sky Removal,  Up: Input Images
+
+2.11.2.6 The Center of the Body in the Image
+............................................
+
+In order for MaRC to map a body in a given photo properly, its location
+in the image must be given.  Specifically, the center of the body in the
+horizontal and vertical directions must be given by using the
+`SAMPLE_CENTER' and the `LINE_CENTER' keywords, in the following
+fashion:
+
+     SAMPLE_CENTER:  -2756.684    # The center may lie off the image.
+     LINE_CENTER:    1293.4014
+
+`SAMPLE_CENTER' denotes the center in the horizontal direction and
+`LINE_CENTER' denotes the center in the vertical direction.
+
+   Note that since MaRC expects images to be read in upside down, the
+line center is measured from the top of the upside down image (i.e. line
+numbers increase downward).  Furthermore, when mapping images from the
+Galileo spacecraft the _object space_ body center must be used.
+
+
+File: MaRC_input.info,  Node: Optical Axis,  Next: Flat Field,  Prev: Body Center,  Up: Input Images
+
+2.11.2.7 The Optical Axis
+.........................
+
+The optical axis, sometimes called the boresight, specifies where in the
+image the observing instrument is actually "looking."  By default, MaRC
+assumes that the optical axis is at the center of the image.  However,
+the user has the option of setting it manually by using the `SAMPLE_OA'
+and `LINE_OA' keywords.  The `SAMPLE_OA' keyword denotes the sample
+(i.e.: horizontal) component of the optical axis, as measured from the
+left side of the image.  The `LINE_OA' keyword denotes the line (i.e.:
+vertical) component of the optical axis, as measured from the top of
+the _upside-down_ image.  Here is an example of how these keywords
+would be used in an input file:
+
+     SAMPLE_OA: 400  # Measured from the left side
+     LINE_OA:   400  # Measured from the top of the upside-down image
+
+
+File: MaRC_input.info,  Node: Flat Field,  Next: Photo Correct,  Prev: Optical Axis,  Up: Input Images
+
+2.11.2.8 The Flat Field Image
+.............................
+
+For calibration purposes, it may sometimes be necessary to "subtract"
+an image from the data set.  This image is referred to as the flat field
+image.  All data values in the flat field image will be subtracted from
+their corresponding data values points in the data set being mapped.  A
+flat field image is entered by using the `FLAT_FIELD' keyword.  A file
+name should be entered as the semantic value of the `FLAT_FIELD'
+keyword, as follows:
+
+     FLAT_FIELD:     101_410flat.big.fits    # A flat field image
+
+The flat field image and the image being mapped should be the same size,
+otherwise an error will occur.  If the `FLAT_FIELD' keyword is not used,
+then no flat fielding will be performed.  Please note that MaRC also
+expects the flat field image to be read in upside down.
+
+
+File: MaRC_input.info,  Node: Photo Correct,  Next: Geom Correct,  Prev: Flat Field,  Up: Input Images
+
+2.11.2.9 Photometric Correction
+...............................
+
+Data points on an image of an ellipsoidal body, such as a planet, tend
+to get darker the closer they are to the edge of the body.  Such an edge
+on a celestial body, for example, is a called a limb.  To compensate for
+this "limb darkening," photometric correction may be performed on data
+in an image.  Currently MaRC supports the Minnaert model for photometric
+correction.  To use it when creating maps, use the `MINNAERT' keyword.
+The `MINNAERT' keyword accepts three types of values:
+
+   * a mathematical expression which will be used as the exponent in the
+     Minnaert model.
+
+   * the keyword token `AUTO' - automatically computes a value for the
+     exponent in the Minnaert model.
+
+   * the keyword token `TABLE' - automatically computes a _table_ of
+     Minnaert exponent values for a set number of latitudes.
+     Interpolation will be used when obtaining values not in the table.
+
+An example of its usage is:
+     MINNAERT: AUTO      # Automatically compute Minnaert exponent
+
+
+File: MaRC_input.info,  Node: Geom Correct,  Next: Emi Ang Cutoff,  Prev: Photo Correct,  Up: Input Images
+
+2.11.2.10 Geometric Lens Aberration Correction
+..............................................
+
+The lens in the camera used to take the picture of the data being mapped
+may have a geometric aberration in it.  To compensate for this lens
+distortion during mapping, the `GEOM_CORRECT' keyword is set to `YES',
+as follows:
+
+     GEOM_CORRECT:   YES  # Correct Galileo images.  "NO" is the default.
+
+If the `GEOM_CORRECT' keyword is not used, then no geometric aberration
+correction is performed.  Currently, this feature only corrects lens
+distortions equal to the lens distortion found on the Galileo
+spacecraft.
+
+
+File: MaRC_input.info,  Node: Emi Ang Cutoff,  Next: Terminator,  Prev: Geom Correct,  Up: Input Images
+
+2.11.2.11 Emission Angle Cut-off
+................................
+
+There are some cases where data on an image is very distorted.  For
+example, data on an image of a planet is very distorted near the edge
+(limb) of the planet.  One method of avoiding data near the limb is to
+prevent data where emission angles are greater than some given value.
+Since the emission angle at the limb of a planet is generally 90 degrees
+(less when close to the planet), choosing an emission angle cut-off of
+75 degrees, for example, will prevent any data points with emission
+angles greater than 75 degrees from being mapped.  To use this feature
+of MaRC, the `EMI_ANG_LIMIT' keyword is needed in the `IMAGE' entry.
+The `EMI_ANG_LIMIT' keyword accepts degree values greater than zero
+degrees and less than 90 degrees.  The `EMI_ANG_LIMIT' keyword entry is
+of the form:
+
+     EMI_ANG_LIMIT:  80  # Cut-off all data points beyond this emission angle
+
+
+File: MaRC_input.info,  Node: Terminator,  Next: Image Geometry,  Prev: Emi Ang Cutoff,  Up: Input Images
+
+2.11.2.12 Avoiding Data Beyond the Terminator
+.............................................
+
+The terminator is the curve on the surface of a body where the
+illuminated portion of the body meets the dark side of the body.  In
+other words, where day becomes night.  Data on the dark side of a body
+in an image may not be useful or may interfere with the averaging
+process in regions where images overlap in the map.  To force MaRC to
+avoid data beyond the terminator, the `TERMINATOR' keyword can be used
+as follows:
+
+     TERMINATOR:   YES   # Avoid data beyond terminator
+
+By default, MaRC will map _all_ data, including data beyond the
+terminator.  Remember to set the `TERMINATOR' keyword to `YES' if you
+do _not_ wish to map data beyond the terminator.
+
+
+File: MaRC_input.info,  Node: Image Geometry,  Next: Image Scale,  Prev: Terminator,  Up: Input Images
+
+2.11.2.13 Image Geometry
+........................
+
+The viewing geometry of the body at the time its image was taken is also
+required by MaRC.  The viewing geometry is comprised of the sub-observer
+point (analogous to the sub-earth point), the position angle, the
+sub-solar point, the range and the scale.  An additional viewing
+geometry value, the optical axis, may also be set (*note Optical
+Axis::).
+
+* Menu:
+
+* Sub-Observer Pt.::    Sub-Observer point
+* Pos. Ang.::           Position angle
+* Sub-Solar Pt.::       Sub-Solar point
+* Range::
+
+
+File: MaRC_input.info,  Node: Sub-Observer Pt.,  Next: Pos. Ang.,  Prev: Image Geometry,  Up: Image Geometry
+
+Sub-Observer Point
+..................
+
+The sub-observer point is the point on the surface of the body which a
+line connecting the center of the observer (a spacecraft, for example)
+and the center of the body passes through.  The sub-observer point is
+set by using the `SUB_OBSERV_LAT' and `SUB_OBSERV_LON' keywords as
+follows:
+
+     SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+     SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+
+
+File: MaRC_input.info,  Node: Pos. Ang.,  Next: Sub-Solar Pt.,  Prev: Sub-Observer Pt.,  Up: Image Geometry
+
+Position Angle
+..............
+
+The position angle, sometimes referred to as the north angle is the
+direction that the projection of the north pole in the _properly
+oriented (not upside down)_ image plane points, measured counter
+clockwise positive from the vertical ("up") direction, and is specified
+by the following keyword entry:
+
+     POSITION_ANGLE: -14  # 14 degrees clockwise of North (in the projection)
+
+Again, by convention, positive values are measured counter-clockwise
+from the vertical ("up") direction in the input image, unless the `CW'
+or the `CCW' tokens are used, as described earlier (*note Angle &
+Range::).  An equivalent expression for the above example would be:
+
+     POSITION_ANGLE: 14 CW  # 14 degrees clockwise of North (in projection)
+
+
+File: MaRC_input.info,  Node: Sub-Solar Pt.,  Next: Range,  Prev: Pos. Ang.,  Up: Image Geometry
+
+Sub-Solar Point
+...............
+
+The sub-solar point is the point on the surface of the body which a line
+connecting the center of the sun and the center of the body passes
+through.  The sub-solar point is set by using the `SUB_SOLAR_LAT' and
+`SUB_SOLAR_LON' keywords as follows:
+
+     SUB_SOLAR_LAT:  3.2 S C # Specifies 3.2 degrees South bodycentric lat.
+     SUB_SOLAR_LON:  15  W   # Specifies 15 degrees West longitude
+
+
+File: MaRC_input.info,  Node: Range,  Prev: Sub-Solar Pt.,  Up: Image Geometry
+
+Range
+.....
+
+The range is the distance from the observer to the center of the target
+being observed (line of sight passing through sub-observer point on the
+surface of the body).  The range becomes very important at close
+distances from the body since perspective effects are no longer
+negligible at such near distances.  Range can be specified either in
+Kilometers or Astronomical units, as explained earlier, in the
+_Keywords and Keyword Values_ section.  The keyword used to enter the
+range is `RANGE', as follows:
+
+     RANGE:     1820266 KM
+
+To specify Astronomical Units, use the `AU' keyword token instead.
+
+
+File: MaRC_input.info,  Node: Image Scale,  Next: Sample Entry,  Prev: Image Geometry,  Up: Input Images
+
+2.11.2.14 Image Scale
+.....................
+
+It is necessary to set how large the body is in the input image.  This
+is the scale.  There are three ways of setting the scale of the body in
+the image.  The user can either set the actual number of kilometers per
+pixel, or set the number of arcseconds per pixel or the instrument
+optical characteristics.  Only one of these three methods of setting the
+scale can be used in a given image entry.
+
+   To set the number of kilometers per pixel, the `KM_PER_PIXEL'
+keyword is used: 
+     KM_PER_PIXEL:   31.45   # This number must be greater than zero.
+
+A valid number of kilometers per pixel must be greater than zero.
+
+   The number of arcseconds per pixel is an optical characteristic of
+the instrument used to observe the body.  To set the number of
+arcseconds per pixel, use:
+
+     ARCSEC_PER_PIX: 0.125   # This number must be greater than zero.
+
+A valid number of arcseconds per pixel must be greater than zero.
+
+   If the lens geometry is to be specified, the focal length and the
+pixel scale at the focal plane of the instrument must be set.  An
+example of how to set these values is:
+
+     FOCAL_LENGTH:   1501.039        # Millimeters
+     PIXEL_SCALE:    65.6168         # Pixels per millimeter
+
+Units are not specified here.  However, the distance units used in both
+entries must be the same.  In this example, the unit for focal length
+was millimeters.  As such, the units for the pixel scale *MUST* be
+pixels per millimeter and *NOT* pixels per centimeter, for example.  If
+a conversion was needed, a mathematical expression could be entered to
+perform the conversion.  Remember that mathematical expressions are
+valid for any keyword that is expecting a numerical value.
+
+
+File: MaRC_input.info,  Node: Sample Entry,  Prev: Image Scale,  Up: Input Images
+
+2.11.2.15 Sample Image Entry
+............................
+
+An example of a functional image entry may be:
+
+     IMAGE:          s0349605600.fits
+                     NIBBLE_LEFT:            10
+                     NIBBLE_RIGHT:           2
+                     NIBBLE_TOP:             5
+                     NIBBLE_BOTTOM:          3
+                     INVERT:                 VERTICAL
+                     INTERPOLATE:            NO
+                     REMOVE_SKY:             NO
+                     SAMPLE_CENTER:          2756.684
+                     LINE_CENTER:            1293.4014
+                     SAMPLE_OA:              400
+                     LINE_OA:                400
+                     FLAT_FIELD:             101_410flat.big.fits
+                     MINNAERT:               TABLE
+                     GEOM_CORRECT:           YES
+                     EMI_ANG_LIMIT:          75
+                     TERMINATOR:             YES
+                     SUB_OBSERV_LAT:         -3.62
+                     SUB_OBSERV_LON:         15.20 E
+                     POSITION_ANGLE:         183.182 CW
+                     SUB_SOLAR_LAT:          -1.80
+                     SUB_SOLAR_LON:          65.84 E
+                     RANGE:                  1820388 KM
+                     FOCAL_LENGTH:           1501.039
+                     PIXEL_SCALE:            65.6168
+
+Again, if there is more than one image per plane simply place other
+image entries, such as the above example, immediately after the previous
+one (*note Sample Input File::).
+
+
+File: MaRC_input.info,  Node: Virtual Images,  Next: Plane Entry,  Prev: Input Images,  Up: Map Planes
+
+2.11.3 Virtual Images
+---------------------
+
+It is often useful to map data that is specific to a given viewing
+geometry, such as body latitudes and emission angles.  A static set of
+such data is generally not available, or isn't always feasible to create
+beforehand due to time and space constraints.  To avoid these issues,
+the data in question must be computed "on-the-fly", i.e. at run-time.
+Since the images do not exist _a priori_, MaRC considers these images
+to be _virtual_ images.
+
+   A map of latitudes, longitudes, the cosines of the emission,
+incidence or phase angle can be created by specifying the following,
+instead of the `IMAGE' entry:
+
+    `LATITUDE'
+          Create a map of latitudes.  
+
+    `LONGITUDE'
+          Create a map of longitudes.  
+
+    `MU'
+          Create a map of the cosines of the emission angles.  
+
+    `MU0'
+          Create a map of the cosines of the incidence angles.  
+
+    `PHASE'
+          Create a map of the cosines of the phase angles.  
+
+
+
+2.11.3.1 Latitude and Longitude Plane Entries
+.............................................
+
+In cases where course-grained map grids (*note Lat/Lon Grid::) are not
+suitable, MaRC can create maps of the latitudes and longitudes for each
+valid pixel on the chosen map projection.  Unlike map grids that are
+considered image extensions, latitude and longitude planes will placed
+in the primary map itself.
+
+   To create a map of latitudes a map plane entry such as the following
+can be used:
+
+     LATITUDE:    LATITUDE_TYPE:         CENTRIC
+
+   The `LATITUDE_TYPE' keyword has the same syntax as the one described
+in the Simple Cylindrical map projection discussion (*note Simple
+Cyl::).
+
+   To create a map of longitudes a simple map plane entry such as the
+following can be used:
+
+     LONGITUDE
+
+2.11.3.2 The Emission, Incidence and Phase Angle Plane Entries
+..............................................................
+
+The emission angle is the angle between the observer and the normal at a
+given point on the body.  The incidence angle is the angle between the
+sun and the normal at a given point on the body.  The phase angle is the
+angle between the observer and the sun, where a given point on the
+surface of the body is the vertex.  All computations involving these
+angles take into account the distance between the observer and the body.
+The sun is assumed to be an infinite distance away.  Here is an example
+of how to specify the use of the cosines of the incidence angles in the
+plane entry:
+
+     MU0:    SUB_OBSERV_LAT:         3.62 S
+             SUB_OBSERV_LON:         14.45 E
+             RANGE:                  1819712.917 KM
+             SUB_SOLAR_LAT:          -1.80
+             SUB_SOLAR_LON:          65.07 E
+
+To specify one of the other angles, simply replace `MU0' with `MU' or
+`PHASE'.  Note that all three types of angle entries require the
+sub-observation point, the observer range and the sub-solar point to be
+specified.  This is more for the sake of consistency rather than
+necessity (e.g. the observer range isn't need to compute incidence
+angles). These were described in the image entry section (*note Image
+Geometry::).  Although the sub-observer point and the observer range are
+not needed to compute the incidence angles, they are used to force the
+user to be consistent when entering other angle entries.
+
+
+File: MaRC_input.info,  Node: Plane Entry,  Prev: Virtual Images,  Up: Map Planes
+
+2.11.4 A Sample Plane Entry
+---------------------------
+
+A functional plane entry would be of the form:
+
+             PLANE:
+                     DATA_MIN:       0.1
+                     DATA_MAX        10000
+                     IMAGE:          s0349605745.fits
+                                     INVERT:                 BOTH
+                                     INTERPOLATE:            NO
+                                     SAMPLE_CENTER:          2788.453
+                                     LINE_CENTER:            1295.195
+                                     SAMPLE_OA:              200
+                                     LINE_OA:                200
+                                     FLAT_FIELD:             756flat.big.fits
+                                     MINNAERT:               1.0
+                                     GEOM_CORRECT:           YES
+                                     EMI_ANG_LIMIT:          80
+                                     TERMINATOR:             NO
+                                     SUB_OBSERV_LAT:         -3.61
+                                     SUB_OBSERV_LON:         14.30 E
+                                     POSITION_ANGLE:         -183.183
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          64.92 E
+                                     RANGE:                  1819651 KM
+                                     FOCAL_LENGTH:           1501.039
+                                     PIXEL_SCALE:            65.6168
+                     IMAGE:          s0349605768.fits
+                                     INVERT:                 HORIZONTAL
+                                     INTERPOLATE:            NO
+                                     SAMPLE_CENTER:          2117.652
+                                     LINE_CENTER:            1289.763
+                                     SAMPLE_OA:              200
+                                     LINE_OA:                200
+                                     FLAT_FIELD:             756flat.big.fits
+                                     MINNAERT:               AUTO
+                                     GEOM_CORRECT:           YES
+                                     EMI_ANG_LIMIT:          78
+                                     TERMINATOR:             YES
+                                     SUB_OBSERV_LAT:         -3.61
+                                     SUB_OBSERV_LON:         14.15 E
+                                     POSITION_ANGLE:         -183.203
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          64.77 E
+                                     RANGE:                  1819528 KM
+                                     FOCAL_LENGTH:           1501.039
+                                     PIXEL_SCALE:            65.6168
+
+or:
+
+             PLANE:
+                     LATITUDE:       LATITUDE_TYPE:          GRAPHIC_LAT
+             PLANE:
+                     LONGITUDE
+             PLANE:
+                     PHASE:          SUB_OBSERV_LAT:         3.62 S
+                                     SUB_OBSERV_LON:         14.45 E
+                                     RANGE:                  1819712.917 KM
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.07 E
+
+
+File: MaRC_input.info,  Node: Sample Input File,  Prev: Map Planes,  Up: Input Files
+
+2.12 An Example of a Complete MaRC Input File
+=============================================
+
+     MAP:    MAP_101c.fits
+     COMMENT:Simple cylindrical map of Jupiter.
+     COMMENT:Generated using MaRC.
+     XCOMMENT:Latitude/Longitude grid for this map.
+             BODY:   Jupiter             # This is an end of line comment.
+       #This is a one line comment.
+                     EQ_RAD:         71492   # Kilometers is a must!!
+                     POL_RAD:        66854
+                     ROTATION:       PROGRADE
+             DATA_TYPE:              SHORT
+             GRID:                   YES
+             TYPE:   SIMPLE_C
+                     OPTIONS:
+                                     AVERAGING:     UNWEIGHTED
+                                     LATITUDE_TYPE: GRAPHIC_LAT
+                                     LO_LAT:        -38 # CENTRIC is default
+                                     HI_LAT:        -8
+                                     LO_LON:        282 # West since prograde
+                                     HI_LON:        337
+             SAMPLES:        800
+             LINES:          400
+             PLANE:
+                     IMAGE:          s0349605600.fits
+                             #       NIBBLE:                 5
+             # The above "NIBBLE" has been commented out !!!!
+             # The "NIBBLE" keyword sets all of the below NIBBLEs
+             # to the same value.
+                                     NIBBLE_LEFT:            10
+                                     NIBBLE_RIGHT:           2
+                                     NIBBLE_TOP:             5
+                                     NIBBLE_BOTTOM:          3
+                                     INVERT:                 VERTICAL
+                                     INTERPOLATE:            NO
+                                     SAMPLE_CENTER:          2756.684
+                                     LINE_CENTER:            1293.4014
+                                     SAMPLE_OA:              200
+                                     LINE_OA:                200
+                                     FLAT_FIELD:             101_410flat.fits
+                                     MINNAERT:               TABLE
+                                     GEOM_CORRECT:           YES
+                                     EMI_ANG_LIMIT:          83.7556
+                                     TERMINATOR:             YES
+                                     SUB_OBSERV_LAT:         -3.62
+                                     SUB_OBSERV_LON:         15.20 E
+                                     POSITION_ANGLE:         183.182 CW
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.84 E
+                                     RANGE:                  1820388 KM
+                                     FOCAL_LENGTH:           1501.039
+                                     PIXEL_SCALE:            65.6168
+                     IMAGE:          s0349605622.fits
+                                     INVERT:                 VERTICAL
+                                     INTERPOLATE:            NO
+                                     SAMPLE_CENTER:          2073.767
+                                     LINE_CENTER:            1284.2759
+                                     SAMPLE_OA:              200
+                                     LINE_OA:                200
+                                     FLAT_FIELD:             101_410flat.fits
+                                     MINNAERT:               AUTO
+                                     GEOM_CORRECT:           YES
+                                     EMI_ANG_LIMIT:          80
+                                     TERMINATOR:             YES
+                                     SUB_OBSERV_LAT:         -3.62
+                                     SUB_OBSERV_LON:         15.05 E
+                                     POSITION_ANGLE:         -183.203
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.69 E
+                                     RANGE:                  1820266 KM
+                                     FOCAL_LENGTH:           1501.039
+                                     PIXEL_SCALE:            65.6168
+
+             PLANE:
+                     IMAGE:          s0349605745.fits
+                                     INVERT:                 VERTICAL
+                                     INTERPOLATE:            NO
+                                     SAMPLE_CENTER:          2788.453
+                                     LINE_CENTER:            1295.195
+                                     SAMPLE_OA:              200
+                                     LINE_OA:                200
+                                     FLAT_FIELD:             101_756flat.fits
+                                     MINNAERT:               1.0
+                                     GEOM_CORRECT:           YES
+                                     EMI_ANG_LIMIT:          85
+                                     TERMINATOR:             NO
+                                     SUB_OBSERV_LAT:         -3.61
+                                     SUB_OBSERV_LON:         14.30 E
+                                     POSITION_ANGLE:         -183.183
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          64.92 E
+                                     RANGE:                  1819651 KM
+                                     FOCAL_LENGTH:           1501.039
+                                     PIXEL_SCALE:            65.6168
+                     IMAGE:          s0349605768.fits
+                                     INVERT:                 VERTICAL
+                                     INTERPOLATE:            NO
+                                     SAMPLE_CENTER:          2117.652
+                                     LINE_CENTER:            1289.763
+                                     SAMPLE_OA:              200
+                                     LINE_OA:                200
+                                     FLAT_FIELD:             101_756flat.fits
+                                     MINNAERT:               TABLE
+                                     GEOM_CORRECT:           YES
+                                     EMI_ANG_LIMIT:          70
+                                     TERMINATOR:             NO
+                                     SUB_OBSERV_LAT:         -3.61
+                                     SUB_OBSERV_LON:         14.15 E
+                                     POSITION_ANGLE:         183.203 CW
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          64.77 E
+                                     RANGE:                  1819528 KM
+                                     FOCAL_LENGTH:           1501.039
+                                     PIXEL_SCALE:            65.6168
+
+             PLANE:
+                     MU:             SUB_OBSERV_LAT:         -3.62
+                                     SUB_OBSERV_LON:         14.45 E
+                     # RANGE defaults to units of Kilometers
+                                     RANGE:                  1819712.917
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.07 E
+
+             PLANE:
+                     MU0:            SUB_OBSERV_LAT:         3.62 S
+                                     SUB_OBSERV_LON:         14.45 E
+                                     RANGE:                  1819712.917 KM
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.07 E
+
+     # The next map in the input file follows.
+     MAP:    mumu0.TEST2.fits
+     COMMENT:This is just a sample input file for a Mu/Mu0/cos(Phase) map
+     XCOMMENT:Latitude / Longitude grid for primary array (the cube)
+             BODY:   Jupiter
+                     EQ_RAD:         71492
+                     POL_RAD:        66854
+                     ROTATION:       PROGRADE
+
+             DATA_TYPE:              SHORT
+             GRID:                   YES
+             GRID_INTERVAL:          10
+             TYPE:   ORTHO
+             OPTIONS:
+                                     SUB_OBSERV_LAT:         3.73 S G
+                                     SUB_OBSERV_LON:         303.54 W
+                                     POSITION_ANGLE:         34.56 CCW
+                                     KM_PER_PIXEL:           300
+                                     SAMPLE_CENTER:          250
+                                     LINE_CENTER:            250
+             SAMPLES:        400
+             LINES:          500
+             PLANE:
+                     MU:             SUB_OBSERV_LAT:         -2.83
+                                     SUB_OBSERV_LON:         56.46 E
+                                     RANGE:                  1555114.417 KM
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.07 E
+             PLANE:
+                     MU0:            SUB_OBSERV_LAT:         -2.83
+                                     SUB_OBSERV_LON:         56.46 E
+                                     RANGE:                  1555114.417
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.07 E
+             PLANE:
+                     PHASE:          SUB_OBSERV_LAT:         -2.83
+                                     SUB_OBSERV_LON:         56.46E
+                                     RANGE:                  1555114.417
+                                     SUB_SOLAR_LAT:          -1.80
+                                     SUB_SOLAR_LON:          65.07E
+             PLANE:
+                     LONGITUDE
+
+
+File: MaRC_input.info,  Node: User Defaults Files,  Next: Copying This Manual,  Prev: Input Files,  Up: Top
+
+3 User Defaults Files
+*********************
+
+Sometimes all maps in a given input file have the same options.  Setting
+the same option for each map or image can be tedious.  Instead, the user
+can define default values for all maps and input images.  At startup,
+MaRC searches for a file called `.marc' in the users home directory.
+This file contains user defined defaults for the grid interval size,
+the valid data range for each plane and the nibbling values for all
+input images.  If set, than these values will be applied to all maps
+and input images.  However, it is possible to override these values by
+entering a different value in the input file where appropriate, as
+explained the MaRC Input File section.  Any map, plane or image entry
+that does not override the values in the user defaults file will use
+the values found in the user defaults file.  If a value is not set in
+the user defaults file, then the MaRC internal defaults will be used.
+All entries in the user defaults file are optional, but must follow a
+specific order if used:
+
+     GRID_INTERVAL:  10      # Must be before the data range and nibbling.
+     DATA_MIN:       0.001   # Both before the nibbling entries.
+     DATA_MAX:       10000
+     NIBBLE_LEFT:    6       # These must used in the shown order.
+     NIBBLE_RIGHT:   20
+     NIBBLE_TOP:     8
+     NIBBLE_BOTTOM:  8
+
+If it is not necessary, for example, to set `DATA_MIN' and
+`NIBBLE_RIGHT', then simply remove them from the user defaults file,
+since all of these entries are optional.
+
+
+File: MaRC_input.info,  Node: Copying This Manual,  Next: Concept Index,  Prev: User Defaults Files,  Up: Top
+
+Appendix A Copying This Manual
+******************************
+
+* Menu:
+
+* GNU Free Documentation License:: License for copying this manual
+
+
+File: MaRC_input.info,  Node: GNU Free Documentation License,  Up: Copying This Manual
+
+A.1 GNU Free Documentation License
+==================================
+
+                      Version 1.2, November 2002
+
+     Copyright (C) 2000,2001,2002 Free Software Foundation, Inc.
+     59 Temple Place, Suite 330, Boston, MA  02111-1307, USA
+
+     Everyone is permitted to copy and distribute verbatim copies
+     of this license document, but changing it is not allowed.
+
+  0. PREAMBLE
+
+     The purpose of this License is to make a manual, textbook, or other
+     functional and useful document "free" in the sense of freedom: to
+     assure everyone the effective freedom to copy and redistribute it,
+     with or without modifying it, either commercially or
+     noncommercially.  Secondarily, this License preserves for the
+     author and publisher a way to get credit for their work, while not
+     being considered responsible for modifications made by others.
+
+     This License is a kind of "copyleft", which means that derivative
+     works of the document must themselves be free in the same sense.
+     It complements the GNU General Public License, which is a copyleft
+     license designed for free software.
+
+     We have designed this License in order to use it for manuals for
+     free software, because free software needs free documentation: a
+     free program should come with manuals providing the same freedoms
+     that the software does.  But this License is not limited to
+     software manuals; it can be used for any textual work, regardless
+     of subject matter or whether it is published as a printed book.
+     We recommend this License principally for works whose purpose is
+     instruction or reference.
+
+  1. APPLICABILITY AND DEFINITIONS
+
+     This License applies to any manual or other work, in any medium,
+     that contains a notice placed by the copyright holder saying it
+     can be distributed under the terms of this License.  Such a notice
+     grants a world-wide, royalty-free license, unlimited in duration,
+     to use that work under the conditions stated herein.  The
+     "Document", below, refers to any such manual or work.  Any member
+     of the public is a licensee, and is addressed as "you".  You
+     accept the license if you copy, modify or distribute the work in a
+     way requiring permission under copyright law.
+
+     A "Modified Version" of the Document means any work containing the
+     Document or a portion of it, either copied verbatim, or with
+     modifications and/or translated into another language.
+
+     A "Secondary Section" is a named appendix or a front-matter section
+     of the Document that deals exclusively with the relationship of the
+     publishers or authors of the Document to the Document's overall
+     subject (or to related matters) and contains nothing that could
+     fall directly within that overall subject.  (Thus, if the Document
+     is in part a textbook of mathematics, a Secondary Section may not
+     explain any mathematics.)  The relationship could be a matter of
+     historical connection with the subject or with related matters, or
+     of legal, commercial, philosophical, ethical or political position
+     regarding them.
+
+     The "Invariant Sections" are certain Secondary Sections whose
+     titles are designated, as being those of Invariant Sections, in
+     the notice that says that the Document is released under this
+     License.  If a section does not fit the above definition of
+     Secondary then it is not allowed to be designated as Invariant.
+     The Document may contain zero Invariant Sections.  If the Document
+     does not identify any Invariant Sections then there are none.
+
+     The "Cover Texts" are certain short passages of text that are
+     listed, as Front-Cover Texts or Back-Cover Texts, in the notice
+     that says that the Document is released under this License.  A
+     Front-Cover Text may be at most 5 words, and a Back-Cover Text may
+     be at most 25 words.
+
+     A "Transparent" copy of the Document means a machine-readable copy,
+     represented in a format whose specification is available to the
+     general public, that is suitable for revising the document
+     straightforwardly with generic text editors or (for images
+     composed of pixels) generic paint programs or (for drawings) some
+     widely available drawing editor, and that is suitable for input to
+     text formatters or for automatic translation to a variety of
+     formats suitable for input to text formatters.  A copy made in an
+     otherwise Transparent file format whose markup, or absence of
+     markup, has been arranged to thwart or discourage subsequent
+     modification by readers is not Transparent.  An image format is
+     not Transparent if used for any substantial amount of text.  A
+     copy that is not "Transparent" is called "Opaque".
+
+     Examples of suitable formats for Transparent copies include plain
+     ASCII without markup, Texinfo input format, LaTeX input format,
+     SGML or XML using a publicly available DTD, and
+     standard-conforming simple HTML, PostScript or PDF designed for
+     human modification.  Examples of transparent image formats include
+     PNG, XCF and JPG.  Opaque formats include proprietary formats that
+     can be read and edited only by proprietary word processors, SGML or
+     XML for which the DTD and/or processing tools are not generally
+     available, and the machine-generated HTML, PostScript or PDF
+     produced by some word processors for output purposes only.
+
+     The "Title Page" means, for a printed book, the title page itself,
+     plus such following pages as are needed to hold, legibly, the
+     material this License requires to appear in the title page.  For
+     works in formats which do not have any title page as such, "Title
+     Page" means the text near the most prominent appearance of the
+     work's title, preceding the beginning of the body of the text.
+
+     A section "Entitled XYZ" means a named subunit of the Document
+     whose title either is precisely XYZ or contains XYZ in parentheses
+     following text that translates XYZ in another language.  (Here XYZ
+     stands for a specific section name mentioned below, such as
+     "Acknowledgements", "Dedications", "Endorsements", or "History".)
+     To "Preserve the Title" of such a section when you modify the
+     Document means that it remains a section "Entitled XYZ" according
+     to this definition.
+
+     The Document may include Warranty Disclaimers next to the notice
+     which states that this License applies to the Document.  These
+     Warranty Disclaimers are considered to be included by reference in
+     this License, but only as regards disclaiming warranties: any other
+     implication that these Warranty Disclaimers may have is void and
+     has no effect on the meaning of this License.
+
+  2. VERBATIM COPYING
+
+     You may copy and distribute the Document in any medium, either
+     commercially or noncommercially, provided that this License, the
+     copyright notices, and the license notice saying this License
+     applies to the Document are reproduced in all copies, and that you
+     add no other conditions whatsoever to those of this License.  You
+     may not use technical measures to obstruct or control the reading
+     or further copying of the copies you make or distribute.  However,
+     you may accept compensation in exchange for copies.  If you
+     distribute a large enough number of copies you must also follow
+     the conditions in section 3.
+
+     You may also lend copies, under the same conditions stated above,
+     and you may publicly display copies.
+
+  3. COPYING IN QUANTITY
+
+     If you publish printed copies (or copies in media that commonly
+     have printed covers) of the Document, numbering more than 100, and
+     the Document's license notice requires Cover Texts, you must
+     enclose the copies in covers that carry, clearly and legibly, all
+     these Cover Texts: Front-Cover Texts on the front cover, and
+     Back-Cover Texts on the back cover.  Both covers must also clearly
+     and legibly identify you as the publisher of these copies.  The
+     front cover must present the full title with all words of the
+     title equally prominent and visible.  You may add other material
+     on the covers in addition.  Copying with changes limited to the
+     covers, as long as they preserve the title of the Document and
+     satisfy these conditions, can be treated as verbatim copying in
+     other respects.
+
+     If the required texts for either cover are too voluminous to fit
+     legibly, you should put the first ones listed (as many as fit
+     reasonably) on the actual cover, and continue the rest onto
+     adjacent pages.
+
+     If you publish or distribute Opaque copies of the Document
+     numbering more than 100, you must either include a
+     machine-readable Transparent copy along with each Opaque copy, or
+     state in or with each Opaque copy a computer-network location from
+     which the general network-using public has access to download
+     using public-standard network protocols a complete Transparent
+     copy of the Document, free of added material.  If you use the
+     latter option, you must take reasonably prudent steps, when you
+     begin distribution of Opaque copies in quantity, to ensure that
+     this Transparent copy will remain thus accessible at the stated
+     location until at least one year after the last time you
+     distribute an Opaque copy (directly or through your agents or
+     retailers) of that edition to the public.
+
+     It is requested, but not required, that you contact the authors of
+     the Document well before redistributing any large number of
+     copies, to give them a chance to provide you with an updated
+     version of the Document.
+
+  4. MODIFICATIONS
+
+     You may copy and distribute a Modified Version of the Document
+     under the conditions of sections 2 and 3 above, provided that you
+     release the Modified Version under precisely this License, with
+     the Modified Version filling the role of the Document, thus
+     licensing distribution and modification of the Modified Version to
+     whoever possesses a copy of it.  In addition, you must do these
+     things in the Modified Version:
+
+       A. Use in the Title Page (and on the covers, if any) a title
+          distinct from that of the Document, and from those of
+          previous versions (which should, if there were any, be listed
+          in the History section of the Document).  You may use the
+          same title as a previous version if the original publisher of
+          that version gives permission.
+
+       B. List on the Title Page, as authors, one or more persons or
+          entities responsible for authorship of the modifications in
+          the Modified Version, together with at least five of the
+          principal authors of the Document (all of its principal
+          authors, if it has fewer than five), unless they release you
+          from this requirement.
+
+       C. State on the Title page the name of the publisher of the
+          Modified Version, as the publisher.
+
+       D. Preserve all the copyright notices of the Document.
+
+       E. Add an appropriate copyright notice for your modifications
+          adjacent to the other copyright notices.
+
+       F. Include, immediately after the copyright notices, a license
+          notice giving the public permission to use the Modified
+          Version under the terms of this License, in the form shown in
+          the Addendum below.
+
+       G. Preserve in that license notice the full lists of Invariant
+          Sections and required Cover Texts given in the Document's
+          license notice.
+
+       H. Include an unaltered copy of this License.
+
+       I. Preserve the section Entitled "History", Preserve its Title,
+          and add to it an item stating at least the title, year, new
+          authors, and publisher of the Modified Version as given on
+          the Title Page.  If there is no section Entitled "History" in
+          the Document, create one stating the title, year, authors,
+          and publisher of the Document as given on its Title Page,
+          then add an item describing the Modified Version as stated in
+          the previous sentence.
+
+       J. Preserve the network location, if any, given in the Document
+          for public access to a Transparent copy of the Document, and
+          likewise the network locations given in the Document for
+          previous versions it was based on.  These may be placed in
+          the "History" section.  You may omit a network location for a
+          work that was published at least four years before the
+          Document itself, or if the original publisher of the version
+          it refers to gives permission.
+
+       K. For any section Entitled "Acknowledgements" or "Dedications",
+          Preserve the Title of the section, and preserve in the
+          section all the substance and tone of each of the contributor
+          acknowledgements and/or dedications given therein.
+
+       L. Preserve all the Invariant Sections of the Document,
+          unaltered in their text and in their titles.  Section numbers
+          or the equivalent are not considered part of the section
+          titles.
+
+       M. Delete any section Entitled "Endorsements".  Such a section
+          may not be included in the Modified Version.
+
+       N. Do not retitle any existing section to be Entitled
+          "Endorsements" or to conflict in title with any Invariant
+          Section.
+
+       O. Preserve any Warranty Disclaimers.
+
+     If the Modified Version includes new front-matter sections or
+     appendices that qualify as Secondary Sections and contain no
+     material copied from the Document, you may at your option
+     designate some or all of these sections as invariant.  To do this,
+     add their titles to the list of Invariant Sections in the Modified
+     Version's license notice.  These titles must be distinct from any
+     other section titles.
+
+     You may add a section Entitled "Endorsements", provided it contains
+     nothing but endorsements of your Modified Version by various
+     parties--for example, statements of peer review or that the text
+     has been approved by an organization as the authoritative
+     definition of a standard.
+
+     You may add a passage of up to five words as a Front-Cover Text,
+     and a passage of up to 25 words as a Back-Cover Text, to the end
+     of the list of Cover Texts in the Modified Version.  Only one
+     passage of Front-Cover Text and one of Back-Cover Text may be
+     added by (or through arrangements made by) any one entity.  If the
+     Document already includes a cover text for the same cover,
+     previously added by you or by arrangement made by the same entity
+     you are acting on behalf of, you may not add another; but you may
+     replace the old one, on explicit permission from the previous
+     publisher that added the old one.
+
+     The author(s) and publisher(s) of the Document do not by this
+     License give permission to use their names for publicity for or to
+     assert or imply endorsement of any Modified Version.
+
+  5. COMBINING DOCUMENTS
+
+     You may combine the Document with other documents released under
+     this License, under the terms defined in section 4 above for
+     modified versions, provided that you include in the combination
+     all of the Invariant Sections of all of the original documents,
+     unmodified, and list them all as Invariant Sections of your
+     combined work in its license notice, and that you preserve all
+     their Warranty Disclaimers.
+
+     The combined work need only contain one copy of this License, and
+     multiple identical Invariant Sections may be replaced with a single
+     copy.  If there are multiple Invariant Sections with the same name
+     but different contents, make the title of each such section unique
+     by adding at the end of it, in parentheses, the name of the
+     original author or publisher of that section if known, or else a
+     unique number.  Make the same adjustment to the section titles in
+     the list of Invariant Sections in the license notice of the
+     combined work.
+
+     In the combination, you must combine any sections Entitled
+     "History" in the various original documents, forming one section
+     Entitled "History"; likewise combine any sections Entitled
+     "Acknowledgements", and any sections Entitled "Dedications".  You
+     must delete all sections Entitled "Endorsements."
+
+  6. COLLECTIONS OF DOCUMENTS
+
+     You may make a collection consisting of the Document and other
+     documents released under this License, and replace the individual
+     copies of this License in the various documents with a single copy
+     that is included in the collection, provided that you follow the
+     rules of this License for verbatim copying of each of the
+     documents in all other respects.
+
+     You may extract a single document from such a collection, and
+     distribute it individually under this License, provided you insert
+     a copy of this License into the extracted document, and follow
+     this License in all other respects regarding verbatim copying of
+     that document.
+
+  7. AGGREGATION WITH INDEPENDENT WORKS
+
+     A compilation of the Document or its derivatives with other
+     separate and independent documents or works, in or on a volume of
+     a storage or distribution medium, is called an "aggregate" if the
+     copyright resulting from the compilation is not used to limit the
+     legal rights of the compilation's users beyond what the individual
+     works permit.  When the Document is included in an aggregate, this
+     License does not apply to the other works in the aggregate which
+     are not themselves derivative works of the Document.
+
+     If the Cover Text requirement of section 3 is applicable to these
+     copies of the Document, then if the Document is less than one half
+     of the entire aggregate, the Document's Cover Texts may be placed
+     on covers that bracket the Document within the aggregate, or the
+     electronic equivalent of covers if the Document is in electronic
+     form.  Otherwise they must appear on printed covers that bracket
+     the whole aggregate.
+
+  8. TRANSLATION
+
+     Translation is considered a kind of modification, so you may
+     distribute translations of the Document under the terms of section
+     4.  Replacing Invariant Sections with translations requires special
+     permission from their copyright holders, but you may include
+     translations of some or all Invariant Sections in addition to the
+     original versions of these Invariant Sections.  You may include a
+     translation of this License, and all the license notices in the
+     Document, and any Warranty Disclaimers, provided that you also
+     include the original English version of this License and the
+     original versions of those notices and disclaimers.  In case of a
+     disagreement between the translation and the original version of
+     this License or a notice or disclaimer, the original version will
+     prevail.
+
+     If a section in the Document is Entitled "Acknowledgements",
+     "Dedications", or "History", the requirement (section 4) to
+     Preserve its Title (section 1) will typically require changing the
+     actual title.
+
+  9. TERMINATION
+
+     You may not copy, modify, sublicense, or distribute the Document
+     except as expressly provided for under this License.  Any other
+     attempt to copy, modify, sublicense or distribute the Document is
+     void, and will automatically terminate your rights under this
+     License.  However, parties who have received copies, or rights,
+     from you under this License will not have their licenses
+     terminated so long as such parties remain in full compliance.
+
+ 10. FUTURE REVISIONS OF THIS LICENSE
+
+     The Free Software Foundation may publish new, revised versions of
+     the GNU Free Documentation License from time to time.  Such new
+     versions will be similar in spirit to the present version, but may
+     differ in detail to address new problems or concerns.  See
+     `http://www.gnu.org/copyleft/'.
+
+     Each version of the License is given a distinguishing version
+     number.  If the Document specifies that a particular numbered
+     version of this License "or any later version" applies to it, you
+     have the option of following the terms and conditions either of
+     that specified version or of any later version that has been
+     published (not as a draft) by the Free Software Foundation.  If
+     the Document does not specify a version number of this License,
+     you may choose any version ever published (not as a draft) by the
+     Free Software Foundation.
+
+A.1.1 ADDENDUM: How to use this License for your documents
+----------------------------------------------------------
+
+To use this License in a document you have written, include a copy of
+the License in the document and put the following copyright and license
+notices just after the title page:
+
+       Copyright (C)  YEAR  YOUR NAME.
+       Permission is granted to copy, distribute and/or modify this document
+       under the terms of the GNU Free Documentation License, Version 1.2
+       or any later version published by the Free Software Foundation;
+       with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+       Texts.  A copy of the license is included in the section entitled ``GNU
+       Free Documentation License''.
+
+   If you have Invariant Sections, Front-Cover Texts and Back-Cover
+Texts, replace the "with...Texts." line with this:
+
+         with the Invariant Sections being LIST THEIR TITLES, with
+         the Front-Cover Texts being LIST, and with the Back-Cover Texts
+         being LIST.
+
+   If you have Invariant Sections without Cover Texts, or some other
+combination of the three, merge those two alternatives to suit the
+situation.
+
+   If your document contains nontrivial examples of program code, we
+recommend releasing these examples in parallel under your choice of
+free software license, such as the GNU General Public License, to
+permit their use in free software.
+
+
+File: MaRC_input.info,  Node: Concept Index,  Prev: Copying This Manual,  Up: Top
+
+Concept Index
+*************
+
+ [index ]
+* Menu:
+
+* # (input file comments):               Comments.             (line  6)
+* .marc user defaults file:              User Defaults Files.  (line  6)
+* Albers:                                Proj Overview.        (line 27)
+* Albers - One:                          Albers Eqv 1.         (line  6)
+* Albers - Two:                          Albers Eqv 2.         (line  6)
+* Angle and Range Entries:               Angle & Range.        (line  3)
+* ARCSEC_PER_PIX <1>:                    Image Scale.          (line 23)
+* ARCSEC_PER_PIX:                        Pers. Scale.          (line 26)
+* arcseconds per pixel <1>:              Image Scale.          (line 19)
+* arcseconds per pixel:                  Pers. Scale.          (line 22)
+* AUTO:                                  Photo Correct.        (line 14)
+* AVERAGING:                             Averaging.            (line 24)
+* averaging techniques:                  Averaging.            (line  6)
+* BODY:                                  Body Data.            (line 10)
+* body center:                           Body Center.          (line  6)
+* boresight:                             Optical Axis.         (line  6)
+* BOTH:                                  Image Inversion.      (line  6)
+* BSCALE:                                Output Data.          (line 16)
+* BYTE:                                  Output Data.          (line 30)
+* BZERO:                                 Output Data.          (line 16)
+* CENTRIC_LAT:                           Simple Cyl.           (line 11)
+* clockwise:                             Angle & Range.        (line 31)
+* COMMENT:                               Map File Comments.    (line  6)
+* computed angles:                       Virtual Images.       (line 14)
+* conformal maps:                        Proj Overview.        (line 15)
+* copying:                               Copying This Manual.  (line  6)
+* counter-clockwise:                     Angle & Range.        (line 31)
+* DATA_MAX:                              Beginning a Plane.    (line  6)
+* DATA_MIN:                              Beginning a Plane.    (line  6)
+* DATA_OFFSET:                           Output Data.          (line  3)
+* DATA_SCALE:                            Output Data.          (line  3)
+* DATA_TYPE:                             Output Data.          (line 30)
+* DOUBLE:                                Output Data.          (line 30)
+* EMI_ANG_LIMIT:                         Emi Ang Cutoff.       (line  6)
+* emission angle:                        Virtual Images.       (line 14)
+* emission angle cut-off:                Emi Ang Cutoff.       (line  6)
+* EQ_RAD:                                Body Data.            (line 10)
+* equivalent maps:                       Proj Overview.        (line 27)
+* FDL, GNU Free Documentation License:   GNU Free Documentation License.
+                                                               (line  6)
+* flat field image:                      Flat Field.           (line  6)
+* FLAT_FIELD:                            Flat Field.           (line  6)
+* FLATTENING:                            Body Data.            (line 21)
+* FLOAT:                                 Output Data.          (line 30)
+* FOCAL_LENGTH <1>:                      Image Scale.          (line 31)
+* FOCAL_LENGTH:                          Pers. Scale.          (line 34)
+* GEOM_CORRECT:                          Geom Correct.         (line  6)
+* geometric correction:                  Geom Correct.         (line  6)
+* GFDL:                                  Copying This Manual.  (line 10)
+* GRAPHIC_LAT:                           Simple Cyl.           (line 11)
+* GRID:                                  Lat/Lon Grid.         (line 16)
+* grid image:                            Lat/Lon Grid.         (line  6)
+* GRID_INTERVAL:                         Lat/Lon Grid.         (line 16)
+* HI_LAT:                                Simple Cyl.           (line 11)
+* HI_LON:                                Simple Cyl.           (line 11)
+* HORIZONTAL:                            Image Inversion.      (line  6)
+* Identity:                              Identity.             (line  6)
+* IMAGE <1>:                             Sample Entry.         (line  8)
+* IMAGE <2>:                             Image Overview.       (line 15)
+* IMAGE:                                 Beginning a Plane.    (line 30)
+* image inversion:                       Image Inversion.      (line  6)
+* incidence angle:                       Virtual Images.       (line 14)
+* input file comments:                   Comments.             (line  6)
+* Input Files:                           Input Files.          (line  3)
+* input image geometry:                  Image Geometry.       (line  6)
+* input image scale:                     Image Scale.          (line  6)
+* Input Images:                          Input Images.         (line  3)
+* INTERPOLATE:                           Interpolation.        (line 13)
+* interpolation:                         Interpolation.        (line  6)
+* INVERT:                                Image Inversion.      (line  6)
+* keyword values:                        Keywords.             (line  3)
+* keywords:                              Keywords.             (line  3)
+* kilometers per pixel:                  Image Scale.          (line 13)
+* KM_PER_PIXEL <1>:                      Image Scale.          (line 14)
+* KM_PER_PIXEL <2>:                      Pers. Scale.          (line 15)
+* KM_PER_PIXEL:                          Scale.                (line 15)
+* Lambert:                               Proj Overview.        (line 15)
+* Lambert conformal <1>:                 Lambert Con 2.        (line  6)
+* Lambert conformal:                     Lambert Con 1.        (line  6)
+* Lambert Cylindrical:                   Lambert Cyl.          (line  6)
+* Lambert Polar Equivalent:              Lambert Pol.          (line  6)
+* LAT_AT_CENTER <1>:                     Viewing Geom.         (line 27)
+* LAT_AT_CENTER:                         Viewing Geometry.     (line 48)
+* LATITUDE <1>:                          Virtual Images.       (line 19)
+* LATITUDE:                              Beginning a Plane.    (line 30)
+* Latitude/Longitude Grid Options:       Lat/Lon Grid.         (line  3)
+* LATITUDE_TYPE:                         Simple Cyl.           (line 11)
+* lens geometry <1>:                     Image Scale.          (line 27)
+* lens geometry:                         Pers. Scale.          (line 30)
+* license:                               Copying This Manual.  (line 10)
+* LINE_CENTER <1>:                       Body Center.          (line  6)
+* LINE_CENTER <2>:                       Viewing Geom.         (line 20)
+* LINE_CENTER:                           Viewing Geometry.     (line 41)
+* LINE_OA:                               Optical Axis.         (line  6)
+* LINES:                                 Map Size.             (line  6)
+* LO_LAT:                                Simple Cyl.           (line 11)
+* LO_LON:                                Simple Cyl.           (line 11)
+* LON_AT_CENTER <1>:                     Viewing Geom.         (line 27)
+* LON_AT_CENTER:                         Viewing Geometry.     (line 48)
+* LONG:                                  Output Data.          (line 30)
+* LONGITUDE <1>:                         Virtual Images.       (line 22)
+* LONGITUDE:                             Beginning a Plane.    (line 30)
+* MAP <1>:                               Sample Input File.    (line  6)
+* MAP:                                   Map Entries.          (line 14)
+* Map Entries:                           Map Entries.          (line  3)
+* map planes:                            Map Planes.           (line  6)
+* map projections:                       Projections.          (line  6)
+* Map Size:                              Map Size.             (line  6)
+* mathematical expressions:              Keywords.             (line 18)
+* maximum latitudes:                     Std and Max Lats.     (line  6)
+* Mercator <1>:                          Mercator.             (line  6)
+* Mercator:                              Proj Overview.        (line 15)
+* MINNAERT:                              Photo Correct.        (line  6)
+* miscellaneous maps:                    Proj Overview.        (line 41)
+* MU <1>:                                Virtual Images.       (line 25)
+* MU:                                    Beginning a Plane.    (line 30)
+* MU0 <1>:                               Virtual Images.       (line 28)
+* MU0:                                   Beginning a Plane.    (line 30)
+* NIBBLE:                                Nibbling.             (line 12)
+* NIBBLE_BOTTOM:                         Nibbling.             (line 12)
+* NIBBLE_LEFT:                           Nibbling.             (line 12)
+* NIBBLE_RIGHT:                          Nibbling.             (line 12)
+* NIBBLE_TOP:                            Nibbling.             (line 12)
+* nibbling:                              Nibbling.             (line  6)
+* NONE:                                  Averaging.            (line 24)
+* Observed Body Data:                    Body Data.            (line  3)
+* optical axis:                          Optical Axis.         (line  6)
+* OPTIONS <1>:                           Simple Cyl.           (line 26)
+* OPTIONS <2>:                           Pers. Entry.          (line 11)
+* OPTIONS:                               Ortho Entry.          (line 11)
+* orthographic <1>:                      Orthographic.         (line  6)
+* orthographic:                          Proj Overview.        (line 41)
+* orthographic center:                   Viewing Geometry.     (line 33)
+* orthographic geometry:                 Viewing Geometry.     (line  3)
+* Output Data:                           Output Data.          (line  3)
+* Overview:                              Overview.             (line  3)
+* perspective <1>:                       Perspective.          (line  3)
+* perspective:                           Proj Overview.        (line 41)
+* perspective center:                    Viewing Geom.         (line 12)
+* perspective geometry:                  Viewing Geom.         (line  3)
+* PHASE <1>:                             Virtual Images.       (line 31)
+* PHASE:                                 Beginning a Plane.    (line 30)
+* phase angle:                           Virtual Images.       (line 14)
+* photometric correction:                Photo Correct.        (line  6)
+* PIXEL_SCALE <1>:                       Image Scale.          (line 31)
+* PIXEL_SCALE:                           Pers. Scale.          (line 34)
+* PLANE <1>:                             Plane Entry.          (line  8)
+* PLANE:                                 Beginning a Plane.    (line  6)
+* POL_RAD:                               Body Data.            (line 10)
+* Polar Stereographic <1>:               Polar Stereo.         (line  6)
+* Polar Stereographic:                   Proj Overview.        (line 15)
+* pole selection:                        Poles.                (line  6)
+* position angle:                        Pos. Ang..            (line  6)
+* POSITION_ANGLE <1>:                    Pos. Ang..            (line 12)
+* POSITION_ANGLE <2>:                    Viewing Geom.         (line 47)
+* POSITION_ANGLE:                        Viewing Geometry.     (line 24)
+* PROGRADE:                              Body Data.            (line 10)
+* RANGE:                                 Range.                (line 15)
+* range:                                 Range.                (line  6)
+* RANGE:                                 Pers. Range.          (line 13)
+* range:                                 Pers. Range.          (line  6)
+* RANGE:                                 Angle & Range.        (line 42)
+* REMOVE_SKY:                            Sky Removal.          (line  6)
+* resolution <1>:                        Pers. Scale.          (line  3)
+* resolution:                            Scale.                (line  3)
+* RETROGRADE:                            Body Data.            (line 10)
+* ROTATION:                              Body Data.            (line 10)
+* SAMPLE_CENTER <1>:                     Body Center.          (line  6)
+* SAMPLE_CENTER <2>:                     Viewing Geom.         (line 20)
+* SAMPLE_CENTER:                         Viewing Geometry.     (line 41)
+* SAMPLE_OA:                             Optical Axis.         (line  6)
+* SAMPLES:                               Map Size.             (line  6)
+* Sanson-Flamsteed <1>:                  Sinusoidal.           (line  6)
+* Sanson-Flamsteed:                      Proj Overview.        (line 27)
+* semantic value:                        Keywords.             (line 12)
+* SHORT:                                 Output Data.          (line 30)
+* simple cylindrical <1>:                Simple Cyl.           (line  3)
+* simple cylindrical:                    Proj Overview.        (line 41)
+* sinusodal:                             Proj Overview.        (line 27)
+* Sinusoidal:                            Sinusoidal.           (line  6)
+* standard parallel restrictions:        Std and Max Lats.     (line 22)
+* standard parallels:                    Std and Max Lats.     (line  6)
+* STD_LAT:                               Std and Max Lats.     (line 15)
+* STD_LAT_1:                             Std and Max Lats.     (line 19)
+* STD_LAT_2:                             Std and Max Lats.     (line 19)
+* sub-observer point <1>:                Sub-Observer Pt..     (line  6)
+* sub-observer point <2>:                Viewing Geom.         (line 35)
+* sub-observer point:                    Viewing Geometry.     (line  6)
+* sub-solar point:                       Sub-Solar Pt..        (line  6)
+* SUB_OBSERV_LAT <1>:                    Sub-Observer Pt..     (line  6)
+* SUB_OBSERV_LAT <2>:                    Viewing Geom.         (line 35)
+* SUB_OBSERV_LAT <3>:                    Viewing Geometry.     (line  6)
+* SUB_OBSERV_LAT:                        Angle & Range.        (line 11)
+* SUB_OBSERV_LON <1>:                    Sub-Observer Pt..     (line  6)
+* SUB_OBSERV_LON <2>:                    Viewing Geom.         (line 35)
+* SUB_OBSERV_LON <3>:                    Viewing Geometry.     (line  6)
+* SUB_OBSERV_LON:                        Angle & Range.        (line 11)
+* SUB_SOLAR_LAT:                         Sub-Solar Pt..        (line  6)
+* SUB_SOLAR_LON:                         Sub-Solar Pt..        (line  6)
+* TABLE:                                 Photo Correct.        (line 14)
+* terminator:                            Terminator.           (line  6)
+* UNWEIGHTED:                            Averaging.            (line 24)
+* User Defaults Files:                   User Defaults Files.  (line  6)
+* VERTICAL:                              Image Inversion.      (line  6)
+* virtual images:                        Virtual Images.       (line  6)
+* WEIGHTED:                              Averaging.            (line 24)
+* XCOMMENT:                              Map File Comments.    (line  6)
+
+
+
+Tag Table:
+Node: Top699
+Node: Overview1870
+Node: Input Files3170
+Node: Comments4071
+Node: Keywords4496
+Node: Angle & Range7073
+Node: Map Entries9618
+Node: Map File Comments10701
+Node: Body Data12243
+Node: Output Data13494
+Node: Lat/Lon Grid15899
+Node: Projections17000
+Node: Proj Overview18144
+Node: Averaging19650
+Node: Poles22258
+Node: Std and Max Lats23163
+Node: Lambert Con 125800
+Node: Lambert Con 226760
+Node: Mercator27651
+Node: Polar Stereo28044
+Node: Albers Eqv 128763
+Node: Albers Eqv 229624
+Node: Lambert Cyl30376
+Node: Lambert Pol30831
+Node: Sinusoidal31380
+Node: Identity31847
+Node: Orthographic32362
+Node: Viewing Geometry33005
+Node: Scale35578
+Node: Ortho Entry36368
+Node: Perspective37303
+Node: Viewing Geom37971
+Node: Pers. Range40560
+Node: Pers. Scale41201
+Node: Pers. Entry43364
+Node: Simple Cyl44446
+Node: Map Size46424
+Node: Map Planes47370
+Node: Beginning a Plane48040
+Node: Input Images49640
+Node: Image Overview50799
+Node: Nibbling51764
+Node: Image Inversion53382
+Node: Interpolation54390
+Node: Sky Removal55129
+Node: Body Center56416
+Node: Optical Axis57403
+Node: Flat Field58349
+Node: Photo Correct59300
+Node: Geom Correct60461
+Node: Emi Ang Cutoff61182
+Node: Terminator62220
+Node: Image Geometry63086
+Node: Sub-Observer Pt.63737
+Node: Pos. Ang.64322
+Node: Sub-Solar Pt.65198
+Node: Range65723
+Node: Image Scale66420
+Node: Sample Entry68259
+Node: Virtual Images69901
+Node: Plane Entry73349
+Node: Sample Input File76857
+Node: User Defaults Files86971
+Node: Copying This Manual88605
+Node: GNU Free Documentation License88858
+Node: Concept Index111271
+
+End Tag Table

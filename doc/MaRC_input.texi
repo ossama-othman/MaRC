@@ -1,0 +1,2351 @@
+\input texinfo  @c -*-texinfo-*-
+
+@c $Id: MaRC_input.texi,v 1.7 2004/10/14 03:57:58 othman Exp $
+
+@include version.texi
+
+@c %**start of header
+@setfilename MaRC_input.info
+@settitle MaRC Input Files
+@c %**end of header
+
+@comment @setchapternewpage odd
+
+@copying
+This is Edition @value{EDITION},
+last updated @value{UPDATED},
+of @cite{The MaRC Manual},
+for @code{MaRC}, version @value{VERSION}.
+
+Copyright @copyright{} 1997-1999, 2003, 2004  Ossama Othman
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, with no
+Front-Cover Texts, and with no Back-Cover Texts.
+A copy of the license is included in the section entitled ``GNU
+Free Documentation License''.
+@end quotation
+@end copying
+
+@titlepage
+@title MaRC Input Files
+@subtitle Creation of Input and User Defaults Files
+@subtitle Edition @value{EDITION}
+@subtitle @value{UPDATED-MONTH}
+@author Ossama Othman
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c @shortcontents
+@contents
+
+@ifnottex
+@node Top
+@top MaRC Input Files
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Overview::              The form and purpose of a MaRC input
+                          file and the user defaults file.
+* Input Files::           This chapter described how to create
+                          and setup a MaRC input file.
+* User Defaults Files::   This chapter describes hot to create
+                          and setup a MaRC user defaults file.
+* Copying This Manual::   How to make copies of this manual.
+* Concept Index::
+@end menu
+
+@node    Overview,      Input Files,    Top,      Top
+@comment node-name,     next,           previous, up
+@cindex Overview
+@chapter Overview
+The MaRC input file structure was designed to double as both a set of
+instructions on how to create one map or more and as a hierarchical list
+of information of what the map contains.  The input file follows a
+category hierarchy.  Each category in the input file has its own set of
+sub-categories or information to be used during map creation.  MaRC
+input files have one or more output map descriptions or entries, where
+each entry has the following required sections, each of which will be
+described later on in this document:
+
+@itemize @bullet
+@item
+Map Entry Sections
+@item
+Map Output File Comments
+@item
+Observed Body Data
+@item
+Output Data Information
+@item
+Latitude/Longitude Grid Options
+@item
+Map Projection Selection and Options
+@item
+Map Size
+@item
+Map Plane Information
+@end itemize
+
+The user defaults file allows the user to set standard values for all
+maps, planes and input images.  The form of the information entered into
+this file is much simpler than that of the input file.  However, the
+detailed descriptions of the information entered into the user defaults
+file can be found in the input files section since entries in the user
+defaults file have much in common with their input file counterparts.
+
+@node    Input Files,  User Defaults Files, Overview,    Top
+@comment node-name,     next,           previous, up
+
+@cindex Input Files
+@chapter Input Files
+@menu
+* Comments::              Placing comments in input files.
+* Keywords::              Input file keywords and keyword values.
+* Angle & Range::         Angle and range conventions.
+* Map Entries::           Setting up a map entry/description.
+* Map File Comments::     Creating map output file comments.
+* Body Data::             Entering characteristics of the
+                          observed body.
+* Output Data::           Output data information.
+* Lat/Lon Grid::          Latitude / Longitude grid options.
+* Projections::           Map projection selection and options.
+* Map Size::              Specifying map dimensions.
+* Map Planes::            Define what is in each map plane.
+* Sample Input File::     A functional and complete sample input file.
+@end menu
+
+@node    Comments,      Keywords,    Input Files,   Input Files
+@comment node-name,     next,           previous, up
+@section Input File Comments
+@cindex input file comments
+@cindex # (input file comments)
+The MaRC input file scanner ignores any text to the right of a pound
+(@code{#}) sign.  Comments may be placed anywhere in the input file.
+The user should be aware that placing a comment before a desired keyword
+or value will cause that keyword or value to be ignored by the parser.
+
+@node    Keywords,    Angle & Range,  Comments,   Input Files
+@comment node-name,     next,           previous, up
+@cindex keywords
+@cindex keyword values
+@section Keywords and Keyword Values
+Information is conveyed to MaRC through the use of a specific set of
+keywords in the input file.  Each keyword has a value type associated
+with it.  The format used in the input file is:
+
+@example
+KEYWORD: keyword value
+@end example
+
+@cindex semantic value
+@noindent
+Notice the use of the colon to delimit the end of the keyword and the
+beginning of the keyword value.  The keyword value will also be referred
+to as the @emph{semantic value} for a given keyword.  For example, MaRC
+may expect a mathematical expression to be used as the semantic value
+for a given keyword.  Currently there are three type of keyword values
+MaRC supports.  They are strings, keyword tokens and mathematical
+expressions.
+@cindex mathematical expressions
+
+MaRC is not case sensitive when parsing keywords.  String keyword
+values, however, are interpreted by MaRC as string literals.  Whatever
+string is passed to MaRC remains unchanged in terms of case or content.
+Keyword tokens are simply strings MaRC expects after some keywords, and
+are interpreted by MaRC as switches that enable a given feature MaRC may
+have.  A mathematical expression is evaluated by the input file parser.
+If the computed value is valid for a given keyword, that value is then
+passed to MaRC.  Mathematical expressions may contain a single number or
+any valid combination of the following mathematical operators and
+functions:
+
+@itemize @bullet
+@item
+Operators
+
+@table @code
+@item +
+Addition
+
+@itemx -
+Subtraction or Negation
+
+@itemx *
+Multiplication
+
+@itemx /
+Division
+
+@itemx ^
+Exponentiation
+
+@itemx ( )
+Arbitrary depth parenthetical expressions
+@end table
+
+@item
+Functions @{ Example of usage: @code{sin(3 * 3.1415 / 2)} @}
+@table @code
+
+@item sin
+The trigonometric sine of a mathematical expression.
+
+@itemx cos
+The trigonometric cosine of a mathematical expression.
+
+@itemx tan
+The trigonometric tangent of a mathematical expression.
+
+@item asin
+The arcsine (inverse sine) of a mathematical expression.
+
+@itemx acos
+The arcsine (inverse cosine) of a mathematical expression.
+
+@itemx atan
+The arctangent (inverse tangent) of a mathematical expression.
+
+@itemx exp
+Raises the number ``e'' to a given value (exponential function).
+
+@itemx ln
+The natural logarithm of a given expression.
+
+@itemx sqrt
+The square root of a mathematical expression.
+@end table
+
+@end itemize
+
+@noindent
+Note that the arguments for the trigonometric functions @code{sin},
+@code{cos} and @code{tan} should be in radians, @strong{NOT} degrees.
+
+
+@node    Angle & Range,  Map Entries,  Keywords,  Input Files
+@comment node-name,     next,           previous, up
+@cindex Angle and Range Entries
+@section Angle and Range Entries
+Special cases of keyword entries that expect mathematical expressions as
+their semantic values exists when specifying latitudes, longitudes,
+position angles and ranges.  Here is an example of a latitude and
+longitude entry, the keywords will be discussed later on:
+
+@cindex @code{SUB_OBSERV_LAT}
+@cindex @code{SUB_OBSERV_LON}
+@example
+SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+@end example
+
+@noindent
+Notice the letters after the numbers.  For latitudes @code{N} denotes
+north latitude.  Similarly @code{S} denotes south latitude.  If neither
+@code{N} nor @code{S} is used then the sign of the mathematical
+expression entered for the latitude determines the hemisphere of the
+sub-observation latitude.  A positive value indicates the northern
+hemisphere, where a negative value indicates the southern hemisphere.
+The letter @code{C} after @code{N} in this example denotes a bodycentric
+latitude.  The letter @code{G} may be used to denote a bodygraphic
+latitude.  If neither @code{C} nor @code{G} is used then a bodycentric
+latitude will be assumed.  A space must be placed between the hemisphere
+and latitude type letters.  Longitudes can be denoted by the letters
+@code{E} and @code{W} for east and west longitude, respectively.  If
+neither is specified, then the direction of rotation of the body
+determines whether the longitude is east or west longitude.  Prograde
+rotation causes the longitude to be west by default, whereas a
+retrograde rotation defaults to east longitude.
+
+A similar expression may be entered for the position angle as follows:
+@cindex clockwise
+@cindex counter-clockwise
+
+@example
+POSITION_ANGLE:  57.32 CW  # 57.32 degrees measured clockwise from vert.
+@end example
+
+@noindent
+Here the token @code{CW} specifies that the position angle is measured
+clockwise from the vertical (``up'') direction of the image.  To specify
+an angle measured counter-clockwise use the token @code{CCW} instead of
+the @code{CW}.  If neither @code{CW} nor @code{CCW} is used then MaRC
+will assume a counter-clockwise positive angle is being entered.
+
+MaRC allows the user to specify the distance unit of a mathematical
+expression used in a range entry, as follows:
+@cindex @code{RANGE}
+
+@example
+RANGE:  1820388 KM      # Kilometers
+@end example
+
+or:
+
+@example
+RANGE:  0.0121685 AU    # Astronomical Units
+@end example
+
+@noindent
+Both are equivalent.  Currently, only units of kilometers (@code{KM})
+and astronomical units (@code{AU}) may be used.  If no unit is entered,
+kilometers will be used as the default unit.  The @code{RANGE} keyword
+will be described later (@pxref{Image Geometry}).
+
+@node    Map Entries,  Map File Comments,  Angle & Range,  Input Files
+@comment node-name,     next,           previous, up
+@cindex Map Entries
+@section Map Entries
+
+An input file can contain more than one map description to facilitate
+batch jobs.  Alternatively, map descriptions may be placed in separate
+files and then passed to MaRC as a of command line arguments, each
+argument being an input file.  The latter has the advantage of occupying
+less memory while MaRC is running, but also has the disadvantage that
+input files are not parsed immediately.  Any combination of these two
+methods of creating maps may be used.
+
+@cindex @code{MAP}
+A map entry begins with the @code{MAP} keyword.  Each map entry in the
+input file begins with this keyword.  The semantic value of the
+@code{MAP} keyword is the name of the output file where the map is to be
+stored.  An example of how a map entry begins follows:
+
+@example
+MAP: map01.fits
+@end example
+
+@noindent
+This states that the name of the file where the map described in the
+rest of the map entry is called ``map01.fits.''  Currently all maps are
+stored in the Flexible Image Transport System (FITS) format.
+
+@node    Map File Comments,  Body Data, Map Entries,  Input Files
+@comment node-name,     next,           previous, up
+@section Map Output File Comments
+@cindex @code{COMMENT}
+@cindex @code{XCOMMENT}
+The FITS file format allows comments to be placed in the primary array
+header, the section of the FITS file where the map is stored, and in the
+image extension header, the section of the FITS file where the
+latitude/longitude grid stored.  Comments for the map that are to be
+placed in the output file are specified by using the @code{COMMENT} and
+@code{XCOMMENT} keywords for the primary array (map) and the image
+extension (grid image), respectively.  The string value for comment
+keywords should not be longer than 70 characters, can be comprised of
+any ASCII character and must end with carriage return.  Any number of
+@code{COMMENT} and @code{XCOMMENT} entries can be used.  However, the
+@code{XCOMMENT} entries must come after the @code{COMMENT} entries.  An
+example of usage is:
+
+@example
+COMMENT:This is a primary array comment.
+COMMENT: Placing a space immediately following the colon will also place
+COMMENT: a space in the output file comments, but is unnecessary since
+COMMENT: the FITS routines that MaRC uses places a space before a
+COMMENT: comment (part of the FITS standard).  However, extra spacing
+COMMENT: may be used, if so desired.
+XCOMMENT:This is an image extension comment.    Tabs may also be used in
+XCOMMENT:both comment entries.  Again any ASCII character may be used.
+XCOMMENT:Remember, each comment entry must end with a carriage return.
+@end example
+
+@node    Body Data,   Output Data,  Map File Comments, Input Files
+@comment node-name,     next,           previous, up
+@cindex Observed Body Data
+@section Observed Body Data
+Information of the body being mapped is needed.  The name of the body,
+its geometry and direction of rotation are used in the input file as
+follows, also notice the use of input file comments:
+
+@cindex @code{BODY}
+@cindex @code{EQ_RAD}
+@cindex @code{POL_RAD}
+@cindex @code{ROTATION}
+@cindex @code{PROGRADE}
+@cindex @code{RETROGRADE}
+@example
+BODY:   Jupiter  #Name of the body to be stored in the map file header.
+        EQ_RAD:         71492   # The equatorial radius. (Kilometers)
+        POL_RAD:        66854   # The polar radius.
+        ROTATION:       PROGRADE  # e.g.: Venus would be RETROGRADE.
+@end example
+
+@noindent
+The body is modeled as an oblate spheroid.  Alternatively, the geometry
+may be specified by using the flattening of the body, the ratio of the
+difference of the equatorial radius and the polar radius and the
+equatorial radius (i.e. @code{(a-c)/a}) may be used with either the
+equatorial radius or the polar radius instead, as follows:
+
+@cindex @code{FLATTENING}
+@example
+        EQ_RAD:         71492
+        FLATTENING:     0.06487
+@end example
+
+@noindent
+or:
+
+@example
+        POL_RAD:        66854
+        FLATTENING:     0.06487
+@end example
+
+@noindent
+The body entry must follow the above order, where the name of the body
+is first, then the geometry, and then the direction of rotation.
+
+@node    Output Data,  Lat/Lon Grid, Body Data,  Input Files
+@comment node-name,     next,           previous, up
+@cindex Output Data
+@cindex @code{DATA_OFFSET}
+@cindex @code{DATA_SCALE}
+@section Output Data Information
+The data stored in the output file can be stored in several formats.
+Data being mapped may have been transformed in some way.  Only linear
+transformations may be specified in the input file.  MaRC provides two
+optional keywords to specify how the data was transformed.  They are the
+@code{DATA_OFFSET} and @code{DATA_SCALE} keywords.  Both of these
+keywords expect a mathematical expression as their semantic value.  Data
+described by these keywords would be of the form:
+
+@example
+(Actual Data) = DATA_OFFSET + DATA_SCALE * (Stored Data)
+@end example
+
+@cindex @code{BZERO}
+@cindex @code{BSCALE}
+@noindent
+The @code{DATA_OFFSET} and @code{DATA_SCALE} keywords are analogous to
+the @code{BZERO} and @code{BSCALE} keywords defined by the FITS
+standard.  Using either one of the @code{DATA_OFFSET} or
+@code{DATA_SCALE} keywords, or both, causes MaRC to place @code{BZERO}
+and @code{BSCALE} entries in the output file primary array header (text
+that precedes the map data).  Both, the @code{DATA_OFFSET} and
+@code{@w{DATA_SCALE}} keywords, are optional.  Either one of the two or
+both may be used.  By default, @code{DATA_OFFSET} is set to zero and
+@code{DATA_SCALE} is set to one.  Specifying these two keywords does
+@strong{NOT} modify the data being stored in the output file in anyway.
+It may, however, cause other applications that read the output file to
+transform the data to their proper values.  The @code{DATA_OFFSET} entry
+must be entered immediately before the @code{DATA_SCALE} entry.
+Immediately following these two keywords is the @code{DATA_TYPE}
+keyword.  The @code{DATA_TYPE} keyword is required.  It specifies the
+number format that the mapped data will be stored as.  Available data
+types are:
+@cindex @code{DATA_TYPE}
+@cindex @code{BYTE}
+@cindex @code{SHORT}
+@cindex @code{LONG}
+@cindex @code{FLOAT}
+@cindex @code{DOUBLE}
+
+@itemize {}
+@table @code
+
+@item BYTE
+1 byte (8  bits) unsigned integer
+
+@itemx SHORT
+2 byte (16 bits) signed integer
+
+@itemx LONG
+4 byte (32 bits) signed integer
+
+@itemx FLOAT
+4 byte (32 bits) floating point number
+
+@itemx DOUBLE
+8 byte (64 bits) floating point number
+@end table
+
+@end itemize
+
+@noindent
+Be aware, for example, that a @code{DOUBLE} type map will occupy four
+times as much memory and storage space then a @code{SHORT} type map of
+the same dimensions.  An example of how all three keywords are used
+follows:
+
+@example
+DATA_OFFSET:    -1.3        # This is optional.  The default is zero.
+DATA_SCALE:     0.0001      # This is optional.  The default is one.
+DATA_TYPE:      SHORT       # This is required.
+@end example
+
+@node    Lat/Lon Grid,  Projections,  Output Data,  Input Files
+@comment node-name,     next,           previous, up
+@cindex Latitude/Longitude Grid Options
+@section Latitude/Longitude Grid Options
+@cindex grid image
+A latitude/longitude grid image may be generated by MaRC if desired.
+The grid image is stored in a separate part of the output file called
+the image extension.  It is left to the user to determine how to overlay
+the grid image on the map.  The grid image is comprised of zeroes and
+ones, in terms of intensity.  Actually it is stored in an unsigned
+integer (8 bits) format.  As such, the minimum value is zero and the
+maximum value is 255.  Grid points and lines have an intensity value of
+255.  It is also possible to specify the interval between points of
+constant latitude and of constant longitude.  By default the interval
+between grid points is 10 degrees (bodycentric where applicable
+@c -- see the appendix for a description of bodycentric latitudes
+).  Both are used in the following fashion:
+@cindex @code{GRID}
+@cindex @code{GRID_INTERVAL}
+
+@example
+GRID:           YES     # This is required.  Enter "YES" or "NO."
+GRID_INTERVAL:  5       # This is optional.
+@end example
+
+@noindent
+The @code{GRID} keyword must come before the @code{GRID_INTERVAL}
+keyword.
+
+@node    Projections,    Map Size,  Lat/Lon Grid,  Input Files
+@comment node-name,     next,           previous, up
+@section Map Projection Selection and Options
+@cindex map projections
+@menu
+* Proj Overview::       Summary of available projections
+* Averaging::           Averaging techniques for overlap regions
+* Poles::               Pole selection for some projections
+* Std and Max Lats::    Notes about standard and maximum latitudes
+* Lambert Con 1::       Conformal with one standard parallel
+* Lambert Con 2::       Conformal with two standard parallels
+* Mercator::            Conformal transverse
+* Polar Stereo::        Conformal polar stereographic
+* Albers Eqv 1::        Equivalent with one standard parallel
+* Albers Eqv 2::        Equivalent with two standard parallels
+* Lambert Cyl::         Cylindrical normal equivalent
+* Lambert Pol::         Polar azimuthal equivalent
+* Sinusoidal::          Sanson-Flamsteed equivalent
+* Identity::            Identity projection
+* Orthographic::        Perspective (point -> infinity)
+* Perspective::         Perspective (point -> finite)
+* Simple Cyl::          Simple cylindrical
+@end menu
+
+@node    Proj Overview,  Averaging,  Projections,  Projections
+@comment node-name,     next,           previous, up
+@subsection Map Projection Overview
+The type of map being created must be specified.  There are several
+types of map projections available.  They are conformal, equivalent and
+miscellaneous projections.  A projection is selected using the
+@code{TYPE} keyword in a given input file.
+
+Conformal map projections are projections that preserve shape, but not
+necessarily size.  Currently, MaRC supports four conformal map
+projections:
+
+@cindex conformal maps
+@cindex Lambert
+@cindex Mercator
+@cindex Polar Stereographic
+@itemize @bullet
+@item
+Normal Conformal Conical Lambert Projection -- One Standard Parallel
+@item
+Normal Conformal Conical Lambert Projection -- Two Standard Parallels
+@item
+Transverse Mercator Projection
+@item
+Polar Stereographic Projection
+@end itemize
+
+@noindent
+Equivalent map projections are projections that preserve area, but not
+necessarily shape.  MaRC supports five equivalent map projections:
+
+@cindex equivalent maps
+@cindex Albers
+@cindex Lambert
+@cindex sinusodal
+@cindex Sanson-Flamsteed
+@itemize @bullet
+@item
+Normal Equivalent Albers Projection  -- One Standard Parallel
+@item
+Normal Equivalent Albers Projection  -- Two Standard Parallels
+@item
+Lambert's Cylindrical Normal Equivalent Projection
+@item
+Lambert's Polar Azimuthal Equivalent Projection
+@item
+Sanson-Flamsteed (Sinusoidal) Equivalent Projection
+@end itemize
+
+@noindent
+The miscellaneous map projections are simply projections that do not fit
+in the conformal or equivalent projection categories.  The three
+available projections in this category are:
+
+@cindex miscellaneous maps
+@cindex orthographic
+@cindex perspective
+@cindex simple cylindrical
+@itemize @bullet
+@item
+Orthographic Projection
+@item
+Perspective Projection
+@item
+Simple Cylindrical Projection
+@end itemize
+
+
+@node    Averaging,  Poles,   Proj Overview,   Projections
+@comment node-name,     next,           previous, up
+@subsection Averaging Techniques
+@cindex averaging techniques
+MaRC is capable of mapping several images on to one map plane.
+Sometimes, there exist regions of overlap between images.  Data in these
+overlap regions are averaged.  The user has the option of specifying an
+averaging technique to use in overlap regions.  Currently, there are two
+averaging techniques available to the user: unweighted averages (weights
+are equal) and weighted averages (weights are unequal).
+
+Unweighted averages are performed simply by taking the sum of all data
+involved and dividing by the total number of data elements involved in
+the sum.  In weighted averaging, data is first multiplied by a weight
+and then added to form a sum.  That weighted sum is then divided by the
+sum of the weights.
+
+Regions of overlap on a map sometimes contain seams.  Taking the average
+may help to remove seams.  The best way to keep seams from appearing is
+by using the weighted average technique with the sky removal feature
+that are both offered by MaRC (@pxref{Sky Removal}).
+
+@cindex @code{AVERAGING}
+@cindex @code{UNWEIGHTED}
+@cindex @code{WEIGHTED}
+@cindex @code{NONE}
+Averaging techniques in overlap regions are selected using the
+@code{AVERAGING} keyword under the @code{OPTIONS} entry for a given
+projection (@pxref{Projections}).  To enable @emph{unweighted} averages
+use the @code{UNWEIGHTED} semantic value.  To enable @emph{weighted}
+averages instead use the @code{WEIGHTED} semantic value.  It is also
+possible to entirely disable averaging in overlap regions by using the
+@code{NONE} semantic value.  Disabling averaging simply causes the data
+from the first contributing image to be mapped within a given map pixel.
+For example, if there are three images that would normally contribute to
+the average in a map pixel, disabling averaging would force data only
+from the first image to be mapped in that pixel.  It should be noted
+that even though there may be four images in a given map, for example,
+it is not necessarily the case that all four images contribute to all of
+the map pixels.  For instance, only two of the four images may overlap
+in a given map pixel.
+
+@noindent
+To enable unweighted averages use the following:
+
+@example
+AVERAGING:  UNWEIGHTED   # Perform unweighted averaging
+@end example
+
+@noindent
+The @code{OPTIONS} entry would look like:
+
+@example
+OPTIONS:
+          AVERAGING:  UNWEIGHTED
+            .
+            .   other projection options
+            .
+@end example
+
+@noindent
+It is important that the @code{AVERAGING} keyword appear before any other
+projection specific options.  The @code{AVERAGING} keyword entry is optional.
+By default, MaRC uses weighted averaging in overlap regions.
+
+@node        Poles,   Std and Max Lats,  Averaging,  Projections
+@comment node-name,     next,           previous, up
+@subsection North and South Pole Selection For Some Projections
+@cindex pole selection
+    Polar projections such as the Conical projections place one of the poles
+(North/South) at the center of the map.  For these projections, a pole to be
+placed at the center of the map can be selected.  By default, MaRC places the
+North Pole at the center.  However, projections which allow the user to set
+standard parallels
+(@pxref{Std and Max Lats, Standard Parallels and Maximum Latitudes})
+must set the pole at the center of the map prior to selecting standard
+parallels.  A pole can be set with the @code{POLE} keyword with the
+form:
+
+@example
+POLE:    NORTH
+@end example
+
+@noindent
+Valid values for the @code{POLE} keyword are @code{NORTH} and @code{SOUTH}.
+@code{NORTH} and @code{SOUTH} can be abbreviated with @code{N} and @code{S},
+respectively.
+
+@node    Std and Max Lats,  Lambert Con 1,     Poles,  Projections
+@comment node-name,     next,           previous, up
+@subsection Standard Parallels and Maximum Latitudes
+@cindex standard parallels
+@cindex maximum latitudes
+Several of the available projections allow the user to set standard
+parallels and maximum latitudes.  Standard parallels are simply
+latitudes along which there is no distortion.  The closer a feature is
+to a standard parallel, the less distorted it is.  Note that the pole to
+be placed at the center of the map (@pxref{Poles}) must be set before
+any standard parallels are set.  For maps with one standard parallel,
+the entry used to set the value for the standard parallel is of the
+form:
+
+@cindex @code{STD_LAT}
+@example
+STD_LAT:  30 N
+@end example
+
+@noindent
+Maps with two standard parallels can have an entry of the form:
+
+@cindex @code{STD_LAT_1}
+@cindex @code{STD_LAT_2}
+@example
+STD_LAT_1:  60 N
+STD_LAT_2:  20 S
+@end example
+
+@cindex standard parallel restrictions
+There are restrictions to the standard parallels a user can select.  For
+maps with one standard parallel, if the North pole is to be placed at
+the center (e.g. @pxref{Lambert Con 1}) then the standard parallel
+should be greater than zero and less than 90.  Maps with the South pole
+at the center must have the standard parallel less than zero and greater
+than -90 (90 @code{S}).  Maps that allow two standard parallels to be
+set have the same restrictions for the first standard parallel as stated
+above for the single standard parallel maps.  The second standard
+parallel has the restriction that its absolute value must be less than
+the absolute value of the first standard parallel.  Similarly, the
+second standard parallel cannot be 90 @code{N} or 90 @code{S}.
+Furthermore, the absolute values of the first and second standard
+parallels cannot be equal.
+
+The conformal maps allow the user to set a maximum latitude at the
+smallest dimension of the map since conformal maps theoretically extend
+on to infinity as latitudes move from the pole at the center of the map
+to the other pole at the extremities of the map (yes, the pole is no
+longer a point at the extremities of the map!).  For example, on a map
+with 800 samples, 400 lines and a maximum latitude at 45 degrees North,
+the 45 degree maximum latitude will be placed at line 1 and line 400
+since there are less lines than there are samples.  Maximum latitudes
+are set with the @code{MAX_LAT} keyword, as follows:
+
+@example
+MAX_LAT:  30 N
+@end example
+
+@noindent
+Note that a negative (south) maximum latitude on a map with the North
+pole at the center of the map will be ``greater'' than the northern
+latitudes since the southern latitudes lie further out radially.  The
+same goes for maps with the South pole at the center: northern latitudes
+lie further out radially than the southern latitudes.
+
+@node    Lambert Con 1,  Lambert Con 2,  Std and Max Lats,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Normal Conformal Conical Lambert Projection - One Std. Parallel
+@cindex Lambert conformal
+Lambert's Normal Conformal Conical projection with one standard parallel
+allows the user to specify a standard parallel.  A pole to place at the
+center of the map must also be chosen.  A maximum latitude can also be
+set.  Here is an example of a MaRC input file entry for this projection:
+
+@example
+TYPE:   LAMCNF1
+        OPTIONS:
+                    AVERAGING:  NONE
+                    POLE:       SOUTH
+                    STD_LAT:    30 S
+                    MAX_LAT:    20 N
+@end example
+
+@noindent
+Note that the standard latitude is in the southern hemisphere since the
+South pole is at the center of the map.  The order of the keywords must
+follow the order illustrated in the above example.
+
+@node    Lambert Con 2,  Mercator,  Lambert Con 1,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Normal Conformal Conical Lambert Projection -Two Std. Parallels
+@cindex Lambert conformal
+Lambert's Normal Conformal Conical projection with two standard
+parallels allows the user to specify two standard parallels.  A pole to
+place at the center of the map must also be chosen.  A maximum latitude
+can also be set.  Here is an example of a MaRC input file entry for this
+projection:
+
+@example
+TYPE:   LAMCNF2
+        OPTIONS:
+                    AVERAGING:  UNWEIGHTED
+                    POLE:       NORTH
+                    STD_LAT_1:  70 N
+                    STD_LAT_2:  10 S
+                    MAX_LAT:    30 S
+@end example
+
+@noindent
+The order of the keywords must follow the order illustrated in the above
+example.
+
+@node    Mercator,  Polar Stereo,  Lambert Con 2,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Transverse Mercator Projection
+@cindex Mercator
+The Mercator projection is selected using the @code{MERCATOR} keyword
+token.  Currently there are no options available for this projection.
+The input file entry would look something like:
+
+@example
+TYPE:   MERCATOR
+@end example
+
+@node    Polar Stereo,  Albers Eqv 1,  Mercator,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Polar Stereographic Projection
+@cindex Polar Stereographic
+The Polar Stereographic projection is selected using the @code{P_STEREO}
+keyword token.  Available options are the pole at center of the map
+using the @code{POLE} keyword and the maximum latitude using the
+@code{MAX_LAT} keyword.  An example of an input file entry for this
+projection is:
+
+@example
+TYPE:   P_STEREO
+        OPTIONS:
+                    AVERAGING:  WEIGHTED
+                    POLE:       NORTH
+                    MAX_LAT:    30 S
+@end example
+
+@noindent
+The order of the keywords must follow the order illustrated in the above
+example.
+
+@node    Albers Eqv 1,  Albers Eqv 2,  Polar Stereo,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Normal Equivalent Albers Projection - One Standard Parallel
+@cindex Albers - One
+The Normal Equivalent Albers projection with one standard parallel
+allows the user to specify a standard parallel.  A pole to place at the
+center of the map must also be chosen.  Here is an example of a MaRC
+input file entry for this projection:
+
+@example
+TYPE:   ALBEQV1
+        OPTIONS:
+                    AVERAGING:  NONE
+                    POLE:       SOUTH
+                    STD_LAT:    30 S
+@end example
+
+@noindent
+Note that the standard latitude is in the southern hemisphere since the
+South pole is at the center of the map.  The order of the keywords must
+follow the order illustrated in the above example.
+
+@node    Albers Eqv 2,  Lambert Cyl,  Albers Eqv 1,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Normal Equivalent Albers Projection - Two Standard Parallels
+@cindex Albers - Two
+The Normal Equivalent Albers projection with two standard parallels
+allows the user to specify two standard parallels.  A pole to place at
+the center of the map must also be chosen.  Here is an example of a MaRC
+input file entry for this projection:
+
+@example
+TYPE:   ALBEQV2
+        OPTIONS:
+                    POLE:      NORTH
+                    STD_LAT_1: 70 N
+                    STD_LAT_2: 20 N
+@end example
+
+@noindent
+The order of the keywords must follow the order illustrated in the above
+example.
+
+@node    Lambert Cyl,  Lambert Pol,  Albers Eqv 2,  Projections
+@comment node-name,     next,           previous, up
+@subsection Lambert's Cylindrical Normal Equivalent Projection
+@cindex Lambert Cylindrical
+Lambert's Cylindrical Normal Equivalent projection is selected using the
+@code{LAMCYLEQ} keyword token.  Currently there are no options available
+for this projecton.  The input file entry would look something like:
+
+@example
+TYPE:   LAMCYLEQ
+@end example
+
+@node    Lambert Pol,  Sinusoidal,  Lambert Cyl,  Projections
+@comment node-name,     next,           previous, up
+@subsection Lambert's Polar Azimuthal Equivalent Projection
+@cindex Lambert Polar Equivalent
+Lambert's Polar Azimuthal Equivalent projection is selected using the
+@code{LAMPOLEQ} keyword token.  The pole at the center of the map may be
+set using the @code{POLE} keyword.  A sample input file entry would be:
+
+@example
+TYPE:   LAMPOLEQ
+        OPTIONS:
+                    AVERAGING:  NONE
+                    POLE:       NORTH
+@end example
+
+@node    Sinusoidal,  Identity,  Lambert Pol,  Projections
+@comment node-name,     next,           previous, up
+@subsection Sanson-Flamsteed (Sinusoidal) Equivalent Projection
+@cindex Sanson-Flamsteed
+@cindex Sinusoidal
+The Sanson-Flamsteed (Sinusoidal) Equivalent projection is selected
+using the @code{SINUSOID} keyword token.  The input file entry would
+look something like:
+
+@example
+TYPE:   SINUSOID
+        OPTIONS:
+                     AVERAGING:   UNWEIGHTED
+@end example
+
+@node    Identity,  Orthographic,  Sinusoidal,  Projections
+@comment node-name,     next,           previous, up
+@subsection Identity Projection
+@cindex Identity
+The Identity projection is a projection that does not modify the
+supplied map image array.  It simply returns exactly what it is given.
+This project is useful for testing purposes or for ``practicing'' with
+MaRC.
+
+The Identity projection is selected using the @code{IDENTITY} keyword
+token.  Its input file entry would look something like:
+
+@example
+TYPE:   IDENTITY
+@end example
+
+@node    Orthographic,  Perspective,  Identity,  Projections
+@comment node-name,     next,           previous, up
+@subsection The Orthographic Projection
+@cindex orthographic
+The orthographic projection is a projection whose perspective point
+approaches infinity.  This projection is a good approximation to images
+that are observed from Earth, for example.  It can produce what the
+observed body would look like at a given viewing geometry.  An
+orthographic projection can be defined in several ways in MaRC.  In
+general, the user enters the viewing geometry and the desired
+resolution.
+
+@menu
+* Viewing Geometry::
+* Scale::
+* Ortho Entry::
+@end menu
+
+@node    Viewing Geometry,  Scale,  Orthographic,  Orthographic
+@comment node-name,     next,           previous, up
+@cindex orthographic geometry
+@subsubsection Viewing Geometry
+@cindex sub-observer point
+@cindex @code{SUB_OBSERV_LAT}
+@cindex @code{SUB_OBSERV_LON}
+The viewing geometry is comprised of what will be referred to as the
+sub-observer point (analogous to the sub-earth point), the position
+angle, which is the direction that the projection of the north pole in
+the image plane points, measured counter clockwise positive from the
+``up'' direction in the image, and the body center location.
+
+The sub-observer point is the point on the surface of the body which a
+line connecting the center of the observer (a spacecraft, for example)
+and the center of the body passes through.  The sub-observer point is
+set by using the @code{SUB_OBSERV_LAT} and @code{SUB_OBSERV_LON}
+keywords as follows:
+
+@example
+SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+@end example
+
+The position angle, sometimes referred to as the north angle is
+specified by the following keyword entry:
+
+@cindex @code{POSITION_ANGLE}
+@example
+POSITION_ANGLE: -20  # 20 degrees clockwise from North in the projection
+@end example
+
+@noindent
+Again, by convention, positive values are measured counter-clockwise
+from the vertical (``up'') direction in the map, unless the @code{CW} or
+the @code{CCW} tokens are used, as described earlier (@pxref{Angle &
+Range}).  An equivalent expression for the above example would be:
+
+@example
+POSITION_ANGLE: 20 CW  # 20 degrees clockwise from North (in projection)
+@end example
+
+@cindex orthographic center
+It is also possible to choose where to place the center of the projected
+body.  Two methods exist.  The user can either enter where the center,
+relative to the lower left corner of the map image, is in the map image,
+or specify what latitude and longitude are at the center of the map
+image, from which the center of the planet will be automatically
+computed.  To specify the center of the planet, the user, for example,
+would enter:
+
+@cindex @code{SAMPLE_CENTER}
+@cindex @code{LINE_CENTER}
+@example
+SAMPLE_CENTER:  -23  # Center in pixels measured from the left edge.
+LINE_CENTER:    400  # Center in pixels measured from the bottom edge.
+@end example
+
+@noindent
+If the latitude and longitude at the center of the image are to be
+specified, then the input file would contain an entry similar to the
+following:
+
+@cindex @code{LAT_AT_CENTER}
+@cindex @code{LON_AT_CENTER}
+@example
+LAT_AT_CENTER:  45 N  # Lat. to place at the center of the map image.
+LON_AT_CENTER:  34 E  # Long. to place at the center of the map image.
+@end example
+
+@noindent
+Note that only one of these two methods of specifying centers can be
+used in a given orthographic projection.  If neither is specified, than
+MaRC places the center of the projected body at the center of the map
+image.
+
+@node Scale,  Ortho Entry,  Viewing Geometry,  Orthographic
+@comment node-name,     next,           previous, up
+@cindex resolution
+@subsubsection Resolution or Scale
+The resolution determines how many kilometers per pixel are to be used
+in the projection.  The higher the number of kilometers per pixel the
+lower the resolution.  However, the resolution can only be as good as
+the resolution of the images used to create the map.  If the number of
+kilometers per pixel for the orthographic projection is not specified,
+MaRC will compute the number of kilometers per pixel that would cause
+the entire projection to take up 90% of the shortest dimension of the
+image.  Kilometers per pixel are entered in the following manner:
+
+@cindex @code{KM_PER_PIXEL}
+@example
+KM_PER_PIXEL:   31.5    # Valid values are greater than zero.
+@end example
+
+@node    Ortho Entry,       ,  Scale,   Orthographic
+@comment node-name,     next,           previous, up
+@subsubsection The Orthographic Projection Input File Entry
+The orthographic projection is selected by using @code{TYPE} keyword and
+the @code{ORTHO} keyword token in the input file.  Combining all of the
+previously described options, an example of how an orthographic
+projection entry would look in the input file is:
+
+@cindex @code{OPTIONS}
+@example
+TYPE:   ORTHO
+        OPTIONS:
+                        AVERAGING:              WEIGHTED
+                        SUB_OBSERV_LAT:         3.73 S G
+                        SUB_OBSERV_LON:         303.54 W
+                        POSITION_ANGLE:         -181.51
+                        KM_PER_PIXEL:           300
+                        SAMPLE_CENTER:          250
+                        LINE_CENTER:            250
+@end example
+
+@noindent
+This keyword order must be followed.
+
+@node    Perspective, Simple Cyl, Orthographic,  Projections
+@comment node-name,     next,           previous, up
+@cindex perspective
+@subsection The Perspective Projection
+Of all the available projections in MaRC, the perspective projection
+most closely reproduces what a given instrument actually ``sees.''  The
+finite distance between the observer and the target is taken into
+account when creating the projection, meaning that this projection is a
+true perspective projection.  Many of the options available for the
+orthographic projection are also available for the perspective
+projection.
+
+@menu
+* Viewing Geom::
+* Pers. Range::
+* Pers. Scale::
+* Pers. Entry::
+@end menu
+
+@node  Viewing Geom, Pers. Range,  Perspective,  Perspective
+@comment node-name,     next,           previous, up
+@cindex perspective geometry
+@subsubsection Perspective Viewing Geometry
+The viewing geometry is comprised of the body center location, what will
+be referred to as the sub-observer point (analogous to the sub-earth
+point), and the position angle, which is the direction that the
+projection of the north pole in the image plane points, measured counter
+clockwise positive from the vertical (``up'') direction.
+
+@cindex perspective center
+It is possible to choose where to place the center of the projected
+body.  Two methods exist.  The user can either enter where the center,
+relative to the lower left corner of the map image, is in the map image,
+or specify what latitude and longitude are at the center of the map
+image, from which the center of the planet will be automatically
+computed.  To specify the center of the planet, the user, for example,
+would enter:
+
+@cindex @code{SAMPLE_CENTER}
+@cindex @code{LINE_CENTER}
+@example
+SAMPLE_CENTER:  -23  # Center in pixels measured from the left edge.
+LINE_CENTER:    400  # Center in pixels measured from the bottom edge.
+@end example
+
+@noindent
+If the latitude and longitude at the center of the image are to be
+specified, then the input file would contain an entry similar to the
+following:
+
+@cindex @code{LAT_AT_CENTER}
+@cindex @code{LON_AT_CENTER}
+@example
+LAT_AT_CENTER:  45 N  # Lat. to place at the center of the map image.
+LON_AT_CENTER:  34 E  # Long. to place at the center of the map image.
+@end example
+
+@noindent
+Note that only one of these two methods of specifying centers can be
+used in a given perspective projection.  If neither is specified, than
+MaRC places the center of the projected body at the center of the map
+image.
+
+@cindex sub-observer point
+@cindex @code{SUB_OBSERV_LAT}
+@cindex @code{SUB_OBSERV_LON}
+The sub-observer point is the point on the surface of the body which a
+line connecting the center of the observer (a spacecraft, for example)
+and the center of the body passes through.  The sub-observer point is
+set by using the @code{SUB_OBSERV_LAT} and @code{SUB_OBSERV_LON}
+keywords as follows:
+
+@example
+SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+@end example
+
+The position angle, sometimes referred to as the north angle is
+specified by the following keyword entry:
+
+@cindex @code{POSITION_ANGLE}
+@example
+POSITION_ANGLE: -20  # 20 degrees clockwise from North in the projection
+@end example
+
+@noindent
+Again, by convention, positive values are measured counter-clockwise
+from the vertical (``up'') direction in the map, unless the @code{CW} or
+the @code{CCW} tokens are used, as described earlier (@pxref{Angle &
+Range}).  An equivalent expression for the above example would be:
+
+@example
+POSITION_ANGLE: 20 CW  # 20 degrees clockwise from North (in projection)
+@end example
+
+@node  Pers. Range, Pers. Scale, Viewing Geom,  Perspective
+@comment node-name,     next,           previous, up
+@subsubsection Perspective Projection Range
+@cindex range
+The range is the distance from the observer to the center of the target
+being observed (line of sight passing through sub-observer point on the
+surface of the body).  Range can be specified either in Kilometers or
+Astronomical units, as explained earlier, in the @emph{Keywords and
+Keyword Values} section.  The keyword used to enter the range is
+@code{RANGE}, as follows:
+
+@cindex @code{RANGE}
+@example
+RANGE:     1820266 KM
+@end example
+
+@noindent
+To specify Astronomical Units, use the @code{AU} keyword token instead.
+
+@node Pers. Scale, Pers. Entry, Pers. Range, Perspective
+@comment node-name,     next,           previous, up
+@cindex resolution
+@subsubsection Perspective Resolution or Scale
+The resolution determines how many kilometers per pixel are to be used
+in the projection.  The higher the number of kilometers per pixel the
+lower the resolution.  However, the resolution can only be as good as
+the resolution of the images used to create the map.  If the number of
+kilometers per pixel for the perspective projection is not specified,
+MaRC will compute the number of kilometers per pixel that would cause
+the entire projection to take up 90% of the shortest dimension of the
+image.  Kilometers per pixel are entered in the following manner:
+
+@cindex @code{KM_PER_PIXEL}
+@example
+KM_PER_PIXEL:   31.5    # Valid values are greater than zero.
+@end example
+
+Other ways of specifying the perspective projection scale are by using
+the @code{ARCSEC_PER_PIX} keyword to set the number of arcseconds per
+pixel or by using the @code{FOCAL_LENGTH} and the @code{PIXEL_SCALE}
+keywords to set the focal length and the pixel scale lens attributes,
+respectively.
+
+@cindex arcseconds per pixel
+The number of arcseconds per pixel is an optical characteristic of the
+instrument used to observe the body.  To set the number of arcseconds
+per pixel, use:
+
+@cindex @code{ARCSEC_PER_PIX}
+@example
+ARCSEC_PER_PIX: 0.125   # This number must be greater than zero.
+@end example
+
+@noindent
+A valid number of arcseconds per pixel must be greater than zero.
+
+@cindex lens geometry
+If the lens geometry is to be specified, the focal length and the pixel
+scale at the focal plane of the instrument must be set.  An example of
+how to set these values is:
+
+@cindex @code{FOCAL_LENGTH}
+@cindex @code{PIXEL_SCALE}
+@example
+FOCAL_LENGTH:   1501.039        # Millimeters
+PIXEL_SCALE:    65.6168         # Pixels per millimeter
+@end example
+
+@noindent
+Units are not specified here.  However, the distance units used in both
+entries must be the same.  In this example, the unit for focal length
+was millimeters.  As such, the units for the pixel scale @strong{MUST}
+be pixels per millimeter and @strong{NOT} pixels per centimeter, for
+example.  If a conversion was needed, a mathematical expression could be
+entered to perform the conversion.  Remember that mathematical
+expressions are valid for any keyword that is expecting a numerical
+value.
+
+@node  Pers. Entry,     ,   Pers. Scale,   Perspective
+@comment node-name,     next,           previous, up
+@subsubsection The Perspective Projection Input File Entry
+The Perspective projection is selected by using @code{TYPE} keyword and
+the @code{PERSPECTIVE} keyword token in the input file.  Combining all
+of the previously described options, an example of how a perspective
+projection entry would look in the input file is:
+
+@cindex @code{OPTIONS}
+@example
+TYPE:   PERSPECTIVE
+        OPTIONS:
+                        AVERAGING:              NONE
+                        LAT_AT_CENTER:          -23 S
+                        LON_AT_CENTER:          77 E
+                        SUB_OBSERV_LAT:         3.73 S G
+                        SUB_OBSERV_LON:         303.54 W
+                        POSITION_ANGLE:         -181.51
+                        RANGE:                  1.3 AU
+                        FOCAL_LENGTH:           1500 # cm
+                        PIXEL_SCALE:            3.5  # pixels/cm
+@end example
+
+@noindent
+This keyword order must be followed.
+
+@node    Simple Cyl, , Perspective,  Projections
+@comment node-name,     next,           previous, up
+@cindex simple cylindrical
+@subsection The Simple Cylindrical Projection
+The simple cylindrical projection is a projection that simply maps
+latitudes as horizontal lines and longitudes as vertical lines.  Pixel
+distances between latitude lines are uniform throughout the map, and
+similarly for longitudes.  It is possible to map data using either
+bodycentric or bodygraphic latitudes.  Also, latitude and longitude
+ranges to be mapped can also be specified.
+@cindex @code{LATITUDE_TYPE}
+@cindex @code{CENTRIC_LAT}
+@cindex @code{GRAPHIC_LAT}
+@cindex @code{LO_LAT}
+@cindex @code{HI_LAT}
+@cindex @code{LO_LON}
+@cindex @code{HI_LON}
+The latitude type is set using the @code{LATITUDE_TYPE} keyword.  To
+choose a bodycentric latitude map, the keyword token
+@code{@w{CENTRIC_LAT}} is used.  Bodygraphic latitudes are selected by
+using the @code{GRAPHIC_LAT} keyword token. The latitude range is set by
+using the @code{LO_LAT} and @code{HI_LAT} keywords, while the longitude
+range is set by using the @code{LO_LON} and @code{HI_LON} keywords.  The
+latitude and longitude options as described earlier (@pxref{Angle &
+Range}) also hold for these latitude/longitude range keywords.  Both
+latitude range keywords must be used if setting a latitude range and
+similarly for the longitude range.  However, the latitude and longitude
+range keywords need not always be used.  If the latitude range is not
+specified MaRC will then default to the full latitude range, and
+similarly for the longitude range.  The following is an example of how a
+simple cylindrical projection is entered in to a MaRC input file:
+
+@cindex @code{OPTIONS}
+@example
+TYPE:   SIMPLE_C
+        OPTIONS:
+                        AVERAGING:      UNWEIGHTED
+                        LATITUDE_TYPE:  GRAPHIC_LAT # or CENTRIC_LAT
+                        LO_LAT:         38 S  # CENTRIC lat. by default
+                        HI_LAT:         8 S
+                        LO_LON:         282 W
+                        HI_LON:         337 W
+@end example
+
+@noindent
+Note that it is valid to enter a value for @code{LO_LON} that is greater
+than @code{HI_LON}, if so desired.
+
+@node    Map Size,  Map Planes, Projections,  Input Files
+@comment node-name,     next,           previous, up
+@section Map Size
+@cindex Map Size
+@cindex @code{SAMPLES}
+@cindex @code{LINES}
+In general most maps have only two dimensions: the number of
+@emph{samples} and the number of @emph{lines}.  Each of these dimensions
+are set with the @code{SAMPLES} and @code{LINES} keywords,
+respectively.  The keyword @code{SAMPLES} refers to the number of
+columns in a map.  The @code{LINES} keyword refers to the number of
+rows in a map.  An example of a map size entry is:
+
+@example
+SAMPLES:        800     # In units of pixels
+LINES:          400     # In units of pixels
+@end example
+
+MaRC can also create multi-plane maps.  Such a map or ``map cube''
+would have several planes each with a different set of data.  Both
+single plane maps and multi-plane maps are defined using the same
+keywords, the only difference being more than one @emph{plane}
+(@pxref{Map Planes}) definition in the multi-plane map case.  Note that
+a map must have at least one plane.
+
+@node    Map Planes,  Sample Input File,  Map Size,  Input Files
+@comment node-name,     next,           previous, up
+@section Map Plane Information
+@cindex map planes
+
+Multiple planes, each containing a different set of data for the map
+projection, may exist.  This section describes how different types map
+planes may be configured.  A map plane may either contain data retrieved
+from a static source (e.g. an image file) or data dynamically computed
+at run-time.
+
+@menu
+* Beginning a Plane::     How to begin a plane entry.
+* Input Images::          Specifying static input images to be mapped.
+* Virtual Images::        Mapping dynamically computed data.
+* Plane Entry::
+@end menu
+
+@node    Beginning a Plane,  Input Images,  Map Planes,  Map Planes
+@comment node-name,     next,           previous, up
+@subsection Beginning a Plane
+@cindex @code{PLANE}
+@cindex @code{DATA_MIN}
+@cindex @code{DATA_MAX}
+If there is more than one plane in a map, simply place another map plane
+entry immediately following the previous entry.  Map plane entries will
+now be described.  Each map plane entry contains the range of valid
+values that can be mapped and a description of what is being mapped.  A
+plane entry begins with the @code{PLANE} keyword.  Following this is
+an optional entry for the valid data range.  The data range is specified
+by the @code{DATA_MIN} and @code{DATA_MAX} keywords.  All data greater
+than @code{DATA_MIN} and less than @code{DATA_MAX} will be mapped.  If
+one or both of these keywords are not specified then they are assigned
+the smallest and largest possible values, a given platform may have for
+double precision floating point numbers (usually on the order of 1E+300
+or more), respectively.  Here is an example of the beginning of a plane
+entry:
+
+@example
+PLANE:
+        DATA_MIN:       -3.14   # This is optional.
+        DATA_MAX:       300     # This is optional.
+@end example
+
+@noindent
+Next, the data set must be specified.  Data sets may be made up of a set
+of images or may be the dynamically computed values of the @code{cosine}
+of the incidence, emission or phase angle at given latitudes and
+longitudes.  For example, one map plane could contain a map of a set of
+images and the next plane could be a map of the cosines of the incidence
+angles.  The supported plane types are defined by the @code{IMAGE},
+@code{MU}, @code{MU0}, @code{PHASE}, @code{LATITUDE} and
+@code{LONGITUDE} entries.
+@cindex @code{IMAGE}
+@cindex @code{MU}
+@cindex @code{MU0}
+@cindex @code{PHASE}
+@cindex @code{LATITUDE}
+@cindex @code{LONGITUDE}
+
+@node    Input Images,  Virtual Images,  Beginning a Plane,  Map Planes
+@comment node-name,     next,           previous, up
+@cindex Input Images
+@subsection The Image Entry
+
+This section describes how images containing static data, such as those
+found in an image file, may be mapped.
+
+@menu
+* Image Overview::   Introduction to map source images
+* Nibbling::         Cut off bad pixels from source images
+* Image Inversion::  Inverting source images vertically and horizontally
+* Interpolation::
+* Sky Removal::      Removing the sky from input images
+* Body Center::      Pixel center of the body in the source image
+* Optical Axis::     Optical axis or boresight of the observing instrument
+* Flat Field::       Image to subtract from source image prior to mapping
+* Photo Correct::    Correct for ``limb darkening'' effects
+* Geom Correct::     Correct for lens aberration on Galileo spacecraft
+* Emi Ang Cutoff::   Emission angle cut-off
+* Terminator::       Avoid data beyond terminator when mapping
+* Image Geometry::   Viewing geometry of source image
+* Image Scale::      Viewing resolution of source image
+* Sample Entry::     What the IMAGE entry should like
+@end menu
+
+@node    Image Overview,  Nibbling,  Input Images,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Image Overview
+A given plane can be made up of several images.  Where each image is
+placed in the map is determined by the information in each image entry.
+An image entry is made up of the input image filename, the image type
+and the input image geometry.  If there is more than one image per plane
+simply place other image entries immediately after the previous one
+(@pxref{Sample Entry} and @ref{Sample Input File}).  There are several
+options which may be specified for an image entry, including a flat
+field image, pixel interpolation and geometric lens aberration
+correction.  An image entry begins with the @code{IMAGE} keyword.  Its
+semantic value is the filename of the input image, as follows:
+@cindex @code{IMAGE}
+@example
+IMAGE: orbit1/frame002.fits    # absolute or relative paths
+@end example
+
+@emph{NOTE: MaRC expects images to be read in upside down.}
+
+@node    Nibbling, Image Inversion, Image Overview, Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Nibbling
+@cindex nibbling
+Following the input image filename, is the @emph{nibbling} setup. Some
+times it is desirable to ignore or to not map pixels on the edges of an
+input image since they are prone to being ``bad pixels,'' pixels with
+invalid or unwanted data.  This is called ``nibbling'' in MaRC and other
+image processing programs.  MaRC allows the user to either set the same
+nibbling value for all sides of an input image or to set the nibble
+value for each side individually.  The
+@cindex @code{NIBBLE}
+@cindex @code{NIBBLE_LEFT}
+@cindex @code{NIBBLE_RIGHT}
+@cindex @code{NIBBLE_TOP}
+@cindex @code{NIBBLE_BOTTOM}
+
+@code{NIBBLE} keyword is used when setting the same nibble value for all
+sides, while the @code{NIBBLE_LEFT}, @code{NIBBLE_RIGHT},
+@code{NIBBLE_TOP} and @code{NIBBLE_BOTTOM} keywords are used to set the
+nibble value for the left, right, top and bottom sides, respectively.
+The @code{NIBBLE} keyword cannot be used with the individual nibble
+keywords, and vice versa.  An example of how to use @code{NIBBLE}
+keyword is:
+
+@example
+NIBBLE: 10      # Ignore all pixels within 10 pixels of each edge.
+@end example
+
+@noindent
+where as the individual nibbling keywords are used as follows:
+
+@example
+NIBBLE_LEFT:    10
+NIBBLE_RIGHT:   6
+NIBBLE_TOP:     14
+NIBBLE_BOTTOM:  20
+@end example
+
+@noindent
+@emph{Note: @code{NIBBLE_BOTTOM} refers to the number of pixels to be
+ignored on the top of a properly oriented (i.e. not upside-down) image,
+and similarly for @code{NIBBLE_TOP}}
+
+@noindent
+Any combination of the individual nibbling entries may be used.  For
+example, if the user wishes only to ignore pixels on the right edge and
+the top edge, then only the @code{NIBBLE_RIGHT} and @code{NIBBLE_TOP}
+keywords need to be used.
+
+@node    Image Inversion, Interpolation, Nibbling, Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Image Inversion
+@cindex image inversion
+@cindex @code{INVERT}
+@cindex @code{VERTICAL}
+@cindex @code{HORIZONTAL}
+@cindex @code{BOTH}
+Some source images are written with the data inverted horizontally,
+vertically or both.  Since MaRC needs images to be oriented with sample
+(column) numbers increasing left to right and line (row) numbers
+increasing top to bottom, MaRC provides a keyword that forces MaRC to
+invert a given source image prior to any image processing.  This keyword
+is the @code{INVERT} keyword.  Allowable values for this keyword are
+@code{HORIZONTAL}, @code{VERTICAL} and @code{BOTH}.  @code{HORIZONTAL}
+causes MaRC to invert a given source image over its central vertical
+axis.  Similarly, @code{VERTICAL} causes MaRC to invert a given source
+image over the central horizontal axis.  Using the value @code{BOTH}
+causes MaRC to invert over both horizontal and vertical axes.  Here is
+an example of how the @code{INVERT} keyword is used:
+
+@example
+INVERT:    VERTICAL     # Invert over central horizontal axis
+@end example
+
+@node    Interpolation, Sky Removal, Image Inversion, Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Interpolation
+@cindex interpolation
+Since all data being mapped is discretized data, the data value between
+two points is not know.  Normally this problems is resolved by taking
+the value of the nearest point.  However, it may sometimes be desirable
+to estimate the value between to points by interpolating between them.
+MaRC performs bilinear interpolation between the four surrounding pixels
+around a desired point.  To enable this feature, use the following:
+
+@cindex @code{INTERPOLATE}
+@example
+INTERPOLATE:    YES   # Enter "NO" to disable.  The default is "NO."
+@end example
+
+@noindent
+If the @code{INTERPOLATE} keyword is not used, the default setting of
+@code{NO} is used.
+
+@node   Sky Removal, Body Center,  Interpolation,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Removing the Sky From Input Images
+@cindex @code{REMOVE_SKY}
+MaRC has the ability to perform weighted averages in regions of overlap
+when mapping.  A high quality map shows little or no seams where input
+images overlap.  In general, the highest quality maps occur when using
+weighted averaging in conjunction with MaRC's sky removal feature.  The
+sky removal feature fills pixels in the image that are not part of the
+target with ``invalid'' data.  These invalid points will not be used
+when determining the weights for a given pixel during weighted
+averaging.
+
+By default, the sky removal feature is enabled.  To disable sky removal,
+set the @code{REMOVE_SKY} keyword to @code{NO}.  Disabling sky removal
+also cuts down on the time it takes to complete a map since an input
+image that has sky removal disabled does not have to scan for and remove
+the sky.  If so desired, the user can also explicitly enable sky removal
+by setting the @code{REMOVE_SKY} keyword to @code{YES}; however, this is
+unnecessary since sky removal is enabled by default.
+
+@noindent
+Here is what an input file entry to disable sky removal would look like:
+
+@example
+REMOVE_SKY:   NO     # Do not scan for sky.
+@end example
+
+@node   Body Center, Optical Axis,  Sky Removal,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection The Center of the Body in the Image
+@cindex body center
+@cindex @code{SAMPLE_CENTER}
+@cindex @code{LINE_CENTER}
+In order for MaRC to map a body in a given photo properly, its location
+in the image must be given.  Specifically, the center of the body in the
+horizontal and vertical directions must be given by using the
+@code{SAMPLE_CENTER} and the @code{LINE_CENTER} keywords, in the
+following fashion:
+
+@example
+SAMPLE_CENTER:  -2756.684    # The center may lie off the image.
+LINE_CENTER:    1293.4014
+@end example
+
+@noindent
+@code{SAMPLE_CENTER} denotes the center in the horizontal direction and
+@code{LINE_CENTER} denotes the center in the vertical direction.
+
+Note that since MaRC expects images to be read in upside down, the line
+center is measured from the top of the upside down image (i.e. line
+numbers increase downward).  Furthermore, when mapping images from the
+Galileo spacecraft the @emph{object space} body center must be used.
+
+@node   Optical Axis,  Flat Field,  Body Center,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection The Optical Axis
+@cindex optical axis
+@cindex boresight
+@cindex @code{SAMPLE_OA}
+@cindex @code{LINE_OA}
+The optical axis, sometimes called the boresight, specifies where in the
+image the observing instrument is actually ``looking.''  By default,
+MaRC assumes that the optical axis is at the center of the image.
+However, the user has the option of setting it manually by using the
+@code{SAMPLE_OA} and @code{LINE_OA} keywords.  The @code{SAMPLE_OA}
+keyword denotes the sample (i.e.: horizontal) component of the optical
+axis, as measured from the left side of the image.  The @code{LINE_OA}
+keyword denotes the line (i.e.: vertical) component of the optical axis,
+as measured from the top of the @emph{upside-down} image.  Here is an
+example of how these keywords would be used in an input file:
+
+@example
+SAMPLE_OA: 400  # Measured from the left side
+LINE_OA:   400  # Measured from the top of the upside-down image
+@end example
+
+@node    Flat Field,  Photo Correct,  Optical Axis,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection The Flat Field Image
+@cindex flat field image
+@cindex @code{FLAT_FIELD}
+For calibration purposes, it may sometimes be necessary to ``subtract''
+an image from the data set.  This image is referred to as the flat field
+image.  All data values in the flat field image will be subtracted from
+their corresponding data values points in the data set being mapped.  A
+flat field image is entered by using the @code{FLAT_FIELD} keyword.  A
+file name should be entered as the semantic value of the
+@code{FLAT_FIELD} keyword, as follows:
+
+@example
+FLAT_FIELD:     101_410flat.big.fits    # A flat field image
+@end example
+
+@noindent
+The flat field image and the image being mapped should be the same size,
+otherwise an error will occur.  If the @code{FLAT_FIELD} keyword is not used,
+then no flat fielding will be performed.  Please note that MaRC also expects
+the flat field image to be read in upside down.
+
+@node    Photo Correct,  Geom Correct,  Flat Field,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Photometric Correction
+@cindex photometric correction
+@cindex @code{MINNAERT}
+Data points on an image of an ellipsoidal body, such as a planet, tend
+to get darker the closer they are to the edge of the body.  Such an edge
+on a celestial body, for example, is a called a limb.  To compensate for
+this ``limb darkening,'' photometric correction may be performed on data
+in an image.  Currently MaRC supports the Minnaert model for photometric
+correction.  To use it when creating maps, use the @code{MINNAERT}
+keyword.  The @code{MINNAERT} keyword accepts three types of values:
+
+@cindex @code{AUTO}
+@cindex @code{TABLE}
+@itemize @bullet
+@item
+a mathematical expression which will be used as the exponent in the
+Minnaert model.
+@item
+the keyword token @code{AUTO} - automatically computes a value for the
+exponent in the Minnaert model.
+@item
+the keyword token @code{TABLE} - automatically computes a @emph{table}
+of Minnaert exponent values for a set number of latitudes.
+Interpolation will be used when obtaining values not in the table.
+@end itemize
+
+@noindent
+An example of its usage is:
+@example
+MINNAERT: AUTO      # Automatically compute Minnaert exponent
+@end example
+
+@node    Geom Correct, Emi Ang Cutoff,  Photo Correct,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Geometric Lens Aberration Correction
+@cindex geometric correction
+@cindex @code{GEOM_CORRECT}
+The lens in the camera used to take the picture of the data being mapped
+may have a geometric aberration in it.  To compensate for this lens
+distortion during mapping, the @code{GEOM_CORRECT} keyword is set to
+@code{YES}, as follows:
+
+@example
+GEOM_CORRECT:   YES  # Correct Galileo images.  "NO" is the default.
+@end example
+
+@noindent
+If the @code{GEOM_CORRECT} keyword is not used, then no geometric
+aberration correction is performed.  Currently, this feature only
+corrects lens distortions equal to the lens distortion found on the
+Galileo spacecraft.
+
+@node    Emi Ang Cutoff,  Terminator,  Geom Correct,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Emission Angle Cut-off
+@cindex emission angle cut-off
+@cindex @code{EMI_ANG_LIMIT}
+There are some cases where data on an image is very distorted.  For
+example, data on an image of a planet is very distorted near the edge
+(limb) of the planet.  One method of avoiding data near the limb is to
+prevent data where emission angles are greater than some given value.
+Since the emission angle at the limb of a planet is generally 90 degrees
+(less when close to the planet), choosing an emission angle cut-off of
+75 degrees, for example, will prevent any data points with emission
+angles greater than 75 degrees from being mapped.  To use this feature
+of MaRC, the @code{EMI_ANG_LIMIT} keyword is needed in the @code{IMAGE}
+entry.  The @code{EMI_ANG_LIMIT} keyword accepts degree values greater
+than zero degrees and less than 90 degrees.  The @code{EMI_ANG_LIMIT}
+keyword entry is of the form:
+
+@example
+EMI_ANG_LIMIT:  80  # Cut-off all data points beyond this emission angle
+@end example
+
+@node    Terminator,  Image Geometry, Emi Ang Cutoff,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Avoiding Data Beyond the Terminator
+@cindex terminator
+The terminator is the curve on the surface of a body where the
+illuminated portion of the body meets the dark side of the body.  In
+other words, where day becomes night.  Data on the dark side of a body
+in an image may not be useful or may interfere with the averaging
+process in regions where images overlap in the map.  To force MaRC to
+avoid data beyond the terminator, the @code{TERMINATOR} keyword can be
+used as follows:
+
+@example
+TERMINATOR:   YES   # Avoid data beyond terminator
+@end example
+
+@noindent
+By default, MaRC will map @emph{all} data, including data beyond the
+terminator.  Remember to set the @code{TERMINATOR} keyword to @code{YES}
+if you do @emph{not} wish to map data beyond the terminator.
+
+@node    Image Geometry,  Image Scale, Terminator,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Image Geometry
+@cindex input image geometry
+The viewing geometry of the body at the time its image was taken is also
+required by MaRC.  The viewing geometry is comprised of the sub-observer
+point (analogous to the sub-earth point), the position angle, the
+sub-solar point, the range and the scale.  An additional viewing
+geometry value, the optical axis, may also be set (@pxref{Optical
+Axis}).
+
+@menu
+* Sub-Observer Pt.::    Sub-Observer point
+* Pos. Ang.::           Position angle
+* Sub-Solar Pt.::       Sub-Solar point
+* Range::
+@end menu
+
+@node    Sub-Observer Pt.,  Pos. Ang.,  Image Geometry,  Image Geometry
+@comment node-name,     next,           previous, up
+@unnumberedsubsubsec Sub-Observer Point
+@cindex sub-observer point
+@cindex @code{SUB_OBSERV_LAT}
+@cindex @code{SUB_OBSERV_LON}
+The sub-observer point is the point on the surface of the body which a
+line connecting the center of the observer (a spacecraft, for example)
+and the center of the body passes through.  The sub-observer point is
+set by using the @code{SUB_OBSERV_LAT} and @code{SUB_OBSERV_LON}
+keywords as follows:
+
+@example
+SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
+SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+@end example
+
+@node    Pos. Ang.,  Sub-Solar Pt.,  Sub-Observer Pt.,  Image Geometry
+@comment node-name,     next,           previous, up
+@unnumberedsubsubsec Position Angle
+@cindex position angle
+The position angle, sometimes referred to as the north angle is the
+direction that the projection of the north pole in the @emph{properly
+oriented (not upside down)} image plane points, measured counter
+clockwise positive from the vertical (``up'') direction, and is
+specified by the following keyword entry:
+
+@cindex @code{POSITION_ANGLE}
+@example
+POSITION_ANGLE: -14  # 14 degrees clockwise of North (in the projection)
+@end example
+
+@noindent
+Again, by convention, positive values are measured counter-clockwise
+from the vertical (``up'') direction in the input image, unless the
+@code{CW} or the @code{CCW} tokens are used, as described earlier
+(@pxref{Angle & Range}).  An equivalent expression for the above example
+would be:
+
+@example
+POSITION_ANGLE: 14 CW  # 14 degrees clockwise of North (in projection)
+@end example
+
+@node    Sub-Solar Pt.,  Range,  Pos. Ang.,  Image Geometry
+@comment node-name,     next,           previous, up
+@unnumberedsubsubsec Sub-Solar Point
+@cindex sub-solar point
+@cindex @code{SUB_SOLAR_LAT}
+@cindex @code{SUB_SOLAR_LON}
+The sub-solar point is the point on the surface of the body which a line
+connecting the center of the sun and the center of the body passes
+through.  The sub-solar point is set by using the @code{SUB_SOLAR_LAT}
+and @code{SUB_SOLAR_LON} keywords as follows:
+
+@example
+SUB_SOLAR_LAT:  3.2 S C # Specifies 3.2 degrees South bodycentric lat.
+SUB_SOLAR_LON:  15  W   # Specifies 15 degrees West longitude
+@end example
+
+@node    Range,   ,  Sub-Solar Pt.,  Image Geometry
+@comment node-name,     next,           previous, up
+@unnumberedsubsubsec Range
+@cindex range
+The range is the distance from the observer to the center of the target
+being observed (line of sight passing through sub-observer point on the
+surface of the body).  The range becomes very important at close
+distances from the body since perspective effects are no longer
+negligible at such near distances.  Range can be specified either in
+Kilometers or Astronomical units, as explained earlier, in the
+@emph{Keywords and Keyword Values} section.  The keyword used to enter
+the range is @code{RANGE}, as follows:
+
+@cindex @code{RANGE}
+@example
+RANGE:     1820266 KM
+@end example
+
+@noindent
+To specify Astronomical Units, use the @code{AU} keyword token instead.
+
+@node    Image Scale,  Sample Entry,  Image Geometry,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Image Scale
+@cindex input image scale
+It is necessary to set how large the body is in the input image.  This
+is the scale.  There are three ways of setting the scale of the body in
+the image.  The user can either set the actual number of kilometers per
+pixel, or set the number of arcseconds per pixel or the instrument
+optical characteristics.  Only one of these three methods of setting the
+scale can be used in a given image entry.
+
+@cindex kilometers per pixel
+To set the number of kilometers per pixel, the @code{KM_PER_PIXEL}
+keyword is used:
+@cindex @code{KM_PER_PIXEL}
+@example
+KM_PER_PIXEL:   31.45   # This number must be greater than zero.
+@end example
+
+@noindent
+A valid number of kilometers per pixel must be greater than zero.
+
+@cindex arcseconds per pixel
+The number of arcseconds per pixel is an optical characteristic of the
+instrument used to observe the body.  To set the number of arcseconds
+per pixel, use:
+
+@cindex @code{ARCSEC_PER_PIX}
+@example
+ARCSEC_PER_PIX: 0.125   # This number must be greater than zero.
+@end example
+
+@noindent
+A valid number of arcseconds per pixel must be greater than zero.
+
+@cindex lens geometry
+If the lens geometry is to be specified, the focal length and the pixel
+scale at the focal plane of the instrument must be set.  An example of
+how to set these values is:
+
+@cindex @code{FOCAL_LENGTH}
+@cindex @code{PIXEL_SCALE}
+@example
+FOCAL_LENGTH:   1501.039        # Millimeters
+PIXEL_SCALE:    65.6168         # Pixels per millimeter
+@end example
+
+@noindent
+Units are not specified here.  However, the distance units used in both
+entries must be the same.  In this example, the unit for focal length
+was millimeters.  As such, the units for the pixel scale @strong{MUST}
+be pixels per millimeter and @strong{NOT} pixels per centimeter, for
+example.  If a conversion was needed, a mathematical expression could be
+entered to perform the conversion.  Remember that mathematical
+expressions are valid for any keyword that is expecting a numerical
+value.
+
+@node    Sample Entry,    ,  Image Scale,  Input Images
+@comment node-name,     next,           previous, up
+@subsubsection Sample Image Entry
+An example of a functional image entry may be:
+
+@cindex @code{IMAGE}
+@example
+IMAGE:          s0349605600.fits
+                NIBBLE_LEFT:            10
+                NIBBLE_RIGHT:           2
+                NIBBLE_TOP:             5
+                NIBBLE_BOTTOM:          3
+                INVERT:                 VERTICAL
+                INTERPOLATE:            NO
+                REMOVE_SKY:             NO
+                SAMPLE_CENTER:          2756.684
+                LINE_CENTER:            1293.4014
+                SAMPLE_OA:              400
+                LINE_OA:                400
+                FLAT_FIELD:             101_410flat.big.fits
+                MINNAERT:               TABLE
+                GEOM_CORRECT:           YES
+                EMI_ANG_LIMIT:          75
+                TERMINATOR:             YES
+                SUB_OBSERV_LAT:         -3.62
+                SUB_OBSERV_LON:         15.20 E
+                POSITION_ANGLE:         183.182 CW
+                SUB_SOLAR_LAT:          -1.80
+                SUB_SOLAR_LON:          65.84 E
+                RANGE:                  1820388 KM
+                FOCAL_LENGTH:           1501.039
+                PIXEL_SCALE:            65.6168
+@end example
+
+@noindent
+Again, if there is more than one image per plane simply place other
+image entries, such as the above example, immediately after the previous
+one (@pxref{Sample Input File}).
+
+@node    Virtual Images,  Plane Entry,  Input Images,  Map Planes
+@comment node-name,     next,           previous, up
+@subsection Virtual Images
+@cindex virtual images
+
+It is often useful to map data that is specific to a given viewing
+geometry, such as body latitudes and emission angles.  A static set of
+such data is generally not available, or isn't always feasible to create
+beforehand due to time and space constraints.  To avoid these issues,
+the data in question must be computed ``on-the-fly'', i.e. at run-time.
+Since the images do not exist @emph{a priori}, MaRC considers these
+images to be @emph{virtual} images.
+
+@cindex computed angles
+@cindex emission angle
+@cindex incidence angle
+@cindex phase angle
+A map of latitudes, longitudes, the cosines of the emission, incidence
+or phase angle can be created by specifying the following, instead of
+the @code{IMAGE} entry:
+
+@itemize {}
+
+@table @code
+
+@item LATITUDE
+Create a map of latitudes.
+@cindex @code{LATITUDE}
+
+@item LONGITUDE
+Create a map of longitudes.
+@cindex @code{LONGITUDE}
+
+@item MU
+Create a map of the cosines of the emission angles.
+@cindex @code{MU}
+
+@itemx MU0
+Create a map of the cosines of the incidence angles.
+@cindex @code{MU0}
+
+@itemx PHASE
+Create a map of the cosines of the phase angles.
+@cindex @code{PHASE}
+
+@end table
+
+@end itemize
+
+@subsubsection Latitude and Longitude Plane Entries
+In cases where course-grained map grids (@pxref{Lat/Lon Grid}) are not
+suitable, MaRC can create maps of the latitudes and longitudes for each
+valid pixel on the chosen map projection.  Unlike map grids that are
+considered image extensions, latitude and longitude planes will placed
+in the primary map itself.
+
+To create a map of latitudes a map plane entry such as the following can
+be used:
+
+@example
+LATITUDE:    LATITUDE_TYPE:         CENTRIC
+@end example
+
+The @code{LATITUDE_TYPE} keyword has the same syntax as the one
+described in the Simple Cylindrical map projection discussion
+(@pxref{Simple Cyl}).
+
+To create a map of longitudes a simple map plane entry such as the
+following can be used:
+
+@example
+LONGITUDE
+@end example
+
+@subsubsection The Emission, Incidence and Phase Angle Plane Entries
+@cindex emission angle
+@cindex incidence angle
+@cindex phase angle
+The emission angle is the angle between the observer and the normal at a
+given point on the body.  The incidence angle is the angle between the
+sun and the normal at a given point on the body.  The phase angle is the
+angle between the observer and the sun, where a given point on the
+surface of the body is the vertex.  All computations involving these
+angles take into account the distance between the observer and the body.
+The sun is assumed to be an infinite distance away.  Here is an example
+of how to specify the use of the cosines of the incidence angles in the
+plane entry:
+
+@example
+MU0:    SUB_OBSERV_LAT:         3.62 S
+        SUB_OBSERV_LON:         14.45 E
+        RANGE:                  1819712.917 KM
+        SUB_SOLAR_LAT:          -1.80
+        SUB_SOLAR_LON:          65.07 E
+@end example
+
+@noindent
+To specify one of the other angles, simply replace @code{MU0} with
+@code{MU} or @code{PHASE}.  Note that all three types of angle entries
+require the sub-observation point, the observer range and the sub-solar
+point to be specified.  This is more for the sake of consistency rather
+than necessity (e.g. the observer range isn't need to compute incidence
+angles). These were described in the image entry section (@pxref{Image
+Geometry}).  Although the sub-observer point and the observer range are
+not needed to compute the incidence angles, they are used to force the
+user to be consistent when entering other angle entries.
+
+@node    Plane Entry,    ,  Virtual Images,  Map Planes
+@comment node-name,     next,           previous, up
+@subsection A Sample Plane Entry
+A functional plane entry would be of the form:
+
+@cindex @code{PLANE}
+@example
+        PLANE:
+                DATA_MIN:       0.1
+                DATA_MAX        10000
+                IMAGE:          s0349605745.fits
+                                INVERT:                 BOTH
+                                INTERPOLATE:            NO
+                                SAMPLE_CENTER:          2788.453
+                                LINE_CENTER:            1295.195
+                                SAMPLE_OA:              200
+                                LINE_OA:                200
+                                FLAT_FIELD:             756flat.big.fits
+                                MINNAERT:               1.0
+                                GEOM_CORRECT:           YES
+                                EMI_ANG_LIMIT:          80
+                                TERMINATOR:             NO
+                                SUB_OBSERV_LAT:         -3.61
+                                SUB_OBSERV_LON:         14.30 E
+                                POSITION_ANGLE:         -183.183
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          64.92 E
+                                RANGE:                  1819651 KM
+                                FOCAL_LENGTH:           1501.039
+                                PIXEL_SCALE:            65.6168
+                IMAGE:          s0349605768.fits
+                                INVERT:                 HORIZONTAL
+                                INTERPOLATE:            NO
+                                SAMPLE_CENTER:          2117.652
+                                LINE_CENTER:            1289.763
+                                SAMPLE_OA:              200
+                                LINE_OA:                200
+                                FLAT_FIELD:             756flat.big.fits
+                                MINNAERT:               AUTO
+                                GEOM_CORRECT:           YES
+                                EMI_ANG_LIMIT:          78
+                                TERMINATOR:             YES
+                                SUB_OBSERV_LAT:         -3.61
+                                SUB_OBSERV_LON:         14.15 E
+                                POSITION_ANGLE:         -183.203
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          64.77 E
+                                RANGE:                  1819528 KM
+                                FOCAL_LENGTH:           1501.039
+                                PIXEL_SCALE:            65.6168
+@end example
+
+@noindent
+or:
+
+@example
+        PLANE:
+                LATITUDE:       LATITUDE_TYPE:          GRAPHIC_LAT
+        PLANE:
+                LONGITUDE
+        PLANE:
+                PHASE:          SUB_OBSERV_LAT:         3.62 S
+                                SUB_OBSERV_LON:         14.45 E
+                                RANGE:                  1819712.917 KM
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.07 E
+@end example
+
+@node    Sample Input File,   ,  Map Planes,  Input Files
+@comment node-name,     next,           previous, up
+@section An Example of a Complete MaRC Input File
+
+@cindex @code{MAP}
+@example
+MAP:    MAP_101c.fits
+COMMENT:Simple cylindrical map of Jupiter.
+COMMENT:Generated using MaRC.
+XCOMMENT:Latitude/Longitude grid for this map.
+        BODY:   Jupiter             # This is an end of line comment.
+  #This is a one line comment.
+                EQ_RAD:         71492   # Kilometers is a must!!
+                POL_RAD:        66854
+                ROTATION:       PROGRADE
+        DATA_TYPE:              SHORT
+        GRID:                   YES
+        TYPE:   SIMPLE_C
+                OPTIONS:
+                                AVERAGING:     UNWEIGHTED
+                                LATITUDE_TYPE: GRAPHIC_LAT
+                                LO_LAT:        -38 # CENTRIC is default
+                                HI_LAT:        -8
+                                LO_LON:        282 # West since prograde
+                                HI_LON:        337
+        SAMPLES:        800
+        LINES:          400
+        PLANE:
+                IMAGE:          s0349605600.fits
+                        #       NIBBLE:                 5
+        # The above "NIBBLE" has been commented out !!!!
+        # The "NIBBLE" keyword sets all of the below NIBBLEs
+        # to the same value.
+                                NIBBLE_LEFT:            10
+                                NIBBLE_RIGHT:           2
+                                NIBBLE_TOP:             5
+                                NIBBLE_BOTTOM:          3
+                                INVERT:                 VERTICAL
+                                INTERPOLATE:            NO
+                                SAMPLE_CENTER:          2756.684
+                                LINE_CENTER:            1293.4014
+                                SAMPLE_OA:              200
+                                LINE_OA:                200
+                                FLAT_FIELD:             101_410flat.fits
+                                MINNAERT:               TABLE
+                                GEOM_CORRECT:           YES
+                                EMI_ANG_LIMIT:          83.7556
+                                TERMINATOR:             YES
+                                SUB_OBSERV_LAT:         -3.62
+                                SUB_OBSERV_LON:         15.20 E
+                                POSITION_ANGLE:         183.182 CW
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.84 E
+                                RANGE:                  1820388 KM
+                                FOCAL_LENGTH:           1501.039
+                                PIXEL_SCALE:            65.6168
+                IMAGE:          s0349605622.fits
+                                INVERT:                 VERTICAL
+                                INTERPOLATE:            NO
+                                SAMPLE_CENTER:          2073.767
+                                LINE_CENTER:            1284.2759
+                                SAMPLE_OA:              200
+                                LINE_OA:                200
+                                FLAT_FIELD:             101_410flat.fits
+                                MINNAERT:               AUTO
+                                GEOM_CORRECT:           YES
+                                EMI_ANG_LIMIT:          80
+                                TERMINATOR:             YES
+                                SUB_OBSERV_LAT:         -3.62
+                                SUB_OBSERV_LON:         15.05 E
+                                POSITION_ANGLE:         -183.203
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.69 E
+                                RANGE:                  1820266 KM
+                                FOCAL_LENGTH:           1501.039
+                                PIXEL_SCALE:            65.6168
+
+        PLANE:
+                IMAGE:          s0349605745.fits
+                                INVERT:                 VERTICAL
+                                INTERPOLATE:            NO
+                                SAMPLE_CENTER:          2788.453
+                                LINE_CENTER:            1295.195
+                                SAMPLE_OA:              200
+                                LINE_OA:                200
+                                FLAT_FIELD:             101_756flat.fits
+                                MINNAERT:               1.0
+                                GEOM_CORRECT:           YES
+                                EMI_ANG_LIMIT:          85
+                                TERMINATOR:             NO
+                                SUB_OBSERV_LAT:         -3.61
+                                SUB_OBSERV_LON:         14.30 E
+                                POSITION_ANGLE:         -183.183
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          64.92 E
+                                RANGE:                  1819651 KM
+                                FOCAL_LENGTH:           1501.039
+                                PIXEL_SCALE:            65.6168
+                IMAGE:          s0349605768.fits
+                                INVERT:                 VERTICAL
+                                INTERPOLATE:            NO
+                                SAMPLE_CENTER:          2117.652
+                                LINE_CENTER:            1289.763
+                                SAMPLE_OA:              200
+                                LINE_OA:                200
+                                FLAT_FIELD:             101_756flat.fits
+                                MINNAERT:               TABLE
+                                GEOM_CORRECT:           YES
+                                EMI_ANG_LIMIT:          70
+                                TERMINATOR:             NO
+                                SUB_OBSERV_LAT:         -3.61
+                                SUB_OBSERV_LON:         14.15 E
+                                POSITION_ANGLE:         183.203 CW
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          64.77 E
+                                RANGE:                  1819528 KM
+                                FOCAL_LENGTH:           1501.039
+                                PIXEL_SCALE:            65.6168
+
+        PLANE:
+                MU:             SUB_OBSERV_LAT:         -3.62
+                                SUB_OBSERV_LON:         14.45 E
+                # RANGE defaults to units of Kilometers
+                                RANGE:                  1819712.917
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.07 E
+
+        PLANE:
+                MU0:            SUB_OBSERV_LAT:         3.62 S
+                                SUB_OBSERV_LON:         14.45 E
+                                RANGE:                  1819712.917 KM
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.07 E
+
+# The next map in the input file follows.
+MAP:    mumu0.TEST2.fits
+COMMENT:This is just a sample input file for a Mu/Mu0/cos(Phase) map
+XCOMMENT:Latitude / Longitude grid for primary array (the cube)
+        BODY:   Jupiter
+                EQ_RAD:         71492
+                POL_RAD:        66854
+                ROTATION:       PROGRADE
+
+        DATA_TYPE:              SHORT
+        GRID:                   YES
+        GRID_INTERVAL:          10
+        TYPE:   ORTHO
+        OPTIONS:
+                                SUB_OBSERV_LAT:         3.73 S G
+                                SUB_OBSERV_LON:         303.54 W
+                                POSITION_ANGLE:         34.56 CCW
+                                KM_PER_PIXEL:           300
+                                SAMPLE_CENTER:          250
+                                LINE_CENTER:            250
+        SAMPLES:        400
+        LINES:          500
+        PLANE:
+                MU:             SUB_OBSERV_LAT:         -2.83
+                                SUB_OBSERV_LON:         56.46 E
+                                RANGE:                  1555114.417 KM
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.07 E
+        PLANE:
+                MU0:            SUB_OBSERV_LAT:         -2.83
+                                SUB_OBSERV_LON:         56.46 E
+                                RANGE:                  1555114.417
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.07 E
+        PLANE:
+                PHASE:          SUB_OBSERV_LAT:         -2.83
+                                SUB_OBSERV_LON:         56.46E
+                                RANGE:                  1555114.417
+                                SUB_SOLAR_LAT:          -1.80
+                                SUB_SOLAR_LON:          65.07E
+        PLANE:
+                LONGITUDE
+@end example
+
+@node    User Defaults Files,   Copying This Manual,  Input Files,    Top
+@comment node-name,     next,           previous, up
+@chapter User Defaults Files
+@cindex User Defaults Files
+@cindex .marc user defaults file
+Sometimes all maps in a given input file have the same options.  Setting
+the same option for each map or image can be tedious.  Instead, the user
+can define default values for all maps and input images.  At startup,
+MaRC searches for a file called @file{.marc} in the users home
+directory.  This file contains user defined defaults for the grid
+interval size, the valid data range for each plane and the nibbling
+values for all input images.  If set, than these values will be applied
+to all maps and input images.  However, it is possible to override these
+values by entering a different value in the input file where
+appropriate, as explained the MaRC Input File section.  Any map, plane
+or image entry that does not override the values in the user defaults
+file will use the values found in the user defaults file.  If a value is
+not set in the user defaults file, then the MaRC internal defaults will
+be used.  All entries in the user defaults file are optional, but must
+follow a specific order if used:
+
+@example
+GRID_INTERVAL:  10      # Must be before the data range and nibbling.
+DATA_MIN:       0.001   # Both before the nibbling entries.
+DATA_MAX:       10000
+NIBBLE_LEFT:    6       # These must used in the shown order.
+NIBBLE_RIGHT:   20
+NIBBLE_TOP:     8
+NIBBLE_BOTTOM:  8
+@end example
+
+@noindent
+If it is not necessary, for example, to set @code{DATA_MIN} and
+@code{NIBBLE_RIGHT}, then simply remove them from the user defaults
+file, since all of these entries are optional.
+
+@node    Copying This Manual,   Concept Index,  User Defaults Files,    Top
+@comment node-name,     next,           previous, up
+@appendix Copying This Manual
+@cindex copying
+
+@menu
+* GNU Free Documentation License:: License for copying this manual
+@end menu
+
+@cindex GFDL
+@cindex license
+@include fdl.texi
+
+@node    Concept Index,     , Copying This Manual, Top
+@c       node-name,     next, previous,            up
+@unnumbered Concept Index
+
+@printindex cp
+
+@bye

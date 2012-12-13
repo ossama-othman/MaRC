@@ -1,0 +1,161 @@
+3 February 1998
+	- Altered "configure.in" to allow users to specify their own
+	  CXXFLAGS/CFLAGS and LDFLAGS.
+	- Distribution of MaRC now follows the terms set forth in the
+	  GNU General Public License (GPL) and the GNU Library General Public
+	  License (LGPL).
+	- Updated TNT headers to TNT version 0.8.5.
+	- Cleaned up some of the code so that "PHOTO" type source image
+	  routines will only be used when the source image is of type "PHOTO."
+	- Updated configure script to use autoconf convention when setting
+	  endian symbols.  WORDS_BIGENDIAN is now used instead of LITTLE_ENDIAN
+	  to avoid conflicts with system header files such as "endian.h."
+	- Added new features:
+	  - Averaging technique may be specified in input file.
+	  - Sky removal may be shut off for individual input images.
+18 November 1997
+	- Updated map library version number to 0.7.33.
+	- Updated FITS class library.
+	- Corrected some code that caused segmentation faults and
+	  "pure virtual method called" errors.
+	- New coordinate transformations used that correct old coordinate
+	  transformation bugs.
+	- Enabled "TERMINATOR" keyword in parser and scanner.  Using this
+	  keyword with a value of "YES" will force MaRC to avoid mapping
+	  data beyond the terminator.  Also added supporting function to
+	  boundary code that parser calls when "TERMINATOR" keyword is
+	  encountered.
+	- Added perspective projection to MaRC. (STILL EXPERIMENTAL)
+	- Replaced all (I hope) "zero" pointers with NULL pointers for
+	  portability issues.
+	- Added image inversion options to input file parser and scanner.
+	- Updated weighted average code to use distance from limb in addition
+	  to distance from edge of image when computing weights.
+	- Corrected bug in boundary computation routine that prevented 360
+	  degree visible longitude ranges from being mapped.
+	- Updated geometric lens abberration correction routine to check for
+	  full frame (800x800) and summation mode frames (400x400).
+	- Updated lexer to prevent errors from occurring when reading
+	  numbers in scientific notation.
+	- Added code to avoid mapping data near limb. (emission angle cut-off)
+17 July 1997
+	- Updated map library version number to 0.7.17.
+	- Averaging procedure changed to use weighted averages.
+	- Legal range of extrema is now determined by data type of map.
+	  Custom extrema values will be forced to fall within this range.
+	- Cleaned up some memory leaks resulting from sloppy "exits." Some
+	  memory leaks still exist for some of the "exit" calls.  Eventually,
+	  these will be cleaned up.
+	- Parser modified to check for the condition of too many planes
+	  being specified and/or not enough plane entries in the input file.
+	  The below map library change prevents this from occuring when
+	  setting up map entries.  As such, this change is redundant, however
+	  it does provide the user with better information concerning
+	  input file problems.
+	- Map library sets the number of planes dynamically now to prevent
+	  attempts to write planes that were accidentally added to the
+	  number of planes.
+	- Added grid routines for the equivalent and conformal projections.
+	- Modified parser and lexer to completely support the equivalent
+	  and conformal projections.
+	- Corrected major bugs in the equivalent and conformal projections.
+	  They may still be a little buggy.
+30 May 1997
+	- Version numbers updated to front end version 0.7.3 and map library
+	  version 0.7.7.
+	- Memory is now handled very differently.  The new memory scheme
+	  uses MUCH less memory for multi-plane maps than previously.  Memory
+	  requirements depend ONLY on the number of samples and lines in the
+	  desired map.  This means that a map with 20 planes would take up the
+	  same amount of memory as a 1 plane map!  Of course, additional
+	  memory is still required to handle additional image entries in the
+	  image queue, but this memory requirement is insignificant compared
+	  to the memory savings of the new memory usage scheme.	
+	- Corrected bug in Orthographic class constructor.  Longitudes that
+	  were rejected by MaRC that were actually visible will now be
+	  accepted.
+	- Changed averaging procedure to allow facilitation of new
+	  "anti-overflow" buffer.  Negative values may now be mapped on
+	  "SHORT" (16-bit) integer maps.
+	- MaRC distribution restructured to use GNU autoconf and GNU automake
+	  scripts to make untested platform builds more hassle free and to
+	  allow easier maintenance of the distribution.
+	- FITS library no longer writes extra block before the image extension
+	  header.
+	- The remaining nine map projections should work now.  MAJOR pointer
+	  usage and access bugs were corrected.  Preliminary tests are
+	  encouraging.  Grid routines and input file options for them still
+	  need to be implemented.
+	- Modified boundary routine to allow full incidence angle map to be
+	  mapped instead of just what is visible to the observer.
+	- Map plot routine has been optimized by using pointer
+	  offsets.  This change decreases the number of array offset
+	  computations from the 15 within the map loops to only a few.  As a
+	  result, there should be a noticeable improvement in speed.
+	- HTML documentation now requires texi2html 1.51 or above to build
+	  properly due to the new "-monolithic" command line option.  This new
+	  option is used to combine the table of contents and main body text
+	  into one file.  This new version seems to have corrected inconsistent
+	  behavior which occured during the build of HTML version of the
+	  concept index.
+	- AIPS FITS library may now be compiled with the rest of MaRC
+	  instead of seperately.
+	- Added the rest of the available maps to the parser and scanner.
+	- Added supplementary routines which may be useful for
+	  map library users.  Routines include radius of curvature in two
+	  directions and distortion at a given planetographic latitude for
+	  the conformal maps.
+	- GNU String class objects have been replaced with Standard C++
+	  Library string class objects.  This should make the code much more
+	  standard and portable.
+	- All image I/O operations are handled by a seperate class.
+	- Make file has been modified to reflect all code reorganizations and
+	  set up to allow future changes easier to make.
+	- Seperated all mapping routines from the MaRC front end.  Mapping
+	  routines were placed in a library.  A single wrapper class is now
+	  used for creation of all types of available maps.
+	- Reorganized much of the MaRC front end code and mapping code.
+	- Cleaned up code and include file placement.  Template instantiations
+	  have been moved to appropriate source files.
+	- Added CW and CCW position angle tokens to parser and scanner.
+	- Removed IMAGE_TYPE keyword from input file, parser and scanner.
+18 January 1997
+	- Version number updated to V.0.5.10
+	- Replaced queue routines with C++ STL queue routines.
+	- Replaced input file parser and scanner with GNU Bison and GNU Flex
+	  generated ones.
+	- MaRC now accepts more than one input file on the command line.
+	- Made various bug fixes in Simple Cylindrical, Orthographic and
+	  Input Image routines, mostly involving longitude problems.
+	- Replaced coordinate transformation routine with one more suited to
+	  the number of rotations.  As a result, a performance increase
+	  should be noticeable.
+	- MaRC now searches for a ".marc" initialization file.  User defaults
+	  may be set in this file, if so desired.
+	- Added several keywords to the parser.  "Legal" data ranges may now be
+	  specified in the input file or MaRC initialization file.  Also
+	  "nibbling" values may be set in either file now.  Output FITS file
+	  comments may now be set up via the input file.
+	- Mathematical expressions may now be used instead of numbers.  Also,
+	  letters may be used to denote hemispheres, some units, etcetera.
+	- Replaced older FITS classes with more recent, but experimental, ones
+	  in hopes that this would correct a problem with an extra FITS block
+	  sometimes showing up between the primary array data and the
+	  extension header.
+	- Cleaned up some code.  Cleaned up the make file.
+	- One line/end of line comments may now be placed in input files
+	  without affecting the input file parse process.
+	- Added "DATA_OFFSET" and "DATA_SCALE" keywords to allow "BZERO" and
+	  "BSCALE" FITS keywords to be used in FITS file.
+	- The keywords XSIZE, YSIZE and PHASE are now obsolete.  SAMPLES,
+	  LINES and PHASE, respectively, should be used instead.
+28 November 1996
+	- Version number updated to V.0.5.4
+	- Corrected bug in Simple Cylindrical routine involving LO_LON > HI_LON
+	- Corrected SIMPLE_C grid creation routine -- related to above problem
+	- Orthographic grid creation routine is now working (apparently)
+26 November 1996
+	- Version number updated to V.0.5.2.
+	- Corrected interpolation routine exceptions.
+	- Corrected problem when using Arcseconds/pixel to denote scale.
+

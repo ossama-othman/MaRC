@@ -1,0 +1,86 @@
+1.	Have to get photometric correction working.
+2.	Have to eventually change default ostream for FITS routines.
+3.	GUI must be completed.  (and started!)
+4.	Test the remaining projections and implement grid routines for them.
+5.	Implement signal handling.
+6.	Add despiking routine.
+7.	Clean up memory leaks, if any, resulting from exceptions.
+8.	WORK ON DOCUMENTATION.
+9.	Create HST-FITS file handling routines.
+10.	"operator==" in InputImage must be changed to include test for equality
+	of limb correction variable.
+11.	Add PostScript support.
+12.	Add JPEG and additional image format support.
+13.	Add support for other types of FITS formats. (e.g. Ascii Header Ext.)
+15.	The input image input file entry should be slightly reorganized.
+16.	Must implement map to map conversion routine(s).
+21.	Mu/Mu0/Phase planes should no longer be scaled by 10000 by default,
+	since it is currently possible to map values greater than 255 into
+	a BYTE map.
+22.	Correct Perspective projection constructor to use new transformation
+	matrix procedure.  Correct Perspective projection grid creation routine
+	to use new perspective routines.
+24.	Create ".el" lisp module for Emacs/XEmacs MaRC input file mode.
+
+-------- Following from Joe Harrington <jh@astrosun.tn.cornell.edu> -------
+27.
+Minnaert and IR Minnaert (no incident contribution) -- see Helfenstein
+automatic limb centering -- see jh
+automatic registration -- see jh
+options for composites that don't use averaging:
+        use best distance from terminator or limb in source image
+        use best mu*mu0
+input  image masks - 0 or 1 depending on validity of pixel
+output image masks - count of contributing input images per pixel
+
+Output options:
+options for different data types for each created object
+option to write any item as: primary array image, extension, and/or sep. file
+grid specifiable like MU/MU0 (spacing in lon and lat, origin location)
+MU/MU0/PHASE/GRID bscale and bzero keywords, e.g., to fit in 0-255
+Input file:
+averaging method defined per-plane as override to global def
+entire input file to appear in output as comment
+output file should identify which item in the input file it is
+simple_cyl -> equidistant_cyl or equi_cyl
+sample -> naxis1
+line -> naxis2
+
+PROBLEMS:
+ragged edges on maps?
+HST extension misunderstood
+equinox keyword
+
+Make all the docs install into ${prefix}/doc/MaRC-version/, which
+seems to be the emerging standard.   (......yeah?)
+
+Perhaps mumu0.test.inp could be used in a make check?  You could
+define a very small output image and include it in the package, and
+cmp it with the one that gets made by make check.
+
+Docs for the library?  Yeah, I know, pipe dream... :-)
+
+read any planetary parameters from FITS keywords if not in map input file
+
+---------------------- End jh suggestions -------------------
+
+27.	Implement map auto-centering (i.e., automatically determine what range
+	of latitudes and longitudes to map.
+28.	Move Centric{Radius, Latitude}, M, N, etc. functions to BodyData class.
+	These functions should be declared virtual.  An "OblateSpheroid" class
+	will then implement these functions.  This change will be used to allow
+	additional body models to be used, such as spheres and "spuds."  The
+	"spud" model would be something similar to the one used in the
+	spudproj program which is now being used to map asteroids.  All map
+	projections should then have different versions of their prospective
+	map equations for each type of body, namely: OblateSpheroid, Sphere and
+	a general body type (such as spuds).  An attempt should be made to
+	implement a general ellipsoid class (is this worth it?).
+30.	Add support for SPICE library.
+31.	Move many of the "valid value" tests to "appropriate" locations.  For
+	example, tests for proper standard latitudes should be moved to
+	projections that use standard latitudes, perhaps even to the
+	underlying base projection classes, such as Conformal and Equivalent.
+32.	Multithread the MaRC library and the MaRC main program.
+33.	Add command line options via the popt libary.
+34.     Fix all the FIXMEs in the code.
