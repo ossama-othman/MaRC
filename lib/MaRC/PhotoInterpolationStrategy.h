@@ -52,7 +52,7 @@ namespace MaRC
 
     /// Perform bilinear interpolation over a 2x2 area of pixels on
     /// the given pixel.
-    virtual bool interpolate (const double * data,
+    virtual bool interpolate (const double * image,
                               double x,
                               double z,
                               double & data) const;

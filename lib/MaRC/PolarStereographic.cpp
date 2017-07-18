@@ -15,7 +15,7 @@ MaRC::PolarStereographic<T>::PolarStereographic (
    bool north_pole)
   : MapFactory<T> ()
   , body_ (body)
-  , max_lat_ (isnan (max_lat)
+  , max_lat_ (std::isnan (max_lat)
               ? 0
               : (north_pole ? max_lat : -max_lat) * C::degree)
   , rho_coeff_ (2 * body->eq_rad () *
@@ -30,7 +30,7 @@ MaRC::PolarStereographic<T>::PolarStereographic (
                        body->eq_rad () / body->eq_rad ())
   , north_pole_ (north_pole)
 {
-  if (!isnan (max_lat) && ::fabs (max_lat) >= 90)
+  if (!std::isnan (max_lat) && ::fabs (max_lat) >= 90)
     {
       std::ostringstream s;
       s << "Maximum polar stereographic latitude (" << max_lat << ") >= 90.";
@@ -69,7 +69,7 @@ MaRC::PolarStereographic<T>::make_map (SourceImage const & source,
                                        double minimum,
                                        double maximum)
 {
-  std::auto_ptr<map_type> map (new map_type (samples, lines));
+  std::unique_ptr<map_type> map (new map_type (samples, lines));
 
   unsigned int const nelem = samples * lines;
 
@@ -142,7 +142,7 @@ MaRC::PolarStereographic<T>::make_grid (unsigned int samples,
                                         float lat_interval,
                                         float lon_interval)
 {
-  std::auto_ptr<grid_type> grid (new grid_type (samples, lines));
+  std::unique_ptr<grid_type> grid (new grid_type (samples, lines));
 
   static unsigned int const imax = 2000;
 

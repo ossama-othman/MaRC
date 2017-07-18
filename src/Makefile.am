@@ -68,7 +68,7 @@ noinst_HEADERS = \
   calc.h \
   parse_scan.h
 
-BUILT_SOURCES = parse.h
+BUILT_SOURCES = parse.hh
 
 
 ## Override Automake generated rule.  Remove once it correctly supports

@@ -7,6 +7,8 @@
 
 #include <limits>
 #include <cmath>
+#include <memory>
+
 
 template <typename T>
 MaRC::Mercator<T>::Mercator (ValuePtr<OblateSpheroid> const & body)
@@ -46,7 +48,7 @@ MaRC::Mercator<T>::make_map (SourceImage const & source,
                              double minimum,
                              double maximum)
 {
-  std::auto_ptr<map_type> map (new map_type (samples, lines));
+  std::unique_ptr<map_type> map (new map_type (samples, lines));
 
   unsigned int const nelem = samples * lines;
 
@@ -101,7 +103,7 @@ MaRC::Mercator<T>::make_grid (unsigned int samples,
                               float lat_interval,
                               float lon_interval)
 {
-  std::auto_ptr<grid_type> grid (new grid_type (samples, lines));
+  std::unique_ptr<grid_type> grid (new grid_type (samples, lines));
 
   // No need to take absolute value.  Always positive.
   double const xmax = static_cast<double> (lines) / samples * C::pi;

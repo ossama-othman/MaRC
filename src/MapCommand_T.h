@@ -45,7 +45,7 @@ namespace MaRC
     /// Constructor.
     MapCommand_T (const std::string & filename,
                   const std::string & body_name,
-                  std::auto_ptr<MapFactory<T> > factory,
+                  std::unique_ptr<MapFactory<T> > factory,
                   unsigned int samples,
                   unsigned int lines);
 

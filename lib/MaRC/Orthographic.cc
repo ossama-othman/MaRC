@@ -11,6 +11,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
+#include <memory>
 
 
 template <typename T>
@@ -51,8 +52,8 @@ MaRC::Orthographic<T>::Orthographic (
     {
       std::cout << "Assuming POLAR ORTHOGRAPHIC projection." << std::endl;
 
-      if (this->sub_observ_lat_ > 0 && this->body_->prograde ()
-          || this->sub_observ_lat_ < 0 && !this->body_->prograde ())
+      if ((this->sub_observ_lat_ > 0 && this->body_->prograde ())
+          || (this->sub_observ_lat_ < 0 && !this->body_->prograde ()))
         {
           if (this->body_->prograde ())
             this->PA_ = 180;
@@ -141,7 +142,7 @@ MaRC::Orthographic<T>::make_map (const SourceImage & source,
 {
   this->init (samples, lines);
 
-  std::auto_ptr<map_type> map (new map_type (samples, lines));
+  std::unique_ptr<map_type> map (new map_type (samples, lines));
 
   const unsigned int nelem = samples * lines;
 
@@ -254,7 +255,7 @@ MaRC::Orthographic<T>::make_grid (unsigned int samples,
                                   float lat_interval,
                                   float lon_interval)
 {
-  std::auto_ptr<grid_type> grid (new grid_type (samples, lines));
+  std::unique_ptr<grid_type> grid (new grid_type (samples, lines));
 
   int i, k, imax = 2000;
   double low_bound, high_bound, x, z;
@@ -433,7 +434,7 @@ MaRC::Orthographic<T>::init (unsigned int samples, unsigned int lines)
     }
 
 
-  if (!isnan (this->lat_at_center_) && !isnan (this->lon_at_center_))
+  if (!std::isnan (this->lat_at_center_) && !std::isnan (this->lon_at_center_))
     {
       // Check if longitude at center (if supplied) is visible.
 
@@ -531,7 +532,7 @@ MaRC::Orthographic<T>::init (unsigned int samples, unsigned int lines)
       this->lat_at_center_ = MaRC::NaN;
       this->lon_at_center_ = MaRC::NaN;
     }
-  else if (isnan (this->sample_center_) || isnan (this->line_center_))
+  else if (std::isnan (this->sample_center_) || std::isnan (this->line_center_))
     {
       this->sample_center_ = samples / 2.0;
       this->line_center_   = lines   / 2.0;

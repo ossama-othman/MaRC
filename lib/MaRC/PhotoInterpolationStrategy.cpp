@@ -52,7 +52,7 @@ MaRC::PhotoInterpolationStrategy::interpolate (const double * image,
       unsigned int count = 0;
       double tmp = 0;
 
-      if (!isnan (image[ob + r]) && !isnan (image[ob + l]))
+      if (!std::isnan (image[ob + r]) && !std::isnan (image[ob + l]))
         {
           // [0][0]
           tmp += (image[ob + r] - image[ob + l]) * (x - l) + image[ob + l];
@@ -63,7 +63,7 @@ MaRC::PhotoInterpolationStrategy::interpolate (const double * image,
           count += 2;
         }
 
-      if (!isnan (image[ot + r]) && !isnan (image[ot + l]))
+      if (!std::isnan (image[ot + r]) && !std::isnan (image[ot + l]))
         {
           // [0][1]
           tmp += (image[ot + r] - image[ot + l]) * (x - l) + image[ot + l];
@@ -71,7 +71,7 @@ MaRC::PhotoInterpolationStrategy::interpolate (const double * image,
           ++count;
         }
 
-      if (!isnan (image[ot + l]) && !isnan (image[ob + l]))
+      if (!std::isnan (image[ot + l]) && !std::isnan (image[ob + l]))
         {
           // [1][0]
           tmp += (image[ot + l] - image[ob + l]) * (z - b) + image[ob + l];

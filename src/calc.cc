@@ -22,7 +22,7 @@
 
 #include "calc.h"
 #include "parse_scan.h"
-#include "parse.h"  /* Parser definiitons */
+#include "parse.hh"  /* Parser definiitons */
 
 #include <cmath>
 
@@ -35,7 +35,7 @@ namespace
     double (*fnct)(double);
   };
 
-  struct init arith_fncts[] =
+  init const arith_fncts[] =
     {
       { "sin", sin },
       { "cos", cos },
@@ -63,7 +63,7 @@ MaRC::sym_entry::sym_entry (void)
 MaRC::symrec::symrec (void)
   : table_ ()
 {
-  for (init * i = arith_fncts; i->fname != 0; ++i)
+  for (init const * i = arith_fncts; i->fname != 0; ++i)
     {
       sym_entry s;
       s.type = FNCT;

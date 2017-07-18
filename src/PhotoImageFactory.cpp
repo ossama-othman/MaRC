@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <sstream>
+#include <memory>
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory (const char * filename,
@@ -160,10 +161,6 @@ MaRC::PhotoImageFactory::make (void)
       // above.
       f_img = new double[nelements];
 
-      long f_fpixel[MAXDIM];
-      f_fpixel[0] = 1;
-      f_fpixel[1] = 1;
-
       double nulval = MaRC::NaN;
       int anynul;  // Unused
 
@@ -213,7 +210,7 @@ MaRC::PhotoImageFactory::make (void)
   // Potential memory leak here. If the below allocation
   // fails, "img" will be leaked since it is raw C++ array.
 
-  std::auto_ptr<MaRC::GeometricCorrection> gc;
+  std::unique_ptr<MaRC::GeometricCorrection> gc;
   if (this->geometric_correction_)
     {
       MaRC::GeometricCorrection * gll =
@@ -230,7 +227,7 @@ MaRC::PhotoImageFactory::make (void)
       gc.reset (nullcor);
     }
 
-  std::auto_ptr<PhotoImage> photo (
+  std::unique_ptr<PhotoImage> photo (
     new MaRC::PhotoImage (this->body_,
                           img,
                           static_cast<unsigned int> (naxes[0]), // samples
@@ -256,22 +253,22 @@ MaRC::PhotoImageFactory::make (void)
   if (this->scale_ > 0)
     photo->scale (this->scale_);
 
-  if (!isnan (this->OA_s_))
+  if (!std::isnan (this->OA_s_))
     photo->optical_axis_sample (this->OA_s_);
 
-  if (!isnan (this->OA_l_))
+  if (!std::isnan (this->OA_l_))
     photo->optical_axis_line (this->OA_l_);
 
-  if (!isnan (this->sample_center_))
+  if (!std::isnan (this->sample_center_))
     photo->body_center_sample (this->sample_center_);
 
-  if (!isnan (this->line_center_))
+  if (!std::isnan (this->line_center_))
     photo->body_center_line (this->line_center_);
 
-  if (!isnan (this->lat_at_center_))
+  if (!std::isnan (this->lat_at_center_))
     photo->lat_at_center (this->lat_at_center_);
 
-  if (!isnan (this->lon_at_center_))
+  if (!std::isnan (this->lon_at_center_))
     photo->lon_at_center (this->lon_at_center_);
 
   if (this->emi_ang_limit_ > 0)

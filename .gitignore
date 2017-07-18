@@ -23,7 +23,6 @@ ltmain.sh
 .libs
 stamp*
 config.*
-!src/config.h
 *.tar.*
 core*
 doc/*.t2p/
@@ -36,5 +35,15 @@ lib/MaRC/map_version.cc
 src/lexer.cc
 src/parse.cc
 src/parse.h*
+src/marc
 test-driver
+tests/Data_Type_Test
+tests/Data_Type_Test.log
+tests/Data_Type_Test.trs
+tests/MaRC_Prog_Test.sh.*
+tests/NaN_Test
+tests/NaN_Test.log
+tests/NaN_Test.trs
+tests/test-suite.log
+tests/test_map.fits
 ylwrap

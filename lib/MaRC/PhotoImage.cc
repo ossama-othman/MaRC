@@ -862,7 +862,7 @@ MaRC::PhotoImage::remove_sky (void)
                                                 dVec,
                                                 lat,
                                                 lon) == 0
-              && !isnan (this->image_[index])
+              && !std::isnan (this->image_[index])
               && fabs (this->image_[index]) >= zero_threshold)
             {
               // On body
@@ -1331,7 +1331,7 @@ MaRC::PhotoImage::read_data (const double & lat,
                                                  lon,
                                                  this->range_,
                                                  data) != 0
-      || isnan (data))
+      || std::isnan (data))
     {
       return false;
     }

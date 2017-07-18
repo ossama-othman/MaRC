@@ -75,11 +75,11 @@ Requires GNU Bison 1.35 or greater
 
   data_type map_data_type;
 
-  std::auto_ptr<MaRC::MapFactory<unsigned char> > map_factory_byte;
-  std::auto_ptr<MaRC::MapFactory<short> >         map_factory_short;
-  std::auto_ptr<MaRC::MapFactory<MaRC::Long> >    map_factory_long;
-  std::auto_ptr<MaRC::MapFactory<float> >         map_factory_float;
-  std::auto_ptr<MaRC::MapFactory<double> >        map_factory_double;
+  std::unique_ptr<MaRC::MapFactory<unsigned char> > map_factory_byte;
+  std::unique_ptr<MaRC::MapFactory<short> >         map_factory_short;
+  std::unique_ptr<MaRC::MapFactory<MaRC::Long> >    map_factory_long;
+  std::unique_ptr<MaRC::MapFactory<float> >         map_factory_float;
+  std::unique_ptr<MaRC::MapFactory<double> >        map_factory_double;
 
   unsigned int map_samples = 0;
   unsigned int map_lines = 0;
@@ -254,10 +254,10 @@ user_file_parse:
           pp.lat_interval  = lat_interval;
           pp.lon_interval  = lon_interval;
 
-          if (!isnan (minimum))
+          if (!std::isnan (minimum))
               pp.minimum = minimum;
 
-          if (!isnan (maximum))
+          if (!std::isnan (maximum))
               pp.maximum = maximum;
 
           pp.nibble_left   = nibble_left_val;
@@ -315,7 +315,7 @@ map_setup:
                     MaRC::ValuePtr<MaRC::MapCommand_T<unsigned char> > (
                       new MaRC::MapCommand_T<unsigned char> (map_filename,
                                                              body_name,
-                                                             map_factory_byte,
+                                                             std::move(map_factory_byte),
                                                              map_samples,
                                                              map_lines));
                   break;
@@ -325,7 +325,7 @@ map_setup:
                     MaRC::ValuePtr<MaRC::MapCommand_T<short> > (
                       new MaRC::MapCommand_T<short> (map_filename,
                                                      body_name,
-                                                     map_factory_short,
+                                                     std::move(map_factory_short),
                                                      map_samples,
                                                      map_lines));
                   break;
@@ -335,7 +335,7 @@ map_setup:
                     MaRC::ValuePtr<MaRC::MapCommand_T<MaRC::Long> > (
                       new MaRC::MapCommand_T<MaRC::Long> (map_filename,
                                                           body_name,
-                                                          map_factory_long,
+                                                          std::move(map_factory_long),
                                                           map_samples,
                                                           map_lines));
                   break;
@@ -345,7 +345,7 @@ map_setup:
                     MaRC::ValuePtr<MaRC::MapCommand_T<float> > (
                       new MaRC::MapCommand_T<float> (map_filename,
                                                      body_name,
-                                                     map_factory_float,
+                                                     std::move(map_factory_float),
                                                      map_samples,
                                                      map_lines));
                   break;
@@ -355,7 +355,7 @@ map_setup:
                     MaRC::ValuePtr<MaRC::MapCommand_T<double> > (
                       new MaRC::MapCommand_T<double> (map_filename,
                                                       body_name,
-                                                      map_factory_double,
+                                                      std::move(map_factory_double),
                                                       map_samples,
                                                       map_lines));
                   break;
@@ -871,14 +871,14 @@ image_setup:
               pixel_scale_val = -1;  // Reset to "bad" value.
             }
 
-          if (!isnan (sample_center) && !isnan (line_center))
+          if (!std::isnan (sample_center) && !std::isnan (line_center))
             {
               photo_factory->body_center (sample_center, line_center);
               sample_center = MaRC::NaN;  // Reset to "bad" value.
               line_center = MaRC::NaN;  // Reset to "bad" value.
             }
 
-          if (!isnan (lat_at_center) && !isnan (lon_at_center))
+          if (!std::isnan (lat_at_center) && !std::isnan (lon_at_center))
             {
               photo_factory->lat_lon_center (lat_at_center, lon_at_center);
               lat_at_center = MaRC::NaN;  // Reset to "bad" value.
@@ -1313,7 +1313,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!isnan (position_angle_val)
+                        (!std::isnan (position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1325,7 +1325,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!isnan (position_angle_val)
+                        (!std::isnan (position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1337,7 +1337,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!isnan (position_angle_val)
+                        (!std::isnan (position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1349,7 +1349,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!isnan (position_angle_val)
+                        (!std::isnan (position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1361,7 +1361,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!isnan (position_angle_val)
+                        (!std::isnan (position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1395,7 +1395,7 @@ ortho_optsub:
         | position_angle { position_angle_val = $1; }
         | km_per_pixel
         | centers {
-            if (!isnan (sample_center) && !isnan (line_center))
+            if (!std::isnan (sample_center) && !std::isnan (line_center))
               {
                 ortho_center.geometry = MaRC::CENTER_GIVEN;
                 ortho_center.sample_lat_center = sample_center;
@@ -1403,7 +1403,7 @@ ortho_optsub:
                 sample_center = MaRC::NaN;  // Reset to "bad" value.
                 line_center   = MaRC::NaN;  // Reset to "bad" value.
               }
-            else if (!isnan (lat_at_center) && !isnan (lon_at_center))
+            else if (!std::isnan (lat_at_center) && !std::isnan (lon_at_center))
               {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
                 ortho_center.sample_lat_center = lat_at_center;
@@ -1426,7 +1426,7 @@ ortho_optsub:
           sub_observation_data.lat = ($1).lat;
           sub_observation_data.lon = ($1).lon;
             position_angle_val = $2;
-            if (!isnan (sample_center) && !isnan (line_center))
+            if (!std::isnan (sample_center) && !std::isnan (line_center))
               {
                 ortho_center.geometry = MaRC::CENTER_GIVEN;
                 ortho_center.sample_lat_center = sample_center;
@@ -1434,7 +1434,7 @@ ortho_optsub:
                 sample_center = MaRC::NaN;  // Reset to "bad" value.
                 line_center   = MaRC::NaN;  // Reset to "bad" value.
               }
-            else if (!isnan (lat_at_center) && !isnan (lon_at_center))
+            else if (!std::isnan (lat_at_center) && !std::isnan (lon_at_center))
               {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
                 ortho_center.sample_lat_center = lat_at_center;

@@ -1,6 +1,7 @@
 // $Id: MosaicImageFactory.cpp,v 1.1 2004/07/03 10:59:42 othman Exp $
 
 #include "MosaicImageFactory.h"
+#include <memory>
 
 
 MaRC::MosaicImageFactory::MosaicImageFactory (const list_type & factories,
@@ -18,7 +19,7 @@ MaRC::MosaicImageFactory::make (void)
   list_type::const_iterator end = this->factories_.end ();
   for (list_type::iterator i = this->factories_.begin (); i != end; ++i)
     {
-      std::auto_ptr<MaRC::PhotoImageFactory::return_type>
+      std::unique_ptr<MaRC::PhotoImageFactory::return_type>
         source ((*i).make ());
 
       const PhotoImage & photo =

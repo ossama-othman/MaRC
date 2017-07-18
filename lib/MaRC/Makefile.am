@@ -40,7 +40,7 @@ libMaRC_la_SOURCES = \
   \
   Grid.cc \
   \
-  map_version.cc
+  Version.cpp
 
 pkginclude_HEADERS = \
   config.h \
@@ -98,26 +98,11 @@ pkginclude_HEADERS = \
   SimpleCylindrical.cc \
   \
   Constants.h \
-  ValuePtr.h
+  ValuePtr.h \
+  \
+  Version.h
 
 noinst_HEADERS = \
   NullInterpolationStrategy.h \
   PhotoInterpolationStrategy.h
 
-BUILT_SOURCES = map_version.cc
-
-map_version.cc: stamp-v
-stamp-v: Makefile
-	rm -f t-version.cc
-#	echo '#include <MaRC/config.h>' > t-version.cc
-#	echo '#include "version.h"' >> t-version.cc
-	echo 'char const marc_lib_version_string[] = PACKAGE_VERSION;' \
-		>> t-version.cc
-	if cmp -s map_version.cc t-version.cc; then   \
-		rm t-version.cc;                      \
-	else                                          \
-		mv t-version.cc map_version.cc;       \
-	fi
-	echo timestamp > $@
-
-DISTCLEANFILES = stamp-v map_version.cc

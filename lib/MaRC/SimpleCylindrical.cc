@@ -78,7 +78,7 @@ MaRC::SimpleCylindrical<T>::make_map (const SourceImage & source,
                                       double minimum,
                                       double maximum)
 {
-  std::auto_ptr<map_type> map (new map_type (samples, lines));
+  std::unique_ptr<map_type> map (new map_type (samples, lines));
 
   // Conversion factor -- latitudes per line
   const double cf = (this->hi_lat_ - this->lo_lat_) / lines;
@@ -125,7 +125,7 @@ MaRC::SimpleCylindrical<T>::make_grid (unsigned int samples,
                                        float lat_interval,
                                        float lon_interval)
 {
-  std::auto_ptr<grid_type> grid (new grid_type (samples, lines));
+  std::unique_ptr<grid_type> grid (new grid_type (samples, lines));
 
   const double lo_lat = this->lo_lat_ /= C::degree;  // Convert back to degrees
   const double hi_lat = this->hi_lat_ /= C::degree;

@@ -52,7 +52,7 @@ AC_CONFIG_HEADERS([lib/MaRC/config.h])
 
 dnl Checks for programs.
 AC_PROG_CXX
-AC_PROG_CXXCPP
+AX_CXX_COMPILE_STDCXX_11
 AC_PROG_LN_S
 AC_PROG_YACC
 AM_PROG_LEX
@@ -81,7 +81,7 @@ dnl
 dnl config.h template
 dnl
 
-dnl Text to be placed at the top of the `ace/config.h' header.
+dnl Text to be placed at the top of the `MaRC/config.h' header.
 AH_TOP([
 #ifndef MARC_CONFIG_H
 #define MARC_CONFIG_H
@@ -91,7 +91,7 @@ AH_TOP([
 
 ])
 
-dnl Text to be placed at the bottom of the `ace/config.h' header.
+dnl Text to be placed at the bottom of the `MaRC/config.h' header.
 AH_BOTTOM([
 
 #endif   /* MARC_CONFIG_H */
@@ -305,7 +305,7 @@ dnl esac
 
 AX_CFLAGS_WARN_ALL([CXXFLAGS])
 AS_IF([test "x$GXX" = "xyes"],
-      [XCXXFLAGS="$XCXXFLAGS -Wextra -Werror -Wformat=2 -pedantic"],
+      [XCXXFLAGS="$XCXXFLAGS -Wextra -Wformat=2 -pedantic"],
       [])
 
 dnl Combine package set flags with user's flags.

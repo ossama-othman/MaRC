@@ -30,14 +30,23 @@ Requires GNU Flex 2.5.4a or greater
 %{
 
 #include "parse_scan.h"
-#include "parse.h" // Parser definitions
+#include "parse.hh" // Parser definitions
 
+int yycolumn = 1;
+
+#define YY_USER_ACTION {                             \
+        yylloc->first_line = yylineno;               \
+        yylloc->last_line = yylineno;                \
+        yylloc->first_column = yycolumn;             \
+        yylloc->last_column = yycolumn + yyleng - 1; \
+ 	yycolumn += yyleng; }
 %}
 
 %option noyywrap
 %option case-insensitive
 %option bison-bridge bison-locations
 %option yylineno
+%option nounput
 %s comment_init
 %x comment
 %s keyword_token

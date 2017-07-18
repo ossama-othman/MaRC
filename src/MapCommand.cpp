@@ -13,8 +13,6 @@
 #include <unistd.h>
 
 
-extern const char *marc_version_string;
-
 MaRC::MapCommand::MapCommand (const std::string & filename,
                               const std::string & body_name,
                               unsigned int samples,
@@ -107,9 +105,7 @@ MaRC::MapCommand::execute (void)
 
   std::string history =
     std::string (this->projection_name ())
-    + std::string (" projection created using MaRC ")
-    + std::string (::marc_version_string)
-    + std::string (".");
+      + " projection created using MaRC " PACKAGE_VERSION ".";
 
   // Write some MaRC-specific HISTORY comments.
   fits_write_history (fptr,
@@ -190,9 +186,7 @@ MaRC::MapCommand::execute (void)
 
       std::string xhistory =
         std::string (this->projection_name ())
-        + std::string (" projection grid created using MaRC ")
-        + std::string (::marc_version_string)
-        + std::string (".");
+        + " projection grid created using MaRC " PACKAGE_VERSION ".";
 
       // Write some MaRC-specific HISTORY comments.
       fits_write_history (fptr,
@@ -207,7 +201,7 @@ MaRC::MapCommand::execute (void)
 //                        "Value of off-grid pixels.",
 //                        &status);
 
-      std::auto_ptr<Grid> grid (this->make_grid (this->samples_,
+      std::unique_ptr<Grid> grid (this->make_grid (this->samples_,
                                                  this->lines_,
                                                  this->lat_interval_,
                                                  this->lon_interval_));

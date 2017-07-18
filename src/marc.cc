@@ -2,6 +2,9 @@
 
 #include "parse_scan.h"
 
+#include <MaRC/config.h>
+#include <MaRC/Version.h>
+
 #include <iostream>
 //#include <fstream>
 #include <list>
@@ -10,7 +13,7 @@
 #include <unistd.h>
 
 
-extern const char marc_lib_version_string[];
+
 
 extern void yyrestart (FILE * input_file);
 
@@ -25,7 +28,7 @@ main (int argc, char *argv[])
     << std::endl <<  "MaRC -- "
     << "Built on " << __DATE__ << " at " << __TIME__ << std::endl
     << "        MaRC Binary  Version " PACKAGE_VERSION  << std::endl
-    << "        MaRC Library Version " << ::marc_lib_version_string
+    << "        MaRC Library Version " << MaRC::library_version()
     << std::endl << std::endl
     << "Copyright (C) 1996, 1997, 1998, 2003, 2004, 2017  Ossama Othman"
     << std::endl

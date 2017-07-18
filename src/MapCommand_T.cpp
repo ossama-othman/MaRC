@@ -9,7 +9,7 @@
 template <typename T>
 MaRC::MapCommand_T<T>::MapCommand_T (const std::string & filename,
                                      const std::string & body_name,
-                                     std::auto_ptr<MapFactory<T> > factory,
+                                     std::unique_ptr<MapFactory<T> > factory,
                                      unsigned int samples,
                                      unsigned int lines)
   : MapCommand (filename, body_name, samples, lines),
@@ -85,10 +85,10 @@ MaRC::MapCommand_T<T>::make_map_planes (fitsfile * fptr, int & status)
                 <<" : " << std::flush;
 
       // Create the SourceImage.
-      std::auto_ptr<SourceImage> image ((*i)->make ());
+      std::unique_ptr<SourceImage> image ((*i)->make ());
 
       // Create the map plane.
-      std::auto_ptr<typename MapFactory<T>::map_type> map (
+      std::unique_ptr<typename MapFactory<T>::map_type> map (
         this->factory_->make_map (*image,
                                   this->samples_,
                                   this->lines_,

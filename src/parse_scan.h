@@ -155,7 +155,7 @@ namespace MaRC
 
 }
 
-#include "parse.h"
+#include "parse.hh"
 
 #define YY_DECL int yylex (YYSTYPE * yylval_param, YYLTYPE * yylloc_param, MaRC::ParseParameter & pp)
 
