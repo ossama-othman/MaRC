@@ -17,7 +17,7 @@ last updated @value{UPDATED},
 of @cite{The MaRC Manual},
 for @code{MaRC}, version @value{VERSION}.
 
-Copyright @copyright{} 1997-1999, 2003, 2004  Ossama Othman
+Copyright @copyright{} 1997-1999, 2003, 2004, 2017  Ossama Othman
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -178,19 +178,19 @@ Operators
 @item +
 Addition
 
-@itemx -
+@item -
 Subtraction or Negation
 
-@itemx *
+@item *
 Multiplication
 
-@itemx /
+@item /
 Division
 
-@itemx ^
+@item ^
 Exponentiation
 
-@itemx ( )
+@item ( )
 Arbitrary depth parenthetical expressions
 @end table
 
@@ -201,28 +201,28 @@ Functions @{ Example of usage: @code{sin(3 * 3.1415 / 2)} @}
 @item sin
 The trigonometric sine of a mathematical expression.
 
-@itemx cos
+@item cos
 The trigonometric cosine of a mathematical expression.
 
-@itemx tan
+@item tan
 The trigonometric tangent of a mathematical expression.
 
 @item asin
 The arcsine (inverse sine) of a mathematical expression.
 
-@itemx acos
+@item acos
 The arcsine (inverse cosine) of a mathematical expression.
 
-@itemx atan
+@item atan
 The arctangent (inverse tangent) of a mathematical expression.
 
-@itemx exp
+@item exp
 Raises the number ``e'' to a given value (exponential function).
 
-@itemx ln
+@item ln
 The natural logarithm of a given expression.
 
-@itemx sqrt
+@item sqrt
 The square root of a mathematical expression.
 @end table
 
@@ -451,26 +451,25 @@ types are:
 @cindex @code{FLOAT}
 @cindex @code{DOUBLE}
 
-@itemize {}
+@indentedblock
 @table @code
-
 @item BYTE
 1 byte (8  bits) unsigned integer
 
-@itemx SHORT
+@item SHORT
 2 byte (16 bits) signed integer
 
-@itemx LONG
+@item LONG
 4 byte (32 bits) signed integer
 
-@itemx FLOAT
+@item FLOAT
 4 byte (32 bits) floating point number
 
-@itemx DOUBLE
+@item DOUBLE
 8 byte (64 bits) floating point number
 @end table
+@end indentedblock
 
-@end itemize
 
 @noindent
 Be aware, for example, that a @code{DOUBLE} type map will occupy four
@@ -1961,10 +1960,8 @@ A map of latitudes, longitudes, the cosines of the emission, incidence
 or phase angle can be created by specifying the following, instead of
 the @code{IMAGE} entry:
 
-@itemize {}
-
+@indentedblock
 @table @code
-
 @item LATITUDE
 Create a map of latitudes.
 @cindex @code{LATITUDE}
@@ -1977,17 +1974,16 @@ Create a map of longitudes.
 Create a map of the cosines of the emission angles.
 @cindex @code{MU}
 
-@itemx MU0
+@item MU0
 Create a map of the cosines of the incidence angles.
 @cindex @code{MU0}
 
-@itemx PHASE
+@item PHASE
 Create a map of the cosines of the phase angles.
 @cindex @code{PHASE}
 
 @end table
-
-@end itemize
+@end indentedblock
 
 @subsubsection Latitude and Longitude Plane Entries
 In cases where course-grained map grids (@pxref{Lat/Lon Grid}) are not
