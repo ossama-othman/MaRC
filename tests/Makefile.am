@@ -26,7 +26,7 @@
 
 MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
 
-INCLUDES = -I$(top_srcdir)/lib
+AM_CPPFLAGS = -I$(top_srcdir)/lib
 
 check_PROGRAMS = \
   Data_Type_Test \

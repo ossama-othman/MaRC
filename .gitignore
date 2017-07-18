@@ -26,4 +26,8 @@ config.*
 !src/config.h
 *.tar.*
 core*
-
+doc/*.t2p/
+doc/mdate-sh
+doc/texinfo.tex
+test-driver
+ylwrap

@@ -1,4 +1,5 @@
-dnl $Id: configure.ac,v 1.24 2005/11/12 07:51:27 othman Exp $
+dnl                                               -*- Autoconf -*-
+dnl Process this file with autoconf to produce a configure script.
 
 dnl  Copyright  1996-1999, 2003, 2004  Ossama Othman
 dnl
@@ -23,14 +24,16 @@ dnl An autoconf script to automatically configure MaRC.
 dnl Process this file with autoconf to produce a configure script.
 dnl
 
-dnl @todo PACKAGE and VERSION should be static, not computed by the
-dnl       shell.  Or M4 should be used to compute if necessary.
-AC_INIT([MaRC],[0.9.7],[othman@users.sourceforge.edu],[marc])
+AC_PREREQ([2.69])
+AC_INIT([MaRC], [0.9.8], [othman@users.sourceforge.edu], [marc])
 
+dnl Check what platform we are running on.
+dnl AC_CANONICAL_TARGET
 
-AC_REVISION([$Id: configure.ac,v 1.24 2005/11/12 07:51:27 othman Exp $])
+AM_INIT_AUTOMAKE([1.15 foreign silent-rules -Wall -Werror -Wno-portability])
+LT_INIT([disable-static])
 
-AC_COPYRIGHT([MaRC is copyrighted by Ossama Othman 1996-1999, 2003, 2004
+AC_COPYRIGHT([MaRC is copyrighted by Ossama Othman 1996-1999, 2003, 2004, 2017
 all rights reserved.  You are free to use, modify, and distribute the
 MaRC source code and object code produced from the source, as long as
 you include this copyright statement along with code built using
@@ -39,27 +42,10 @@ MaRC.
 Please see the file "COPYING" in the top level MaRC directory for
 additional details.])
 
+AC_CONFIG_MACRO_DIRS([m4])
 
-dnl Minimum required version of GNU autoconf for this configure script.
-AC_PREREQ([2.59])
 
 AC_CONFIG_SRCDIR([lib/MaRC/PhotoImage.h])
-
-dnl Check what platform we are running on.
-AC_CANONICAL_TARGET([])
-
-dnl Initialize GNU Automake, and require Automake 1.8.5 or better.
-AM_INIT_AUTOMAKE([1.9.4])
-
-MARC_BIN_VERSION=AC_PACKAGE_VERSION
-AC_SUBST([MARC_BIN_VERSION])
-
-MARC_LIB_VERSION=AC_PACKAGE_VERSION
-AC_SUBST([MARC_LIB_VERSION])
-
-dnl Check for libtool and turn on Automake processing for Libtool
-AC_DISABLE_SHARED
-AC_PROG_LIBTOOL
 
 dnl Generate a header file with all settings.
 AC_CONFIG_HEADERS([lib/MaRC/config.h])
@@ -86,11 +72,6 @@ dnl fi
 dnl if test -z "$LEX"; then
 dnl   AC_MSG_ERROR([GNU Flex not found.  GNU Flex 2.5.4a or newer is REQUIRED.])
 dnl fi
-
-dnl    XCXXFLAGS="-Wall -Weffc++"
-if test "$GXX" = yes; then
-    XCXXFLAGS="-W -Wall"
-fi
 
 dnl Enable C99 extensions if not already enabled.  Needed for NaN
 dnl support on some platforms.
@@ -132,7 +113,7 @@ AH_TEMPLATE([MARC_HAS_COVARIANT_RETURN_TYPES],[C++ compiler supports covariant r
 dnl Additional configure script arguments
 AC_ARG_ENABLE([debug],
   AC_HELP_STRING([--enable-debug],[enable debugging [[no]]]), [
-  if test "$GXX" = no; then
+  if test "x$GXX" = "xno"; then
     XCXXFLAGS="-g"
   fi
 dnl   AC_DEFINE([TNT_BOUNDS_CHECK])
@@ -140,20 +121,14 @@ dnl   AC_DEFINE([DEBUG])
   echo "enabling debugging for C++:  $XCXXFLAGS $CXXFLAGS"
 ], [AC_DEFINE([NDEBUG])])
 
-dnl AC_ARG_ENABLE(exception-handling,
-dnl 	[ --disable-exceptions     disable exception handling],
-dnl 	[EXCEPTION_FLAGS=""],
-dnl 	[AC_DEFINE(HANDLE_EXCEPTIONS)
-dnl   	 EXCEPTION_FLAGS="-fhandle-exceptions"])
-
 dnl Checks for libraries.
 
 dnl We're of course going to need the C math library.
-AC_CHECK_LIB([m], [cos])
+AC_SEARCH_LIBS([cos],[m])
 
 dnl Check if the socket library is available and needed.  CFITSIO
 dnl requires socket support.
-AC_SEARCH_LIBS([socket],[socket],,,[-lnsl])
+AC_SEARCH_LIBS([socket],[socket],,,[nsl])
 
 dnl Check for gethostbyname in -lnsl since some platforms (e.g. Solaris)
 dnl put it there.  CFITSIO may need it.
@@ -161,9 +136,7 @@ AC_SEARCH_LIBS([gethostbyname],[nsl],,)
 
 dnl Check for the CFITSIO library.
 dnl   fits_create_file is a preprocessor macro for ffinit.  *sigh*
-AC_CHECK_LIB(
-  [cfitsio],
-  [ffinit],
+AC_SEARCH_LIBS([ffinit],[cfitsio],
   [],
   [AC_MSG_ERROR([MaRC requires CFITSIO.  CFITSIO library not found.])])
 
@@ -172,10 +145,8 @@ AC_CHECK_FUNCS([rint])
 
 dnl Checks for header files.
 AC_HEADER_STDC
-dnl AC_CHECK_HEADERS(fcntl.h limits.h unistd.h time.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-dnl AC_C_BIGENDIAN
 AC_TYPE_SIZE_T
 dnl AC_CHECK_SIZEOF(short)
 dnl AC_CHECK_SIZEOF([int], [4])
@@ -331,6 +302,11 @@ dnl *)
 dnl 	dnl nothing
 dnl 	;;
 dnl esac
+
+AX_CFLAGS_WARN_ALL([CXXFLAGS])
+AS_IF([test "x$GXX" = "xyes"],
+      [XCXXFLAGS="$XCXXFLAGS -Wextra -Werror -Wformat=2 -pedantic"],
+      [])
 
 dnl Combine package set flags with user's flags.
 dnl User's flags go after package flags to allow user to override

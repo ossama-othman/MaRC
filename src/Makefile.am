@@ -29,7 +29,7 @@
 
 DISTCLEANFILES = stamp-v version.cpp ##lexer.cc parse.{cc,h}
 
-INCLUDES = -I$(top_builddir)/lib -I$(top_srcdir)/lib
+AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 bin_PROGRAMS = marc
 

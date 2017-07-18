@@ -180,7 +180,7 @@ Mon Nov  8 02:21:21 2004  Ossama Othman  <ossama@dre.vanderbilt.edu>
 	* src/calc.cc:
 
 	  Improved const-correctness.
-	
+
 	* src/lexer.ll:
 	* src/parse_scan.h:
 	* src/parse_scan.cc (yylex):

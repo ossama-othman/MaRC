@@ -16,9 +16,6 @@
 ##  along with this program; if not, write to the Free Software
 ##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-##  $Id: Makefile.am,v 1.3 2004/11/06 00:30:11 othman Exp $
-
-
 ##
 ##  Process this file with automake to create Makefile.in
 ##
@@ -27,3 +24,4 @@ SUBDIRS = doc lib src tests
 
 EXTRA_DIST = FAQ BUGS ChangeLog.0
 
+ACLOCAL_AMFLAGS = -I m4

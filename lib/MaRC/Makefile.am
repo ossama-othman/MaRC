@@ -5,7 +5,7 @@
 ##
 
 
-INCLUDES = -I$(top_builddir)/lib -I$(top_srcdir)/lib
+AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 lib_LTLIBRARIES = libMaRC.la
 
