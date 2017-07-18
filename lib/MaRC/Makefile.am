@@ -111,7 +111,7 @@ stamp-v: Makefile
 	rm -f t-version.cc
 #	echo '#include <MaRC/config.h>' > t-version.cc
 #	echo '#include "version.h"' >> t-version.cc
-	echo 'char const * marc_lib_version_string = "@MARC_LIB_VERSION@";' \
+	echo 'char const marc_lib_version_string[] = PACKAGE_VERSION;' \
 		>> t-version.cc
 	if cmp -s map_version.cc t-version.cc; then   \
 		rm t-version.cc;                      \

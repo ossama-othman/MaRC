@@ -27,7 +27,11 @@ config.*
 *.tar.*
 core*
 doc/*.t2p/
+doc/*.info
+doc/*.pdf
 doc/mdate-sh
 doc/texinfo.tex
+doc/version.texi
+lib/MaRC/map_version.cc
 test-driver
 ylwrap

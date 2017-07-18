@@ -9,8 +9,8 @@
 
 #include <unistd.h>
 
-extern const char * marc_version_string;
-extern const char * marc_lib_version_string;
+
+extern const char marc_lib_version_string[];
 
 extern void yyrestart (FILE * input_file);
 
@@ -24,10 +24,10 @@ main (int argc, char *argv[])
   std::cout
     << std::endl <<  "MaRC -- "
     << "Built on " << __DATE__ << " at " << __TIME__ << std::endl
-    << "        MaRC Binary  Version " << ::marc_version_string  << std::endl
+    << "        MaRC Binary  Version " PACKAGE_VERSION  << std::endl
     << "        MaRC Library Version " << ::marc_lib_version_string
     << std::endl << std::endl
-    << "Copyright (C) 1996, 1997, 1998, 2003, 2004  Ossama Othman"
+    << "Copyright (C) 1996, 1997, 1998, 2003, 2004, 2017  Ossama Othman"
     << std::endl
     << "All Rights Reserved" << std::endl << std::endl
     << "MaRC comes with ABSOLUTELY NO WARRANTY." << std::endl
