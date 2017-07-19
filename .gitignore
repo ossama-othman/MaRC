@@ -4,6 +4,7 @@
 *.so*
 *.a
 *~
+.#*
 *#*#
 config.log
 config.status

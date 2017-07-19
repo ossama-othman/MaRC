@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl  Copyright  1996-1999, 2003, 2004  Ossama Othman
+dnl  Copyright  1996-1999, 2003-2004, 2017  Ossama Othman
 dnl
 dnl  All Rights Reserved
 dnl
@@ -25,7 +25,11 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 
 AC_PREREQ([2.69])
-AC_INIT([MaRC], [0.9.8], [othman@users.sourceforge.edu], [marc])
+AC_INIT([MaRC], [0.9.8], [othman@users.sourceforge.net], [marc])
+
+dnl Additional configure script arguments
+AX_IS_RELEASE([git-directory])
+AX_CHECK_ENABLE_DEBUG()
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
@@ -33,7 +37,7 @@ AM_INIT_AUTOMAKE([1.15 foreign silent-rules -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
-AC_COPYRIGHT([MaRC is copyrighted by Ossama Othman 1996-1999, 2003, 2004, 2017
+AC_COPYRIGHT([MaRC is copyrighted by Ossama Othman 1996-1999, 2003-2004, 2017
 all rights reserved.  You are free to use, modify, and distribute the
 MaRC source code and object code produced from the source, as long as
 you include this copyright statement along with code built using
@@ -43,7 +47,6 @@ Please see the file "COPYING" in the top level MaRC directory for
 additional details.])
 
 AC_CONFIG_MACRO_DIRS([m4])
-
 
 AC_CONFIG_SRCDIR([lib/MaRC/PhotoImage.h])
 
@@ -61,17 +64,6 @@ AM_PROG_LEX
 ##AC_CHECK_PROG([DVIPS], [dvips], [dvips], [])
 
 AC_LANG([C++])
-
-dnl The following YACC and LEX stuff will probably be removed soon.
-dnl if test "$YACC" = "bison -y"; then
-dnl   YFLAGS="-d $YFLAGS"
-dnl else
-dnl   ./missing bison
-dnl fi
-
-dnl if test -z "$LEX"; then
-dnl   AC_MSG_ERROR([GNU Flex not found.  GNU Flex 2.5.4a or newer is REQUIRED.])
-dnl fi
 
 dnl Enable C99 extensions if not already enabled.  Needed for NaN
 dnl support on some platforms.
@@ -110,17 +102,6 @@ AH_TEMPLATE([MARC_C_LIB_QUIET_NAN],[C library quiet NaN value.])
 
 AH_TEMPLATE([MARC_HAS_COVARIANT_RETURN_TYPES],[C++ compiler supports covariant return types.])
 
-dnl Additional configure script arguments
-AC_ARG_ENABLE([debug],
-  AC_HELP_STRING([--enable-debug],[enable debugging [[no]]]), [
-  if test "x$GXX" = "xno"; then
-    XCXXFLAGS="-g"
-  fi
-dnl   AC_DEFINE([TNT_BOUNDS_CHECK])
-dnl   AC_DEFINE([DEBUG])
-  echo "enabling debugging for C++:  $XCXXFLAGS $CXXFLAGS"
-], [AC_DEFINE([NDEBUG])])
-
 dnl Checks for libraries.
 
 dnl We're of course going to need the C math library.
@@ -132,7 +113,7 @@ AC_SEARCH_LIBS([socket],[socket],,,[nsl])
 
 dnl Check for gethostbyname in -lnsl since some platforms (e.g. Solaris)
 dnl put it there.  CFITSIO may need it.
-AC_SEARCH_LIBS([gethostbyname],[nsl],,)
+AX_LIB_SOCKET_NSL
 
 dnl Check for the CFITSIO library.
 dnl   fits_create_file is a preprocessor macro for ffinit.  *sigh*
@@ -147,63 +128,36 @@ dnl Checks for header files.
 AC_HEADER_STDC
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-AC_TYPE_SIZE_T
-dnl AC_CHECK_SIZEOF(short)
-dnl AC_CHECK_SIZEOF([int], [4])
-dnl AC_CHECK_SIZEOF([long], [4])
-dnl AC_CHECK_SIZEOF(float)
-dnl AC_CHECK_SIZEOF(double)
-
-dnl Some systems have different type sizes then what may be expected.
-dnl Custom define the desired types.
-dnl if test $ac_cv_sizeof_int = 4; then
-dnl 	long_type=int
-dnl else
-dnl 	long_type=long
-dnl fi
-dnl AC_SUBST([long_type])
-
 AC_CACHE_CHECK([if $CXX supports covariant return types],
   [ac_cv_cxx_covariant_return_types_supported],[
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-
 class Base
 {
 public:
-
   virtual void foo () = 0;
-
 };
 
 class Derived : public Base
 {
 public:
-
   virtual void foo () {}
-
 };
 
 class Factory
 {
 public:
-
   virtual Base * make () = 0;
-
 };
 
 class ConcreteFactory : public Factory
 {
 public:
-
   virtual Derived * make () { return new Derived; }
-
 };
       ]],
       [[
 ConcreteFactory factory;
-
 Derived * d = factory.make ();
-
       ]])
     ],
     [
@@ -214,9 +168,8 @@ Derived * d = factory.make ();
     ])
   ])
 
-if test "$ac_cv_cxx_covariant_return_types_supported" = "yes"; then
-  AC_DEFINE([MARC_HAS_COVARIANT_RETURN_TYPES])
-fi
+AS_IF([test "x$ac_cv_cxx_covariant_return_types_supported" = "xyes"],
+      [AC_DEFINE([MARC_HAS_COVARIANT_RETURN_TYPES])])
 
 AC_CACHE_CHECK([if $CXX STL implementation supports quiet NaN constant],
   [ac_cv_STL_quiet_NaN_supported],[
@@ -236,40 +189,40 @@ if (!std::numeric_limits<double>::has_quiet_NaN)
     ])
   ])
 
-if test $ac_cv_STL_quiet_NaN_supported = yes; then
-  AC_DEFINE([MARC_HAS_STL_QUIET_NAN_SUPPORT])
-else
-  AC_CACHE_CHECK([for C library implementation of quiet NaN constant],
-  [ac_cv_C_lib_quiet_NaN],[
-    for ac_nan in NAN 'nan ("char-sequence")' 'strtod ("NAN", 0)' 'strtod ("NAN(char-sequence)", 0)'; do
-      AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+AS_IF([test "x$ac_cv_STL_quiet_NaN_supported" = "xyes"],
+      [AC_DEFINE([MARC_HAS_STL_QUIET_NAN_SUPPORT])],
+      [AC_CACHE_CHECK([for C library implementation of quiet NaN constant],
+                      [ac_cv_C_lib_quiet_NaN],
+		      [
+        for ac_nan in NAN 'nan ("char-sequence")' 'strtod ("NAN", 0)' 'strtod ("NAN(char-sequence)", 0)'; do
+           AC_RUN_IFELSE([
+	     AC_LANG_PROGRAM([[
 #include <cmath>
 #include <cstdlib>
-        ]],
-        [[
-if (isnan ($ac_nan) == 0)
+            ]],
+            [[
+if (std::isnan($ac_nan) == 0)
   return -1;  // NaN not supported.
-        ]])
-      ],
-      [
-       ac_cv_C_lib_quiet_NaN="$ac_nan"
-       break
-      ],
-      [
-       ac_cv_C_lib_quiet_NaN=none
+            ]])
+           ],
+           [
+             ac_cv_C_lib_quiet_NaN="$ac_nan"
+             break
+           ],
+           [
+             ac_cv_C_lib_quiet_NaN=none
+           ])
+        done
+                      ])
+
+       AS_IF([test "x$ac_cv_C_lib_quiet_NaN" != "xnone"],
+             [AC_DEFINE_UNQUOTED([MARC_C_LIB_QUIET_NAN],
+	                         [$ac_cv_C_lib_quiet_NaN])])
       ])
-    done
-  ])
 
-  if test "$ac_cv_C_lib_quiet_NaN" != none; then
-    AC_DEFINE_UNQUOTED([MARC_C_LIB_QUIET_NAN],[$ac_cv_C_lib_quiet_NaN])
-  fi
-fi
-
-if test "$ac_cv_STL_quiet_NaN_supported" = no &&
-   test "$ac_cv_C_lib_quiet_NaN" = none; then
-  AC_MSG_ERROR([Unable to determine if NaN constant is supported.])
-fi
+AS_IF([test "x$ac_cv_STL_quiet_NaN_supported" = "xno" &&
+       test "x$ac_cv_C_lib_quiet_NaN" = "xnone"],
+      [AC_MSG_ERROR([Unable to determine if NaN constant is supported.])])
 
 dnl dnl System specific configuration
 dnl case "$target" in
@@ -327,7 +280,3 @@ AC_CONFIG_FILES([
   tests/Makefile
 ])
 AC_OUTPUT
-
-dnl Local Variables:
-dnl mode:autoconf
-dnl End:
