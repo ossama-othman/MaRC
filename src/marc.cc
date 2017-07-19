@@ -122,7 +122,7 @@ main (int argc, char *argv[])
         }
 
       // Create the map(s).
-      MaRC::ParseParameter::commands_list const & commands =
+      MaRC::ParseParameter::command_list const & commands =
           parse_parameters.commands ();
 
       for (auto & p : commands)

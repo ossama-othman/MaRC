@@ -43,12 +43,12 @@ namespace MaRC
   {
   public:
 
-    typedef std::list<std::unique_ptr<MapCommand>> commands_list;
+    typedef std::list<std::unique_ptr<MapCommand>> command_list;
 
     /// Constructor.
     ParseParameter (void);
 
-    commands_list const & commands(void) const { return this->commands_; }
+    command_list const & commands(void) const { return this->commands_; }
 
     /// Push a Command object on to the list of Commands to execute.
     void push_command (std::unique_ptr<MapCommand> c);
@@ -102,7 +102,7 @@ namespace MaRC
      * The command list is constructed while parsing the user's defaults
      * and map input files.
      */
-    commands_list commands_;
+    command_list commands_;
 
     /// Calculator symbol table.
     symrec sym_table_;
