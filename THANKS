@@ -1,5 +1,3 @@
-# $Id: THANKS,v 1.4 2005/11/12 07:54:23 othman Exp $
-
 Many thanks to Peter Gierasch, Don Banfield, Maureen Bell and Noam Solomon at
 the Center for Radiophysics and Space Research at Cornell University for
 putting up with the many bugs they discovered and for helping me refine MaRC
@@ -12,13 +10,13 @@ useful suggestions, and for encouraging me to make MaRC open-source.
 
 Contributors
 ------------
-Peter Gierasch      <gierasch@astro.cornell.edu>
-Don Banfield        <banfield@astro.cornell.edu>
-Brian Carcich       <carcich@astro.cornell.edu>
-Maureen Bell        <mbell@astro.cornell.edu>
-Noam Solomon        <noam@astro.cornell.edu>
-Joe Harrington      <jh@astro.cornell.edu>
-Amy Simon           <asimon@astro.cornell.edu
-Tom Shannon         <shannon@astro.cornell.edu>
-Krzysztof Findeisen <kpf4@cornell.edu>
-Nathanael Nerode    <neroden@astro.cornell.edu>
+Peter Gierasch      <gierasch at astro.cornell.edu>
+Don Banfield        <banfield at astro.cornell.edu>
+Brian Carcich       <carcich at astro.cornell.edu>
+Maureen Bell        <mbell at astro.cornell.edu>
+Noam Solomon        <noam at astro.cornell.edu>
+Joe Harrington      <jh at astro.cornell.edu>
+Amy Simon           <asimon at astro.cornell.edu
+Tom Shannon         <shannon at astro.cornell.edu>
+Krzysztof Findeisen <kpf4 at cornell.edu>
+Nathanael Nerode    <neroden at astro.cornell.edu>
