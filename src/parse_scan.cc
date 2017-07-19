@@ -27,9 +27,9 @@ MaRC::ParseParameter::ParseParameter (void)
 }
 
 void
-MaRC::ParseParameter::push_command (const MaRC::ValuePtr<MapCommand> & c)
+MaRC::ParseParameter::push_command(std::unique_ptr<MapCommand> c)
 {
-  this->commands_.push_back (c);
+    this->commands_.push_back(std::move(c));
 }
 
 // -------------------------------------------------------------------
@@ -93,5 +93,8 @@ yyerror (YYLTYPE * /* locp */,
          MaRC::ParseParameter & /* pp */,
          char const * msg)
 {
-  std::cerr << msg << std::endl;
+    /**
+     * @todo Pull location from @a locp argument.
+     */
+    std::cerr << msg << std::endl;
 }

@@ -4,9 +4,7 @@
 /**
  *  @file MapCommand.h
  *
- *  $Id: MapCommand.h,v 1.3 2004/07/06 00:01:41 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 
@@ -51,10 +49,10 @@ namespace MaRC
      * @param samples   Number of samples in map.
      * @param lines     Number of lines in map.
      */
-    MapCommand (const std::string & filename,
-                const std::string & body_name,
-                unsigned int samples,
-                unsigned int lines);
+    MapCommand(std::string const & filename,
+               std::string const & body_name,
+               long samples,
+               long lines);
 
     /// Destructor.
     virtual ~MapCommand (void);
@@ -83,20 +81,10 @@ namespace MaRC
      *
      * @return @c Grid object containing grid image.
      */
-    virtual Grid * make_grid (unsigned int samples,
-                              unsigned int lines,
+    virtual Grid * make_grid (long samples,
+                              long lines,
                               float lat_interval,
                               float lon_interval) = 0;
-
-    /// Clone operation that polymorphically copies the concrete
-    /// @c MapCommand object.
-    /**
-     * This clone operation is generally used in conjunction with the
-     * VP_traits<MapCommand> template specialization to prevent the
-     * slicing that occurs copying through a copy constructor
-     * instead.
-     */
-    virtual MapCommand * clone (void) const = 0;
 
     /// Set map author.
     void author (const std::string & author);
@@ -162,10 +150,10 @@ namespace MaRC
   protected:
 
     /// Number of samples in map.
-    unsigned int samples_;
+    long const samples_;
 
     /// Number of lines in map.
-    unsigned int lines_;
+    long const lines_;
 
     /// List of @c ImageFactorys that create the @c SourceImage to be
     /// mapped on each map plane.
@@ -180,7 +168,7 @@ namespace MaRC
   private:
 
     /// Map filename.
-    std::string filename_;
+    std::string const filename_;
 
     /// Person responsible for compiling the data in the map
     std::string author_;
@@ -229,16 +217,6 @@ namespace MaRC
     /// Flag that determines if a grid is created.
     bool create_grid_;
 
-  };
-
-  // MapCommand specialization of the ValuePtr traits template.
-  template<>
-  struct VP_traits<MapCommand>
-  {
-    static MapCommand * clone (const MapCommand * p)
-    {
-      return p->clone ();
-    }
   };
 
 }

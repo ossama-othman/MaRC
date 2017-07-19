@@ -4,9 +4,7 @@
 /**
  *  @file MapCommand_T.h
  *
- *  $Id: MapCommand_T.h,v 1.2 2004/07/06 00:01:41 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 
@@ -16,8 +14,7 @@
 
 #include "MapCommand.h"
 
-#include "MaRC/ValuePtr.h"
-#include "MaRC/MapFactory.h"
+#include <MaRC/MapFactory.h>
 
 #include <memory>
 
@@ -43,11 +40,11 @@ namespace MaRC
   public:
 
     /// Constructor.
-    MapCommand_T (const std::string & filename,
-                  const std::string & body_name,
-                  std::unique_ptr<MapFactory<T> > factory,
-                  unsigned int samples,
-                  unsigned int lines);
+    MapCommand_T(std::string const & filename,
+                 std::string const & body_name,
+                 std::unique_ptr<MapFactory<T>> factory,
+                 long samples,
+                 long lines);
 
     /**
      * @name @c MapCommand Methods.
@@ -58,17 +55,17 @@ namespace MaRC
     virtual const char * projection_name (void) const;
     virtual void initialize_FITS_image (fitsfile * fptr, int & status);
     virtual void make_map_planes (fitsfile * fptr, int & status);
-    virtual Grid * make_grid (unsigned int samples,
-                              unsigned int lines,
-                              float lat_interval,
-                              float lon_interval);
-    virtual MapCommand * clone (void) const;
+    virtual Grid * make_grid(long samples,
+                             long lines,
+                             float lat_interval,
+                             float lon_interval);
     //@}
 
   private:
 
-    /// @c MapFactory object responsible for creating maps and grids.
-    MaRC::ValuePtr<MapFactory<T> > factory_;
+      /// @c MapFactory object responsible for creating maps and
+      /// grids.
+      std::unique_ptr<MapFactory<T>> factory_;
 
   };
 

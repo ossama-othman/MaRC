@@ -122,17 +122,11 @@ main (int argc, char *argv[])
         }
 
       // Create the map(s).
+      MaRC::ParseParameter::commands_list const & commands =
+          parse_parameters.commands ();
 
-      MaRC::ParseParameter::Commands const & commands =
-        parse_parameters.commands ();
-
-      MaRC::ParseParameter::Commands::const_iterator end =
-        commands.end ();
-      for (MaRC::ParseParameter::Commands::const_iterator p =
-             commands.begin ();
-           p != end;
-           ++p)
-        (void) (*p)->execute ();
+      for (auto & p : commands)
+          (void) p->execute();
     }
   catch (const std::exception & e)
     {

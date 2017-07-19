@@ -3,7 +3,8 @@
 #include "MapCommand.h"
 #include "FITS_traits.h"
 
-#include "MaRC/Grid.h"
+#include <MaRC/Grid.h>
+#include <MaRC/config.h>
 
 #include <fitsio.h>
 
@@ -13,10 +14,10 @@
 #include <unistd.h>
 
 
-MaRC::MapCommand::MapCommand (const std::string & filename,
-                              const std::string & body_name,
-                              unsigned int samples,
-                              unsigned int lines)
+MaRC::MapCommand::MapCommand (std::string const & filename,
+                              std::string const & body_name,
+                              long samples,
+                              long lines)
   : samples_ (samples),
     lines_ (lines),
     image_factories_ (),
@@ -103,7 +104,7 @@ MaRC::MapCommand::execute (void)
       fits_write_comment (fptr, (*i).c_str (), &status);
     }
 
-  std::string history =
+  std::string const history =
     std::string (this->projection_name ())
       + " projection created using MaRC " PACKAGE_VERSION ".";
 
@@ -165,15 +166,21 @@ MaRC::MapCommand::execute (void)
 
   if (this->create_grid_)
     {
-      static const int grid_naxis = 2;
       long naxes[] = { this->samples_, this->lines_ };
+      constexpr int grid_naxis = sizeof(naxes) / sizeof(naxes[0]);
+
+      static_assert(grid_naxis == 2,
+                    "Map grid is not two dimensional.");
 
       // Create the image extension containing the map grid.
-      fits_create_img (fptr,
-                       FITS_traits<unsigned char>::bitpix,
-                       grid_naxis,
-                       naxes,
-                       &status);
+      /**
+       * @todo Check return value!
+       */
+      fits_create_img(fptr,
+                      FITS::traits<FITS::byte_type>::bitpix,
+                      grid_naxis,
+                      naxes,
+                      &status);
 
       // Write the grid comments.
       comment_list_type::iterator xcomment_end = this->xcomments_.end ();
@@ -184,7 +191,7 @@ MaRC::MapCommand::execute (void)
           fits_write_comment (fptr, (*i).c_str (), &status);
         }
 
-      std::string xhistory =
+      std::string const xhistory =
         std::string (this->projection_name ())
         + " projection grid created using MaRC " PACKAGE_VERSION ".";
 
@@ -201,19 +208,24 @@ MaRC::MapCommand::execute (void)
 //                        "Value of off-grid pixels.",
 //                        &status);
 
-      std::unique_ptr<Grid> grid (this->make_grid (this->samples_,
+      std::unique_ptr<Grid> grid(this->make_grid(this->samples_,
                                                  this->lines_,
                                                  this->lat_interval_,
                                                  this->lon_interval_));
 
-      static const long fpixel = 1;  // First pixel/element
+      // LONGLONG is a CFITSIO type.
+      constexpr LONGLONG fpixel = 1;  // First pixel/element
+      LONGLONG const nelements = this->samples_ * this->lines_;
 
-      const unsigned int nelements = this->samples_ * this->lines_;
-      FITS_traits<unsigned char>::write_img (fptr,
-                                             fpixel,
-                                             nelements,
-                                             grid->get (),
-                                             status);
+      /**
+       * @todo Check return value!
+       */
+      (void) fits_write_img(fptr,
+                            FITS::traits<FITS::byte_type>::datatype,
+                            fpixel,
+                            nelements,
+                            grid->get(),
+                            &status);
 
       // Write a checksum for the grid.
       fits_write_chksum (fptr, &status);

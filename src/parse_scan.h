@@ -19,9 +19,8 @@
 #include "calc.h"
 #include "MapCommand.h"
 
-#include "MaRC/ValuePtr.h"
-
 #include <list>
+#include <memory>
 
 // The following #undef in necessary to make it possible to use GNU
 // Flex 2.5.31 generated C++ scanners without "redefinition"
@@ -44,15 +43,15 @@ namespace MaRC
   {
   public:
 
-    typedef std::list<MaRC::ValuePtr<MapCommand> > Commands;
+    typedef std::list<std::unique_ptr<MapCommand>> commands_list;
 
     /// Constructor.
     ParseParameter (void);
 
-    Commands const & commands (void) const { return this->commands_; }
+    commands_list const & commands(void) const { return this->commands_; }
 
     /// Push a Command object on to the list of Commands to execute.
-    void push_command (MaRC::ValuePtr<MapCommand> const & c);
+    void push_command (std::unique_ptr<MapCommand> c);
 
     /// Return reference to symbol table.
     symrec & sym_table (void) { return this->sym_table_; }
@@ -103,7 +102,7 @@ namespace MaRC
      * The command list is constructed while parsing the user's defaults
      * and map input files.
      */
-    Commands commands_;
+    commands_list commands_;
 
     /// Calculator symbol table.
     symrec sym_table_;

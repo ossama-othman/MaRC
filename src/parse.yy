@@ -75,21 +75,24 @@ Requires GNU Bison 1.35 or greater
 
   data_type map_data_type;
 
-  std::unique_ptr<MaRC::MapFactory<unsigned char> > map_factory_byte;
-  std::unique_ptr<MaRC::MapFactory<short> >         map_factory_short;
-  std::unique_ptr<MaRC::MapFactory<MaRC::Long> >    map_factory_long;
-  std::unique_ptr<MaRC::MapFactory<float> >         map_factory_float;
-  std::unique_ptr<MaRC::MapFactory<double> >        map_factory_double;
+  using namespace MaRC;
 
-  unsigned int map_samples = 0;
-  unsigned int map_lines = 0;
+  std::unique_ptr<MapFactory<FITS::byte_type>>   map_factory_byte;
+  std::unique_ptr<MapFactory<FITS::short_type>>  map_factory_short;
+  std::unique_ptr<MapFactory<FITS::long_type>>   map_factory_long;
+  std::unique_ptr<MapFactory<FITS::float_type>>  map_factory_float;
+  std::unique_ptr<MapFactory<FITS::double_type>> map_factory_double;
 
-  bool transform_data = false;
+  // CFITSIO's "naxes" parameter is an array of long values.
+  long map_samples = 0;
+  long map_lines = 0;
+
+  bool  transform_data = false;
   float fits_bzero  = 0;
   float fits_bscale = 1;
 
   bool blank_set = false;
-  int   fits_blank  = 0;
+  int  fits_blank  = 0;
 
   // To create a grid or not to create a grid?  That is the question.
   bool create_grid = false;
@@ -306,64 +309,63 @@ map_setup:
             }
           else
             {
-              MaRC::ValuePtr<MaRC::MapCommand> map_command;
+              std::unique_ptr<MaRC::MapCommand> map_command;
 
-              switch (map_data_type)
-                {
-                case BYTE:
+              switch (map_data_type) {
+              case BYTE:
                   map_command =
-                    MaRC::ValuePtr<MaRC::MapCommand_T<unsigned char> > (
-                      new MaRC::MapCommand_T<unsigned char> (map_filename,
-                                                             body_name,
-                                                             std::move(map_factory_byte),
-                                                             map_samples,
-                                                             map_lines));
+                      std::make_unique<MaRC::MapCommand_T<FITS::byte_type>>(
+                          map_filename,
+                          body_name,
+                          std::move(map_factory_byte),
+                          map_samples,
+                          map_lines);
                   break;
 
-                case SHORT:
+              case SHORT:
                   map_command =
-                    MaRC::ValuePtr<MaRC::MapCommand_T<short> > (
-                      new MaRC::MapCommand_T<short> (map_filename,
-                                                     body_name,
-                                                     std::move(map_factory_short),
-                                                     map_samples,
-                                                     map_lines));
-                  break;
+                      std::make_unique<MaRC::MapCommand_T<FITS::short_type>>(
+                          map_filename,
+                          body_name,
+                          std::move(map_factory_short),
+                          map_samples,
+                          map_lines);
+              break;
 
-                case LONG:
+              case LONG:
                   map_command =
-                    MaRC::ValuePtr<MaRC::MapCommand_T<MaRC::Long> > (
-                      new MaRC::MapCommand_T<MaRC::Long> (map_filename,
-                                                          body_name,
-                                                          std::move(map_factory_long),
-                                                          map_samples,
-                                                          map_lines));
+                      std::make_unique<MaRC::MapCommand_T<FITS::long_type>>(
+                          map_filename,
+                          body_name,
+                          std::move(map_factory_long),
+                          map_samples,
+                          map_lines);
                   break;
 
-                case FLOAT:
+              case FLOAT:
                   map_command =
-                    MaRC::ValuePtr<MaRC::MapCommand_T<float> > (
-                      new MaRC::MapCommand_T<float> (map_filename,
-                                                     body_name,
-                                                     std::move(map_factory_float),
-                                                     map_samples,
-                                                     map_lines));
+                      std::make_unique<MaRC::MapCommand_T<FITS::float_type>>(
+                          map_filename,
+                          body_name,
+                          std::move(map_factory_float),
+                          map_samples,
+                          map_lines);
                   break;
 
-                case DOUBLE:
+              case DOUBLE:
                   map_command =
-                    MaRC::ValuePtr<MaRC::MapCommand_T<double> > (
-                      new MaRC::MapCommand_T<double> (map_filename,
-                                                      body_name,
-                                                      std::move(map_factory_double),
-                                                      map_samples,
-                                                      map_lines));
+                      std::make_unique<MaRC::MapCommand_T<FITS::double_type>>(
+                          map_filename,
+                          body_name,
+                          std::move(map_factory_double),
+                          map_samples,
+                          map_lines);
                   break;
 
-                default:
-                  throw std::invalid_argument ("Unrecognized map data type");
+              default:
+                  throw std::invalid_argument("Unrecognized map data type");
                   break;
-                }
+              }
 
               map_command->author (map_author);
               map_command->origin (map_origin);
@@ -385,7 +387,7 @@ map_setup:
 
               map_command->image_factories (image_factories);
 
-              pp.push_command (map_command);
+              pp.push_command(std::move(map_command));
             }
         }
 ;
@@ -453,14 +455,14 @@ data_info:
 
 data_offset:
         | DATA_OFFSET ':' size  {
-            fits_bzero = static_cast<float> ($3);
+            fits_bzero = static_cast<FITS::float_type> ($3);
             transform_data = true;
         }
 ;
 
 data_scale:
         | DATA_SCALE ':' size   {
-            fits_bscale = static_cast<float> ($3);
+            fits_bscale = static_cast<FITS::float_type> ($3);
             transform_data = true;
         }
 ;
@@ -596,7 +598,7 @@ planes: | PLANES ':' size         {
 samples:
         SAMPLES ':' size        {
           if ($3 > 0)
-            map_samples = static_cast<unsigned int> ($3);
+            map_samples = static_cast<long>($3);
           else
             {
               std::cerr << "Incorrect value for SAMPLES entered: "
@@ -607,7 +609,7 @@ samples:
 
 lines:  LINES ':' size  {
           if ($3 > 0)
-            map_lines = static_cast<unsigned int> ($3);
+            map_lines = static_cast<long>($3);
           else
             {
               std::cerr << "Incorrect value for LINES entered: " << $3
@@ -1268,31 +1270,30 @@ lampoleq_options:
 /* ------------------------- Mercator Projection ------------------------ */
 mercator:
         MAP_TYPE ':' _MERCATOR  {
-          switch (map_data_type)
-            {
-              case BYTE:
-                map_factory_byte.reset (
-                  new MaRC::Mercator<unsigned char> (oblate_spheroid));
-                break;
+          switch (map_data_type) {
+          case BYTE:
+              map_factory_byte =
+                  std::make_unique<MaRC::Mercator<FITS::byte_type>>(oblate_spheroid);
+              break;
 
               case SHORT:
                 map_factory_short.reset (
-                  new MaRC::Mercator<short> (oblate_spheroid));
+                  new MaRC::Mercator<FITS::short_type> (oblate_spheroid));
                 break;
 
               case LONG:
                 map_factory_long.reset (
-                  new MaRC::Mercator<MaRC::Long> (oblate_spheroid));
+                  new MaRC::Mercator<FITS::long_type> (oblate_spheroid));
                 break;
 
               case FLOAT:
                 map_factory_float.reset (
-                  new MaRC::Mercator<float> (oblate_spheroid));
+                  new MaRC::Mercator<FITS::float_type> (oblate_spheroid));
                 break;
 
               case DOUBLE:
                 map_factory_double.reset (
-                  new MaRC::Mercator<double> (oblate_spheroid));
+                  new MaRC::Mercator<FITS::double_type> (oblate_spheroid));
                 break;
 
               default:
@@ -1309,7 +1310,7 @@ ortho:  MAP_TYPE ':' _ORTHO
             {
               case BYTE:
                 map_factory_byte.reset (
-                  new MaRC::Orthographic<unsigned char> (
+                  new MaRC::Orthographic<FITS::byte_type> (
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
@@ -1321,7 +1322,7 @@ ortho:  MAP_TYPE ':' _ORTHO
 
               case SHORT:
                 map_factory_short.reset (
-                  new MaRC::Orthographic<short> (
+                  new MaRC::Orthographic<FITS::short_type> (
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
@@ -1333,7 +1334,7 @@ ortho:  MAP_TYPE ':' _ORTHO
 
               case LONG:
                 map_factory_long.reset (
-                  new MaRC::Orthographic<MaRC::Long> (
+                  new MaRC::Orthographic<FITS::long_type> (
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
@@ -1345,7 +1346,7 @@ ortho:  MAP_TYPE ':' _ORTHO
 
               case FLOAT:
                 map_factory_float.reset (
-                  new MaRC::Orthographic<float> (
+                  new MaRC::Orthographic<FITS::float_type> (
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
@@ -1357,7 +1358,7 @@ ortho:  MAP_TYPE ':' _ORTHO
 
               case DOUBLE:
                 map_factory_double.reset (
-                  new MaRC::Orthographic<double> (
+                  new MaRC::Orthographic<FITS::double_type> (
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
@@ -1586,35 +1587,35 @@ p_stereo:
             {
               case BYTE:
                 map_factory_byte.reset (
-                  new MaRC::PolarStereographic<unsigned char> (oblate_spheroid,
+                  new MaRC::PolarStereographic<FITS::byte_type> (oblate_spheroid,
                                                                max_lat,
                                                                north_pole));
                 break;
 
               case SHORT:
                 map_factory_short.reset (
-                  new MaRC::PolarStereographic<short> (oblate_spheroid,
+                  new MaRC::PolarStereographic<FITS::short_type> (oblate_spheroid,
                                                        max_lat,
                                                        north_pole));
                 break;
 
               case LONG:
                 map_factory_long.reset (
-                  new MaRC::PolarStereographic<MaRC::Long> (oblate_spheroid,
+                  new MaRC::PolarStereographic<FITS::long_type> (oblate_spheroid,
                                                             max_lat,
                                                             north_pole));
                 break;
 
               case FLOAT:
                 map_factory_float.reset (
-                  new MaRC::PolarStereographic<float> (oblate_spheroid,
+                  new MaRC::PolarStereographic<FITS::float_type> (oblate_spheroid,
                                                        max_lat,
                                                        north_pole));
                 break;
 
               case DOUBLE:
                 map_factory_double.reset (
-                  new MaRC::PolarStereographic<double> (oblate_spheroid,
+                  new MaRC::PolarStereographic<FITS::double_type> (oblate_spheroid,
                                                         max_lat,
                                                         north_pole));
                 break;
@@ -1645,7 +1646,7 @@ simple_c:
             {
               case BYTE:
                 map_factory_byte.reset (
-                  new MaRC::SimpleCylindrical<unsigned char> (
+                  new MaRC::SimpleCylindrical<FITS::byte_type>(
                         oblate_spheroid,
                         lo_lat,
                         hi_lat,
@@ -1656,7 +1657,7 @@ simple_c:
 
               case SHORT:
                 map_factory_short.reset (
-                  new MaRC::SimpleCylindrical<short> (oblate_spheroid,
+                  new MaRC::SimpleCylindrical<FITS::short_type>(oblate_spheroid,
                                                       lo_lat,
                                                       hi_lat,
                                                       lo_lon,
@@ -1666,7 +1667,7 @@ simple_c:
 
               case LONG:
                 map_factory_long.reset (
-                  new MaRC::SimpleCylindrical<MaRC::Long> (
+                  new MaRC::SimpleCylindrical<FITS::long_type> (
                     oblate_spheroid,
                     lo_lat,
                     hi_lat,
@@ -1677,7 +1678,7 @@ simple_c:
 
               case FLOAT:
                 map_factory_float.reset (
-                  new MaRC::SimpleCylindrical<float> (oblate_spheroid,
+                  new MaRC::SimpleCylindrical<FITS::float_type> (oblate_spheroid,
                                                       lo_lat,
                                                       hi_lat,
                                                       lo_lon,
@@ -1687,7 +1688,7 @@ simple_c:
 
               case DOUBLE:
                 map_factory_double.reset (
-                  new MaRC::SimpleCylindrical<double> (oblate_spheroid,
+                  new MaRC::SimpleCylindrical<FITS::double_type>(oblate_spheroid,
                                                        lo_lat,
                                                        hi_lat,
                                                        lo_lon,
