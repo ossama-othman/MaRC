@@ -38,9 +38,6 @@ src/parse.cc
 src/parse.h*
 src/marc
 test-driver
-tests/Data_Type_Test
-tests/Data_Type_Test.log
-tests/Data_Type_Test.trs
 tests/MaRC_Prog_Test.sh.*
 tests/NaN_Test
 tests/NaN_Test.log

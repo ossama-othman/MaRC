@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <memory>
+#include <type_traits>  // For sanity check below.
 
 #include <unistd.h>
 
@@ -36,6 +37,35 @@ MaRC::MapCommand::MapCommand (std::string const & filename,
     transform_data_ (false),
     create_grid_ (false)
 {
+    // Compile-time FITS data type sanity check.
+    static_assert(
+        /**
+         * @todo Find a better place to put this static assertion.
+         *
+         * @note We could achieve a similar affect in a simpler manner
+         *       through @c std::is_same<> but the below approach
+         *       doesn't make assumptions of the underlying types.
+         */
+        sizeof(FITS::byte_type) == 1
+        && std::is_integral<FITS::byte_type>()
+        && std::is_unsigned<FITS::byte_type>()
+
+        && sizeof(FITS::short_type) == 2
+        && std::is_integral<FITS::short_type>()
+        && std::is_signed<FITS::short_type>()
+
+        && sizeof(FITS::long_type) == 4
+        && std::is_integral<FITS::long_type>()
+        && std::is_signed<FITS::long_type>()
+
+        // Floating point values are always signed.
+        && sizeof(FITS::float_type) == 4
+        && std::is_floating_point<FITS::float_type>()
+
+        && sizeof(FITS::double_type) == 8
+        && std::is_floating_point<FITS::double_type>(),
+
+        "Underlying types do not satisfy FITS data type requirements.");
 }
 
 MaRC::MapCommand::~MapCommand (void)

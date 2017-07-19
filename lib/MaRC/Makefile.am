@@ -47,10 +47,6 @@ pkginclude_HEADERS = \
   \
   NaN.h \
   \
-  IfThenElse.h \
-  \
-  Long.h \
-  \
   Matrix.h \
   Vector.h \
   \
