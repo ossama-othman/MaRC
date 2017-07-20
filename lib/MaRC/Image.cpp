@@ -1,5 +1,3 @@
-// $Id: Image.cpp,v 1.1 2004/07/06 00:01:41 othman Exp $
-
 #include <algorithm>
 
 template <typename T>

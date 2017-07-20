@@ -1,5 +1,3 @@
-// $Id: PhotoImageFactory.cpp,v 1.7 2004/10/14 03:57:44 othman Exp $
-
 #include "PhotoImageFactory.h"
 
 #include "MaRC/PhotoImage.h"

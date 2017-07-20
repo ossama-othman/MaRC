@@ -1,5 +1,3 @@
-// $Id: LatitudeImage.cc,v 1.2 2004/07/03 10:59:42 othman Exp $
-
 #include "LatitudeImage.h"
 #include "BodyData.h"
 #include "Constants.h"

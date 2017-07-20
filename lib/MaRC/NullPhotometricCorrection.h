@@ -4,9 +4,7 @@
 /**
  *  @file NullPhotometricCorrection.h
  *
- *  $Id: NullPhotometricCorrection.h,v 1.3 2004/07/06 00:01:41 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

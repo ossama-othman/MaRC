@@ -5,9 +5,7 @@
 /**
  *  @file NaN.h
  *
- *  $Id: NaN.h,v 1.3 2004/11/04 06:22:58 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

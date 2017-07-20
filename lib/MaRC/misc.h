@@ -1,7 +1,5 @@
 //  -*- C++ -*-
 //
-// $Id: misc.h,v 1.10 2005/11/09 18:58:57 othman Exp $
-//
 // Copyright © 1996-1999  Ossama Othman
 //
 // All Rights Reserved

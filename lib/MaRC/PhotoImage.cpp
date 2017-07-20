@@ -1,5 +1,3 @@
-// $Id: PhotoImage.cc,v 1.14 2005/11/12 07:51:29 othman Exp $
-
 #include "PhotoImage.h"
 #include "Constants.h"
 #include "OblateSpheroid.h"

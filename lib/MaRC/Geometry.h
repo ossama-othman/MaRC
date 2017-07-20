@@ -4,11 +4,9 @@
 /**
  *  @file Geometry.h
  *
- *  $Id: Geometry.h,v 1.3 2004/10/13 09:53:35 othman Exp $
- *
  *  MaRC geometry related functions
  *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

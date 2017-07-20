@@ -4,9 +4,7 @@
 /**
  *  @file Image.h
  *
- *  $Id: Image.h,v 1.2 2004/08/04 00:11:01 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

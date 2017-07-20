@@ -4,11 +4,9 @@
 /**
  *  @file Vector.h
  *
- *  $Id: Vector.h,v 1.2 2004/10/14 03:57:43 othman Exp $
- *
  *  MaRC vector class and operations.
  *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

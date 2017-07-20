@@ -4,9 +4,7 @@
 /**
  *  @file BodyData.h
  *
- *  $Id: BodyData.h,v 1.3 2004/10/13 09:53:35 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

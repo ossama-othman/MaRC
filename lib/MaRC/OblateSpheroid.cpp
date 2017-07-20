@@ -1,5 +1,3 @@
-// $Id: OblateSpheroid.cc,v 1.5 2004/10/13 09:53:35 othman Exp $
-
 #include "OblateSpheroid.h"
 #include "Vector.h"
 

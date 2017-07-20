@@ -4,9 +4,7 @@
 /**
  *  @file GLLGeometricCorrection.h
  *
- *  $Id: GLLGeometricCorrection.h,v 1.5 2004/08/04 00:11:01 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

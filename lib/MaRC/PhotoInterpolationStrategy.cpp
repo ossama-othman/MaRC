@@ -1,5 +1,3 @@
-// $Id: PhotoInterpolationStrategy.cpp,v 1.5 2005/11/09 18:58:57 othman Exp $
-
 #include "PhotoInterpolationStrategy.h"
 
 #include <cmath>

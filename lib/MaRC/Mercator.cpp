@@ -1,5 +1,3 @@
-// $Id: Mercator.cpp,v 1.4 2004/11/03 07:13:10 othman Exp $
-
 #include "MaRC/Mercator.h"
 #include "MaRC/Constants.h"
 #include "MaRC/OblateSpheroid.h"

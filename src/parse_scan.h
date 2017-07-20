@@ -4,11 +4,9 @@
 /**
  *  @file parse_scan.h
  *
- *  $Id: parse_scan.h,v 1.10 2004/11/08 10:26:24 othman Exp $
- *
  *  MaRC Parser and Scanner Declarations
  *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

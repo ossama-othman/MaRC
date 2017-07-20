@@ -1,5 +1,3 @@
-// $Id: Mu0ImageFactory.cpp,v 1.1 2004/07/03 10:59:42 othman Exp $
-
 #include "Mu0ImageFactory.h"
 
 #include "MaRC/Mu0Image.h"

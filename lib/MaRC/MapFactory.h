@@ -4,9 +4,7 @@
 /**
  *  @file MapFactory.h
  *
- *  $Id: MapFactory.h,v 1.8 2004/10/11 09:25:58 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

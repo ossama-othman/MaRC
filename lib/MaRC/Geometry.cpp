@@ -1,9 +1,8 @@
-// $Id: Geometry.cc,v 1.3 2004/10/13 09:53:35 othman Exp $
-
 #include "Geometry.h"
 #include "Matrix.h"
 
 #include <cmath>
+
 
 void
 MaRC::Geometry::RotX (const double & angle,

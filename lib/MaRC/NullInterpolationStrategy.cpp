@@ -1,5 +1,3 @@
-// $Id: NullInterpolationStrategy.cpp,v 1.3 2005/11/09 18:58:57 othman Exp $
-
 #include "NullInterpolationStrategy.h"
 
 

@@ -1,5 +1,3 @@
-// $Id: PolarStereographic.cpp,v 1.4 2004/11/03 07:21:01 othman Exp $
-
 #include "MaRC/PolarStereographic.h"
 #include "MaRC/Constants.h"
 #include "MaRC/OblateSpheroid.h"

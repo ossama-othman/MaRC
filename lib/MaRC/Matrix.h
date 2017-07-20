@@ -4,11 +4,9 @@
 /**
  *  @file Matrix.h
  *
- *  $Id: Matrix.h,v 1.1 2004/10/13 09:53:35 othman Exp $
- *
  *  MaRC matrix class and operations.
  *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

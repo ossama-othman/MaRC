@@ -1,5 +1,3 @@
-// $Id: NaN.cpp,v 1.1 2004/11/04 06:22:58 othman Exp $
-
 #include "NaN.h"
 #include "config.h"
 

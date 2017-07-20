@@ -4,9 +4,7 @@
 /**
  *  @file OblateSpheroid.h
  *
- *  $Id: OblateSpheroid.h,v 1.4 2004/10/14 08:54:29 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

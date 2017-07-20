@@ -1,5 +1,3 @@
-// $Id: SimpleCylindrical.cc,v 1.7 2004/10/14 08:54:29 othman Exp $
-
 #include "MaRC/SimpleCylindrical.h"
 #include "MaRC/Constants.h"
 #include "MaRC/BodyData.h"

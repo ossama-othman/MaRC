@@ -4,9 +4,7 @@
 /**
  *  @file LongitudeImage.h
  *
- *  $Id: LongitudeImage.h,v 1.1 2003/10/27 04:28:46 ossama Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

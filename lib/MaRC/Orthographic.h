@@ -4,9 +4,7 @@
 /**
  *  @file Orthographic.h
  *
- *  $Id: Orthographic.h,v 1.6 2004/07/06 06:04:41 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

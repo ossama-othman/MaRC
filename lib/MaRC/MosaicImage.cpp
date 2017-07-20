@@ -1,5 +1,3 @@
-// $Id: MosaicImage.cc,v 1.4 2004/10/14 03:57:43 othman Exp $
-
 #include "MosaicImage.h"
 
 #include <cmath>

@@ -4,9 +4,7 @@
 /**
  *  @file Mercator.h
  *
- *  $Id: Mercator.h,v 1.2 2004/11/03 05:08:42 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

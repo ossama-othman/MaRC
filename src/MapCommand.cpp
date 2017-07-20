@@ -1,5 +1,3 @@
-// $Id: MapCommand.cpp,v 1.8 2005/02/08 20:34:24 othman Exp $
-
 #include "MapCommand.h"
 #include "FITS_traits.h"
 

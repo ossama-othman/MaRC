@@ -1,5 +1,3 @@
-// $Id: LongitudeImage.cc,v 1.2 2004/08/04 00:11:12 othman Exp $
-
 #include "LongitudeImage.h"
 #include "Constants.h"
 

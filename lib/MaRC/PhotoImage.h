@@ -4,9 +4,7 @@
 /**
  *  @file PhotoImage.h
  *
- *  $Id: PhotoImage.h,v 1.11 2005/11/12 07:51:29 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

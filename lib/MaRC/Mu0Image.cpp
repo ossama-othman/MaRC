@@ -1,5 +1,3 @@
-// $Id: Mu0Image.cc,v 1.3 2004/07/06 00:01:41 othman Exp $
-
 #include "Mu0Image.h"
 #include "OblateSpheroid.h"
 #include "Constants.h"

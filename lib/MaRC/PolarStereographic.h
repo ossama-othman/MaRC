@@ -4,9 +4,7 @@
 /**
  *  @file PolarStereographic.h
  *
- *  $Id: PolarStereographic.h,v 1.2 2004/11/03 07:13:12 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

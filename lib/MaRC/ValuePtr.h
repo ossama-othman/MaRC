@@ -4,12 +4,10 @@
 /**
  *  @file ValuePtr.h
  *
- *  $Id: ValuePtr.h,v 1.3 2004/07/03 23:13:37 othman Exp $
- *
  *  ValuePtr implementation based on code in Herb Sutter's book "More
  *  Exceptional C++".
  *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

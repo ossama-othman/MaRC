@@ -1,5 +1,3 @@
-// $Id: marc.cc,v 1.11 2005/02/08 20:34:25 othman Exp $
-
 #include "parse_scan.h"
 
 #include <MaRC/config.h>

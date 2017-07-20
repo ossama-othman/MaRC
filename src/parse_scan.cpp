@@ -1,14 +1,9 @@
-// $Id: parse_scan.cc,v 1.8 2004/11/08 10:26:24 othman Exp $
-
-
 #include "parse_scan.h"
 
 #include <iostream>
 #include <string>
 #include <limits>
 #include <cstdlib>
-
-
 
 
 MaRC::ParseParameter::ParseParameter (void)

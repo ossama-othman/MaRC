@@ -4,9 +4,9 @@
 /**
  *  @file Version.h
  *
- * MaRC library version information.
+ *  MaRC library version information.
  *
- *  @author Ossama Othman <ossama.othman@gmail.com>
+ *  @author Ossama Othman
  */
 //==========================================================================
 
@@ -26,4 +26,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_VALUE_PTR_H */
+#endif  /* MARC_LIB_VERSION_H */

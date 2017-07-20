@@ -4,9 +4,7 @@
 /**
  *  @file SimpleCylindrical.h
  *
- *  $Id: SimpleCylindrical.h,v 1.9 2004/11/03 05:08:42 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

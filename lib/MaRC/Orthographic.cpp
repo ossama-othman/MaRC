@@ -1,5 +1,3 @@
-// $Id: Orthographic.cc,v 1.8 2004/10/14 08:54:29 othman Exp $
-
 #include "MaRC/Orthographic.h"
 #include "MaRC/OblateSpheroid.h"
 #include "MaRC/Constants.h"

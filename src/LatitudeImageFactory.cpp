@@ -1,5 +1,3 @@
-// $Id: LatitudeImageFactory.cpp,v 1.1 2004/07/03 10:59:42 othman Exp $
-
 #include "LatitudeImageFactory.h"
 
 #include "MaRC/LatitudeImage.h"

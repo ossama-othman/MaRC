@@ -4,8 +4,6 @@
 /**
  *  @file Constants.h
  *
- *  $Id: Constants.h,v 1.3 2004/06/12 04:02:24 othman Exp $
- *
  *  Mathematical and physical constants and conversion factors
  *
  *  Copyright (C) 1993, 1994, 1995
@@ -34,10 +32,10 @@
  *
  *
  * Conversion from C++ structure to namespace by Ossama Othman
- * <ossama@dre.vanderbilt.edu> in November 2003.
+ * in November 2003.
  *
  *  @author Associated Universities, Inc. Washington DC, USA
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

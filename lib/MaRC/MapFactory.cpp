@@ -1,5 +1,3 @@
-// $Id: MapFactory.cc,v 1.6 2004/10/14 03:57:43 othman Exp $
-
 #include "MapFactory.h"
 #include "Map_traits.h"
 #include "SourceImage.h"

@@ -1,6 +1,4 @@
 //  -*- C++ -*-
-//
-// $Id: NullGeometricCorrection.h,v 1.3 2004/07/06 00:01:41 othman Exp $
 
 #ifndef MARC_NULL_GEOMETRIC_CORRECTION_H
 #define MARC_NULL_GEOMETRIC_CORRECTION_H

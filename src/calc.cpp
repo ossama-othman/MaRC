@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright © 1996, 1997, 1998, 2004 Ossama Othman
+// Copyright © 1996, 1997, 1998, 2004, 2017 Ossama Othman
 //
 // All Rights Reserved
 //
@@ -17,8 +17,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// $Id: calc.cc,v 1.5 2004/11/08 10:26:24 othman Exp $
 
 #include "calc.h"
 #include "parse_scan.h"

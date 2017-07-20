@@ -4,9 +4,7 @@
 /**
  *  @file MosaicImage.h
  *
- *  $Id: MosaicImage.h,v 1.5 2004/10/14 03:57:43 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

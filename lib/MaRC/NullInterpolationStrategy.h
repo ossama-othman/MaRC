@@ -4,9 +4,7 @@
 /**
  *  @file NullInterpolationStrategy.h
  *
- *  $Id: NullInterpolationStrategy.h,v 1.3 2005/11/09 18:58:57 othman Exp $
- *
- *  @author Ossama Othman <ossama@dre.vanderbilt.edu>
+ *  @author Ossama Othman
  */
 //==========================================================================
 

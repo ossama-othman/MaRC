@@ -4,8 +4,6 @@
 /**
  *  @file root_find.h
  *
- *  $Id: root_find.h,v 1.2 2005/02/08 20:57:26 othman Exp $
- *
  *  MaRC root finding related functions
  *
  *  @author Ossama Othman
