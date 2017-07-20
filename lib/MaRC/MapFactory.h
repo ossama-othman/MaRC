@@ -143,6 +143,6 @@ namespace MaRC
 
 }
 
-#include "MaRC/MapFactory.cc"
+#include "MaRC/MapFactory.cpp"
 
 #endif

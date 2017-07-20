@@ -1,5 +1,3 @@
-##  $Id: Makefile.am,v 1.26 2005/11/12 07:51:29 othman Exp $
-
 ##
 ##  Process this file with automake to create Makefile.in
 ##
@@ -12,33 +10,33 @@ lib_LTLIBRARIES = libMaRC.la
 libMaRC_la_SOURCES = \
   NaN.cpp \
   \
-  Geometry.cc \
+  Geometry.cpp \
   \
-  BodyData.cc \
-  OblateSpheroid.cc \
+  BodyData.cpp \
+  OblateSpheroid.cpp \
   \
-  GeometricCorrection.cc \
-  GLLGeometricCorrection.cc \
-  NullGeometricCorrection.cc \
+  GeometricCorrection.cpp \
+  GLLGeometricCorrection.cpp \
+  NullGeometricCorrection.cpp \
   \
-  PhotometricCorrection.cc \
-  NullPhotometricCorrection.cc \
+  PhotometricCorrection.cpp \
+  NullPhotometricCorrection.cpp \
   \
   InterpolationStrategy.cpp \
   PhotoInterpolationStrategy.cpp \
   NullInterpolationStrategy.cpp \
   \
-  SourceImage.cc \
-  VirtualImage.cc \
-  MuImage.cc \
-  Mu0Image.cc \
-  CosPhaseImage.cc \
-  LatitudeImage.cc \
-  LongitudeImage.cc \
-  PhotoImage.cc \
-  MosaicImage.cc \
+  SourceImage.cpp \
+  VirtualImage.cpp \
+  MuImage.cpp \
+  Mu0Image.cpp \
+  CosPhaseImage.cpp \
+  LatitudeImage.cpp \
+  LongitudeImage.cpp \
+  PhotoImage.cpp \
+  MosaicImage.cpp \
   \
-  Grid.cc \
+  Grid.cpp \
   \
   Version.cpp
 
@@ -83,15 +81,15 @@ pkginclude_HEADERS = \
   \
   Map_traits.h \
   MapFactory.h \
-  MapFactory.cc \
+  MapFactory.cpp \
   Mercator.h \
   Mercator.cpp \
   Orthographic.h \
-  Orthographic.cc \
+  Orthographic.cpp \
   PolarStereographic.h \
   PolarStereographic.cpp \
   SimpleCylindrical.h \
-  SimpleCylindrical.cc \
+  SimpleCylindrical.cpp \
   \
   Constants.h \
   ValuePtr.h \

@@ -32,7 +32,6 @@ doc/*.pdf
 doc/mdate-sh
 doc/texinfo.tex
 doc/version.texi
-lib/MaRC/map_version.cc
 src/lexer.cc
 src/parse.cc
 src/parse.h*
@@ -45,3 +44,4 @@ tests/NaN_Test.trs
 tests/test-suite.log
 tests/test_map.fits
 ylwrap
+marc-*/

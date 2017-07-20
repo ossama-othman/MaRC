@@ -1,5 +1,3 @@
-##  $Id: Makefile.am,v 1.10 2004/11/08 10:26:24 othman Exp $
-##
 ##  Copyright © 1996, 1997, 1998, 2017  Ossama Othman
 ##
 ##  All Rights Reserved
@@ -26,7 +24,7 @@
 
 #LEXLIB  = @LEXLIB@
 
-DISTCLEANFILES = stamp-v version.cpp ##lexer.cc parse.{cc,h}
+#DISTCLEANFILES = stamp-v version.cpp ##lexer.cpp parse.{cc,h}
 
 AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
@@ -44,9 +42,9 @@ marc_SOURCES = \
   PhotoImageFactory.cpp \
   MosaicImageFactory.cpp \
   MapCommand.cpp \
-  marc.cc \
-  parse_scan.cc \
-  calc.cc \
+  marc.cpp \
+  parse_scan.cpp \
+  calc.cpp \
   parse.yy \
   lexer.ll
 

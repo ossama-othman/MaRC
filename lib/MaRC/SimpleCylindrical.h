@@ -119,6 +119,6 @@ namespace MaRC
 
 }
 
-#include "MaRC/SimpleCylindrical.cc"
+#include "MaRC/SimpleCylindrical.cpp"
 
 #endif

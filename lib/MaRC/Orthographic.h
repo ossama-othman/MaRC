@@ -151,6 +151,6 @@ namespace MaRC
 
 }
 
-#include "MaRC/Orthographic.cc"
+#include "MaRC/Orthographic.cpp"
 
 #endif  /* MARC_ORTHOGRAPHIC_H */
