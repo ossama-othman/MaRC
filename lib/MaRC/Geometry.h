@@ -13,14 +13,17 @@
 #ifndef MARC_GEOMETRY_H
 #define MARC_GEOMETRY_H
 
+#include <cstddef>
+
+#include <MaRC/Matrix.h>
+
 
 namespace MaRC
 {
-  template <unsigned int M, typename T> class Vector;
-  template <unsigned int M, unsigned int N, typename T> class Matrix;
-  typedef Vector<3, double> DVector;
-  typedef Vector<3, float>  FVector;
-  typedef Matrix<3, 3, double> DMatrix;
+  template <typename T, std::size_t M, std::size_t N> class Matrix;
+  typedef Vector<double, 3> DVector;
+  typedef Vector<float, 3>  FVector;
+  typedef Matrix<double, 3, 3> DMatrix;
 
   namespace Geometry
   {

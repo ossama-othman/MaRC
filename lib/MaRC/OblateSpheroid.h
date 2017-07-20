@@ -12,12 +12,11 @@
 #define MARC_OBLATE_SPHEROID_H
 
 #include <MaRC/BodyData.h>
-
+#include <MaRC/Vector.h>
 
 namespace MaRC
 {
-  template <unsigned int M, typename T> class Vector;
-  typedef Vector<3, double> DVector;
+  typedef Vector<double, 3> DVector;
 
   /**
    * @class OblateSpheroid

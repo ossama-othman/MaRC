@@ -144,7 +144,7 @@ MaRC::Orthographic<T>::make_map (const SourceImage & source,
 
   const unsigned int nelem = samples * lines;
 
-  DVector ImgCoord (3), Rotated (3);
+  DVector ImgCoord, Rotated;
 
   const DMatrix rotY (MaRC::Geometry::RotYMatrix (-this->PA_));
   const DMatrix rotX (MaRC::Geometry::RotXMatrix (this->sub_observ_lat_));
@@ -257,7 +257,7 @@ MaRC::Orthographic<T>::make_grid (unsigned int samples,
 
   int i, k, imax = 2000;
   double low_bound, high_bound, x, z;
-  DVector Coord(3), T_Coord(3);
+  DVector Coord, T_Coord;
   float m, mm, mm2, n, nn;
 
   // Tranformation matrix to rotate about x than new y

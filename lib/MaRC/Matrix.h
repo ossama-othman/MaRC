@@ -17,6 +17,7 @@
 
 #include "MaRC/Vector.h"
 
+
 namespace MaRC
 {
 
@@ -37,7 +38,7 @@ namespace MaRC
    * @todo Look into using super-optimized third party matrix
    *       implementations.
    */
-  template <unsigned int M, unsigned int N, typename T = double>
+  template <typename T, std::size_t M, std::size_t N>
   class Matrix
   {
   public:
@@ -46,51 +47,51 @@ namespace MaRC
     typedef T               element_type;
     typedef T &             reference;
     typedef T const &       const_reference;
-    typedef Matrix<M, N, T> matrix_type;
-    typedef Matrix<N, M, T> transpose_type;
+    typedef Matrix<T, M, N> matrix_type;
+    typedef Matrix<T, N, M> transpose_type;
 
     /// Constructor.
     Matrix (T const & value = T ())
     {
-      for (unsigned int row = 0; row < M; ++row)
-        for (unsigned int col = 0; col < N; ++col)
+      for (std::size_t row = 0; row < M; ++row)
+        for (std::size_t col = 0; col < N; ++col)
           this->matrix_[row][col] = value;
     }
 
     /// Copy constructor.
-    Matrix (Matrix<M, N, T> const & rhs)
+    Matrix (Matrix<T, M, N> const & rhs)
     {
-      for (unsigned int row = 0; row < M; ++row)
-        for (unsigned int col = 0; col < N; ++col)
+      for (std::size_t row = 0; row < M; ++row)
+        for (std::size_t col = 0; col < N; ++col)
           this->matrix_[row][col] = rhs (row, col);
     }
 
     /// Assignment from another matrix operator.
-    Matrix<M, N, T> & operator= (Matrix<M, N, T> const & rhs)
+    Matrix<T, M, N> & operator=(Matrix<T, M, N> const & rhs)
     {
-      for (unsigned int row = 0; row < M; ++row)
-        for (unsigned int col = 0; col < N; ++col)
+      for (std::size_t row = 0; row < M; ++row)
+        for (std::size_t col = 0; col < N; ++col)
           this->matrix_[row][col] = rhs (row, col);
 
       return *this;
     }
 
     /// Assignment from a scalar operator.
-    Matrix<M, N, T> & operator= (T const & value)
+    Matrix<T, M, N> & operator=(T const & value)
     {
-      for (unsigned int row = 0; row < M; ++row)
-        for (unsigned int col = 0; col < N; ++col)
+      for (std::size_t row = 0; row < M; ++row)
+        for (std::size_t col = 0; col < N; ++col)
           this->matrix_[row][col] = value;
 
       return *this;
     }
 
-    inline unsigned int rows (void) const
+    inline std::size_t rows (void) const
     {
       return M;
     }
 
-    inline unsigned int columns (void) const
+    inline std::size_t columns (void) const
     {
       return N;
     }
@@ -100,7 +101,7 @@ namespace MaRC
      * @param row Zero-based matrix row.
      * @param col Zero-based matrix column.
      */
-    inline reference operator() (unsigned int row, unsigned int col)
+    inline reference operator()(std::size_t row, std::size_t col)
     {
       if (row >= M || col >= N)
         throw std::out_of_range ("Out of range matrix index or indices");
@@ -113,8 +114,8 @@ namespace MaRC
      * @param row Zero-based matrix row.
      * @param col Zero-based matrix column.
      */
-    inline const_reference operator() (unsigned int row,
-                                       unsigned int col) const
+    inline const_reference operator()(std::size_t row,
+				      std::size_t col) const
     {
       if (row >= M || col >= N)
         throw std::out_of_range ("Out of range matrix index or indices");
@@ -132,46 +133,46 @@ namespace MaRC
   // ---------------------------------------------------------
 
   /// Matrix addition operator.
-  template <unsigned int M, unsigned int N, typename T>
-  Matrix<M, N, T> operator+ (Matrix<M, N, T> const & lhs,
-                             Matrix<M, N, T> const & rhs)
+  template <typename T, std::size_t M, std::size_t N>
+  Matrix<T, M, N> operator+(Matrix<T, M, N> const & lhs,
+                            Matrix<T, M, N> const & rhs)
   {
-    Matrix<M, N, T> matrix;
+    Matrix<T, M, N> matrix;
 
-    for (unsigned int row = 0; row < M; ++row)
-      for (unsigned int col = 0; col < N; ++col)
+    for (std::size_t row = 0; row < M; ++row)
+      for (std::size_t col = 0; col < N; ++col)
         matrix (row, col) = lhs (row, col) + rhs (row, col);
 
     return matrix;
   }
 
   /// Matrix subtraction operator
-  template <unsigned int M, unsigned int N, typename T>
-  Matrix<M, N, T> operator- (Matrix<M, N, T> const & lhs,
-                             Matrix<M, N, T> const & rhs)
+  template <typename T, std::size_t M, std::size_t N>
+  Matrix<T, M, N> operator-(Matrix<T, M, N> const & lhs,
+			    Matrix<T, M, N> const & rhs)
   {
-    Matrix<M, N, T> matrix;
+    Matrix<T, M, N> matrix;
 
-    for (unsigned int row = 0; row < M; ++row)
-      for (unsigned int col = 0; col < N; ++col)
+    for (std::size_t row = 0; row < M; ++row)
+      for (std::size_t col = 0; col < N; ++col)
         matrix (row, col) = lhs (row, col) - rhs (row, col);
 
     return matrix;
   }
 
   /// Matrix/matrix multiplication operator.
-  template <unsigned int M, unsigned int N, unsigned int R, typename T>
-  Matrix<M, R, T> operator* (Matrix<M, N, T> const & lhs,
-                             Matrix<N, R, T> const & rhs)
+  template <typename T, std::size_t M, std::size_t N, std::size_t R>
+  Matrix<T, M, R> operator*(Matrix<T, M, N> const & lhs,
+                            Matrix<T, N, R> const & rhs)
   {
-    Matrix<M, R, T> matrix;
+    Matrix<T, M, R> matrix;
 
-    for (unsigned int m = 0; m < M; ++m)
-      for (unsigned int r = 0; r < R; ++r)
+    for (std::size_t m = 0; m < M; ++m)
+      for (std::size_t r = 0; r < R; ++r)
         {
-          T & element = matrix (m, r); // Already default initialized.
+          T & element = matrix(m, r); // Already default initialized.
 
-          for (unsigned int n = 0; n < N; ++n)
+          for (std::size_t n = 0; n < N; ++n)
             element += lhs (m, n) * rhs (n, r);
         }
 
@@ -179,27 +180,27 @@ namespace MaRC
   }
 
   /// Matrix transpose.
-  template <unsigned int M, unsigned int N, typename T>
-  Matrix<N, M, T> transpose (Matrix<M, N, T> const & m)
+  template <typename T, std::size_t M, std::size_t N>
+  Matrix<T, N, M> transpose(Matrix<T, M, N> const & m)
   {
-    Matrix<N, M, T> t;
+    Matrix<T, N, M> t;
 
-    for (unsigned int row = 0; row < M; ++row)
-      for (unsigned int col = 0; col < N; ++col)
-        t (col, row) = m (row, col);
+    for (std::size_t row = 0; row < M; ++row)
+      for (std::size_t col = 0; col < N; ++col)
+        t(col, row) = m(row, col);
 
     return t;
   }
 
   /// Matrix/vector multiplication operator.
-  template <unsigned int M, unsigned int N, typename T>
-  Vector<M, T> operator* (Matrix<M, N, T> const & A, Vector<N, T> const & x)
+  template <typename T, std::size_t M, std::size_t N>
+  Vector<T, M> operator*(Matrix<T, M, N> const & A, Vector<T, N> const & x)
   {
-    Vector<M, T> v;
+    Vector<T, M> v;
 
-    for (unsigned int m = 0; m < M; ++m)
-      for (unsigned int n = 0; n < N; ++n)
-        v[m] += A (m, n) * x[n];
+    for (std::size_t m = 0; m < M; ++m)
+      for (std::size_t n = 0; n < N; ++n)
+        v[m] += A(m, n) * x[n];
 
     return v;
   }
@@ -207,20 +208,18 @@ namespace MaRC
   // ---------------------------------------------------------
 
   /// Stream insertion operator
-  template <unsigned int M, unsigned int N, typename T>
-  std::ostream & operator<< (std::ostream & s, Matrix<M, N, T> const & m)
+  template <typename T, std::size_t M, std::size_t N>
+  std::ostream & operator<<(std::ostream & s, Matrix<T, M, N> const & m)
   {
     s << "(" << M << " x " << N << ")" << std::endl;
 
-    for (unsigned int row = 0; row < M; ++row)
-      {
-        for (unsigned int col = 0; col < N; ++col)
-          {
-            s << " " << m (row, col);
-          }
-
-        s << std::endl;
+    for (std::size_t row = 0; row < M; ++row) {
+      for (std::size_t col = 0; col < N; ++col) {
+	s << " " << m(row, col);
       }
+
+      s << std::endl;
+    }
 
     return s;
   }
