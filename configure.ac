@@ -29,7 +29,7 @@ AC_INIT([MaRC], [0.9.8], [othman@users.sourceforge.net], [marc])
 
 dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
-AX_CHECK_ENABLE_DEBUG()
+AX_CHECK_ENABLE_DEBUG([yes])
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
@@ -224,37 +224,10 @@ AS_IF([test "x$ac_cv_STL_quiet_NaN_supported" = "xno" &&
        test "x$ac_cv_C_lib_quiet_NaN" = "xnone"],
       [AC_MSG_ERROR([Unable to determine if NaN constant is supported.])])
 
-dnl dnl System specific configuration
-dnl case "$target" in
-dnl i386-*)
-dnl         if test -n "$GXX"; then
-dnl                 XCXXFLAGS="$XCXXFLAGS -mtune=i386"
-dnl         fi
-dnl         ;;
-dnl i486-*)
-dnl 	if test -n "$GXX"; then
-dnl 		XCXXFLAGS="$XCXXFLAGS -mtune=i486"
-dnl 	fi
-dnl 	;;
-dnl i586-*)
-dnl 	if test -n "$GXX"; then
-dnl 		XCXXFLAGS="$XCXXFLAGS -mtune=i586"
-dnl 	fi
-dnl 	;;
-dnl i686-*)
-dnl 	if test -n "$GXX"; then
-dnl 		XCXXFLAGS="$XCXXFLAGS -mtune=i686"
-dnl 	fi
-dnl 	;;
-dnl *osf*)
-dnl 	if test -z "$GXX"; then
-dnl 		XCXXFLAGS="$XCXXFLAGS -define_templates"
-dnl 	fi
-dnl 	;;
-dnl *)
-dnl 	dnl nothing
-dnl 	;;
-dnl esac
+dnl System specific configuration
+AS_IF([test "x$ax_enable_debug" != "xyes"],
+      [AS_IF([test "x$GXX" = "xyes"], [XCXXFLAGS="$XCXXFLAGS -O2"])
+       AX_GCC_ARCHFLAG([yes], [XCXXFLAGS="$XCXXFLAGS $ax_cv_gcc_archflag"])])
 
 AX_CFLAGS_WARN_ALL([CXXFLAGS])
 AS_IF([test "x$GXX" = "xyes"],
