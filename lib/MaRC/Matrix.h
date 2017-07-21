@@ -17,6 +17,9 @@
 
 #include "MaRC/Vector.h"
 
+#include <type_traits>
+#include <algorithm>
+
 
 namespace MaRC
 {
@@ -51,27 +54,36 @@ namespace MaRC
     typedef Matrix<T, N, M> transpose_type;
 
     /// Constructor.
-    Matrix (T const & value = T ())
+    Matrix(T const & value = T())
+      : matrix_{value}
     {
-      for (std::size_t row = 0; row < M; ++row)
-        for (std::size_t col = 0; col < N; ++col)
-          this->matrix_[row][col] = value;
+      static_assert(std::is_arithmetic<T>(),
+                    "Matrix type should be an integer "
+                    "or floating point type.");
     }
 
     /// Copy constructor.
-    Matrix (Matrix<T, M, N> const & rhs)
+    Matrix(Matrix<T, M, N> const & rhs)
     {
-      for (std::size_t row = 0; row < M; ++row)
-        for (std::size_t col = 0; col < N; ++col)
-          this->matrix_[row][col] = rhs (row, col);
+      // Efficiently copy the matrix by treating it as a
+      // one-dimensional array.
+
+      std::copy(rhs.decayed_begin(),
+                rhs.decayed_end(),
+                this->decayed_begin());
     }
 
     /// Assignment from another matrix operator.
     Matrix<T, M, N> & operator=(Matrix<T, M, N> const & rhs)
     {
-      for (std::size_t row = 0; row < M; ++row)
-        for (std::size_t col = 0; col < N; ++col)
-          this->matrix_[row][col] = rhs (row, col);
+      // Efficiently copy the matrix by treating it as a
+      // one-dimensional array.
+      //
+      // Non-throwing for arithmetic types.
+
+      std::copy(rhs.decayed_begin(),
+                rhs.decayed_end(),
+                this->decayed_begin());
 
       return *this;
     }
@@ -79,19 +91,21 @@ namespace MaRC
     /// Assignment from a scalar operator.
     Matrix<T, M, N> & operator=(T const & value)
     {
-      for (std::size_t row = 0; row < M; ++row)
-        for (std::size_t col = 0; col < N; ++col)
-          this->matrix_[row][col] = value;
+      // Efficiently fill the matrix by treating it as a
+      // one-dimensional array.
+      //
+      // Non-throwing for arithmetic types.
+      std::fill(this->decayed_begin(), this->decayed_end(), value);
 
       return *this;
     }
 
-    inline std::size_t rows (void) const
+    constexpr inline std::size_t rows(void) const
     {
       return M;
     }
 
-    inline std::size_t columns (void) const
+    constexpr inline std::size_t columns(void) const
     {
       return N;
     }
@@ -104,7 +118,7 @@ namespace MaRC
     inline reference operator()(std::size_t row, std::size_t col)
     {
       if (row >= M || col >= N)
-        throw std::out_of_range ("Out of range matrix index or indices");
+        throw std::out_of_range("Out of range matrix index or indices");
 
       return this->matrix_[row][col];
     }
@@ -115,12 +129,88 @@ namespace MaRC
      * @param col Zero-based matrix column.
      */
     inline const_reference operator()(std::size_t row,
-				      std::size_t col) const
+                                      std::size_t col) const
     {
       if (row >= M || col >= N)
-        throw std::out_of_range ("Out of range matrix index or indices");
+        throw std::out_of_range("Out of range matrix index or indices");
 
       return this->matrix_[row][col];
+    }
+
+    Matrix<T, M, N> & operator+=(Matrix<T, M, N> const & rhs)
+    {
+      constexpr T * dest = this->decayed_begin();
+      constexpr T const * const src_end = rhs.decayed_end();
+
+      for (T const * src = rhs.decayed_begin();
+           src != src_end;
+           ++src, ++dest)
+        *dest += *src;
+
+      return *this;
+    }
+
+    Matrix<T, M, N> & operator-=(Matrix<T, M, N> const & rhs)
+    {
+      constexpr T * dest = this->decayed_begin();
+      constexpr T const * const src_end = rhs.decayed_end();
+
+      for (T const * src = rhs.decayed_begin();
+           src != src_end;
+           ++src, ++dest)
+        *dest -= *src;
+
+      return *this;
+    }
+
+  private:
+
+    /**
+     * Get the decayed begin iterator of the matrix.
+     *
+     * Return an iterator to the beginning of the flattened form of
+     * this matrix.  This method exists solely to facilitate efficient
+     * copying of the matrix.
+     */
+    constexpr inline T * decayed_begin()
+    {
+      return &this->matrix_[0][0];
+    }
+
+    /**
+     * Get the decayed begin const iterator of the matrix.
+     *
+     * Return an iterator to the beginning of the flattened form of
+     * this matrix.  This method exists solely to facilitate efficient
+     * copying of the matrix.
+     */
+    constexpr inline T const* decayed_begin() const
+    {
+      return &this->matrix_[0][0];
+    }
+
+    /**
+     * Get the decayed end iterator of the matrix.
+     *
+     * Return an iterator to the end of the flattened form of this
+     * matrix.  This method exists solely to facilitate efficient
+     * copying of the matrix.
+     */
+    constexpr inline T * decayed_end()
+    {
+      return this->decayed_begin() + M * N;
+    }
+
+    /**
+     * Get the decayed end const iterator of the matrix.
+     *
+     * Return an iterator to the end of the flattened form of this
+     * matrix.  This method exists solely to facilitate efficient
+     * copying of the matrix.
+     */
+    constexpr inline T const * decayed_end() const
+    {
+      return this->decayed_begin() + M * N;
     }
 
   private:
@@ -131,53 +221,6 @@ namespace MaRC
   };
 
   // ---------------------------------------------------------
-
-  /// Matrix addition operator.
-  template <typename T, std::size_t M, std::size_t N>
-  Matrix<T, M, N> operator+(Matrix<T, M, N> const & lhs,
-                            Matrix<T, M, N> const & rhs)
-  {
-    Matrix<T, M, N> matrix;
-
-    for (std::size_t row = 0; row < M; ++row)
-      for (std::size_t col = 0; col < N; ++col)
-        matrix (row, col) = lhs (row, col) + rhs (row, col);
-
-    return matrix;
-  }
-
-  /// Matrix subtraction operator
-  template <typename T, std::size_t M, std::size_t N>
-  Matrix<T, M, N> operator-(Matrix<T, M, N> const & lhs,
-			    Matrix<T, M, N> const & rhs)
-  {
-    Matrix<T, M, N> matrix;
-
-    for (std::size_t row = 0; row < M; ++row)
-      for (std::size_t col = 0; col < N; ++col)
-        matrix (row, col) = lhs (row, col) - rhs (row, col);
-
-    return matrix;
-  }
-
-  /// Matrix/matrix multiplication operator.
-  template <typename T, std::size_t M, std::size_t N, std::size_t R>
-  Matrix<T, M, R> operator*(Matrix<T, M, N> const & lhs,
-                            Matrix<T, N, R> const & rhs)
-  {
-    Matrix<T, M, R> matrix;
-
-    for (std::size_t m = 0; m < M; ++m)
-      for (std::size_t r = 0; r < R; ++r)
-        {
-          T & element = matrix(m, r); // Already default initialized.
-
-          for (std::size_t n = 0; n < N; ++n)
-            element += lhs (m, n) * rhs (n, r);
-        }
-
-    return matrix;
-  }
 
   /// Matrix transpose.
   template <typename T, std::size_t M, std::size_t N>
@@ -192,38 +235,82 @@ namespace MaRC
     return t;
   }
 
-  /// Matrix/vector multiplication operator.
-  template <typename T, std::size_t M, std::size_t N>
-  Vector<T, M> operator*(Matrix<T, M, N> const & A, Vector<T, N> const & x)
-  {
-    Vector<T, M> v;
+}
 
-    for (std::size_t m = 0; m < M; ++m)
+// ---------------------------------------------------------
+
+/// Matrix addition operator.
+template <typename T, std::size_t M, std::size_t N>
+MaRC::Matrix<T, M, N> operator+(MaRC::Matrix<T, M, N> const & lhs,
+                                MaRC::Matrix<T, M, N> const & rhs)
+{
+  MaRC::Matrix<T, M, N> matrix(lhs);
+  matrix += rhs;
+
+  return matrix;
+}
+
+/// Matrix subtraction operator
+template <typename T, std::size_t M, std::size_t N>
+MaRC::Matrix<T, M, N> operator-(MaRC::Matrix<T, M, N> const & lhs,
+                                MaRC::Matrix<T, M, N> const & rhs)
+{
+  MaRC::Matrix<T, M, N> matrix(lhs);
+  matrix -= rhs;
+
+  return matrix;
+}
+
+/// Matrix/matrix multiplication operator.
+template <typename T, std::size_t M, std::size_t N, std::size_t R>
+MaRC::Matrix<T, M, R> operator*(MaRC::Matrix<T, M, N> const & lhs,
+                                MaRC::Matrix<T, N, R> const & rhs)
+{
+  MaRC::Matrix<T, M, R> matrix;
+
+  for (std::size_t m = 0; m < M; ++m)
+    for (std::size_t r = 0; r < R; ++r) {
+      T & element = matrix(m, r); // Already default initialized.
+
       for (std::size_t n = 0; n < N; ++n)
-        v[m] += A(m, n) * x[n];
-
-    return v;
-  }
-
-  // ---------------------------------------------------------
-
-  /// Stream insertion operator
-  template <typename T, std::size_t M, std::size_t N>
-  std::ostream & operator<<(std::ostream & s, Matrix<T, M, N> const & m)
-  {
-    s << "(" << M << " x " << N << ")" << std::endl;
-
-    for (std::size_t row = 0; row < M; ++row) {
-      for (std::size_t col = 0; col < N; ++col) {
-	s << " " << m(row, col);
-      }
-
-      s << std::endl;
+        element += lhs(m, n) * rhs(n, r);
     }
 
-    return s;
+  return matrix;
+}
+
+/// Matrix/vector multiplication operator.
+template <typename T, std::size_t M, std::size_t N>
+MaRC::Vector<T, M> operator*(MaRC::Matrix<T, M, N> const & A,
+                             MaRC::Vector<T, N> const & x)
+{
+  MaRC::Vector<T, M> v;
+
+  for (std::size_t m = 0; m < M; ++m)
+    for (std::size_t n = 0; n < N; ++n)
+      v[m] += A(m, n) * x[n];
+
+  return v;
+}
+
+// ---------------------------------------------------------
+
+/// Stream insertion operator
+template <typename T, std::size_t M, std::size_t N>
+std::ostream & operator<<(std::ostream & s,
+                          MaRC::Matrix<T, M, N> const & m)
+{
+  s << "(" << M << " x " << N << ")\n";
+
+  for (std::size_t row = 0; row < M; ++row) {
+    for (std::size_t col = 0; col < N; ++col) {
+      s << " " << m(row, col);
+    }
+
+    s << '\n';
   }
 
+  return s;
 }
 
 
