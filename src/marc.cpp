@@ -11,8 +11,6 @@
 #include <unistd.h>
 
 
-
-
 extern void yyrestart (FILE * input_file);
 
 int
@@ -28,7 +26,7 @@ main (int argc, char *argv[])
     << "        MaRC Binary  Version " PACKAGE_VERSION  << std::endl
     << "        MaRC Library Version " << MaRC::library_version()
     << std::endl << std::endl
-    << "Copyright (C) 1996, 1997, 1998, 2003, 2004, 2017  Ossama Othman"
+    << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman"
     << std::endl
     << "All Rights Reserved" << std::endl << std::endl
     << "MaRC comes with ABSOLUTELY NO WARRANTY." << std::endl
