@@ -51,7 +51,7 @@ namespace
 // ---------------------------------------------------------------
 
 MaRC::sym_entry::sym_entry (void)
-  // : type (sym_type)
+   : type()
 {
   value.var = 0; /* set value to 0 even if fctn.  */
 }
