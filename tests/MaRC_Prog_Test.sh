@@ -1,7 +1,5 @@
 #! /bin/sh
 
-# $Id: MaRC_Prog_Test.sh,v 1.2 2004/11/08 19:05:08 othman Exp $
-
 set -e
 
 # Set $top_builddir default if it was not set in the environment.

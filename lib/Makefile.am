@@ -16,8 +16,6 @@
 ##  License along with this library; if not, write to the Free
 ##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-##  $Id: Makefile.am,v 1.5 2004/10/13 09:53:35 othman Exp $
-
 ##
 ##  Process this file with automake to create Makefile.in
 ##

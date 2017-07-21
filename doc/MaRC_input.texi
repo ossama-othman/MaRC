@@ -1,7 +1,5 @@
 \input texinfo  @c -*-texinfo-*-
 
-@c $Id: MaRC_input.texi,v 1.7 2004/10/14 03:57:58 othman Exp $
-
 @include version.texi
 
 @c %**start of header
