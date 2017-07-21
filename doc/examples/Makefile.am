@@ -1,21 +1,18 @@
-##  Copyright © 1996, 1997  Ossama Othman
+## Copyright (C) 1996-1997, 2017 Ossama Othman
 ##
-##  All Rights Reserved
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
 ##
-##               WARNING
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
 ##
-##  THIS SOFTWARE AND MANUAL ARE BOTH
-##  PROTECTED BY U.S. COPYRIGHT LAW
-##  (TITLE  17 UNITED STATES CODE).
-##  UNAUTHORIZED REPRODUCTION AND/OR
-##  SALE MAY RESULT IN IMPRISONMENT OF
-##  UP TO ONE YEAR AND FINES OF UP TO
-##  $100,000 (17 USC 506). COPYRIGHT
-##  INFRINGERS MAY ALSO BE SUBJECT TO
-##  CIVIL LIABILITY.
-
-##  $Id: Makefile.am,v 1.3 2004/11/08 21:45:44 othman Exp $
-
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 ##
 ##  Process this file with automake to produce Makefile.in
