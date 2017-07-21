@@ -30,49 +30,48 @@ namespace MaRC
    */
   template <typename T, std::size_t M>
   using Vector = std::array<T, M>;
+}
 
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
 
-  /// Vector addition operator.
-  template <typename T, std::size_t M>
-  Vector<T, M> operator+(Vector<T, M> const & lhs,
-			 Vector<T, M> const & rhs)
-  {
-    Vector<T, M> vector;
+/// Vector addition operator.
+template <typename T, std::size_t M>
+MaRC::Vector<T, M> const operator+(MaRC::Vector<T, M> const & lhs,
+                                   MaRC::Vector<T, M> const & rhs)
+{
+  MaRC::Vector<T, M> vector(lhs);
 
-    for (std::size_t row = 0; row < M; ++row)
-      vector[row] = lhs[row] + rhs[row];
+  for (std::size_t row = 0; row < M; ++row)
+    vector[row] += rhs[row];
 
-    return vector;
-  }
+  return vector;
+}
 
-  /// Vector subtraction operator
-  template <typename T, std::size_t M>
-  Vector<T, M> operator- (Vector<T, M> const & lhs,
-                          Vector<T, M> const & rhs)
-  {
-    Vector<T, M> vector;
+/// Vector subtraction operator
+template <typename T, std::size_t M>
+MaRC::Vector<T, M> const operator-(MaRC::Vector<T, M> const & lhs,
+                                   MaRC::Vector<T, M> const & rhs)
+{
+  MaRC::Vector<T, M> vector(lhs);
 
-    for (std::size_t row = 0; row < M; ++row)
-      vector[row] = lhs[row] - rhs[row];
+  for (std::size_t row = 0; row < M; ++row)
+    vector[row] -= rhs[row];
 
-    return vector;
-  }
+  return vector;
+}
 
-  // ---------------------------------------------------------
+// ---------------------------------------------------------
 
-  /// Stream insertion operator
-  template <typename T, std::size_t M>
-  std::ostream & operator<< (std::ostream & s, Vector<T, M> const & v)
-  {
-    s << "(" << M << ")\n";
+/// Stream insertion operator
+template <typename T, std::size_t M>
+std::ostream & operator<< (std::ostream & s, MaRC::Vector<T, M> const & v)
+{
+  s << "(" << M << ")\n";
 
-    for (std::size_t row = 0; row < M; ++row)
-      s << " " << v[row] << '\n';
+  for (std::size_t row = 0; row < M; ++row)
+    s << " " << v[row] << '\n';
 
-    return s;
-  }
-
+  return s;
 }
 
 
