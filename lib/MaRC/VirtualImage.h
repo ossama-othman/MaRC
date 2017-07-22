@@ -36,7 +36,7 @@ namespace MaRC
      * @param o Linear offset value applied to all (scaled) computed
      *          data.
      */
-    VirtualImage (double s = 1, double o = 0);
+    VirtualImage(double s = 1, double o = 0);
 
     /// Retrieve data from virtual image.
     /**
@@ -53,9 +53,7 @@ namespace MaRC
      *
      * @see read_data_i()
      */
-    virtual bool read_data (double lat,
-                            double lon,
-                            double & data) const;
+    virtual bool read_data(double lat, double lon, double & data) const;
 
   private:
 
@@ -72,9 +70,9 @@ namespace MaRC
      *
      * @see read_data().
      */
-    virtual bool read_data_i (double lat,
-                              double lon,
-                              double & data) const = 0;
+    virtual bool read_data_i(double lat,
+			     double lon,
+			     double & data) const = 0;
 
     /// Is point at given latitude and longitude visible to the
     /// observer?
@@ -109,7 +107,7 @@ namespace MaRC
      *
      * @return Data scale
      */
-    virtual double scale (void) const;
+    double scale(void) const { return this->scale_; }
 
     /// Data offset
     /**
@@ -117,19 +115,20 @@ namespace MaRC
      *
      * @return Data offset
      */
-    virtual double offset (void) const;
+    double offset(void) const { return this->offset_; }
     //@}
 
   private:
 
     /// Linear scaling coefficient applied to computed data.
-    double scale_;
+    double const scale_;
 
     /// Linear offset value applied to all (scaled) computed data.
-    double offset_;
+    double const offset_;
 
   };
 
 } // End MaRC namespace
+
 
 #endif  /* MARC_VIRTUAL_IMAGE_H */
