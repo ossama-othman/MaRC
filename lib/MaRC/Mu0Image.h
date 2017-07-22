@@ -52,8 +52,8 @@ namespace MaRC
     /**
      * @see MaRC::VirtualImage::read_data_i().
      */
-    virtual bool read_data_i (const double & Latitude,
-                              const double & Longitude,
+    virtual bool read_data_i (double Latitude,
+                              double Longitude,
                               double & Data) const;
 
 
@@ -62,8 +62,7 @@ namespace MaRC
     /**
      * @see MaRC::VirtualImage::is_visible().
      */
-    virtual bool is_visible (const double & lat,
-                             const double & lon) const;
+    virtual bool is_visible (double lat, double lon) const;
 
   private:
 

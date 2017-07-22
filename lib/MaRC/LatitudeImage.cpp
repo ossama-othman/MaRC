@@ -11,8 +11,8 @@ MaRC::LatitudeImage::LatitudeImage (const MaRC::ValuePtr<BodyData> & body,
 }
 
 bool
-MaRC::LatitudeImage::read_data_i (const double & lat,
-                                  const double & /* lon */,
+MaRC::LatitudeImage::read_data_i (double lat,
+                                  double /* lon */,
                                   double & data) const
 {
   if (this->graphic_latitudes_)

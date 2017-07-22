@@ -18,8 +18,8 @@ MaRC::MuImage::MuImage (const OblateSpheroid & body,
 }
 
 bool
-MaRC::MuImage::read_data_i (const double & lat,
-                            const double & lon,
+MaRC::MuImage::read_data_i (double lat,
+                            double lon,
                             double & data) const
 {
   data = this->body_.mu (this->sub_observ_lat_,
@@ -32,8 +32,7 @@ MaRC::MuImage::read_data_i (const double & lat,
 }
 
 bool
-MaRC::MuImage::is_visible (const double & lat,
-                           const double & lon) const
+MaRC::MuImage::is_visible (double lat, double lon) const
 {
   return MaRC::MuImage::is_visible_i (this->body_,
                                       this->sub_observ_lat_,
@@ -45,13 +44,13 @@ MaRC::MuImage::is_visible (const double & lat,
 
 bool
 MaRC::MuImage::is_visible_i (const OblateSpheroid & body,
-                             const double & sub_observ_lat,
-                             const double & sub_observ_lon,
-                             const double & lat,
-                             const double & lon,
-                             const double & range)
+                             double sub_observ_lat,
+                             double sub_observ_lon,
+                             double lat,
+                             double lon,
+                             double range)
 {
-  const double latg = body.graphic_latitude (lat);
+  const double latg   = body.graphic_latitude (lat);
 
   const double radius = body.centric_radius (lat);
 
@@ -77,7 +76,7 @@ MaRC::MuImage::is_visible_i (const OblateSpheroid & body,
       if (l >= lower && l <= upper)
         return true;
     }
-  else if (cosine < -1)             // Full 360 degree visible longitude range
+  else if (cosine < -1)  // Full 360 degree visible longitude range
     return true;
 
   return false;

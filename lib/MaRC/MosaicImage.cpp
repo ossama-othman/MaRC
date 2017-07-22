@@ -14,8 +14,8 @@ MaRC::MosaicImage::MosaicImage (const list_type & images,
 }
 
 bool
-MaRC::MosaicImage::read_data (const double & lat,
-                              const double & lon,
+MaRC::MosaicImage::read_data (double lat,
+                              double lon,
                               double & data) const
 {
   bool found_data = false;

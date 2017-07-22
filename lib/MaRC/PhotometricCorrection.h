@@ -48,13 +48,13 @@ namespace MaRC
      * @param range          Observer range to subobservation point.
      */
     virtual int correct (const BodyData & body,
-                         const double & sub_observ_lat,
-                         const double & sub_observ_lon,
-                         const double & sub_solar_lat,
-                         const double & sub_solar_lon,
-                         const double & lat,
-                         const double & lon,
-                         const double & range,
+                         double sub_observ_lat,
+                         double sub_observ_lon,
+                         double sub_solar_lat,
+                         double sub_solar_lon,
+                         double lat,
+                         double lon,
+                         double range,
                          double & data) = 0;
 
     /// Clone operation that polymorphically copies the concrete

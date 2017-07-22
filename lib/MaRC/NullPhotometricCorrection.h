@@ -46,13 +46,13 @@ namespace MaRC
      * This particular implementation is a no-op.
      */
     virtual int correct (const BodyData & body,
-                         const double & sub_observ_lat,
-                         const double & sub_observ_lon,
-                         const double & sub_solar_lat,
-                         const double & sub_solar_lon,
-                         const double & lat,
-                         const double & lon,
-                         const double & range,
+                         double sub_observ_lat,
+                         double sub_observ_lon,
+                         double sub_solar_lat,
+                         double sub_solar_lon,
+                         double lat,
+                         double lon,
+                         double range,
                          double & data);
 
     /// Clone this @c NullPhotometricCorrection object.

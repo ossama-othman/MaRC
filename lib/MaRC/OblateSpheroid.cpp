@@ -126,7 +126,7 @@ MaRC::OblateSpheroid::initialize_radii (double eq_rad,
 }
 
 inline double
-MaRC::OblateSpheroid::centric_radius (const double & lat) const
+MaRC::OblateSpheroid::centric_radius (double lat) const
 {
   const double er2     = this->eq_rad_ * this->eq_rad_;
   const double pr2     = this->pol_rad_ * this->pol_rad_;
@@ -138,7 +138,7 @@ MaRC::OblateSpheroid::centric_radius (const double & lat) const
 }
 
 inline double
-MaRC::OblateSpheroid::centric_latitude (const double & lat) const
+MaRC::OblateSpheroid::centric_latitude (double lat) const
 {
   return
     ::atan (this->pol_rad_ * this->pol_rad_ / (this->eq_rad_ * this->eq_rad_)
@@ -146,7 +146,7 @@ MaRC::OblateSpheroid::centric_latitude (const double & lat) const
 }
 
 inline double
-MaRC::OblateSpheroid::graphic_latitude (const double & lat) const
+MaRC::OblateSpheroid::graphic_latitude (double lat) const
 {
   return
     ::atan (this->eq_rad_ * this->eq_rad_ / (this->pol_rad_ * this->pol_rad_)
@@ -154,11 +154,11 @@ MaRC::OblateSpheroid::graphic_latitude (const double & lat) const
 }
 
 double
-MaRC::OblateSpheroid::mu (const double & sub_observ_lat,
-                          const double & sub_observ_lon,
-                          const double & lat,
-                          const double & lon,
-                          const double & range) const
+MaRC::OblateSpheroid::mu (double sub_observ_lat,
+                          double sub_observ_lon,
+                          double lat,
+                          double lon,
+                          double range) const
 {
   // Compute the local normal-observer angle - Emission Angle (Mu)
 
@@ -179,10 +179,10 @@ MaRC::OblateSpheroid::mu (const double & sub_observ_lat,
 }
 
 double
-MaRC::OblateSpheroid::mu0 (const double & sub_solar_lat,
-                           const double & sub_solar_lon,
-                           const double & lat,
-                           const double & lon) const
+MaRC::OblateSpheroid::mu0 (double sub_solar_lat,
+                           double sub_solar_lon,
+                           double lat,
+                           double lon) const
 {
   // Compute the sun-local normal angle - Incidence Angle (Mu0)
 
@@ -195,13 +195,13 @@ MaRC::OblateSpheroid::mu0 (const double & sub_solar_lat,
 
 // Cosine of phase angle (observer range taken into account)
 double
-MaRC::OblateSpheroid::cos_phase (const double & sub_observ_lat,
-                                 const double & sub_observ_lon,
-                                 const double & sub_solar_lat,
-                                 const double & sub_solar_lon,
-                                 const double & lat,
-                                 const double & lon,
-                                 const double & range) const
+MaRC::OblateSpheroid::cos_phase (double sub_observ_lat,
+                                 double sub_observ_lon,
+                                 double sub_solar_lat,
+                                 double sub_solar_lon,
+                                 double lat,
+                                 double lon,
+                                 double range) const
 {
   // Compute the Sun-point on surface of body-Observer angle
   // (phase angle)
@@ -227,7 +227,7 @@ MaRC::OblateSpheroid::cos_phase (const double & sub_observ_lat,
 }
 
 inline double
-MaRC::OblateSpheroid::M (const double & lat)
+MaRC::OblateSpheroid::M (double lat)
 {
   const double fe2 = this->first_eccentricity_ * this->first_eccentricity_;
   const double sin_latg = ::sin (this->graphic_latitude (lat));
@@ -237,7 +237,7 @@ MaRC::OblateSpheroid::M (const double & lat)
 }
 
 inline double
-MaRC::OblateSpheroid::N (const double & lat)
+MaRC::OblateSpheroid::N (double lat)
 {
   const double sin_latg = ::sin (this->graphic_latitude (lat));
 
@@ -275,15 +275,15 @@ MaRC::OblateSpheroid::ellipse_intersection (const DVector & vec,
   //
 
   // Semi-major axis along x-axis
-  const double & Axis_a = this->eq_rad_;
+  double const Axis_a = this->eq_rad_;
 
   // Semi-major axis along y-axis
-  const double & Axis_b = this->eq_rad_;
+  double const Axis_b = this->eq_rad_;
 
   // Semi-major axis along z-axis
-  const double & Axis_c = this->pol_rad_;
+  double const Axis_c = this->pol_rad_;
 
-  const double semis[3] = { Axis_a, Axis_b, Axis_c };
+  double const semis[] = { Axis_a, Axis_b, Axis_c };
 
   // Initialize to zero just in case error occurs
   lat = 0;

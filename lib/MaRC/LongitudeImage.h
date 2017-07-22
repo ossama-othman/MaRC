@@ -33,8 +33,8 @@ namespace MaRC
     /**
      * @see MaRC::VirtualImage::read_data_i().
      */
-    virtual bool read_data_i (const double & lat,
-                              const double & lon,
+    virtual bool read_data_i (double lat,
+                              double lon,
                               double & data) const;
 
   };

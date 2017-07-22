@@ -2,8 +2,8 @@
 #include "Constants.h"
 
 bool
-MaRC::LongitudeImage::read_data_i (const double & /* lat */,
-                                   const double & lon,
+MaRC::LongitudeImage::read_data_i (double /* lat */,
+                                   double lon,
                                    double & data) const
 {
   data = lon / C::degree;  // Convert radians to degrees.

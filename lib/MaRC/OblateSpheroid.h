@@ -86,34 +86,34 @@ namespace MaRC
      * Methods required by the MaRC::BodyData abstract base class.
      */
     //@{
-    virtual double centric_radius (const double & lat) const;
+    virtual double centric_radius (double lat) const;
 
-    virtual double centric_latitude (const double & lat) const;
+    virtual double centric_latitude (double lat) const;
 
-    virtual double graphic_latitude (const double & lat) const;
+    virtual double graphic_latitude (double lat) const;
 
-    virtual double mu (const double & sub_observ_lat,
-                       const double & sub_observ_lon,
-                       const double & lat,
-                       const double & lon,
-                       const double & range) const;
+    virtual double mu (double sub_observ_lat,
+                       double sub_observ_lon,
+                       double lat,
+                       double lon,
+                       double range) const;
 
-    virtual double mu0 (const double & sub_solar_lat,
-                        const double & sub_solar_lon,
-                        const double & lat,
-                        const double & lon) const;
+    virtual double mu0 (double sub_solar_lat,
+                        double sub_solar_lon,
+                        double lat,
+                        double lon) const;
 
-    virtual double cos_phase (const double & sub_observ_lat,
-                              const double & sub_observ_lon,
-                              const double & sub_solar_lat,
-                              const double & sub_solar_lon,
-                              const double & lat,
-                              const double & lon,
-                              const double & range) const;
+    virtual double cos_phase (double sub_observ_lat,
+                              double sub_observ_lon,
+                              double sub_solar_lat,
+                              double sub_solar_lon,
+                              double lat,
+                              double lon,
+                              double range) const;
 
-    virtual double M (const double & lat);
+    virtual double M (double lat);
 
-    virtual double N (const double & lat);
+    virtual double N (double lat);
     //@}
 
     /// Intersection of tri-axial ellipsoid with line.

@@ -7,8 +7,8 @@ MaRC::VirtualImage::VirtualImage (double s, double o)
 }
 
 bool
-MaRC::VirtualImage::read_data (const double & lat,
-                               const double & lon,
+MaRC::VirtualImage::read_data (double lat,
+                               double lon,
                                double & data) const
 {
   // FIXME: This is ugly.  The visibility check is specific to an oblate
@@ -26,8 +26,8 @@ MaRC::VirtualImage::read_data (const double & lat,
 }
 
 bool
-MaRC::VirtualImage::is_visible (const double & /* lat */,
-                                const double & /* lon */) const
+MaRC::VirtualImage::is_visible (double /* lat */,
+                                double /* lon */) const
 {
   return true;  // Always visible by default.
 }

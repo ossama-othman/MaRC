@@ -20,8 +20,8 @@ MaRC::CosPhaseImage::CosPhaseImage (const OblateSpheroid & body,
 }
 
 bool
-MaRC::CosPhaseImage::read_data_i (const double & lat,
-                                  const double & lon,
+MaRC::CosPhaseImage::read_data_i (double lat,
+                                  double lon,
                                   double & data) const
 {
   data = this->body_.cos_phase (this->sub_observ_lat_,
@@ -36,8 +36,7 @@ MaRC::CosPhaseImage::read_data_i (const double & lat,
 }
 
 bool
-MaRC::CosPhaseImage::is_visible (const double & lat,
-                                 const double & lon) const
+MaRC::CosPhaseImage::is_visible (double lat, double lon) const
 {
   // This implementation is as the same as the one used by the MuImage
   // class.

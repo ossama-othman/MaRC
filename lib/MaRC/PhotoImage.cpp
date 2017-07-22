@@ -119,8 +119,7 @@ MaRC::PhotoImage::operator== (PhotoImage const & img)
 }
 
 bool
-MaRC::PhotoImage::is_visible (double const & lat,
-                              double const & lon) const
+MaRC::PhotoImage::is_visible (double lat, double lon) const
 {
 //   const double radius = this->body_.centric_radius (lat);
   const double latg   = this->body_.graphic_latitude (lat);
@@ -1263,8 +1262,8 @@ MaRC::PhotoImage::emi_ang_limit (double angle)
 }
 
 bool
-MaRC::PhotoImage::read_data (const double & lat,
-                             const double & lon,
+MaRC::PhotoImage::read_data (double lat,
+                             double lon,
                              double & data) const
 {
   unsigned int weight = 1;  // Unused.
@@ -1275,8 +1274,8 @@ MaRC::PhotoImage::read_data (const double & lat,
 }
 
 bool
-MaRC::PhotoImage::read_data (const double & lat,
-                             const double & lon,
+MaRC::PhotoImage::read_data (double lat,
+                             double lon,
                              double & data,
                              unsigned int & weight,
                              bool scan) const
@@ -1413,8 +1412,8 @@ MaRC::PhotoImage::read_data (const double & lat,
 }
 
 bool
-MaRC::PhotoImage::latlon2pix (const double & lat,
-                              const double & lon,
+MaRC::PhotoImage::latlon2pix (double lat,
+                              double lon,
                               double & x,
                               double & z) const
 {

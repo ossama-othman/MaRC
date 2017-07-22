@@ -61,7 +61,7 @@ namespace MaRC
      *
      * @return Radius at given latitude.
      */
-    virtual double centric_radius (const double & lat) const = 0;
+    virtual double centric_radius (double lat) const = 0;
 
     /// Convert from GRAPHIC to CENTRIC latitude
     /**
@@ -69,7 +69,7 @@ namespace MaRC
      *
      * @return Bodycentric latitude.
      */
-    virtual double centric_latitude (const double & lat) const = 0;
+    virtual double centric_latitude (double lat) const = 0;
 
     /// Convert from CENTRIC to GRAPHIC latitude
     /**
@@ -77,7 +77,7 @@ namespace MaRC
      *
      * @return Bodygraphic latitude.
      */
-    virtual double graphic_latitude (const double & lat) const = 0;
+    virtual double graphic_latitude (double lat) const = 0;
 
     /// Return cosine of emission angle
     /**
@@ -89,11 +89,11 @@ namespace MaRC
      *
      * @return Cosine of emission angle.
      */
-    virtual double mu (const double & sub_observ_lat,
-                       const double & sub_observ_lon,
-                       const double & lat,
-                       const double & lon,
-                       const double & range) const = 0;
+    virtual double mu (double sub_observ_lat,
+                       double sub_observ_lon,
+                       double lat,
+                       double lon,
+                       double range) const = 0;
 
     /// Return cosine of incidence angle
     /**
@@ -106,10 +106,10 @@ namespace MaRC
      *
      * @note Sun is assumed to be an infinite distance away.
      */
-    virtual double mu0 (const double & sub_solar_lat,
-                        const double & sub_solar_lon,
-                        const double & lat,
-                        const double & lon) const = 0;
+    virtual double mu0 (double sub_solar_lat,
+                        double sub_solar_lon,
+                        double lat,
+                        double lon) const = 0;
 
     /// Return cosine of phase angle
     /**
@@ -123,13 +123,13 @@ namespace MaRC
      *
      * @return Cosine of phase angle.
      */
-    virtual double cos_phase (const double & sub_observ_lat,
-                              const double & sub_observ_lon,
-                              const double & sub_solar_lat,
-                              const double & sub_solar_lon,
-                              const double & lat,
-                              const double & lon,
-                              const double & range) const = 0;
+    virtual double cos_phase (double sub_observ_lat,
+                              double sub_observ_lon,
+                              double sub_solar_lat,
+                              double sub_solar_lon,
+                              double lat,
+                              double lon,
+                              double range) const = 0;
 
     /// Radius of curvature of the meridian.
     /**
@@ -137,7 +137,7 @@ namespace MaRC
      *
      * @return Radius of curvature of the meridian.
      */
-    virtual double M (const double & lat) = 0;
+    virtual double M (double lat) = 0;
 
     /// Radius of curvature in the direction of the prime vertical
     /// perpendicular to the direction of the meridian.
@@ -148,7 +148,7 @@ namespace MaRC
      *         vertical  perpendicular to the direction of the
      *         meridian.
      */
-    virtual double N (const double & lat) = 0;
+    virtual double N (double lat) = 0;
 
   private:
 

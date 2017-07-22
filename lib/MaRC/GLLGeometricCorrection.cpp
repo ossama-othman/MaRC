@@ -118,7 +118,7 @@ MaRC::GLLGeometricCorrection::clone (void) const
 }
 
 inline double
-MaRC::GLLGeometricCorrection::cube_root (const double & x)
+MaRC::GLLGeometricCorrection::cube_root (double x)
 {
   if      (x == 0) return 0;
   else if (x < 0)  return (-::exp (::log (::fabs (x)) / 3.0));

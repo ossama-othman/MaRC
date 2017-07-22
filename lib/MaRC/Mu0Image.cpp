@@ -16,8 +16,8 @@ MaRC::Mu0Image::Mu0Image (const OblateSpheroid & body,
 }
 
 bool
-MaRC::Mu0Image::read_data_i (const double & lat,
-                             const double & lon,
+MaRC::Mu0Image::read_data_i (double lat,
+                             double lon,
                              double & data) const
 {
   data = this->body_.mu0 (this->sub_solar_lat_,
@@ -29,8 +29,7 @@ MaRC::Mu0Image::read_data_i (const double & lat,
 }
 
 bool
-MaRC::Mu0Image::is_visible (const double & lat,
-                            const double & lon) const
+MaRC::Mu0Image::is_visible (double lat, double lon) const
 {
   // FIXME: This is ugly.  The visibility check is specific to an oblate
   // spheroid.  It should really be moved to OblateSpheroid strategy.

@@ -53,8 +53,8 @@ namespace MaRC
      *
      * @see read_data_i()
      */
-    virtual bool read_data (const double & lat,
-                            const double & lon,
+    virtual bool read_data (double lat,
+                            double lon,
                             double & data) const;
 
   private:
@@ -72,10 +72,9 @@ namespace MaRC
      *
      * @see read_data().
      */
-    virtual bool read_data_i (const double & lat,
-                              const double & lon,
+    virtual bool read_data_i (double lat,
+                              double lon,
                               double & data) const = 0;
-
 
     /// Is point at given latitude and longitude visible to the
     /// observer?
@@ -87,15 +86,13 @@ namespace MaRC
      *
      * @note The default implementation always returns @c true.
      */
-    virtual bool is_visible (const double & lat,
-                             const double & lon) const;
-
+    virtual bool is_visible (double lat, double lon) const;
 
     /**
      * @name Linear Data Transformation
      *
      * These methods return the values used when linearly transforming
-     * thedata read from an image.  In particular, data will be
+     * the data read from an image.  In particular, data will be
      * transformed according to the following equation:
      *
      * @code

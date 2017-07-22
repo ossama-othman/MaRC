@@ -39,8 +39,8 @@ namespace MaRC
      *
      * @return @c true - Data retrieved, @c false - No data retrieved.
      */
-    virtual bool read_data (const double & lat,
-                            const double & lon,
+    virtual bool read_data (double lat,
+                            double lon,
                             double & data) const = 0;
 
   };

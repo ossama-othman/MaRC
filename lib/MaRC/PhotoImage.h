@@ -268,8 +268,8 @@ namespace MaRC
      *
      * @return 0 - Data retrieved, 1 - No data retrieved.
      */
-    virtual bool read_data (const double & lat,
-                            const double & lon,
+    virtual bool read_data (double lat,
+                            double lon,
                             double & data) const;
 
     /// Retrieve data and weight from source image.
@@ -288,14 +288,14 @@ namespace MaRC
      *
      * @return 0 - Data retrieved, 1 - No data retrieved.
      */
-    virtual bool read_data (const double & lat,
-                            const double & lon,
+    virtual bool read_data (double lat,
+                            double lon,
                             double & data,
                             unsigned int & weight,
                             bool scan = true) const;
 
     /// Returns "true" if latitude and longitude are visible
-    bool is_visible (const double & lat, const double & lon) const;
+    bool is_visible (double lat, double lon) const;
 
 
     /// Convert (Latitude, Longitude) to (Sample, Line)
@@ -309,8 +309,8 @@ namespace MaRC
      *       components, they are more accurate than their integer
      *       counterparts.
      */
-    bool latlon2pix (const double & lat,
-                     const double & lon,
+    bool latlon2pix (double lat,
+                     double lon,
                      double & x,
                      double & z) const;
 

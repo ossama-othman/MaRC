@@ -47,11 +47,11 @@ namespace MaRC
     /// Underlying implementation for @c MaRC::MuImage::is_visible()
     /// method.
     static bool is_visible_i (const OblateSpheroid & body,
-                              const double & sub_observ_lat,
-                              const double & sub_observ_lon,
-                              const double & lat,
-                              const double & lon,
-                              const double & range);
+                              double sub_observ_lat,
+                              double sub_observ_lon,
+                              double lat,
+                              double lon,
+                              double range);
 
   private:
 
@@ -59,8 +59,8 @@ namespace MaRC
     /**
      * @see MaRC::VirtualImage::read_data_i().
      */
-    virtual bool read_data_i (const double & lat,
-                              const double & lon,
+    virtual bool read_data_i (double lat,
+                              double lon,
                               double & data) const;
 
     /// Is point at given latitude and longitude visible to the
@@ -68,8 +68,7 @@ namespace MaRC
     /**
      * @see MaRC::VirtualImage::is_visible().
      */
-    virtual bool is_visible (const double & lat,
-                             const double & lon) const;
+    virtual bool is_visible (double lat, double lon) const;
 
   private:
 
