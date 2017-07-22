@@ -30,34 +30,34 @@ namespace MaRC
     // All coordinate transformations assume a right-handed coordinate system
 
     /// Rotate about x-axis
-    void RotX (const double &, const DVector &, DVector &);
+    void RotX(double, DVector const &, DVector &);
 
     /// Rotate about y-axis
-    void RotY (const double &, const DVector &, DVector &);
+    void RotY(double, DVector const &, DVector &);
 
     /// Rotate about z-axis
-    void RotZ (const double &, const DVector &, DVector &);
+    void RotZ(double, DVector const &, DVector &);
 
     /// Return a transformation matrix that rotates about the x-axis.
-    DMatrix RotXMatrix (const double & angle);
+    DMatrix RotXMatrix(double angle);
 
     /// Return a transformation matrix that rotates about the y-axis.
-    DMatrix RotYMatrix (const double & angle);
+    DMatrix RotYMatrix(double angle);
 
     /// Return a transformation matrix that rotates about the z-axis.
-    DMatrix RotZMatrix (const double & angle);
+    DMatrix RotZMatrix(double angle);
 
     /// Obtain magnitude of vector of type double.
-    double Magnitude (const DVector &);
+    double Magnitude(DVector const &);
 
     /// Obtain magnitude of vector of type float.
-    double Magnitude (const FVector &);
+    double Magnitude(const FVector &);
 
     /// Convert a vector of type double to a unit vector.
-    void toUnitVector (DVector &);
+    void toUnitVector(DVector &);
 
     /// Convert a vector of type float to a unit vector
-    void toUnitVector (FVector &);
+    void toUnitVector(FVector &);
   }
 }
 

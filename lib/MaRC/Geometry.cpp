@@ -1,115 +1,130 @@
 #include "Geometry.h"
 #include "Matrix.h"
 
+#include <type_traits>
 #include <cmath>
 
 
 void
-MaRC::Geometry::RotX (const double & angle,
-                      const DVector & vec,
-                      DVector & rotated)
+MaRC::Geometry::RotX(double angle,
+		     DVector const & vec,
+		     DVector & rotated)
 {
+  double const cosine = ::cos(angle);
+  double const sine   = ::sin(angle);
+
   rotated[0] =  vec[0];
-  rotated[1] =  vec[1] * ::cos (angle) + vec[2] * ::sin (angle);
-  rotated[2] = -vec[1] * ::sin (angle) + vec[2] * ::cos (angle);
+  rotated[1] =  vec[1] * cosine + vec[2] * sine;
+  rotated[2] = -vec[1] * sine   + vec[2] * cosine;
 }
 
 void
-MaRC::Geometry::RotY (const double & angle,
-                      const DVector & vec,
-                      DVector & rotated)
+MaRC::Geometry::RotY(double angle,
+		     DVector const & vec,
+		     DVector & rotated)
 {
-  rotated[0] = vec[0] * ::cos (angle) - vec[2] * ::sin (angle);
+  double const cosine = ::cos(angle);
+  double const sine   = ::sin(angle);
+
+  rotated[0] = vec[0] * cosine - vec[2] * sine;
   rotated[1] = vec[1];
-  rotated[2] = vec[0] * ::sin (angle) + vec[2] * ::cos (angle);
+  rotated[2] = vec[0] * sine   + vec[2] * cosine;
 }
 
 void
-MaRC::Geometry::RotZ (const double &angle,
-                      const DVector &vec,
-                      DVector &rotated)
+MaRC::Geometry::RotZ(double angle,
+		     DVector const & vec,
+		     DVector &rotated)
 {
-  rotated[0] =  vec[0] * ::cos (angle) + vec[1] * ::sin (angle);
-  rotated[1] = -vec[0] * ::sin (angle) + vec[1] * ::cos (angle);
+  double const cosine = ::cos(angle);
+  double const sine   = ::sin(angle);
+
+  rotated[0] =  vec[0] * cosine + vec[1] * sine;
+  rotated[1] = -vec[0] * sine   + vec[1] * cosine;
   rotated[2] =  vec[2];
 }
 
 MaRC::DMatrix
-MaRC::Geometry::RotXMatrix (const double & angle)
+MaRC::Geometry::RotXMatrix(double angle)
 {
-  MaRC::DMatrix Matricks;
+  MaRC::DMatrix matrix;
 
-  Matricks = 0;
+  double const cosine = ::cos(angle);
+  double const sine   = ::sin(angle);
 
-  Matricks (0, 0) =  1;
-  Matricks (1, 1) =  ::cos (angle);
-  Matricks (1, 2) =  ::sin (angle);
-  Matricks (2, 1) = -::sin (angle);
-  Matricks (2, 2) =  ::cos (angle);
+  matrix(0, 0) =  1;
+  matrix(1, 1) =  cosine;
+  matrix(1, 2) =  sine;
+  matrix(2, 1) = -sine;
+  matrix(2, 2) =  cosine;
 
-  return Matricks;
+  return matrix;
 }
 
 MaRC::DMatrix
-MaRC::Geometry::RotYMatrix (const double & angle)
+MaRC::Geometry::RotYMatrix(double angle)
 {
-  MaRC::DMatrix Matricks;
+  MaRC::DMatrix matrix;
 
-  Matricks = 0;
+  double const cosine = ::cos(angle);
+  double const sine   = ::sin(angle);
 
-  Matricks (0, 0) =  ::cos (angle);
-  Matricks (0, 2) = -::sin (angle);
-  Matricks (1, 1) =  1;
-  Matricks (2, 0) =  ::sin (angle);
-  Matricks (2, 2) =  ::cos (angle);
+  matrix(0, 0) =  cosine;
+  matrix(0, 2) = -sine;
+  matrix(1, 1) =  1;
+  matrix(2, 0) =  sine;
+  matrix(2, 2) =  cosine;
 
-  return Matricks;
+  return matrix;
 }
 
 MaRC::DMatrix
-MaRC::Geometry::RotZMatrix (const double & angle)
+MaRC::Geometry::RotZMatrix(double angle)
 {
-  MaRC::DMatrix Matricks;
+  MaRC::DMatrix matrix;
 
-  Matricks = 0;
+  double const cosine = ::cos(angle);
+  double const sine   = ::sin(angle);
 
-  Matricks (0, 0) =  ::cos (angle);
-  Matricks (0, 1) =  ::sin (angle);
-  Matricks (1, 0) = -::sin (angle);
-  Matricks (1, 1) =  ::cos (angle);
-  Matricks (2, 2) =  1;
+  matrix(0, 0) =  cosine;
+  matrix(0, 1) =  sine;
+  matrix(1, 0) = -sine;
+  matrix(1, 1) =  cosine;
+  matrix(2, 2) =  1;
 
-  return Matricks;
+  return matrix;
 }
 
 double
-MaRC::Geometry::Magnitude (const DVector & vec)
+MaRC::Geometry::Magnitude(const DVector & vec)
 {
-  return ::sqrt (vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+  return ::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 }
 
 double
-MaRC::Geometry::Magnitude (const FVector & vec)
+MaRC::Geometry::Magnitude(const FVector & vec)
 {
-  return ::sqrt (vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+  return ::sqrt(static_cast<double>(vec[0]) * vec[0]
+		+ vec[1] * vec[1]
+		+ vec[2] * vec[2]);
 }
 
 // The following really should be only for float or double vectors,
 // not integer vectors!
 void
-MaRC::Geometry::toUnitVector (DVector &vec)
+MaRC::Geometry::toUnitVector(DVector &vec)
 {
-  const double mag = Geometry::Magnitude (vec);
+  double const mag = Geometry::Magnitude(vec);
 
-  for (unsigned int i = 0; i < 3; ++i)
+  for(std::size_t i = 0; i < std::extent<DVector>(); ++i)
     vec[i] /= mag;
 }
 
 void
-MaRC::Geometry::toUnitVector (FVector &vec)
+MaRC::Geometry::toUnitVector(FVector &vec)
 {
-  const double mag = Geometry::Magnitude (vec);
+  double const mag = Geometry::Magnitude(vec);
 
-  for (unsigned int i = 0; i < 3; ++i)
-    vec[i] /= static_cast<float> (mag);
+  for(std::size_t i = 0; i < std::extent<FVector>(); ++i)
+    vec[i] /= static_cast<float>(mag);
 }

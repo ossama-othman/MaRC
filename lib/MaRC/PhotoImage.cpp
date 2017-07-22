@@ -113,7 +113,7 @@ MaRC::PhotoImage::operator== (PhotoImage const & img)
           && this->sub_solar_lat_  == img.sub_solar_lat_
           && this->sub_solar_lon_  == img.sub_solar_lon_
           && this->range_ == img.range_
-          && this->position_angle_ == img.position_angle_) ? true : false;
+          && this->position_angle_ == img.position_angle_);
 
   //  return 1; // DEBUGGING PURPOSES ONLY!!!!
 }
