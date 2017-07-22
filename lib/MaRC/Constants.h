@@ -88,26 +88,22 @@ namespace C
 {
   // Begin Mathematical constants
 
-
-  /// Foo
-  void foo (void);
-
   /**
    * @name Irrationals
    */
   //@{
 
   /// sqrt(2)
-  static const double sqrt2 = 1.4142135623730950488;
+  static constexpr double sqrt2 = 1.4142135623730950488;
 
   /// sqrt(3)
-  static const double sqrt3 = 1.7320508075688772935;
+  static constexpr double sqrt3 = 1.7320508075688772935;
 
   /// 1/sqrt(2)
-  static const double _1_sqrt2 = 0.70710678118654752440;
+  static constexpr double _1_sqrt2 = 0.70710678118654752440;
 
   /// 1/sqrt(3)
-  static const double _1_sqrt3 = 0.57735026918962576451;
+  static constexpr double _1_sqrt3 = 0.57735026918962576451;
 
   //@}
 
@@ -116,28 +112,28 @@ namespace C
    */
   //@{
   /// pi
-  static const double pi = 3.141592653589793238462643;
+  static constexpr double pi = 3.141592653589793238462643;
 
   /// 2*pi
-  static const double _2pi = 6.283185307179586476925286;
+  static constexpr double _2pi = 6.283185307179586476925286;
 
   /// pi/2
-  static const double pi_2 = 1.570796326794896619231322;
+  static constexpr double pi_2 = 1.570796326794896619231322;
 
   /// pi/4
-  static const double pi_4 = 0.7853981633974483096156608;
+  static constexpr double pi_4 = 0.7853981633974483096156608;
 
   /// 1/pi
-  static const double _1_pi = 0.3183098861837906715377675;
+  static constexpr double _1_pi = 0.3183098861837906715377675;
 
   /// 2/pi
-  static const double _2_pi = 0.6366197723675813430755350;
+  static constexpr double _2_pi = 0.6366197723675813430755350;
 
   /// 1/sqrt(pi)
-  static const double _1_sqrtpi = 0.5641895835477562869480795;
+  static constexpr double _1_sqrtpi = 0.5641895835477562869480795;
 
   /// 2/sqrt(pi)
-  static const double _2_sqrtpi = 1.1283791670955125738961590;
+  static constexpr double _2_sqrtpi = 1.1283791670955125738961590;
   //@}
 
   /**
@@ -145,19 +141,19 @@ namespace C
    */
   //@{
   /// e
-  static const double e = 2.718281828459045235360287;
+  static constexpr double e = 2.718281828459045235360287;
 
   /// ln(2)
-  static const double ln2 = 0.6931471805599453094172321;
+  static constexpr double ln2 = 0.6931471805599453094172321;
 
   /// ln(10)
-  static const double ln10 = 2.3025850929940456840179915;
+  static constexpr double ln10 = 2.3025850929940456840179915;
 
   /// log2(e)
-  static const double log2e = 1.4426950408889634074;
+  static constexpr double log2e = 1.4426950408889634074;
 
   /// log10(e)
-  static const double log10e = 0.4342944819032518276511289;
+  static constexpr double log10e = 0.4342944819032518276511289;
   //@}
 
   /**
@@ -165,13 +161,13 @@ namespace C
    */
   //@{
   /// gamma
-  static const double gamma = 0.577215664901532860606512;
+  static constexpr double gamma = 0.577215664901532860606512;
 
   /// ln(gamma)
-  static const double lngamma = -0.549539312981644822337662;
+  static constexpr double lngamma = -0.549539312981644822337662;
 
   /// e**gamma
-  static const double etogamma = 1.7810724179901979852;
+  static constexpr double etogamma = 1.7810724179901979852;
   //@}
 
   // End Mathematical constants
@@ -194,27 +190,27 @@ namespace C
    */
   //@{
   /// velocity of light
-  static const double c = 2.99792458e+08;
+  static constexpr double c = 2.99792458e+08;
 
   /// Gravitational constant
-  static const double Gravity = 6.67259e-11;
+  static constexpr double Gravity = 6.67259e-11;
 
   /// Planck's constant
-  static const double Planck = 6.6260755e-34;
+  static constexpr double Planck = 6.6260755e-34;
 
   /// gas constant
-  static const double GasConst = 8.314510;
+  static constexpr double GasConst = 8.314510;
   /// Avogardo's constant
-  static const double Avogadro = 6.0221367e+23;
+  static constexpr double Avogadro = 6.0221367e+23;
 
   /// electron charge
-  static const double qe = 1.60217733e-19;
+  static constexpr double qe = 1.60217733e-19;
 
   /// proton mass
-  static const double mp = 1.6726231e-27;
+  static constexpr double mp = 1.6726231e-27;
 
   /// proton mass / electron mass
-  static const double mp_me = 1836.152701;
+  static constexpr double mp_me = 1836.152701;
   //@}
 
   /**
@@ -222,31 +218,31 @@ namespace C
    */
   //@{
   /// magnetic permeability of vacuum
-  static const double mu0 = 4.0e-7 * C::pi;
+  static constexpr double mu0 = 4.0e-7 * C::pi;
 
   /// electric permittivity of vacuum
-  static const double epsilon0 = 1.0 / ( C::mu0 * C::c * C::c );
+  static constexpr double epsilon0 = 1.0 / ( C::mu0 * C::c * C::c );
 
   /// Planck's constant divided by 2*pi
-  static const double Planck_2pi = C::Planck / C::_2pi;
+  static constexpr double Planck_2pi = C::Planck / C::_2pi;
 
   /// atomic mass unit
-  static const double u = 1.0e-3 / C::Avogadro;
+  static constexpr double u = 1.0e-3 / C::Avogadro;
 
   /// Boltzmann's constant
-  static const double Boltzmann = C::GasConst / C::Avogadro;
+  static constexpr double Boltzmann = C::GasConst / C::Avogadro;
 
   /// Faraday's constant
-  static const double Faraday = C::Avogadro * C::qe;
+  static constexpr double Faraday = C::Avogadro * C::qe;
 
   /// electron mass
-  static const double me = C::mp / C::mp_me;
+  static constexpr double me = C::mp / C::mp_me;
 
   /// classical electron radius
-  static const double re = 2.8179e-15;
+  static constexpr double re = 2.8179e-15;
 
   /// Bohr radius
-  static const double a0 = 5.2918e-11;
+  static constexpr double a0 = 5.2918e-11;
   //@}
 
   /**
@@ -254,7 +250,7 @@ namespace C
    */
   //@{
   /// solar radius
-  static const double R0 = 6.9599e+08;
+  static constexpr double R0 = 6.9599e+08;
   //@}
 
   // End Physical constants, and quantities
@@ -267,64 +263,64 @@ namespace C
    */
   //@{
   /// e+24 (Y)
-  static const double yotta = 1.0e+24;
+  static constexpr double yotta = 1.0e+24;
 
   /// e+21 (Z)
-  static const double zetta = 1.0e+21;
+  static constexpr double zetta = 1.0e+21;
 
   /// e+18 (E)
-  static const double exa = 1.0e+18;
+  static constexpr double exa = 1.0e+18;
 
   /// e+15 (P)
-  static const double peta = 1.0e+15;
+  static constexpr double peta = 1.0e+15;
 
   /// e+12 (T)
-  static const double tera = 1.0e+12;
+  static constexpr double tera = 1.0e+12;
 
   /// e+09 (G)
-  static const double giga = 1.0e+09;
+  static constexpr double giga = 1.0e+09;
 
   /// e+06 (M)
-  static const double mega = 1.0e+06;
+  static constexpr double mega = 1.0e+06;
 
   /// e+03 (k)
-  static const double kilo = 1.0e+03;
+  static constexpr double kilo = 1.0e+03;
 
   /// e+02 (h)
-  static const double hecto = 1.0e+02;
+  static constexpr double hecto = 1.0e+02;
 
   /// e+01 (D)
-  static const double deka = 1.0e+01;
+  static constexpr double deka = 1.0e+01;
 
   /// e-01 (d)
-  static const double deci = 1.0e-01;
+  static constexpr double deci = 1.0e-01;
 
   /// e-02 (c)
-  static const double centi = 1.0e-02;
+  static constexpr double centi = 1.0e-02;
 
   /// e-03 (m)
-  static const double milli = 1.0e-03;
+  static constexpr double milli = 1.0e-03;
 
   /// e-06 (u)
-  static const double micro = 1.0e-06;
+  static constexpr double micro = 1.0e-06;
 
   /// e-09 (n)
-  static const double nano = 1.0e-09;
+  static constexpr double nano = 1.0e-09;
 
   /// e-12 (p)
-  static const double pico = 1.0e-12;
+  static constexpr double pico = 1.0e-12;
 
   /// e-15 (f)
-  static const double femto = 1.0e-15;
+  static constexpr double femto = 1.0e-15;
 
   /// e-18 (a)
-  static const double atto = 1.0e-18;
+  static constexpr double atto = 1.0e-18;
 
   /// e-21 (z)
-  static const double zepto = 1.0e-21;
+  static constexpr double zepto = 1.0e-21;
 
   /// e-24 (y)
-  static const double yocto = 1.0e-24;
+  static constexpr double yocto = 1.0e-24;
   //@}
 
   /**
@@ -332,37 +328,37 @@ namespace C
    */
   //@{
   /// radian
-  static const double radian = 1.0;
+  static constexpr double radian = 1.0;
 
   /// circle
-  static const double circle = (2.0 * C::pi) * C::radian;
+  static constexpr double circle = (2.0 * C::pi) * C::radian;
 
   /// circuit
-  static const double circuit = C::circle;
+  static constexpr double circuit = C::circle;
 
   /// cycle
-  static const double cycle = C::circle;
+  static constexpr double cycle = C::circle;
 
   /// revolution
-  static const double rev = C::circle;
+  static constexpr double rev = C::circle;
 
   /// revolution
-  static const double revolution = C::circle;
+  static constexpr double revolution = C::circle;
 
   /// rotation
-  static const double rotation = C::circle;
+  static constexpr double rotation = C::circle;
 
   /// degree
-  static const double degree = (1.0 / 360.0) * C::circle;
+  static constexpr double degree = (1.0 / 360.0) * C::circle;
 
   /// arcminute
-  static const double arcmin = (1.0 /  60.0) * C::degree;
+  static constexpr double arcmin = (1.0 /  60.0) * C::degree;
 
   /// arcsecond
-  static const double arcsec = (1.0 /  60.0) * C::arcmin;
+  static constexpr double arcsec = (1.0 /  60.0) * C::arcmin;
 
   /// grad
-  static const double grad = (1.0 / 400.0) * C::circle;
+  static constexpr double grad = (1.0 / 400.0) * C::circle;
   //@}
 
   /**
@@ -370,19 +366,19 @@ namespace C
    */
   //@{
   /// steradian
-  static const double steradian = 1.0;
+  static constexpr double steradian = 1.0;
 
   /// sphere
-  static const double sphere = (4.0 * C::pi) * C::steradian;
+  static constexpr double sphere = (4.0 * C::pi) * C::steradian;
 
   /// square degree
-  static const double square_degree = C::degree * C::degree;
+  static constexpr double square_degree = C::degree * C::degree;
 
   /// square arcminute
-  static const double square_arcmin = C::arcmin * C::arcmin;
+  static constexpr double square_arcmin = C::arcmin * C::arcmin;
 
   /// square arcsecond
-  static const double square_arcsec = C::arcsec * C::arcsec;
+  static constexpr double square_arcsec = C::arcsec * C::arcsec;
   //@}
 
   // End Numerical conversion factors
@@ -395,22 +391,22 @@ namespace C
    */
   //@{
   /// second
-  static const double second = 1.0;
+  static constexpr double second = 1.0;
 
   /// minute
-  static const double minute = 60.0 * C::second;
+  static constexpr double minute = 60.0 * C::second;
 
   /// hour
-  static const double hour = 60.0 * C::minute;
+  static constexpr double hour = 60.0 * C::minute;
 
   /// day
-  static const double day = 24.0 * C::hour;
+  static constexpr double day = 24.0 * C::hour;
 
   /// week
-  static const double week = 7.0 * C::day;
+  static constexpr double week = 7.0 * C::day;
 
   /// fortnight
-  static const double fortnight = 2.0 * C::week;
+  static constexpr double fortnight = 2.0 * C::week;
   //@}
 
   /**
@@ -418,7 +414,7 @@ namespace C
    */
   //@{
   /// Hertz
-  static const double Hertz = 1.0 / C::second;
+  static constexpr double Hertz = 1.0 / C::second;
   //@}
 
   /**
@@ -426,76 +422,76 @@ namespace C
    */
   //@{
   /// metre
-  static const double metre = 1.0;
+  static constexpr double metre = 1.0;
 
   /// metre (American spelling)
-  static const double meter = C::metre;
+  static constexpr double meter = C::metre;
 
   /// Fermi
-  static const double Fermi = 1.0e-15 * C::metre;
+  static constexpr double Fermi = 1.0e-15 * C::metre;
 
   /// Angstrom
-  static const double Angstrom = 1.0e-10 * C::metre;
+  static constexpr double Angstrom = 1.0e-10 * C::metre;
 
   /// inch
-  static const double inch = 2.54e-2 * C::metre;
+  static constexpr double inch = 2.54e-2 * C::metre;
 
   /// thou (inch/1000)
-  static const double thou = 1.0e-3 * C::inch;
+  static constexpr double thou = 1.0e-3 * C::inch;
 
   /// hand
-  static const double hand = 4.0 * C::inch;
+  static constexpr double hand = 4.0 * C::inch;
 
   /// span
-  static const double span = 9.0 * C::inch;
+  static constexpr double span = 9.0 * C::inch;
 
   /// foot
-  static const double foot = 12.0 * C::inch;
+  static constexpr double foot = 12.0 * C::inch;
 
   /// yard
-  static const double yard = 3.0 * C::foot;
+  static constexpr double yard = 3.0 * C::foot;
 
   /// fathom
-  static const double fathom = 6.0 * C::foot;
+  static constexpr double fathom = 6.0 * C::foot;
 
   /// rod
-  static const double rod = 16.5 * C::foot;
+  static constexpr double rod = 16.5 * C::foot;
 
   /// perch
-  static const double perch = C::rod;
+  static constexpr double perch = C::rod;
 
   /// rope
-  static const double rope = 20.0 * C::foot;
+  static constexpr double rope = 20.0 * C::foot;
 
   /// chain
-  static const double chain = 22.0 * C::yard;
+  static constexpr double chain = 22.0 * C::yard;
 
   /// furlong
-  static const double furlong = 220.0 * C::yard;
+  static constexpr double furlong = 220.0 * C::yard;
 
   /// English statute mile
-  static const double mile = 5280.0 * C::foot;
+  static constexpr double mile = 5280.0 * C::foot;
 
   /// nautical mile
-  static const double nautical_mile = 6080.0 * C::foot;
+  static constexpr double nautical_mile = 6080.0 * C::foot;
 
   /// point
-  static const double point = (1.0 / 72.0) * C::inch;
+  static constexpr double point = (1.0 / 72.0) * C::inch;
 
   /// pica
-  static const double pica = 12.0 * C::point;
+  static constexpr double pica = 12.0 * C::point;
 
   /// astronomical unit
-  static const double astronomical_unit = 1.4959787066e+11 * C::metre;
+  static constexpr double astronomical_unit = 1.4959787066e+11 * C::metre;
 
   /// light second
-  static const double light_second = C::c * C::metre;
+  static constexpr double light_second = C::c * C::metre;
 
   /// light year
-  static const double light_year = 9.46073047e+15 * C::metre;
+  static constexpr double light_year = 9.46073047e+15 * C::metre;
 
   /// parsec
-  static const double parsec = 3.26156378 * C::light_year;
+  static constexpr double parsec = 3.26156378 * C::light_year;
   //@}
 
   /**
@@ -503,40 +499,40 @@ namespace C
    */
   //@{
   /// square metre
-  static const double square_metre = C::metre * C::metre;
+  static constexpr double square_metre = C::metre * C::metre;
 
   /// square meter (American spelling)
-  static const double square_meter = C::square_metre;
+  static constexpr double square_meter = C::square_metre;
 
   /// are
-  static const double are = 100.0 * C::square_metre;
+  static constexpr double are = 100.0 * C::square_metre;
 
   /// barn
-  static const double barn = 1.0e-28 * C::square_metre;
+  static constexpr double barn = 1.0e-28 * C::square_metre;
 
   /// square inch
-  static const double square_inch = C::inch * C::inch;
+  static constexpr double square_inch = C::inch * C::inch;
 
   /// square foot
-  static const double square_foot = C::foot * C::foot;
+  static constexpr double square_foot = C::foot * C::foot;
 
   /// square yard
-  static const double square_yard = C::yard * C::yard;
+  static constexpr double square_yard = C::yard * C::yard;
 
   /// square mile
-  static const double square_mile = C::mile * C::mile;
+  static constexpr double square_mile = C::mile * C::mile;
 
   /// square perch
-  static const double square_perch = C::perch * C::perch;
+  static constexpr double square_perch = C::perch * C::perch;
 
   /// rood
-  static const double rood = 40.0 * C::square_perch;
+  static constexpr double rood = 40.0 * C::square_perch;
 
   /// acre
-  static const double acre = 4.0 * C::rood;
+  static constexpr double acre = 4.0 * C::rood;
 
   /// square
-  static const double square = 100.0 * C::square_foot;
+  static constexpr double square = 100.0 * C::square_foot;
   //@}
 
   /**
@@ -544,76 +540,76 @@ namespace C
    */
   //@{
   /// cubic metre
-  static const double cubic_metre = C::metre * C::square_metre;
+  static constexpr double cubic_metre = C::metre * C::square_metre;
 
   /// cubic meter (American spelling)
-  static const double cubic_meter = C::cubic_metre;
+  static constexpr double cubic_meter = C::cubic_metre;
 
   /// stere
-  static const double stere = C::cubic_metre;
+  static constexpr double stere = C::cubic_metre;
 
   /// litre
-  static const double litre = 1.0e-3 * C::cubic_metre;
+  static constexpr double litre = 1.0e-3 * C::cubic_metre;
 
   /// liter (American spelling)
-  static const double liter = C::litre;
+  static constexpr double liter = C::litre;
 
   /// cubic inch
-  static const double cubic_inch = C::inch * C::square_inch;
+  static constexpr double cubic_inch = C::inch * C::square_inch;
 
   /// cubic foot
-  static const double cubic_foot = C::foot * C::square_foot;
+  static constexpr double cubic_foot = C::foot * C::square_foot;
 
   /// cubic yard
-  static const double cubic_yard = C::yard * C::square_yard;
+  static constexpr double cubic_yard = C::yard * C::square_yard;
 
   /// cubic mile
-  static const double cubic_mile = C::mile * C::square_mile;
+  static constexpr double cubic_mile = C::mile * C::square_mile;
 
   /// (Brit) gallon
-  static const double gallon = 277.4193 * C::cubic_inch;
+  static constexpr double gallon = 277.4193 * C::cubic_inch;
 
   /// (Brit) quart
-  static const double quart = (1.0 / 4.0) * C::gallon;
+  static constexpr double quart = (1.0 / 4.0) * C::gallon;
 
   /// (Brit) pint
-  static const double pint = (1.0 / 2.0) * C::quart;
+  static constexpr double pint = (1.0 / 2.0) * C::quart;
 
   /// (Brit) gill
-  static const double gill = (1.0 / 4.0) * C::pint;
+  static constexpr double gill = (1.0 / 4.0) * C::pint;
 
   /// (Brit) fluid ounce
-  static const double fluid_ounce = (1.0 / 5.0) * C::gill;
+  static constexpr double fluid_ounce = (1.0 / 5.0) * C::gill;
 
   /// (Brit) drachm
-  static const double drachm = (1.0 / 8.0) * C::fluid_ounce;
+  static constexpr double drachm = (1.0 / 8.0) * C::fluid_ounce;
 
   /// (Brit) scruple
-  static const double scruple = (1.0 / 3.0) * C::drachm;
+  static constexpr double scruple = (1.0 / 3.0) * C::drachm;
 
   /// (Brit) minim
-  static const double minim = (1.0 / 20.0) * C::scruple;
+  static constexpr double minim = (1.0 / 20.0) * C::scruple;
 
   /// (US liq) gallon
-  static const double USgallon = 231.0 * C::cubic_inch;
+  static constexpr double USgallon = 231.0 * C::cubic_inch;
 
   /// (US liq) quart
-  static const double USquart = (1.0 / 4.0) * C::USgallon;
+  static constexpr double USquart = (1.0 / 4.0) * C::USgallon;
 
   /// (US liq) pint
-  static const double USpint = (1.0 / 2.0) * C::USquart;
+  static constexpr double USpint = (1.0 / 2.0) * C::USquart;
 
   /// (US liq) gill
-  static const double USgill = (1.0 / 4.0) * C::USpint;
+  static constexpr double USgill = (1.0 / 4.0) * C::USpint;
 
   /// (US liq) fluid ounce
-  static const double USfluid_ounce = (1.0 / 4.0) * C::USgill;
+  static constexpr double USfluid_ounce = (1.0 / 4.0) * C::USgill;
 
   /// (US liq) dram
-  static const double USdram = (1.0 / 8.0) * C::USfluid_ounce;
+  static constexpr double USdram = (1.0 / 8.0) * C::USfluid_ounce;
 
   /// (US liq) minim
-  static const double USminim = (1.0 / 60.0) * C::USdram;
+  static constexpr double USminim = (1.0 / 60.0) * C::USdram;
   //@}
 
   /**
@@ -621,7 +617,7 @@ namespace C
    */
   //@{
   /// nautical miles per hour
-  static const double knot = C::nautical_mile / C::hour;
+  static constexpr double knot = C::nautical_mile / C::hour;
   //@}
 
   /**
@@ -629,7 +625,7 @@ namespace C
    */
   //@{
   /// gravitational acceleration
-  static const double g = 9.80665 * C::metre / C::second / C::second;
+  static constexpr double g = 9.80665 * C::metre / C::second / C::second;
   //@}
 
   /**
@@ -637,43 +633,43 @@ namespace C
    */
   //@{
   /// gram
-  static const double gram = 0.001;
+  static constexpr double gram = 0.001;
 
   /// metric ton
-  static const double tonne = 1000.0 * C::kilo * C::gram;
+  static constexpr double tonne = 1000.0 * C::kilo * C::gram;
 
   /// metric carat
-  static const double carat = (1.0 / 5.0) * C::gram;
+  static constexpr double carat = (1.0 / 5.0) * C::gram;
 
   /// pound (avoirdupois)
-  static const double pound = 0.45359237 * C::kilo * C::gram;
+  static constexpr double pound = 0.45359237 * C::kilo * C::gram;
 
   /// ounce (avoirdupois)
-  static const double ounce = (1.0 / 16.0) * C::pound;
+  static constexpr double ounce = (1.0 / 16.0) * C::pound;
 
   /// stone
-  static const double stone = 14.0 * C::pound;
+  static constexpr double stone = 14.0 * C::pound;
 
   /// stone
-  static const double quarter = 2.0 * C::stone;
+  static constexpr double quarter = 2.0 * C::stone;
 
   /// (long) hundredweight
-  static const double hundredweight = 4.0 * C::quarter;
+  static constexpr double hundredweight = 4.0 * C::quarter;
 
   /// (long) ton
-  static const double ton = 20.0 * C::hundredweight;
+  static constexpr double ton = 20.0 * C::hundredweight;
 
   /// cental
-  static const double cental = 100.0 * C::pound;
+  static constexpr double cental = 100.0 * C::pound;
 
   /// short quarter (Brit)
-  static const double shortquarter = 25.0 * C::pound;
+  static constexpr double shortquarter = 25.0 * C::pound;
 
   /// short hundredweight
-  static const double shortcwt = 4.0 * C::shortquarter;
+  static constexpr double shortcwt = 4.0 * C::shortquarter;
 
   /// short ton
-  static const double shortton = 20.0 * C::shortcwt;
+  static constexpr double shortton = 20.0 * C::shortcwt;
   //@}
 
   /**
@@ -682,11 +678,11 @@ namespace C
   //@{
 
   /// Newton
-  static const double Newton =
+  static constexpr double Newton =
     C::kilo * C::gram * C::metre / C::second / C::second;
 
   /// dyne
-  static const double dyne = 1.0e-5 * C::Newton;
+  static constexpr double dyne = 1.0e-5 * C::Newton;
   //@}
 
   /**
@@ -694,19 +690,19 @@ namespace C
    */
   //@{
   /// Pascal
-  static const double Pascal = C::Newton / C::square_metre;
+  static constexpr double Pascal = C::Newton / C::square_metre;
 
   /// atmosphere
-  static const double atmosphere = 1.01325e+5 * C::Pascal;
+  static constexpr double atmosphere = 1.01325e+5 * C::Pascal;
 
   /// bar
-  static const double bar = 1.0e+5 * C::Pascal;
+  static constexpr double bar = 1.0e+5 * C::Pascal;
 
   /// torr
-  static const double torr = (1.0 / 760.0) * C::atmosphere;
+  static constexpr double torr = (1.0 / 760.0) * C::atmosphere;
 
   /// mm of Mercury
-  static const double mmHg = (13.5951 * C::g) * C::Pascal;
+  static constexpr double mmHg = (13.5951 * C::g) * C::Pascal;
   //@}
 
   /**
@@ -714,25 +710,25 @@ namespace C
    */
   //@{
   /// Joule
-  static const double Joule = C::Newton * C::metre;
+  static constexpr double Joule = C::Newton * C::metre;
 
   /// kiloWatt * hour
-  static const double kWh = 3.6e+6 * C::Joule;
+  static constexpr double kWh = 3.6e+6 * C::Joule;
 
   /// erg
-  static const double erg = 1.0e-7 * C::Joule;
+  static constexpr double erg = 1.0e-7 * C::Joule;
 
   /// calorie (thermochemical)
-  static const double calorie = 4.184 * C::Joule;
+  static constexpr double calorie = 4.184 * C::Joule;
 
   /// calorie (International Steam)
-  static const double calorie_IT = 4.1868 * C::Joule;
+  static constexpr double calorie_IT = 4.1868 * C::Joule;
 
   /// British thermal unit
-  static const double Btu = 1.05435e+3 * C::Joule;
+  static constexpr double Btu = 1.05435e+3 * C::Joule;
 
   /// electron volt
-  static const double eV = C::qe * C::Joule;
+  static constexpr double eV = C::qe * C::Joule;
   //@}
 
   /**
@@ -740,19 +736,19 @@ namespace C
    */
   //@{
   /// Kelvin
-  static const double Kelvin = C::Boltzmann * C::Joule;
+  static constexpr double Kelvin = C::Boltzmann * C::Joule;
 
   /// Celsius
-  static const double Celsius = C::Kelvin;
+  static constexpr double Celsius = C::Kelvin;
 
   /// Centigrade
-  static const double Centigrade = C::Celsius;
+  static constexpr double Centigrade = C::Celsius;
 
   /// Fahrenheit
-  static const double Fahrenheit = (5.0 / 9.0) * C::Kelvin;
+  static constexpr double Fahrenheit = (5.0 / 9.0) * C::Kelvin;
 
   /// Rankine
-  static const double Rankine = C::Fahrenheit;
+  static constexpr double Rankine = C::Fahrenheit;
   //@}
 
   /**
@@ -760,19 +756,19 @@ namespace C
    */
   //@{
   /// Absolute Zero (Kelvins)
-  static const double Kelvin_0 = 0.0 * C::Kelvin;
+  static constexpr double Kelvin_0 = 0.0 * C::Kelvin;
 
   /// Celsius Zero
-  static const double Celsius_0 = 273.15 * C::Kelvin;
+  static constexpr double Celsius_0 = 273.15 * C::Kelvin;
 
   /// Centigrade Zero
-  static const double Centigrade_0 = C::Celsius_0;
+  static constexpr double Centigrade_0 = C::Celsius_0;
 
   /// Fahrenheit Zero
-  static const double Fahrenheit_0 = 459.67 * C::Fahrenheit;
+  static constexpr double Fahrenheit_0 = 459.67 * C::Fahrenheit;
 
   /// Absolute Zero (Rankines)
-  static const double Rankine_0 = 0.0 * C::Fahrenheit;
+  static constexpr double Rankine_0 = 0.0 * C::Fahrenheit;
   //@}
 
   /**
@@ -780,10 +776,10 @@ namespace C
    */
   //@{
   /// Watt
-  static const double Watt = C::Joule / C::second;
+  static constexpr double Watt = C::Joule / C::second;
 
   /// horsepower
-  static const double horsepower = 745.7 * C::Watt;
+  static constexpr double horsepower = 745.7 * C::Watt;
   //@}
 
   /**
@@ -791,10 +787,10 @@ namespace C
    */
   //@{
   /// Jansky
-  static const double Jansky = 1.0e-26 * C::Watt / C::square_metre / C::Hertz;
+  static constexpr double Jansky = 1.0e-26 * C::Watt / C::square_metre / C::Hertz;
 
   /// flux units
-  static const double fu = C::Jansky;
+  static constexpr double fu = C::Jansky;
   //@}
 
   /**
@@ -802,13 +798,13 @@ namespace C
    */
   //@{
   /// Coulomb
-  static const double Coulomb = 1.0;
+  static constexpr double Coulomb = 1.0;
 
   /// abCoulomb (emu)
-  static const double abCoulomb = 10.0 * C::Coulomb;
+  static constexpr double abCoulomb = 10.0 * C::Coulomb;
 
   /// statCoulomb (esu)
-  static const double statCoulomb = (0.1 / C::c) * C::Coulomb;
+  static constexpr double statCoulomb = (0.1 / C::c) * C::Coulomb;
   //@}
 
   /**
@@ -816,13 +812,13 @@ namespace C
    */
   //@{
   /// Ampere
-  static const double Ampere = C::Coulomb / C::second;
+  static constexpr double Ampere = C::Coulomb / C::second;
 
   /// abAmpere (emu)
-  static const double abAmpere = 10.0 * C::Ampere;
+  static constexpr double abAmpere = 10.0 * C::Ampere;
 
   /// statAmpere (esu)
-  static const double statAmpere = (0.1 / C::c) * C::Ampere;
+  static constexpr double statAmpere = (0.1 / C::c) * C::Ampere;
   //@}
 
   // Electric field strength (force / charge) [M*L/(T*T*Q)]
@@ -832,13 +828,13 @@ namespace C
    */
   //@{
   /// Volt
-  static const double Volt = C::Joule / C::Coulomb;
+  static constexpr double Volt = C::Joule / C::Coulomb;
 
   /// abVolt (emu)
-  static const double abVolt = 1.0e-8 * C::Volt;
+  static constexpr double abVolt = 1.0e-8 * C::Volt;
 
   /// statVolt (esu)
-  static const double statVolt = (C::c * 1.0e-6) * C::Volt;
+  static constexpr double statVolt = (C::c * 1.0e-6) * C::Volt;
   //@}
 
   /**
@@ -846,13 +842,13 @@ namespace C
    */
   //@{
   /// Ohm
-  static const double Ohm = C::Volt / C::Ampere;
+  static constexpr double Ohm = C::Volt / C::Ampere;
 
   /// abOhm (emu)
-  static const double abOhm = 1.0e-9 * C::Ohm;
+  static constexpr double abOhm = 1.0e-9 * C::Ohm;
 
   /// starOhm (esu)
-  static const double statOhm = (3.0e+3 * C::c) * C::Ohm;
+  static constexpr double statOhm = (3.0e+3 * C::c) * C::Ohm;
   //@}
 
   /**
@@ -860,10 +856,10 @@ namespace C
    */
   //@{
   /// Siemens
-  static const double Siemens = C::Ampere / C::Volt;
+  static constexpr double Siemens = C::Ampere / C::Volt;
 
   /// mho
-  static const double mho = C::Siemens;
+  static constexpr double mho = C::Siemens;
   //@}
 
   /**
@@ -871,13 +867,13 @@ namespace C
    */
   //@{
   /// Farad
-  static const double Farad = C::Coulomb / C::Volt;
+  static constexpr double Farad = C::Coulomb / C::Volt;
 
   /// abFarad (emu)
-  static const double abFarad = 1.0e+9 * C::Farad;
+  static constexpr double abFarad = 1.0e+9 * C::Farad;
 
   /// statFarad (esu)
-  static const double statFarad = 1.0 / (3.0e+3 * C::c) * C::Farad;
+  static constexpr double statFarad = 1.0 / (3.0e+3 * C::c) * C::Farad;
   //@}
 
   /**
@@ -885,13 +881,13 @@ namespace C
    */
   //@{
   /// Henry
-  static const double Henry = C::Volt * C::second / C::Ampere;
+  static constexpr double Henry = C::Volt * C::second / C::Ampere;
 
   /// abHenry (emu)
-  static const double abHenry = 1.0e-9 * C::Henry;
+  static constexpr double abHenry = 1.0e-9 * C::Henry;
 
   /// statHenry (esu)
-  static const double statHenry = (3.0e+3 * C::c) * C::Henry;
+  static constexpr double statHenry = (3.0e+3 * C::c) * C::Henry;
   //@}
 
   /**
@@ -899,10 +895,10 @@ namespace C
    */
   //@{
   /// Tesla
-  static const double Tesla = C::Newton / C::Coulomb / (C::metre / C::second);
+  static constexpr double Tesla = C::Newton / C::Coulomb / (C::metre / C::second);
 
   /// Gauss (emu)
-  static const double Gauss = 1.0e-4 * C::Tesla;
+  static constexpr double Gauss = 1.0e-4 * C::Tesla;
   //@}
 
   /**
@@ -910,13 +906,13 @@ namespace C
    */
   //@{
   /// Weber
-  static const double Weber = C::Tesla / C::square_metre;
+  static constexpr double Weber = C::Tesla / C::square_metre;
 
   /// Maxwell (emu)
-  static const double Maxwell = 1.0e-8 * C::Weber;
+  static constexpr double Maxwell = 1.0e-8 * C::Weber;
 
   /// line (emu)
-  static const double line = C::Maxwell;
+  static constexpr double line = C::Maxwell;
   //@}
 
   /**
@@ -924,25 +920,25 @@ namespace C
    */
   //@{
   /// Ampere-turn
-  static const double Ampere_turn = C::Ampere;
+  static constexpr double Ampere_turn = C::Ampere;
 
   /// abAmpere-turn
-  static const double abAmpere_turn = 10.0 * C::Ampere_turn;
+  static constexpr double abAmpere_turn = 10.0 * C::Ampere_turn;
 
   /// Gilbert (emu)
-  static const double Gilbert = 10.0 / (4.0 * C::pi) * C::Ampere_turn;
+  static constexpr double Gilbert = 10.0 / (4.0 * C::pi) * C::Ampere_turn;
 
   /// praGilbert (emu)
-  static const double praGilbert = (4.0 * C::pi) * C::Ampere_turn;
+  static constexpr double praGilbert = (4.0 * C::pi) * C::Ampere_turn;
   //@}
 
   // Magnetic field intensity (current / length) [Q/(T*L)]:
   //@{
   /// Oersted (emu)
-  static const double Oersted = 1000.0 / (4.0 * C::pi) * C::Ampere / C::metre;
+  static constexpr double Oersted = 1000.0 / (4.0 * C::pi) * C::Ampere / C::metre;
 
   /// praOersted (emu)
-  static const double praOersted = (4.0 * C::pi) * C::Ampere / C::metre;
+  static constexpr double praOersted = (4.0 * C::pi) * C::Ampere / C::metre;
   //@}
 
   /**
@@ -950,7 +946,7 @@ namespace C
    */
   //@{
   /// Bequerel
-  static const double Bequerel = 1.0;
+  static constexpr double Bequerel = 1.0;
   //@}
 
   /**
@@ -958,7 +954,7 @@ namespace C
    */
   //@{
   /// candela
-  static const double candela = 1.0;
+  static constexpr double candela = 1.0;
   //@}
 
   /**
@@ -966,10 +962,10 @@ namespace C
    */
   //@{
   /// mole
-  static const double mole = 1.0;
+  static constexpr double mole = 1.0;
 
   /// number of molecules
-  static const double molecule = (1.0 / C::Avogadro) * C::mole;
+  static constexpr double molecule = (1.0 / C::Avogadro) * C::mole;
   //@}
 
   // End Physical conversion factors
