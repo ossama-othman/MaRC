@@ -129,7 +129,6 @@ namespace MaRC
   };
 
   // MapFactory specialization of the ValuePtr traits template.
-  template<>
   template<typename T>
   struct VP_traits<MapFactory<T> >
   {
