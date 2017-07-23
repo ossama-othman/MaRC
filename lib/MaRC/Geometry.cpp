@@ -1,14 +1,13 @@
 #include "Geometry.h"
 #include "Matrix.h"
 
-#include <type_traits>
 #include <cmath>
 
 
 void
 MaRC::Geometry::RotX(double angle,
-		     DVector const & vec,
-		     DVector & rotated)
+                     DVector const & vec,
+                     DVector & rotated)
 {
   double const cosine = ::cos(angle);
   double const sine   = ::sin(angle);
@@ -20,8 +19,8 @@ MaRC::Geometry::RotX(double angle,
 
 void
 MaRC::Geometry::RotY(double angle,
-		     DVector const & vec,
-		     DVector & rotated)
+                     DVector const & vec,
+                     DVector & rotated)
 {
   double const cosine = ::cos(angle);
   double const sine   = ::sin(angle);
@@ -33,8 +32,8 @@ MaRC::Geometry::RotY(double angle,
 
 void
 MaRC::Geometry::RotZ(double angle,
-		     DVector const & vec,
-		     DVector &rotated)
+                     DVector const & vec,
+                     DVector &rotated)
 {
   double const cosine = ::cos(angle);
   double const sine   = ::sin(angle);
@@ -105,8 +104,8 @@ double
 MaRC::Geometry::Magnitude(const FVector & vec)
 {
   return ::sqrt(static_cast<double>(vec[0]) * vec[0]
-		+ vec[1] * vec[1]
-		+ vec[2] * vec[2]);
+                + vec[1] * vec[1]
+                + vec[2] * vec[2]);
 }
 
 // The following really should be only for float or double vectors,
@@ -116,7 +115,7 @@ MaRC::Geometry::toUnitVector(DVector &vec)
 {
   double const mag = Geometry::Magnitude(vec);
 
-  for(std::size_t i = 0; i < std::extent<DVector>(); ++i)
+  for(std::size_t i = 0; i < 3; ++i)
     vec[i] /= mag;
 }
 
@@ -125,6 +124,6 @@ MaRC::Geometry::toUnitVector(FVector &vec)
 {
   double const mag = Geometry::Magnitude(vec);
 
-  for(std::size_t i = 0; i < std::extent<FVector>(); ++i)
-    vec[i] /= static_cast<float>(mag);
+  for(std::size_t i = 0; i < 3; ++i)
+      vec[i] /= static_cast<float>(mag);
 }
