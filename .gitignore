@@ -44,6 +44,9 @@ tests/NaN_Test.trs
 tests/Vector_Test
 tests/Vector_Test.log
 tests/Vector_Test.trs
+tests/Matrix_Test
+tests/Matrix_Test.log
+tests/Matrix_Test.trs
 tests/test-suite.log
 tests/test_map.fits
 ylwrap

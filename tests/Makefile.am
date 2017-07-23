@@ -24,7 +24,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/lib
 
 check_PROGRAMS = \
   NaN_Test \
-  Vector_Test
+  Vector_Test \
+  Matrix_Test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
@@ -32,16 +33,18 @@ dist_check_DATA = \
   test_map.inp \
   test.fits.gz
 
+NaN_Test_SOURCES = NaN_Test.cpp
+NaN_Test_LDADD = $(MARC_LIB)
+
+Vector_Test_SOURCES = Vector_Test.cpp
+
+Matrix_Test_SOURCES = Matrix_Test.cpp
+
 TESTS = \
   $(check_PROGRAMS) \
   $(dist_check_SCRIPTS)
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
-
-NaN_Test_SOURCES = NaN_Test.cpp
-NaN_Test_LDADD = $(MARC_LIB)
-
-Vector_Test_SOURCES = Vector_Test.cpp
 
 CLEANFILES = test_map.fits
 
