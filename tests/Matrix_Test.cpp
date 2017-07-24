@@ -25,7 +25,9 @@
 
 bool test_matrix_initialization()
 {
-    using matrix_type = MaRC::Matrix<int, 2, 2>;
+    static constexpr std::size_t ROWS = 2;
+    static constexpr std::size_t COLUMNS = 2;
+    using matrix_type = MaRC::Matrix<int, ROWS, COLUMNS>;
 
     matrix_type const m1;     // Default initialize all elements to 0.
 
@@ -42,8 +44,13 @@ bool test_matrix_initialization()
 
     matrix_type const m5 = m3;
 
+    std::iterator_traits<matrix_type::iterator>::difference_type const
+        element_count = std::distance(std::cbegin(m1), std::cend(m1));
+
     return
-        std::find_if_not(
+        element_count > 0
+        && static_cast<decltype(ROWS)>(element_count) == ROWS * COLUMNS
+        && std::find_if_not(
             std::cbegin(m1),
             std::cend(m1),
             [](auto value)
@@ -51,13 +58,13 @@ bool test_matrix_initialization()
                 return value == matrix_type::value_type();
             }) == std::cend(m1)
         && std::equal(std::cbegin(m2), std::cend(m2),
-                      std::cbegin(n),  std::end(n))
+                      std::cbegin(n),  std::cend(n))
         && std::equal(std::cbegin(m3), std::cend(m3),
-                      std::cbegin(m2),  std::end(m2))
+                      std::cbegin(m2), std::cend(m2))
         && std::equal(std::cbegin(m4), std::cend(m4),
-                      std::cbegin(n),  std::end(n))
+                      std::cbegin(n),  std::cend(n))
         && std::equal(std::cbegin(m5), std::cend(m5),
-                      std::cbegin(m3),  std::end(m3));
+                      std::cbegin(m3), std::cend(m3));
 }
 
 bool test_matrix_comparison()

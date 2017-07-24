@@ -54,10 +54,10 @@ namespace MaRC
         typedef T               element_type;
         typedef T &             reference;
         typedef T const &       const_reference;
-
-
         typedef Matrix<T, M, N> matrix_type;
         typedef Matrix<T, N, M> transpose_type;
+        typedef T *             iterator;
+        typedef T const *       const_iterator;
 
         /// Constructor.
         Matrix()
@@ -152,8 +152,8 @@ namespace MaRC
             //
             // Non-throwing for arithmetic types.
 
-            std::copy(rhs.begin(),
-                      rhs.end(),
+            std::copy(std::cbegin(rhs),
+                      std::cend(rhs),
                       this->begin());
 
             return *this;
@@ -227,7 +227,7 @@ namespace MaRC
          * Return an iterator to the beginning of the flattened form
          * of this matrix.
          */
-        constexpr inline T * begin()
+        constexpr inline iterator begin()
         {
             return &this->matrix_[0][0];
         }
@@ -239,7 +239,7 @@ namespace MaRC
          * form of this matrix.  This method exists solely to
          * facilitate efficient copying of the matrix.
          */
-        constexpr inline T const * begin() const
+        constexpr inline const_iterator begin() const
         {
             return &this->matrix_[0][0];
         }
@@ -250,7 +250,7 @@ namespace MaRC
          * Return an iterator to the end of the flattened form of this
          * matrix.
          */
-        constexpr inline T * end()
+        constexpr inline iterator end()
         {
             return this->begin() + M * N;
         }
@@ -261,7 +261,7 @@ namespace MaRC
          * Return a const iterator to the end of the flattened form of
          * this matrix.
          */
-        constexpr inline T const * end() const
+        constexpr inline const_iterator end() const
         {
             return this->begin() + M * N;
         }

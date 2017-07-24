@@ -20,7 +20,8 @@
 
 bool test_vector_initialization()
 {
-    using vector_type = MaRC::Vector<int, 3>;
+    static constexpr std::size_t ROWS = 3;
+    using vector_type = MaRC::Vector<int, ROWS>;
 
     vector_type const v1;  // Default initialize all elements to 0.
 
@@ -36,8 +37,13 @@ bool test_vector_initialization()
 
     vector_type const v5 = v3;
 
+    std::iterator_traits<vector_type::iterator>::difference_type const
+        row_count = std::distance(std::cbegin(v1), std::cend(v1));
+
     return
-        std::find_if_not(
+        row_count > 0
+        && static_cast<decltype(ROWS)>(row_count) == ROWS
+        && std::find_if_not(
             std::cbegin(v1),
             std::cend(v1),
             [](auto value)
@@ -45,13 +51,13 @@ bool test_vector_initialization()
                 return value == vector_type::value_type();
             }) == std::cend(v1)
         && std::equal(std::cbegin(v2), std::cend(v2),
-                      std::cbegin(n),  std::end(n))
+                      std::cbegin(n),  std::cend(n))
         && std::equal(std::cbegin(v3), std::cend(v3),
-                      std::cbegin(v2),  std::end(v2))
+                      std::cbegin(v2), std::cend(v2))
         && std::equal(std::cbegin(v4), std::cend(v4),
-                      std::cbegin(n),  std::end(n))
+                      std::cbegin(n),  std::cend(n))
         && std::equal(std::cbegin(v5), std::cend(v5),
-                      std::cbegin(v3),  std::end(v3));
+                      std::cbegin(v3), std::cend(v3));
 }
 
 bool test_vector_comparison()
