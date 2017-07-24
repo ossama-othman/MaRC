@@ -1,14 +1,37 @@
+24 July 2017 - MaRC 0.9.8
+
+- MaRC now requires C++14 conforming compilers.  The 'configure'
+  script will attempt to detect and enable C++14 support in the C++
+  compiler in use. Verified to build with g++ 6.3 and Clang++ 3.9.
+- Modernized the build infrastructure to leverage the latest versions
+  of the GNU autotools (Autoconf, Automake and Libtool).  This should
+  provide better build support on more platforms, particularly recent
+  ones.
+- MaRC now passes the static analysis scan run through Coverity (see
+  https://scan.coverity.com/projects/ossama-othman-marc).
+- Added better support for automated detection of CPU tuning compiler
+  flags.
+- Updated LPGL license terms from 2.0 to 2.1.
+- Updated GFDL license terms from 1.2 to 2.3.
+- Minor optimizations.
+- Slight reduction in static footprint.
+- Fixed a bug MaRC::Vector iteration problem that prevented properly
+  mapping images where the latitude and longitude at the optical axis
+  ({LAT,LON}_AT_CENTER) instead of the of body center
+  ({SAMPLE,LINE}_CENTER were given.  Support for the LAT_AT_CENTER and
+  LON_AT_CENTER MaRC input file keywords is still disabled, however,
+  since the fix is still somewhat experimental.
+
 11 November 2005 - MaRC 0.9.7
 
 - Fixed latitude/longitude visibility calculation so that it correctly
-takes into account an optical axis that is not in line with the
-sub-observation point.
+  takes into account an optical axis that is not in line with the
+  sub-observation point.
 
 9 November 2005 - MaRC 0.9.6
 
 - Reduced floating point computation error when image focal length and
   scale are available.
-
 - Fixed logic error that prevented images from being mapped
   correctly.
 
@@ -76,25 +99,25 @@ sub-observation point.
 
 18 November 1997
 
-	- Updated coordinate transformation matrix computations.
-	  Transformation should now be correct.  The update allows MaRC to
-	  take into account the fact the camera may not be looking directly
-	  at the sub-observation point.
-	- Added a perspective projection.  (STILL EXPERIMENTAL)
-	- Added code to use weighted averages when mapping in overlap regions.
-	  Seams are virtually invisible when mapping source images that were
-	  taken with the same instrument.
-	- Many code fixes and clean ups.
-	- Added some support for reading VICAR files.
+- Updated coordinate transformation matrix computations.
+  Transformation should now be correct.  The update allows MaRC to
+  take into account the fact the camera may not be looking directly at
+  the sub-observation point.
+- Added a perspective projection.  (STILL EXPERIMENTAL)
+- Added code to use weighted averages when mapping in overlap regions.
+  Seams are virtually invisible when mapping source images that were
+  taken with the same instrument.
+- Many code fixes and clean ups.
+- Added some support for reading VICAR files.
 
 30 May 1997
 
-	- Memory is now handled very differently.  The new memory scheme
-	  uses MUCH less memory for multi-plane maps than previously.  Memory
-	  requirements depend ONLY on the number of samples and lines in the
-	  desired map.  This means that a map with 20 planes would take up the
-	  same amount of memory as a 1 plane map during mapping!  Of course,
-	  additional memory is still required to handle the additional images
-	  in the image queue, but this memory requirement is insignificant
-	  compared to the memory savings of the new memory usage scheme.
-	- Negative values may now be mapped on "SHORT" (16-bit) integer maps.
+- Memory is now handled very differently.  The new memory scheme uses
+  MUCH less memory for multi-plane maps than previously.  Memory
+  requirements depend ONLY on the number of samples and lines in the
+  desired map.  This means that a map with 20 planes would take up the
+  same amount of memory as a 1 plane map during mapping!  Of course,
+  additional memory is still required to handle the additional images
+  in the image queue, but this memory requirement is insignificant
+  compared to the memory savings of the new memory usage scheme.
+- Negative values may now be mapped on "SHORT" (16-bit) integer maps.

@@ -1,3 +1,12 @@
+Mon Jul 24 22:07:36 2017  Ossama Othman  <othman@users.sourceforge.net>
+
+	* MaRC 0.9.8 released.
+	* This ChangeLog will no longer be maintained.  See the NEWS file
+	  for high level descriptions of changes, and git logs
+	  (https://github.com/ossama-othman/MaRC or
+	  https://sourceforge.net/projects/marc/) for specific change
+	  details.
+
 Fri Nov 11 23:53:43 2005  Ossama Othman  <ossama@dre.vanderbilt.edu>
 
 	* THANKS:
