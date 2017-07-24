@@ -111,7 +111,7 @@ namespace MaRC
         Vector<T, M> & operator=(Vector<T, M> const & rhs)
         {
             std::copy(std::cbegin(rhs),
-                      std::cbegin(rhs),
+                      std::cend(rhs),
                       this->begin());
 
             return *this;
