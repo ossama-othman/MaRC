@@ -19,12 +19,11 @@ Copyright @copyright{} 1997-1999, 2003, 2004, 2017  Ossama Othman
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2
+under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
-with no Invariant Sections, with no
-Front-Cover Texts, and with no Back-Cover Texts.
-A copy of the license is included in the section entitled ``GNU
-Free Documentation License''.
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+A copy of the license is included in the section entitled "GNU
+Free Documentation License".
 @end quotation
 @end copying
 
@@ -2331,6 +2330,10 @@ file, since all of these entries are optional.
 @menu
 * GNU Free Documentation License:: License for copying this manual
 @end menu
+
+@node GNU Free Documentation License, , , Copying This Manual
+@comment node-name,     next,           previous, up
+@appendixsec GNU Free Documentation License
 
 @cindex GFDL
 @cindex license
