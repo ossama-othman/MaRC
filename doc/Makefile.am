@@ -1,4 +1,4 @@
-##  Copyright 1996, 1997, 2004  Ossama Othman
+##  Copyright 1996-1997, 2004, 2017  Ossama Othman
 ##
 ##  All Rights Reserved
 ##
@@ -20,8 +20,6 @@
 ##  Process this file with automake to produce Makefile.in
 ##
 
-SUBDIRS = examples
-
 dist_man_MANS = marc.1
 
 info_TEXINFOS = MaRC_input.texi
@@ -29,6 +27,12 @@ MaRC_input_TEXINFOS = fdl.texi
 
 docdir = $(prefix)/share/doc/$(PACKAGE)
 dist_doc_DATA = MaRC_input.pdf
+
+exampledir = $(prefix)/share/doc/$(PACKAGE)/examples
+dist_example_DATA = \
+	examples/dot.marc \
+	examples/101.inp \
+	examples/mumu0.test.inp
 
 all-local: pdf # ps html
 

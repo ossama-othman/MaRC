@@ -246,7 +246,6 @@ dnl AC_CONFIG_SUBDIRS(lib/popt)dnl
 AC_CONFIG_FILES([
   Makefile
   doc/Makefile
-  doc/examples/Makefile
   lib/Makefile
   lib/MaRC/Makefile
   src/Makefile
