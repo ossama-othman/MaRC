@@ -51,8 +51,8 @@ namespace MaRC
      */
     static T minimum (double min)
     {
-      static const T absolute_min = std::numeric_limits<T>::min ();
-      return (min < absolute_min ? absolute_min : static_cast<T> (min));
+      static constexpr T absolute_min = std::numeric_limits<T>::lowest();
+      return (min < absolute_min ? absolute_min : static_cast<T>(min));
     }
 
     /// Make sure given maximum value falls within map data type
@@ -73,8 +73,8 @@ namespace MaRC
      */
     static T maximum (double max)
     {
-      static const T absolute_max = std::numeric_limits<T>::max ();
-      return (max > absolute_max ? absolute_max : static_cast<T> (max));
+      static constexpr T absolute_max = std::numeric_limits<T>::max();
+      return (max > absolute_max ? absolute_max : static_cast<T>(max));
     }
 
   };
@@ -85,14 +85,20 @@ namespace MaRC
   {
     static float minimum (double min)
     {
-      static const float absolute_min =
-        -std::numeric_limits<float>::min () - 1;
+      /**
+       * @todo Why do we need to add one here?  Why not just drop this
+       *       @c float specialization entirely.  The generalized
+       *       trait above appears to be sufficient.
+       */
+      static constexpr float absolute_min =
+        std::numeric_limits<float>::lowest() + 1;
       return (min < absolute_min ? absolute_min : min);
     }
 
     static float maximum (double max)
     {
-      static const float absolute_max = std::numeric_limits<float>::max ();
+      static constexpr float absolute_max =
+          std::numeric_limits<float>::max();
       return (max > absolute_max ? absolute_max : max);
     }
 

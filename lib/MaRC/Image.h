@@ -15,10 +15,8 @@
 #include <MaRC/NaN.h>
 
 #include <limits>
+#include <cassert>
 
-#ifdef DEBUG
-# include <cassert>
-#endif  /* DEBUG */
 
 namespace MaRC
 {
@@ -43,7 +41,6 @@ namespace MaRC
       for (T * image = begin; image != end; ++image)
         *image = T ();
     }
-
   };
 
   // Image_traits specializations.
@@ -56,20 +53,6 @@ namespace MaRC
       for (float * image = begin; image != end; ++image)
         *image = static_cast<float> (MaRC::NaN);
     }
-
-    static float minimum (double min)
-    {
-      static const float absolute_min =
-        -std::numeric_limits<float>::min () - 1;
-      return (min < absolute_min ? absolute_min : min);
-    }
-
-    static float maximum (double max)
-    {
-      static const float absolute_max = std::numeric_limits<float>::max ();
-      return (max > absolute_max ? absolute_max : max);
-    }
-
   };
 
   template <>
@@ -81,7 +64,6 @@ namespace MaRC
       for (double * image = begin; image != end; ++image)
         *image = static_cast<double> (MaRC::NaN);
     }
-
   };
 
 

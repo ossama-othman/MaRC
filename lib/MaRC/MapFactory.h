@@ -76,8 +76,8 @@ namespace MaRC
         const SourceImage & source,
         unsigned int samples,
         unsigned int lines,
-        double minimum = -std::numeric_limits<double>::max (),
-        double maximum =  std::numeric_limits<double>::max ()) = 0;
+        double minimum = std::numeric_limits<double>::lowest(),
+        double maximum = std::numeric_limits<double>::max()) = 0;
 
     /// Create the latitude/longitude grid for the desired map
     /// projection.

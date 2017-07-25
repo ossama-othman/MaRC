@@ -7,17 +7,17 @@
 
 
 MaRC::ParseParameter::ParseParameter (void)
-  : lat_interval (10),
-    lon_interval (10),
-    minimum (-std::numeric_limits<double>::max ()),
-    maximum (std::numeric_limits<double>::max ()),
-    nibble_left   (0),
-    nibble_right  (0),
-    nibble_top    (0),
-    nibble_bottom (0),
-    commands_ (),
-    sym_table_ ()// ,
-//     lexer_ ()
+  : lat_interval(10)
+  , lon_interval(10)
+  , minimum(std::numeric_limits<decltype(this->minimum)>::lowest())
+  , maximum(std::numeric_limits<decltype(this->maximum)>::max())
+  , nibble_left  (0)
+  , nibble_right (0)
+  , nibble_top   (0)
+  , nibble_bottom(0)
+  , commands_()
+  , sym_table_()
+  // , lexer_()
 {
 }
 
