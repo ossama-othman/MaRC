@@ -1,6 +1,4 @@
 // -*- C++ -*-
-
-//==========================================================================
 /**
  *  @file Constants.h
  *
@@ -37,8 +35,6 @@
  *  @author Associated Universities, Inc. Washington DC, USA
  *  @author Ossama Othman
  */
-//==========================================================================
-
 
 #ifndef MARC_AIPS_CONSTANTS_H
 #define MARC_AIPS_CONSTANTS_H
