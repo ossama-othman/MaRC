@@ -1,6 +1,6 @@
 //   -*- C++ -*-
 /**
- *  @file BodyData.h
+ * @file BodyData.h
  *
  * Copyright (C) 1999, 2003-2004, 2017  Ossama Othman
  *

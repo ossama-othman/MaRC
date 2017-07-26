@@ -70,7 +70,7 @@
 	  same amount of memory as a 1 plane map!  Of course, additional
 	  memory is still required to handle additional image entries in the
 	  image queue, but this memory requirement is insignificant compared
-	  to the memory savings of the new memory usage scheme.	
+	  to the memory savings of the new memory usage scheme.
 	- Corrected bug in Orthographic class constructor.  Longitudes that
 	  were rejected by MaRC that were actually visible will now be
 	  accepted.
@@ -158,4 +158,3 @@
 	- Version number updated to V.0.5.2.
 	- Corrected interpolation routine exceptions.
 	- Corrected problem when using Arcseconds/pixel to denote scale.
-
