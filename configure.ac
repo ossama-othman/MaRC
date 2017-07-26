@@ -3,26 +3,22 @@ dnl Process this file with autoconf to produce a configure script.
 
 dnl  Copyright  1996-1999, 2003-2004, 2017  Ossama Othman
 dnl
-dnl  All Rights Reserved
+dnl This program is free software; you can redistribute it and/or modify
+dnl it under the terms of the GNU General Public License as published by
+dnl the Free Software Foundation; either version 2 of the License, or
+dnl (at your option) any later version.
 dnl
-dnl  This program is free software; you can redistribute it and/or modify
-dnl  it under the terms of the GNU General Public License as published by
-dnl  the Free Software Foundation; either version 2 of the License, or
-dnl  (at your option) any later version.
+dnl This program is distributed in the hope that it will be useful,
+dnl but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl GNU General Public License for more details.
 dnl
-dnl  This program is distributed in the hope that it will be useful,
-dnl  but WITHOUT ANY WARRANTY; without even the implied warranty of
-dnl  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-dnl  GNU General Public License for more details.
-dnl
-dnl  You should have received a copy of the GNU General Public License
-dnl  along with this program; if not, write to the Free Software
-dnl  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+dnl You should have received a copy of the GNU General Public License along
+dnl with this program; if not, write to the Free Software Foundation, Inc.,
+dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-dnl
 dnl An autoconf script to automatically configure MaRC.
-dnl Process this file with autoconf to produce a configure script.
-dnl
+
 
 AC_PREREQ([2.69])
 AC_INIT([MaRC], [0.9.8], [othman@users.sourceforge.net], [marc])
@@ -36,15 +32,6 @@ dnl AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.15 foreign silent-rules -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
-
-AC_COPYRIGHT([MaRC is copyrighted by Ossama Othman 1996-1999, 2003-2004, 2017
-all rights reserved.  You are free to use, modify, and distribute the
-MaRC source code and object code produced from the source, as long as
-you include this copyright statement along with code built using
-MaRC.
-
-Please see the file "COPYING" in the top level MaRC directory for
-additional details.])
 
 AC_CONFIG_MACRO_DIRS([m4])
 

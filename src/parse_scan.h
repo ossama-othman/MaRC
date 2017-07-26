@@ -1,15 +1,27 @@
 //   -*- C++ -*-
-
-//==========================================================================
 /**
- *  @file parse_scan.h
+ * @file parse_scan.h
  *
- *  MaRC Parser and Scanner Declarations
+ * MaRC Parser and Scanner Declarations
  *
- *  @author Ossama Othman
+ * Copyright (C) 1999, 2004, 2017  Ossama Othman
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * @author Ossama Othman
  */
-//==========================================================================
-
 
 #ifndef MARC_PARSE_SCAN_H
 #define MARC_PARSE_SCAN_H
@@ -25,6 +37,7 @@
 // compile-time errors.  *sigh*
 // #undef yyFlexLexer
 // #include <FlexLexer.h>
+
 
 namespace MaRC
 {
@@ -160,5 +173,6 @@ YY_DECL;
 
 int yyparse (MaRC::ParseParameter & pp);
 void yyerror (YYLTYPE * locp, MaRC::ParseParameter & pp, char const * msg);
+
 
 #endif
