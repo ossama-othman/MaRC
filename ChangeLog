@@ -1230,7 +1230,7 @@ Thu Jun 24 11:49:17 2004  Ossama Othman  <ossama@dre.vanderbilt.edu>
 
 	* src/MapCommand.h:
 
-	  New file containing bstract base class to be subclassed by
+	  New file containing abstract base class to be subclassed by
 	  concrete MaRC Command classes.
 
 	* src/parse.yy:
