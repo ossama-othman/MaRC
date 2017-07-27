@@ -25,8 +25,8 @@
 #ifndef MARC_MAP_TRAITS_H
 #define MARC_MAP_TRAITS_H
 
-#include <vector>
 #include <limits>
+
 
 namespace MaRC
 {
@@ -42,16 +42,17 @@ namespace MaRC
     template <typename T>
     struct Map_traits
     {
-        /// @typedef Type returned from @c make_map() method.
-        using map_type = std::vector<T>;
+        /// Value used to initialize an empty map.
+        /**
+         * The initial/empty map data value for integer typed maps
+         * will be zero, but the value for floating point typed maps
+         * in MaRC is the Not-a-Number constant, not zero.  This
+         * allows for easy disambiguation between actual data and
+         * areas of the map that contain no data.
+         */
+        static constexpr T empty_value =
+            std::numeric_limits<T>::quiet_NaN();
 
-        map_type make_map(std::size_t samples, std::size lines)
-        {
-            // Moved on the return, not copied, due to C++11 move
-            // semantics.
-            return map_type(samples * lines, T());
-        }
-      
         /// Make sure given minimum value falls within map data type
         /// range.
         /**
@@ -133,7 +134,7 @@ namespace MaRC
     };
 
     template <>
-    struct Map_traits<double>
+    Map_traits<double>
     {
         static double minimum(double min)
         {
@@ -147,21 +148,6 @@ namespace MaRC
             // No clipping is necessary since the data types are the
             // same.
             return max;
-        }
-    };
-
-    // -----------------------------------------------------------
-
-    struct Grid_traits
-    {
-        /// @typedef Type returned from @c make_grid() method.
-        using grid_type = std::vector<unsigned char>;
-
-        grid_type make_grid(std::size_t samples, std::size lines)
-        {
-            // Moved on the return, not copied, due to C++11 move
-            // semantics.
-            return grid_type(samples * lines, grid_type::value_type());
         }
     };
 

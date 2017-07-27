@@ -61,7 +61,7 @@ MaRC::MosaicImage::read_data (double lat,
             // Shortest distance to an edge of the source image or a
             // blank value in the source image.  This is used as a
             // weight when using weighted averaging.
-            unsigned int weight = 1;
+            std::size_t weight = 1;
 
             static bool const scan = true; // Scan for data weight.
 

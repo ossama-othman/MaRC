@@ -30,49 +30,46 @@
 
 namespace MaRC
 {
-  class BodyData;
-
-  /**
-   * @class NullPhotometricCorrection
-   *
-   * @brief Null (no-op) photometric correction strategy.
-   *
-   * This photometric correction strategy is a no-op.  It performs no
-   * photometric correction.
-   */
-  class NullPhotometricCorrection : public PhotometricCorrection
-  {
-  public:
-
-    /// Destructor
-    virtual ~NullPhotometricCorrection (void);
+    class BodyData;
 
     /**
-     * @name PhotometricCorrection Methods
+     * @class NullPhotometricCorrection
      *
-     * Methods required by the @c PhotometricCorrection abstract base
-     * class.
+     * @brief Null (no-op) photometric correction strategy.
      *
-     * @see @c PhotometricCorrection::correct()
+     * This photometric correction strategy is a no-op.  It performs
+     * no photometric correction.
      */
-    //@{
-    /// Perform photometric correction.
-    /**
-     * This particular implementation is a no-op.
-     */
-    virtual int correct (const BodyData & body,
-                         double sub_observ_lat,
-                         double sub_observ_lon,
-                         double sub_solar_lat,
-                         double sub_solar_lon,
-                         double lat,
-                         double lon,
-                         double range,
-                         double & data);
+    class NullPhotometricCorrection : public PhotometricCorrection
+    {
+    public:
 
-    /// Clone this @c NullPhotometricCorrection object.
-    virtual PhotometricCorrection * clone (void) const;
-    //@}
+        /// Destructor
+        virtual ~NullPhotometricCorrection (void);
+
+        /**
+         * @name PhotometricCorrection Methods
+         *
+         * Methods required by the @c PhotometricCorrection abstract
+         * base class.
+         *
+         * @see @c PhotometricCorrection::correct()
+         */
+        //@{
+        /// Perform photometric correction.
+        /**
+         * This particular implementation is a no-op.
+         */
+        virtual int correct(BodyData const & body,
+                            double sub_observ_lat,
+                            double sub_observ_lon,
+                            double sub_solar_lat,
+                            double sub_solar_lon,
+                            double lat,
+                            double lon,
+                            double range,
+                            double & data);
+        //@}
 
   };
 

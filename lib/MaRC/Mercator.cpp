@@ -53,15 +53,13 @@ MaRC::Mercator<T>::projection_name (void) const
 }
 
 template <typename T>
-MaRC::Mercator<T>::map_type
-MaRC::Mercator<T>::make_map(SourceImage const & source,
-                            std::size_t samples,
-                            std::size_t lines,
-                            double minimum,
-                            double maximum)
+void
+MaRC::Mercator<T>::make_map_i(SourceImage const & source,
+                              std::size_t samples,
+                              std::size_t lines,
+                              double minimum,
+                              double maximum)
 {
-    map_type map(MaRC::initialize_map<T>(samples, lines));
-
     std::size_t const nelem = samples * lines;
 
     std::size_t offset = 0;
@@ -91,15 +89,13 @@ MaRC::Mercator<T>::make_map(SourceImage const & source,
             unsigned char const percent_complete =
                 static_cast<unsigned char> ((offset + 1) * 100 / nelem);
 
-            double data = 0;
-            if (this->plot(source,
-                           lat,
-                           lon,
-                           minimum,
-                           maximum,
-                           percent_complete,
-                           data))
-                (*map)[offset] = static_cast<T>(data);
+            this->plot(source,
+                       lat,
+                       lon,
+                       minimum,
+                       maximum,
+                       percent_complete,
+                       map[offset]);
         }
     }
 

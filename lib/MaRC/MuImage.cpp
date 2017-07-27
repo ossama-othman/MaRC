@@ -28,79 +28,79 @@
 #include <cmath>
 
 
-MaRC::MuImage::MuImage (const OblateSpheroid & body,
-                        double sub_observ_lat,
-                        double sub_observ_lon,
-                        double range)
-  : VirtualImage (10000, 0),
-    body_ (body),
-    sub_observ_lat_ (sub_observ_lat * C::degree), // Radians
-    sub_observ_lon_ (sub_observ_lon * C::degree), // Radians
-    range_ (range)
+MaRC::MuImage::MuImage(OblateSpheroid const & body,
+                       double sub_observ_lat,
+                       double sub_observ_lon,
+                       double range)
+    : VirtualImage(10000, 0)
+    , body_(body)
+    , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
+    , sub_observ_lon_(sub_observ_lon * C::degree) // Radians
+    , range_(range)
 {
 }
 
 bool
-MaRC::MuImage::read_data_i (double lat,
+MaRC::MuImage::read_data_i(double lat, double lon, double & data) const
+{
+    data = this->body_.mu(this->sub_observ_lat_,
+                          this->sub_observ_lon_,
+                          lat,
+                          lon,
+                          this->range_);
+
+    return true;
+}
+
+bool
+MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
+                            double sub_observ_lat,
+                            double sub_observ_lon,
+                            double lat,
                             double lon,
-                            double & data) const
+                            double range)
 {
-  data = this->body_.mu (this->sub_observ_lat_,
-                         this->sub_observ_lon_,
-                         lat,
-                         lon,
-                         this->range_);
+    double const latg   = body.graphic_latitude (lat);
 
-  return true;
-}
+    double const radius = body.centric_radius (lat);
 
-bool
-MaRC::MuImage::is_visible (double lat, double lon) const
-{
-  return MaRC::MuImage::is_visible_i (this->body_,
-                                      this->sub_observ_lat_,
-                                      this->sub_observ_lon_,
-                                      lat,
-                                      lon,
-                                      this->range_);
-}
+    double const cosine =
+        (radius * ::cos (lat - latg) -
+         range * ::sin (sub_observ_lat) *
+         ::sin (latg)) /
+        range /::cos (sub_observ_lat) / ::cos (latg);
 
-bool
-MaRC::MuImage::is_visible_i (const OblateSpheroid & body,
-                             double sub_observ_lat,
-                             double sub_observ_lon,
-                             double lat,
-                             double lon,
-                             double range)
-{
-  const double latg   = body.graphic_latitude (lat);
+    if (cosine >= -1 && cosine <= 1) {
+        // Partial range of longitudes are visible
 
-  const double radius = body.centric_radius (lat);
+        double const lower = sub_observ_lon - ::fabs(::acos (cosine));
+        double const upper = sub_observ_lon + ::fabs(::acos (cosine));
 
-  const double cosine =
-    (radius * ::cos (lat - latg) -
-     range * ::sin (sub_observ_lat) *
-     ::sin (latg)) /
-    range /::cos (sub_observ_lat) / ::cos (latg);
+        // Now check if longitude at given latitude is visible
+        double l = lon;
 
-  if (cosine >= -1 && cosine <= 1)  // Partial range of longitudes are visible
-    {
-      const double lower = sub_observ_lon - ::fabs (::acos (cosine));
-      const double upper = sub_observ_lon + ::fabs (::acos (cosine));
+        if (l < lower)
+            l += C::_2pi;
+        else if (l > upper)
+            l -= C::_2pi;
 
-      // Now check if longitude at given latitude is visible
-      double l = lon;
-
-      if (l < lower)
-        l += C::_2pi;
-      else if (l > upper)
-        l -= C::_2pi;
-
-      if (l >= lower && l <= upper)
+        if (l >= lower && l <= upper)
+            return true;
+    } else if (cosine < -1) {
+         // Full 360 degree visible longitude range
         return true;
     }
-  else if (cosine < -1)  // Full 360 degree visible longitude range
-    return true;
 
   return false;
+}
+
+bool
+MaRC::MuImage::is_visible(double lat, double lon) const
+{
+    return MaRC::MuImage::is_visible_i(this->body_,
+                                       this->sub_observ_lat_,
+                                       this->sub_observ_lon_,
+                                       lat,
+                                       lon,
+                                       this->range_);
 }

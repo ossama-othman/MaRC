@@ -42,6 +42,8 @@ namespace MaRC
     {
     public:
 
+        GeometricCorrection() = default;
+
         // Disallow copying.
         GeometricCorrection(GeometricCorrection const &) = delete;
         GeometricCorrection & operator=(

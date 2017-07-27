@@ -915,7 +915,7 @@ image_initialize:
             photo_factory =
                 std::make_unique<MaRC::PhotoImageFactory>(
                     $3,
-                    *oblate_spheroid));
+                    *oblate_spheroid);
                 free ($3);
         }
 ;
@@ -1077,12 +1077,10 @@ phase:  _PHASE ':'
 
 lat_plane: LATITUDE ':' lat_type {
             // Latitudes in radians
-            MaRC::ValuePtr<MaRC::BodyData> bd (
-              new MaRC::OblateSpheroid (*oblate_spheroid));
 
             image_factory =
-              MaRC::ValuePtr<MaRC::LatitudeImageFactory> (
-                new MaRC::LatitudeImageFactory (bd, graphic_lat));
+                std::make_unique<MaRC::LatitudeImageFactory>(
+                    *oblate_spheroid, graphic_lat));
            }
 ;
 
@@ -1090,8 +1088,7 @@ lat_plane: LATITUDE ':' lat_type {
 lon_plane: LONGITUDE {
             // Longitudes in radians
             image_factory =
-              MaRC::ValuePtr<MaRC::LongitudeImageFactory> (
-                new MaRC::LongitudeImageFactory);
+                std::make_unique<MaRC::LongitudeImageFactory>();
            }
 ;
 

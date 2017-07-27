@@ -83,12 +83,11 @@ namespace MaRC
          * @note We rely on C++11 move semantics to avoid deep copying
          *       the returned map.
          */
-        virtual map_type make_map(
-            SourceImage const & source,
-            std::size_t samples,
-            std::size_t lines,
-            double minimum = std::numeric_limits<double>::lowest(),
-            double maximum = std::numeric_limits<double>::max()) = 0;
+        map_type make_map(SourceImage const & source,
+                          std::size_t samples,
+                          std::size_t lines,
+                          double minimum,
+                          double maximum);
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.
@@ -111,6 +110,26 @@ namespace MaRC
                                     float lon_interval) = 0;
 
     protected:
+
+        /// Create the desired map projection.
+        /**
+         * @param[in]     source  SourceImage object containing the
+         *                        data to be mapped.
+         * @param[in]     samples Number of samples in map.
+         * @param[in]     lines   Number of lines   in map.
+         * @param[in]     minimum Minimum allowed value map, i.e. all
+         *                        data greater than @ a minimum.
+         * @param[in]     maximum Maximum allowed value map, i.e. all
+         *                        data less than @a maximum.
+         * @param[in,out] map     Map container to be populated with
+         *                        map data.
+         */
+        virtual void make_map_i(SourceImage const & source,
+                                std::size_t samples,
+                                std::size_t lines,
+                                double minimum,
+                                double maximum,
+                                map_type & map) = 0;
 
         /// Plot the data on the map.
         /**

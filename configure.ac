@@ -158,59 +158,6 @@ Derived * d = factory.make ();
 AS_IF([test "x$ac_cv_cxx_covariant_return_types_supported" = "xyes"],
       [AC_DEFINE([MARC_HAS_COVARIANT_RETURN_TYPES])])
 
-AC_CACHE_CHECK([if $CXX STL implementation supports quiet NaN constant],
-  [ac_cv_STL_quiet_NaN_supported],[
-    AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#include <limits>
-      ]],
-      [[
-if (!std::numeric_limits<double>::has_quiet_NaN)
-  return -1;
-      ]])
-    ],
-    [
-     ac_cv_STL_quiet_NaN_supported=yes
-    ],
-    [
-     ac_cv_STL_quiet_NaN_supported=no
-    ])
-  ])
-
-AS_IF([test "x$ac_cv_STL_quiet_NaN_supported" = "xyes"],
-      [AC_DEFINE([MARC_HAS_STL_QUIET_NAN_SUPPORT])],
-      [AC_CACHE_CHECK([for C library implementation of quiet NaN constant],
-                      [ac_cv_C_lib_quiet_NaN],
-		      [
-        for ac_nan in NAN 'nan ("char-sequence")' 'strtod ("NAN", 0)' 'strtod ("NAN(char-sequence)", 0)'; do
-           AC_RUN_IFELSE([
-	     AC_LANG_PROGRAM([[
-#include <cmath>
-#include <cstdlib>
-            ]],
-            [[
-if (std::isnan($ac_nan) == 0)
-  return -1;  // NaN not supported.
-            ]])
-           ],
-           [
-             ac_cv_C_lib_quiet_NaN="$ac_nan"
-             break
-           ],
-           [
-             ac_cv_C_lib_quiet_NaN=none
-           ])
-        done
-                      ])
-
-       AS_IF([test "x$ac_cv_C_lib_quiet_NaN" != "xnone"],
-             [AC_DEFINE_UNQUOTED([MARC_C_LIB_QUIET_NAN],
-	                         [$ac_cv_C_lib_quiet_NaN])])
-      ])
-
-AS_IF([test "x$ac_cv_STL_quiet_NaN_supported" = "xno" &&
-       test "x$ac_cv_C_lib_quiet_NaN" = "xnone"],
-      [AC_MSG_ERROR([Unable to determine if NaN constant is supported.])])
-
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],
       [AS_IF([test "x$GXX" = "xyes"], [XCXXFLAGS="$XCXXFLAGS -O2"])

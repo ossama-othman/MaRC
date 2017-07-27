@@ -30,7 +30,7 @@ MaRC::NullPhotometricCorrection::~NullPhotometricCorrection (void)
 
 int
 MaRC::NullPhotometricCorrection::correct (
-  const BodyData & /* body */,
+  BodyData const & /* body */,
   double /* sub_observ_lat */,
   double /* sub_observ_lon */,
   double /* sub_solar_lat */,
@@ -41,11 +41,4 @@ MaRC::NullPhotometricCorrection::correct (
   double & /* data */)
 {
   return 0;
-}
-
-MaRC::PhotometricCorrection *
-MaRC::NullPhotometricCorrection::clone (void) const
-{
-  // Stateless so no need to copy construct.
-  return new NullPhotometricCorrection;
 }

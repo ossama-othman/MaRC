@@ -1,5 +1,4 @@
-/**
- * @file Image.cpp
+ Image.cpp
  *
  * Copyright (C) 2004, 2017  Ossama Othman
  *

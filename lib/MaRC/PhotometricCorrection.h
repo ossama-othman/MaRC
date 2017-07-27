@@ -45,6 +45,8 @@ namespace MaRC
     {
     public:
 
+        PhotometricCorrection() = default;
+
         // Disallow copying.
         PhotometricCorrection(PhotometricCorrection const &) = delete;
         PhotometricCorrection & operator=(

@@ -76,14 +76,6 @@ MaRC::SimpleCylindrical<T>::~SimpleCylindrical (void)
 }
 
 template <typename T>
-MaRC::MapFactory<T> *
-MaRC::SimpleCylindrical<T>::clone (void) const
-{
-  // Simple copy construction will suffice.
-  return new MaRC::SimpleCylindrical<T> (*this);
-}
-
-template <typename T>
 const char *
 MaRC::SimpleCylindrical<T>::projection_name (void) const
 {

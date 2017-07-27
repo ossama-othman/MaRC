@@ -41,9 +41,17 @@ namespace MaRC
   {
   public:
 
+      SourceImage() = default;
+
+      /// Disallow copying.
+      SourceImage(SourceImage const &) = delete;
+      SourceImage & operator=(SourceImage const &) = delete;
+
     /// Destructor.
     virtual ~SourceImage (void);
 
+
+      
     /// Retrieve data from source image.
     /**
      * Retrieve data from source image.

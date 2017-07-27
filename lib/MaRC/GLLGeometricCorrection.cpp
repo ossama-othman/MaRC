@@ -32,13 +32,13 @@ namespace MaRC
     namespace GLL
     {
         // The distortion constant must be a positive number.
-        static const double DISTORTION = 0.00000000658;
+        static constexpr double DISTORTION = 0.00000000658;
 
         // Default optical axis line.
-        static const double OA_LINE = 400;
+        static constexpr double OA_LINE = 400;
 
         // Default optical axis sample.
-        static const double OA_SAMPLE = 400;
+        static constexpr double OA_SAMPLE = 400;
     }
 }
 
@@ -46,8 +46,7 @@ namespace MaRC
 // Base summation mode detection on (samples > 1.1 * OA_SAMPLE)
 // instead of (samples > OA_SAMPLE) to avoid potential inexact
 // comparisons of two equal values e.g. (400.0 > 400.0000001).
-MaRC::GLLGeometricCorrection::GLLGeometricCorrection (
-    unsigned int samples)
+MaRC::GLLGeometricCorrection::GLLGeometricCorrection(std::size_t samples)
     : summation_mode_(samples > 1.1 * MaRC::GLL::OA_SAMPLE
                       ? false : true)
 {

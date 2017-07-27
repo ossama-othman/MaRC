@@ -80,7 +80,6 @@ namespace MaRC
      * @see @c MapFactory
      */
     //@{
-    virtual MapFactory<T> * clone (void) const;
     virtual const char * projection_name (void) const;
     virtual map_type * make_map (const SourceImage & source,
                                  unsigned int samples,

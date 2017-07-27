@@ -22,8 +22,6 @@ AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 lib_LTLIBRARIES = libMaRC.la
 
 libMaRC_la_SOURCES = \
-  NaN.cpp \
-  \
   Geometry.cpp \
   \
   BodyData.cpp \
@@ -56,8 +54,6 @@ libMaRC_la_SOURCES = \
 
 pkginclude_HEADERS = \
   config.h \
-  \
-  NaN.h \
   \
   Matrix.h \
   Vector.h \

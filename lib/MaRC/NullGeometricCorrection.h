@@ -30,31 +30,32 @@
 
 namespace MaRC
 {
-  /**
-   * @class NullGeometricCorrection
-   *
-   * @brief Null (no-op) geometric correction strategy.
-   *
-   * This geometric correction strategy is a no-op.  It performs no
-   * geometric correction.
-   */
-  class NullGeometricCorrection : public GeometricCorrection
-  {
-  public:
-
     /**
-     * @name GeometricCorrection Methods
+     * @class NullGeometricCorrection
      *
-     * Virtual methods required by the GeometricCorrection abstract
-     * base class.
+     * @brief Null (no-op) geometric correction strategy.
+     *
+     * This geometric correction strategy is a no-op.  It performs no
+     * geometric correction.
      */
-    //@{
-    virtual void image_to_object (double & line, double & sample);
-    virtual void object_to_image (double & line, double & sample);
-    virtual GeometricCorrection * clone (void) const;
-    //@}
+    class NullGeometricCorrection : public GeometricCorrection
+    {
+    public:
 
-  };
+        NullGeometricCorrection() = default;
+
+        /**
+         * @name GeometricCorrection Methods
+         *
+         * Virtual methods required by the GeometricCorrection
+         * abstract base class.
+         */
+        //@{
+        virtual void image_to_object(double & line, double & sample);
+        virtual void object_to_image(double & line, double & sample);
+      //@}
+
+    };
 
 }
 

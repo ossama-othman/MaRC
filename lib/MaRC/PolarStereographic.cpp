@@ -67,14 +67,6 @@ MaRC::PolarStereographic<T>::~PolarStereographic (void)
 }
 
 template <typename T>
-MaRC::MapFactory<T> *
-MaRC::PolarStereographic<T>::clone (void) const
-{
-  // Simple copy construction will suffice.
-  return new MaRC::PolarStereographic<T> (*this);
-}
-
-template <typename T>
 char const *
 MaRC::PolarStereographic<T>::projection_name (void) const
 {

@@ -145,14 +145,6 @@ MaRC::Orthographic<T>::projection_name (void) const
 }
 
 template <typename T>
-MaRC::MapFactory<T> *
-MaRC::Orthographic<T>::clone (void) const
-{
-  // Simple copy construction will suffice.
-  return new MaRC::Orthographic<T> (*this);
-}
-
-template <typename T>
 typename MaRC::Orthographic<T>::map_type *
 MaRC::Orthographic<T>::make_map (const SourceImage & source,
                                  unsigned int samples,
@@ -235,27 +227,25 @@ MaRC::Orthographic<T>::make_map (const SourceImage & source,
                   zz= Rotated[2];
                 }
 
-              const double lat = ::atan2 (zz, ::sqrt (x * x + y * y));
+              double const lat = ::atan2(zz, ::sqrt (x * x + y * y));
 
               double lon;
 
-              if (this->body_->prograde ())
-                lon = this->sub_observ_lon_ - ::atan2 (-x, y) + C::pi;
+              if (this->body_->prograde())
+                lon = this->sub_observ_lon_ - ::atan2(-x, y) + C::pi;
               else
-                lon = this->sub_observ_lon_ + ::atan2 (-x, y) - C::pi;
+                lon = this->sub_observ_lon_ + ::atan2(-x, y) - C::pi;
 
-              const unsigned char percent_complete =
-                static_cast<unsigned char> ((offset + 1) * 100 / nelem);
+              unsigned char const percent_complete =
+                  static_cast<unsigned char>((offset + 1) * 100 / nelem);
 
-              double data = 0;
-              if (this->plot (source,
-                              lat,
-                              lon,
-                              minimum,
-                              maximum,
-                              percent_complete,
-                              data))
-                (*map)[offset] = static_cast<T> (data);
+              this->plot (source,
+                          lat,
+                          lon,
+                          minimum,
+                          maximum,
+                          percent_complete,
+                          map[offset]))
             }
         }
     }
