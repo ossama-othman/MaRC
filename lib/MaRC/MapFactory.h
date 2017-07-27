@@ -25,134 +25,130 @@
 #ifndef MARC_MAP_FACTORY_H
 #define MARC_MAP_FACTORY_H
 
-#include <MaRC/Image.h>
-#include <MaRC/Grid.h>
-
-#include <MaRC/ValuePtr.h>
-
+#include <vector>
 #include <limits>
 
 
 namespace MaRC
 {
-  class SourceImage;
+    class SourceImage;
 
-  /**
-   * @class MapFactory
-   *
-   * @brief Map Abstract Factory
-   *
-   * Abstract Factory class for map projections supported by MaRC.
-   */
-  template <typename T>
-  class MapFactory
-  {
-  public:
-
-    /// @typedef Type of data to be stored in map.
-    typedef T        data_type;
-
-    /// @typedef Type returned from @c make_map() method.
-    typedef Image<T> map_type;
-
-    /// @typedef Type returned from @c make_grid() method.
-    typedef Grid     grid_type;
-
-    /// Constructor.
-    MapFactory (void);
-
-    /// Destructor.
-    virtual ~MapFactory (void);
-
-    /// Clone operation that polymorphically copies the concrete
-    /// @c MapFactory object.
     /**
-     * This clone operation is generally used in conjunction with the
-     * VP_traits<MapFactory> template specialization to prevent the
-     * slicing that occurs when copying through a copy constructor
-     * instead.
-     */
-    virtual MapFactory<T> * clone (void) const = 0;
-
-    /// Return the name of the map projection.
-    virtual const char * projection_name (void) const = 0;
-
-    /// Create the desired map projection.
-    /**
-     * @param source  SourceImage object containing the data to be
-     *                mapped.
-     * @param samples Number of samples in map.
-     * @param lines   Number of lines   in map.
-     * @param minimum Minimum allowed value map, i.e. all data \> minimum.
-     * @param maximum Maximum allowed value map, i.e. all data \< maximum.
-     */
-    virtual map_type * make_map (
-        const SourceImage & source,
-        unsigned int samples,
-        unsigned int lines,
-        double minimum = std::numeric_limits<double>::lowest(),
-        double maximum = std::numeric_limits<double>::max()) = 0;
-
-    /// Create the latitude/longitude grid for the desired map
-    /// projection.
-    /**
-     * @param samples Number of samples in grid.
-     * @param lines   Number of lines   in grid.
-     * @param lat_interval Number of degrees between each latitude
-     *                     grid line.
-     * @param lon_interval Number of degrees between each longitude
-     *                     grid line.
-     */
-    virtual grid_type * make_grid (unsigned int samples,
-                                   unsigned int lines,
-                                   float lat_interval,
-                                   float lon_interval) = 0;
-
-  protected:
-
-    /// Plot the data on the map.
-    /**
-     * Plot the data at given latitude and longitude on the map.
+     * @class MapFactory
      *
-     * @param source           SourceImage object containing the data
-     *                         to be mapped.
-     * @param lat              Bodycentric latitude
-     * @param lon              Bodycentric longitude
-     * @param minimum          Minimum allowed value map, i.e. all
-     *                         data \> minimum.
-     * @param maximum          Maximum allowed value map, i.e. all
-     *                         data \< maximum.
-     * @param percent_complete Percent of map completed
-     * @param[out] data        Data retrieved from source image.
+     * @brief Map Abstract Factory
      *
-     * @return true if data was found at given latitude and longitude.
+     * Abstract Factory class for map projections supported by MaRC.
      */
-    bool plot (const SourceImage & source,
-               double lat,
-               double lon,
-               double minimum,
-               double maximum,
-               unsigned char percent_complete,
-               double & data);
-
-  private:
-
-    /// Previously measured percentage of map completed.
-    unsigned char percent_complete_old_;
-
-  };
-
-  // MapFactory specialization of the ValuePtr traits template.
-  template<typename T>
-  struct VP_traits<MapFactory<T> >
-  {
-    static MapFactory<T> * clone (const MapFactory<T> * p)
+    template <typename T>
+    class MapFactory
     {
-      return p->clone ();
-    }
-  };
+    public:
+
+        /// @typedef Type of data to be stored in map.
+        typedef T        data_type;
+
+        /// @typedef Type returned from @c make_map() method.
+        using map_type = std::vector<T>;
+
+        /// @typedef Type returned from @c make_grid() method.
+        using grid_type = std::vector<unsigned char>;
+
+        /// Constructor.
+        MapFactory();
+
+        // Disallow copying.
+        MapFactory(MapFactory const &) = delete;
+        MapFactory & operator=(MapFactory const &) = delete;
+
+        /// Destructor.
+        virtual ~MapFactory();
+
+        /// Return the name of the map projection.
+        virtual char const * projection_name() const = 0;
+
+        /// Create the desired map projection.
+        /**
+         * @param[in] source  SourceImage object containing the data
+         *                    to be mapped.
+         * @param[in] samples Number of samples in map.
+         * @param[in] lines   Number of lines   in map.
+         * @param[in] minimum Minimum allowed value map, i.e. all data
+         *                    greater than @ a minimum.
+         * @param[in] maximum Maximum allowed value map, i.e. all data
+         *                    less than @a maximum.
+         *
+         * @return The generated map image via C++11 move semantics.
+         *
+         * @note We rely on C++11 move semantics to avoid deep copying
+         *       the returned map.
+         */
+        virtual map_type make_map(
+            SourceImage const & source,
+            std::size_t samples,
+            std::size_t lines,
+            double minimum = std::numeric_limits<double>::lowest(),
+            double maximum = std::numeric_limits<double>::max()) = 0;
+
+        /// Create the latitude/longitude grid for the desired map
+        /// projection.
+        /**
+         * @param[in] samples      Number of samples in grid.
+         * @param[in] lines        Number of lines   in grid.
+         * @param[in] lat_interval Number of degrees between each
+         *                         latitude grid line.
+         * @param[in] lon_interval Number of degrees between each
+         *                         longitude grid line.
+         *
+         * @return The generated grid image.
+         *
+         * @note We rely on C++11 move semantics to avoid deep copying
+         *       the returned grid.
+         */
+        virtual grid_type make_grid(std::size_t samples,
+                                    std::size_t lines,
+                                    float lat_interval,
+                                    float lon_interval) = 0;
+
+    protected:
+
+        /// Plot the data on the map.
+        /**
+         * Plot the data at given latitude and longitude on the map.
+         * @param[in] source           SourceImage object containing
+         *                             the datato be mapped.
+         * @param[in] lat              Bodycentric latitude
+         * @param[in] lon              Bodycentric longitude
+         * @param[in] minimum          Minimum allowed value map,
+         *                             i.e. all data greater than
+         *                             @a minimum.
+         * @param[in] maximum          Maximum allowed value map,
+         *                             i.e. all data less than
+         *                             @a maximum.
+         * @param[in] percent_complete Percent of map completed
+         * @param[out] data            Data retrieved from source
+         *                             image.
+         *
+         * @return true if data was found at given latitude and
+         *         longitude.
+         */
+        bool plot(const SourceImage & source,
+                  double lat,
+                  double lon,
+                  double minimum,
+                  double maximum,
+                  unsigned char percent_complete,
+                  double & data);
+
+    private:
+
+        /// Previously measured percentage of map completed.
+        unsigned char percent_complete_old_;
+
+    };
 
 }
+
 
 #include "MaRC/MapFactory.cpp"
 

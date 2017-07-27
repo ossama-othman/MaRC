@@ -106,7 +106,6 @@ pkginclude_HEADERS = \
   SimpleCylindrical.cpp \
   \
   Constants.h \
-  ValuePtr.h \
   \
   Version.h
 

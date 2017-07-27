@@ -59,7 +59,6 @@
 #include <MaRC/PolarStereographic.h>
 #include <MaRC/SimpleCylindrical.h>
 
-#include "MaRC/ValuePtr.h"
 
 #include <MaRC/Constants.h>
 #include <MaRC/NaN.h>
@@ -70,15 +69,16 @@
 #include "MapCommand_T.h"
 
 #include <stdexcept>
+#include <limits>
+#include <memory>
 #include <cstring>
 #include <cmath>
-#include <limits>
 #include <cassert>
 
   std::string map_filename;
 
   std::string body_name;
-  MaRC::ValuePtr<MaRC::OblateSpheroid> oblate_spheroid;
+  std::unique_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
   std::string map_author;
   std::string map_origin;
@@ -114,9 +114,9 @@
   float lat_interval;
   float lon_interval;
 
-  MaRC::ValuePtr<MaRC::ImageFactory> image_factory;
+  std::unique_ptr<MaRC::ImageFactory> image_factory;
 
-  MaRC::ValuePtr<MaRC::PhotoImageFactory> photo_factory;
+  std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
   MaRC::MosaicImageFactory::list_type photo_factories;
   MaRC::MosaicImage::average_type averaging_type =
     MaRC::MosaicImage::AVG_WEIGHTED;
@@ -643,11 +643,10 @@ body:   BODY ':' _STRING
           free ($3);
 
           oblate_spheroid =
-            MaRC::ValuePtr<MaRC::OblateSpheroid> (
-              new MaRC::OblateSpheroid ($5,
-                                        ($4).eq_rad,
-                                        ($4).pol_rad,
-                                        ($4).flattening));
+              std::make_unique<MaRC::OblateSpheroid>($5,
+                                                     ($4).eq_rad,
+                                                     ($4).pol_rad,
+                                                     ($4).flattening));
         }
 ;
 
@@ -830,9 +829,8 @@ image:
         }
         | image_setup image {
             image_factory =
-              MaRC::ValuePtr<MaRC::MosaicImageFactory> (
-                new MaRC::MosaicImageFactory (photo_factories,
-                                              averaging_type));
+              std::unique<MaRC::MosaicImageFactory>(photo_factories,
+                                                    averaging_type));
         }
 ;
 
@@ -914,11 +912,11 @@ image_setup:
 image_initialize:
         /* Parse input image filename and initialize SourceImage object */
         _IMAGE ':' _STRING {
-          photo_factory =
-            MaRC::ValuePtr<MaRC::PhotoImageFactory> (
-              new MaRC::PhotoImageFactory ($3,
-                                           *oblate_spheroid));
-            free ($3);
+            photo_factory =
+                std::make_unique<MaRC::PhotoImageFactory>(
+                    $3,
+                    *oblate_spheroid));
+                free ($3);
         }
 ;
 
@@ -1041,11 +1039,10 @@ mu:     _MU ':'
         sub_solar       {
             // Mu * 10000
             image_factory =
-              MaRC::ValuePtr<MaRC::MuImageFactory> (
-                new MaRC::MuImageFactory (*oblate_spheroid,
-                                          ($3).lat,
-                                          ($3).lon,
-                                          $4));
+                std::make_unique<MaRC::MuImageFactory>(*oblate_spheroid,
+                                                       ($3).lat,
+                                                       ($3).lon,
+                                                       $4));
         }
 ;
 

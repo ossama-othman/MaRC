@@ -53,11 +53,11 @@ namespace MaRC
 
     /// Constructor
     /**
-     * @param samples Number of samples in the PhotoImage.  Only used
-     *                to determine whether summation mode should be
-     *                enabled.
+     * @param[in] samples Number of samples in the PhotoImage.  Only
+     *                    used to determine whether summation mode
+     *                    should be enabled.
      */
-    GLLGeometricCorrection (unsigned int samples);
+    GLLGeometricCorrection(unsigned int samples);
 
     /**
      * @name GeometricCorrection Methods
@@ -66,23 +66,22 @@ namespace MaRC
      * base class.
      */
     //@{
-    virtual void image_to_object (double & line, double & sample);
-    virtual void object_to_image (double & line, double & sample);
-    virtual GeometricCorrection * clone (void) const;
+    virtual void image_to_object(double & line, double & sample);
+    virtual void object_to_image(double & line, double & sample);
     //@}
 
     /// Return current summation mode
-    bool summation_mode (void) const { return this->summation_mode_; }
+    bool summation_mode() const { return this->summation_mode_; }
 
   private:
 
     /// Compute the cubic root of a given value
-    static double cube_root (double x);
+    static double cube_root(double x);
 
   private:
 
     /// true = summation mode, false = full frame
-    const bool summation_mode_;
+    bool const summation_mode_;
 
   };
 
