@@ -42,22 +42,34 @@ MaRC::MapFactory<T>::~MapFactory (void)
 
 template <typename T>
 MaRC::MapFactory<T>::map_type
-MaRC::MapFactory<T>::make_make(SourceImage const & source,
-                               std::size_t samples,
-                               std::size_t lines,
-                               double minimum,
-                               double maximum)
+MaRC::MapFactory<T>::make_map(SourceImage const & source,
+                              std::size_t samples,
+                              std::size_t lines,
+                              double minimum,
+                              double maximum)
 {
     map_type map(samples * lines, Map_traits<T>::empty_value);
 
-    this->make_map_i(source,
-                     samples,
-                     lines,
-                     minimum,
-                     maximum,
-                     map);
+    this->plot_map(source,
+                   samples,
+                   lines,
+                   minimum,
+                   maximum,
+                   map);
 
     return std::move(map);
+}
+
+template <typename T>
+MaRC::MapFactory<T>::grid_type
+MaRC::MapFactory<T>::make_grid(std::size_t samples,
+                               std::size_t lines)
+{
+    grid_type grid(samples * lines, 0);
+
+    this->plot_grid(samples, line, grid);
+
+    return std::move(grid);
 }
 
 
@@ -79,7 +91,7 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
         (source.read_data(lat, lon, datum)
          && data > Map_traits<T>::minimum(minimum)
          && data < Map_traits<T>::maximum(maximum));
-    
+
     if (found_data)
         map_datum = static_cast<T>(datum);
 

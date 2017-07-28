@@ -250,6 +250,10 @@ MaRC::MapCommand::execute (void)
                           xhistory.c_str (),
                           &status);
 
+      /**
+       * @todo Look into enabling the BLANK keyword for the map grid
+       *       FITS extension.
+       */
 //       int grid_blank = 0;
 //       fits_update_key (fptr,
 //                        TINT,
@@ -315,9 +319,11 @@ MaRC::MapCommand::xcomment_list (const comment_list_type & comments)
 void
 MaRC::MapCommand::grid_intervals (float lat_interval, float lon_interval)
 {
-  this->create_grid_ = true;
-  this->lat_interval_ = lat_interval;
-  this->lon_interval_ = lon_interval;
+    assert(lat_interval > 1 && lon_interval > 1);
+
+    this->create_grid_ = true;
+    this->lat_interval_ = lat_interval;
+    this->lon_interval_ = lon_interval;
 }
 
 void

@@ -31,6 +31,7 @@
 #include <memory>
 #include <vector>
 
+
 namespace MaRC
 {
     class OblateSpheroid;
@@ -79,7 +80,7 @@ namespace MaRC
          *                        (@c PhotoImage assumes ownership).
          */
         PhotoImage(OblateSpheroid const & body,
-                   std::vector<double>(image), // moved, not copied!
+                   std::vector<double> image, // moved, not copied!
                    std::size_t samples,
                    std::size_t lines,
                    std::unique_ptr<GeometricCorrection> gc);
@@ -283,7 +284,7 @@ namespace MaRC
          * Retrieve data from source image. The configured data
          * interpolation strategy will be applied.
          *
-         * @see MaRC::SourceImage::read_data_i.
+         * @see MaRC::SourceImage::read_data().
          */
         virtual bool read_data(double lat,
                                double lon,
@@ -306,7 +307,8 @@ namespace MaRC
          *                       @c read_data() that does not return a
          *                       weight.
          *
-         * @return @c true - Data retrieved, @c false - No data retrieved.
+         * @retval @c true  Data retrieved,
+         * @retval @c false No data retrieved.
          */
         bool read_data(double lat,
                        double lon,
@@ -317,8 +319,7 @@ namespace MaRC
         /// Returns "true" if latitude and longitude are visible.
         bool is_visible(double lat, double lon) const;
 
-
-        /// Convert (Latitude, Longitude) to (Sample, Line)
+        /// Convert (latitude, longitude) to (sample, sine)
         /**
          * @param[in] lat  Bodycentric (e.g. planetocentric) latitude
          *                 in radians.
@@ -326,8 +327,8 @@ namespace MaRC
          * @param[out] x   Floating point value corresponding to @c i.
          * @param[out] z   Floating point value corresponding to @c k.
          *
-         * @return @c true if conversion succeeded, @c false
-         *         otherwise.
+         * @retval @c true  Conversion succeeded.
+         * @retval @c false Conversion failed.
          * 
          * @note Since @a x and @a z potentially include fractional
          *       pixel components, they are more accurate than their
@@ -342,12 +343,12 @@ namespace MaRC
         /**
          * @todo Automate finalization of PhotoImage setup.
          */
-        void finalize_setup (void);
+        void finalize_setup();
 
     private:
 
         /// Use range, focal length and scale to compute
-        int set_km_per_pixel(void);
+        int set_km_per_pixel();
 
         /// Get rotation matrices for case when body centers are given.
         /**

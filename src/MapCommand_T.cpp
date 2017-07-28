@@ -107,6 +107,12 @@ MaRC::MapCommand_T<T>::make_map_planes (fitsfile * fptr, int & status)
       std::unique_ptr<SourceImage> image(i->make());
 
       // Create the map plane.
+      /**
+       * @todo Pass the FITS BLANK value (@see this->blank_) if one
+       *       was supplied (@see @c this->blank_set_) to
+       *       @c make_map() so that the map may be initialized with
+       *       that value in the integer data typed map case.
+       */
       std::unique_ptr<typename MapFactory<T>::map_type> map(
           this->factory_->make_map(*image,
                                    this->samples_,

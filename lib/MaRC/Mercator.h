@@ -52,10 +52,10 @@ namespace MaRC
     public:
 
         /// @typedef Type returned from @c make_map() method.
-        using map_type = typename MapFactory<T>::map_type;
+        using MapFactory<T>::map_type;
 
         /// @typedef Type returned from @c make_grid() method.
-        using grid_type = typename MapFactory<T>::grid_type;
+        using MapFactory<T>::grid_type;
 
         /// Constructor.
         /**
@@ -76,12 +76,7 @@ namespace MaRC
          * @see @c MapFactory
          */
         //@{
-        virtual const char * projection_name (void) const;
-        virtual map_type make_map (SourceImage const & source,
-                                   std::size_t samples,
-                                   std::size_t lines,
-                                   double minimum,
-                                   double maximum);
+        virtual const char * projection_name() const;
         virtual grid_type make_grid(std::size_t samples,
                                     std::size_t lines,
                                     float lat_interval,
@@ -89,6 +84,12 @@ namespace MaRC
         //@}
 
     private:
+
+        virtual map_type make_map_i(SourceImage const & source,
+                                    std::size_t samples,
+                                    std::size_t lines,
+                                    double minimum,
+                                    double maximum);
 
         /// Orient longitude according to rotation direction
         /// (prograde/retrograde).

@@ -48,8 +48,6 @@ libMaRC_la_SOURCES = \
   PhotoImage.cpp \
   MosaicImage.cpp \
   \
-  Grid.cpp \
-  \
   Version.cpp
 
 pkginclude_HEADERS = \

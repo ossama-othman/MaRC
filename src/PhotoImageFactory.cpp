@@ -211,7 +211,8 @@ MaRC::PhotoImageFactory::make(void)
         for (std::size_t i = 0; i < size; ++i)
             img[i] -= f_img[i];
 
-        f_img.clear(); // No longer need the flat field image.
+        f_img.clear();         // No longer need the flat field image.
+        f_img.shrink_to_fit();
     }
 
     // Invert image if desired.

@@ -1351,13 +1351,14 @@ MaRC::PhotoImage::read_data(double lat,
             auto end   = sky_mask +
                 (offset + (this->samples_ - this->nibble_right_));
 
-            auto const result = std::find(begin, end, true);
+            auto result = std::find(begin, end, true);
 
             assert(begin < result);
 
             shortest_distance =
-                std::min(static_cast<std::size_t>(std::distance(begin, result)),
-                         shortest_distance);
+                std::min(
+                    static_cast<std::size_t>(std::distance(begin, result)),
+                    shortest_distance);
 
             // Search from nibble_left to i.
             begin = sky_mask + (offset + this->nibble_left_);
@@ -1366,8 +1367,9 @@ MaRC::PhotoImage::read_data(double lat,
             result = std::find(begin, end, true);
 
             shortest_distance =
-                std::min(std::distance(begin, result),
-                         shortest_distance);
+                std::min(
+                    static_cast<std::size_t>(std::distance(begin, result)),
+                    shortest_distance);
 
             // Search from k to nibble_bottom.
             std::size_t const kend = this->lines_ - this->nibble_bottom_;

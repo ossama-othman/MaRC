@@ -28,105 +28,123 @@
 
 #include <MaRC/MapFactory.h>
 
+#include <memory>
+
 
 namespace MaRC
 {
-  class BodyData;
-
-  /**
-   * @class SimpleCylindrical
-   *
-   * @brief Simple cylindrical concrete map factory.
-   *
-   * A Simple cylindrical map contains data mapped to a rectangular
-   * latitude/longitude array.
-   */
-  template <typename T>
-  class SimpleCylindrical : public MapFactory<T>
-  {
-  public:
-
-    /// @typedef Type returned from @c make_map() method.
-    typedef typename MapFactory<T>::map_type  map_type;
-
-    /// @typedef Type returned from @c make_grid() method.
-    typedef typename MapFactory<T>::grid_type grid_type;
-
-    /// Constructor.
-    /**
-     * @param body        Pointer to BodyData object representing body
-     *                    being mapped.
-     * @param lo_lat      Lower latitude  in simple cylindrical map.
-     * @param hi_lat      Upper latitude  in simple cylindrical map.
-     * @param lo_lon      Lower longitude in simple cylindrical map.
-     * @param hi_lon      Upper longitude in simple cylindrical map.
-     * @param graphic_lat Map bodygraphic latitudes instead of
-     *                    bodycentric latitudes.
-     */
-    SimpleCylindrical (const ValuePtr<BodyData> & body,
-                       double lo_lat,
-                       double hi_lat,
-                       double lo_lon,
-                       double hi_lon,
-                       bool graphic_lat);
-
-    /// Destructor
-    ~SimpleCylindrical (void);
+    class BodyData;
 
     /**
-     * @name @c MapFactory Methods
+     * @class SimpleCylindrical
      *
-     * Factory methods required by the @c MapFactory abstract base
-     * class.
+     * @brief Simple cylindrical concrete map factory.
      *
-     * @see @c MapFactory
+     * A Simple cylindrical map contains data mapped to a rectangular
+     * latitude/longitude array.
      */
-    //@{
-    virtual const char * projection_name (void) const;
-    virtual map_type * make_map (const SourceImage & source,
-                                 unsigned int samples,
-                                 unsigned int lines,
-                                 double minimum,
-                                 double maximum);
-    virtual grid_type * make_grid (unsigned int samples,
-                                   unsigned int lines,
-                                   float lat_interval,
-                                   float lon_interval);
-    //@}
+    template <typename T>
+    class SimpleCylindrical : public MapFactory<T>
+    {
+    public:
+
+        /// @typedef Type of map passed to @c plot_map() method.
+        using MapFactory<T>::map_type;
+
+        /// @typedef Type of grid passed to @c plot_grid() method.
+        using MapFactory<T>::grid_type;
+
+        /// Constructor.
+        /**
+         * @param[in] body        Pointer to BodyData object
+         *                        representing body being mapped.
+         * @param[in] lo_lat      Lower latitude  in simple
+         *                        cylindrical map.
+         * @param[in] hi_lat      Upper latitude  in simple
+         *                        cylindrical map.
+         * @param[in] lo_lon      Lower longitude in simple
+         *                        cylindrical map.
+         * @param[in] hi_lon      Upper longitude in simple
+         *                        cylindrical map.
+         * @param[in] graphic_lat Map bodygraphic latitudes instead of
+         *                        bodycentric latitudes.
+         */
+        SimpleCylindrical (BodyData const & body,
+                           double lo_lat,
+                           double hi_lat,
+                           double lo_lon,
+                           double hi_lon,
+                           bool graphic_lat);
+
+        /// Destructor
+        virtual ~SimpleCylindrical();
+
+        /**
+         * @name @c MapFactory Methods
+         *
+         * Methods required by the @c MapFactory abstract base class.
+         *
+         * @see @c MapFactory
+         */
+        //@{
+        virtual const char * projection_name() const;
+        //@}
 
   private:
 
-    /// Orient longitude according to rotation direction
-    /// (prograde/retrograde).
-    /**
-     * @param i       Sample in map being mapped.
-     * @param samples Number of samples in image.
-     */
-    inline double get_longitude (unsigned int i,
-                                 unsigned int samples) const;
+        /**
+         * @name Private @c MapFactory Methods
+         *
+         * Methods required by the @c MapFactory abstract base class.
+         *
+         * @see @c MapFactory and @c MapFactoryBase
+         */
+        //@{
+        virtual const char * projection_name() const;
+        virtual void plot_map(SourceImage const & source,
+                              unsigned int samples,
+                              unsigned int lines,
+                              double minimum,
+                              double maximum,
+                              map_type & map);
+        virtual void plot_grid(unsigned int samples,
+                               unsigned int lines,
+                               float lat_interval,
+                               float lon_interval,
+                               grid_type & grid);
+        //@}
 
-  private:
+        /// Orient longitude according to rotation direction
+        /// (prograde/retrograde).
+        /**
+         * @param[in] i       Sample in map being mapped.
+         * @param[in] samples Number of samples in image.
+         */
+        inline double get_longitude (unsigned int i,
+                                     unsigned int samples) const;
 
-    /// BodyData object representing the body being mapped.
-    ValuePtr<BodyData> body_;
+    private:
 
-    /// Lower latitude in simple cylindrical map.
-    double lo_lat_;
+        /// BodyData object representing the body being mapped.
+        BodyData const & body_;
 
-    /// Upper latitude in simple cylindrical map.
-    double hi_lat_;
+        /// Lower latitude in simple cylindrical map.
+        double lo_lat_;
 
-    /// Lower longitude in simple cylindrical map.
-    double lo_lon_;
+        /// Upper latitude in simple cylindrical map.
+        double hi_lat_;
 
-    /// Upper longitude in simple cylindrical map.
-    double hi_lon_;
+        /// Lower longitude in simple cylindrical map.
+        double lo_lon_;
 
-    /// Flag that determines if bodygraphic latitudes are mapped
-    /// instead of bodycentric latitudes.
-    const bool graphic_lat_;
+        /// Upper longitude in simple cylindrical map.
+        double hi_lon_;
 
-  };
+        /// Flag that determines if bodygraphic latitudes are mapped
+        /// instead of bodycentric latitudes.
+        bool const graphic_lat_;
+
+    };
 
 }
 
