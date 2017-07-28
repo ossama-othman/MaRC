@@ -29,9 +29,10 @@
 #include <fitsio.h>
 
 #include <stdexcept>
-#include <cmath>
 #include <sstream>
 #include <memory>
+#include <cmath>
+#include <cassert>
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename,
@@ -44,7 +45,7 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename,
     , sub_observ_lat_(0)
     , sub_observ_lon_(0)
     , sub_solar_lat_(0)
-    , sub_solar_lon_0)
+    , sub_solar_lon_(0)
     , range_(-1)
     , position_angle_(0)
     , arcsec_per_pixel_(0)
@@ -70,8 +71,8 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename,
 {
 }
 
-MaRC::PhotoImageFactory::return_type *
-MaRC::PhotoImageFactory::make(void)
+std::unique_ptr<MaRC::PhotoImageFactory::return_type>
+MaRC::PhotoImageFactory::make()
 {
     fitsfile * fptr = 0;
     static const int mode = READONLY;
@@ -109,7 +110,7 @@ MaRC::PhotoImageFactory::make(void)
 
     // Note that we're only reading a 2-dimensional image above.
     std::vector<double> img(nelements,
-                            std::numeric_limits<doube::quiet_NaN());
+                            std::numeric_limits<double>::quiet_NaN());
 
     long fpixel[MAXDIM];
     fpixel[0] = 1;
@@ -123,7 +124,7 @@ MaRC::PhotoImageFactory::make(void)
                          fpixel,
                          nelements,
                          &nulval,
-                         img,
+                         img.data(),
                          &anynul,
                          &status);
 
@@ -180,7 +181,7 @@ MaRC::PhotoImageFactory::make(void)
         // above.
         f_img.resize(nelements);
 
-        double nulval = MaRC::NaN;
+        double nulval = std::numeric_limits<double>::quiet_NaN();
         int anynul;  // Unused
 
         (void) fits_read_pix(fptr,
@@ -236,7 +237,7 @@ MaRC::PhotoImageFactory::make(void)
     }
 
     std::unique_ptr<PhotoImage> photo(
-        std::make_unique<MaRC::PhotoImage(
+        std::make_unique<MaRC::PhotoImage>(
             this->body_,
             img,
             static_cast<std::size_t>(naxes[0]), // samples
@@ -292,7 +293,7 @@ MaRC::PhotoImageFactory::make(void)
 
     photo->finalize_setup();
 
-    return photo;
+    return std::move(photo);
 }
 
 void
@@ -452,20 +453,17 @@ MaRC::PhotoImageFactory::invert_v(std::vector<double> & image,
                                   std::size_t samples,
                                   std::size_t lines)
 {
-  // Invert image from top to bottom.
-  const unsigned int middle = lines / 2;
-
+    // Invert image from top to bottom.
     std::size_t const middle = lines / 2;
 
     for (std::size_t line = 0; line < middle; ++line) {
-
         // Line from the one end.
-        auto const top_begin = img.begin() + line * samples;
+        auto const top_begin = image.begin() + line * samples;
         auto const top_end   = top_begin + samples;
 
         // Line from the other end.
         std::size_t const offset = (lines - line - 1) * samples;
-        auto const bottom_begin = img.begin() + offset;
+        auto const bottom_begin = image.begin() + offset;
 
         // Swap the lines.
         std::swap_ranges(top_begin, top_end, bottom_begin);

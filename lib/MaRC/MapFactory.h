@@ -67,9 +67,13 @@ namespace MaRC
             grid_type grid(samples * lines,
                            decltype(grid_type::value_type)());
 
-            this->plot_grid(samples, line, grid);
+            this->plot_grid(samples,
+                            line,
+                            lat_interval,
+                            lon_interval,
+                            grid);
 
-            return std::move(grid);
+            return grid;
         }
 
     private:

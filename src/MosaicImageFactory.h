@@ -33,6 +33,7 @@
 
 namespace MaRC
 {
+
     /**
      * @class MosaicImageFactory
      *
@@ -50,14 +51,14 @@ namespace MaRC
     {
     public:
 
-        typedef std::list<PhotoImageFactory> list_type;
+        using list_type = std::list<std::unique_ptr<PhotoImageFactory>>;
 
         /// Constructor.
-        MosaicImageFactory(list_type const & factories,
+        MosaicImageFactory(list_type factories,
                            MosaicImage::average_type type);
 
         /// Create a @c MosaicImage.
-        virtual SourceImage * make(void);
+        virtual std::unique_ptr<SourceImage> make();
 
     private:
 

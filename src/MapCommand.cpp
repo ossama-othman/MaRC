@@ -23,7 +23,6 @@
 #include "MapCommand.h"
 #include "FITS_traits.h"
 
-#include <MaRC/Grid.h>
 #include <MaRC/config.h>
 
 #include <fitsio.h>

@@ -28,8 +28,8 @@
 
 MaRC::LatitudeImage::LatitudeImage(BodyData const & body,
                                    bool graphic_latitudes)
-  : body_(body),
-    graphic_latitudes_ (graphic_latitudes)
+  : body_(body)
+  , graphic_latitudes_(graphic_latitudes)
 {
 }
 
@@ -39,7 +39,7 @@ MaRC::LatitudeImage::read_data_i(double lat,
                                  double & data) const
 {
     if (this->graphic_latitudes_)
-        data = this->body_.graphic_latitude (lat);
+        data = this->body_.graphic_latitude(lat);
     else
         data = lat;
 

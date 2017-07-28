@@ -78,4 +78,5 @@ namespace MaRC
 
 } // End MaRC namespace
 
+
 #endif  /* MARC_LATITUDE_IMAGE_H */

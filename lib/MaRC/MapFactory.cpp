@@ -41,7 +41,7 @@ MaRC::MapFactory<T>::~MapFactory (void)
 }
 
 template <typename T>
-MaRC::MapFactory<T>::map_type
+typename MaRC::MapFactory<T>::map_type
 MaRC::MapFactory<T>::make_map(SourceImage const & source,
                               std::size_t samples,
                               std::size_t lines,
@@ -61,7 +61,7 @@ MaRC::MapFactory<T>::make_map(SourceImage const & source,
 }
 
 template <typename T>
-MaRC::MapFactory<T>::grid_type
+typename MaRC::MapFactory<T>::grid_type
 MaRC::MapFactory<T>::make_grid(std::size_t samples,
                                std::size_t lines)
 {

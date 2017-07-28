@@ -61,9 +61,6 @@ pkginclude_HEADERS = \
   BodyData.h \
   OblateSpheroid.h \
   \
-  misc.h \
-  root_find.h \
-  \
   SourceImage.h \
   VirtualImage.h \
   MuImage.h \
@@ -83,10 +80,6 @@ pkginclude_HEADERS = \
   PhotometricCorrection.h \
   NullPhotometricCorrection.h \
   \
-  Image.h \
-  Image.cpp \
-  Grid.h \
-  \
   Map_traits.h \
   MapFactory.h \
   MapFactory.cpp \
@@ -104,5 +97,8 @@ pkginclude_HEADERS = \
   Version.h
 
 noinst_HEADERS = \
+  misc.h \
+  root_find.h \
+  \
   NullInterpolationStrategy.h \
   PhotoInterpolationStrategy.h

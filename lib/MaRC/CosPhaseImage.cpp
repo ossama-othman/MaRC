@@ -27,48 +27,48 @@
 #include "Constants.h"
 
 
-MaRC::CosPhaseImage::CosPhaseImage (const OblateSpheroid & body,
-                                    double sub_observ_lat,
-                                    double sub_observ_lon,
-                                    double sub_solar_lat,
-                                    double sub_solar_lon,
-                                    double range)
-  : VirtualImage (10000, 0),
-    body_ (body),
-    sub_observ_lat_ (sub_observ_lat * C::degree), // Radians
-    sub_observ_lon_ (sub_observ_lon * C::degree), // Radians
-    sub_solar_lat_ (sub_solar_lat * C::degree), // Radians
-    sub_solar_lon_ (sub_solar_lon * C::degree), // Radians
-    range_ (range)
+MaRC::CosPhaseImage::CosPhaseImage(OblateSpheroid const & body,
+                                   double sub_observ_lat,
+                                   double sub_observ_lon,
+                                   double sub_solar_lat,
+                                   double sub_solar_lon,
+                                   double range)
+    : VirtualImage (10000, 0)
+    , body_(body)
+    , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
+    , sub_observ_lon_(sub_observ_lon * C::degree) // Radians
+    , sub_solar_lat_(sub_solar_lat * C::degree)   // Radians
+    , sub_solar_lon_(sub_solar_lon * C::degree)   // Radians
+    , range_(range)
 {
 }
 
 bool
-MaRC::CosPhaseImage::read_data_i (double lat,
-                                  double lon,
-                                  double & data) const
+MaRC::CosPhaseImage::read_data_i(double lat,
+                                 double lon,
+                                 double & data) const
 {
-  data = this->body_.cos_phase (this->sub_observ_lat_,
-                                this->sub_observ_lon_,
-                                this->sub_solar_lat_,
-                                this->sub_solar_lon_,
-                                lat,
-                                lon,
-                                this->range_);
+    data = this->body_.cos_phase(this->sub_observ_lat_,
+                                 this->sub_observ_lon_,
+                                 this->sub_solar_lat_,
+                                 this->sub_solar_lon_,
+                                 lat,
+                                 lon,
+                                 this->range_);
 
-  return true;
+    return true;
 }
 
 bool
-MaRC::CosPhaseImage::is_visible (double lat, double lon) const
+MaRC::CosPhaseImage::is_visible(double lat, double lon) const
 {
-  // This implementation is as the same as the one used by the MuImage
-  // class.
+    // This implementation is as the same as the one used by the
+    // MuImage class.
 
-  return MaRC::MuImage::is_visible_i (this->body_,
-                                      this->sub_observ_lat_,
-                                      this->sub_observ_lon_,
-                                      lat,
-                                      lon,
-                                      this->range_);
+    return MaRC::MuImage::is_visible_i(this->body_,
+                                       this->sub_observ_lat_,
+                                       this->sub_observ_lon_,
+                                       lat,
+                                       lon,
+                                       this->range_);
 }

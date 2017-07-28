@@ -24,6 +24,8 @@
 #ifndef MARC_IMAGE_FACTORY_H
 #define MARC_IMAGE_FACTORY_H
 
+#include <memory>
+
 
 namespace MaRC
 {
@@ -53,18 +55,22 @@ namespace MaRC
         virtual ~ImageFactory();
 
         /// Create an Image.
-        virtual SourceImage * make() = 0;
+        virtual std::unique_ptr<SourceImage> make() = 0;
 
-        /// Set minimum allowed data value in map plane. (data > minimum)
+        /// Set minimum allowed data value in map plane.
+        /// (data > minimum)
         void minimum(double m) { this->minimum_ = m; }
 
-        /// Set maximum allowed data value in map plane. (data < maximum)
+        /// Set maximum allowed data value in map plane.
+        /// (data < maximum)
         void maximum(double m) { this->maximum_ = m; }
 
-        /// Return minimum allowed data value in map plane. (data > minimum)
+        /// Return minimum allowed data value in map plane.
+        /// (data > minimum)
         double minimum() const { return this->minimum_; }
 
-        /// Return maximum allowed data value in map plane. (data < maximum)
+        /// Return maximum allowed data value in map plane.
+        /// (data < maximum)
         double maximum() const { return this->maximum_; }
 
     private:

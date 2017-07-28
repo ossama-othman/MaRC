@@ -26,58 +26,54 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/OblateSpheroid.h"
-
 
 namespace MaRC
 {
-  /**
-   * @class Mu0ImageFactory
-   *
-   * @brief Factory class that creates Mu0Image objects.
-   *
-   * This class creates Mu0Image objects.
-   */
-  class Mu0ImageFactory : public ImageFactory
-  {
-  public:
+    class OblateSpheroid;
 
-    /// Constructor.
     /**
-     * @param body Reference to body being mapped (currently must be
-     *             represented as an oblate spheroid).
-     * @param sub_observ_lat Bodycentric sub-observer latitude in radians
-     * @param sub_observ_lon Sub-observer longitude in radians
-     * @param range          Observer to target center distance
+     * @class Mu0ImageFactory
+     *
+     * @brief Factory class that creates Mu0Image objects.
+     *
+     * This class creates Mu0Image objects.
      */
-    Mu0ImageFactory (const OblateSpheroid & body,
-                     double sub_solar_lat,
-                     double sub_solar_lon);
+    class Mu0ImageFactory : public ImageFactory
+    {
+    public:
 
-    /// Create a @c Mu0Image.
-    virtual SourceImage * make (void);
+        /// Constructor.
+        /**
+         * @param[in] body          Body being mapped (currently must
+         *                          be represented as an oblate
+         *                          spheroid).
+         * @param[in] sub_solar_lat Sub-solar latitude in degrees.
+         * @param[in] sub_solar_lon Sub-solar longitude in degrees.
+         */
+        Mu0ImageFactory(OblateSpheroid const & body,
+                        double sub_solar_lat,
+                        double sub_solar_lon);
 
-    /// Clone operation that polymorphically copies this
-    /// @c Mu0ImageFactory object.
-    virtual ImageFactory * clone (void) const;
+        /// Create a @c Mu0Image.
+        virtual std::unique_ptr<SourceImage> make();
 
-  private:
+    private:
 
-    /// Object representing the body being mapped.
-    /**
-     * @note OblateSpheroid is used instead of BodyData since some
-     *       code in this implementation assumes that the body is
-     *       modeled as an oblate spheroid.
-     */
-    OblateSpheroid body_;
+        /// Object representing the body being mapped.
+        /**
+         * @note OblateSpheroid is used instead of BodyData since some
+         *       code in this implementation assumes that the body is
+         *       modeled as an oblate spheroid.
+         */
+        OblateSpheroid const & body_;
 
-    /// Sub-Solar Latitude -- BodyCENTRIC (radians).
-    double sub_solar_lat_;
+        /// Sub-solar latitude (degrees).
+        double sub_solar_lat_;
 
-    /// Sub-Solar Longitude -- Central Meridian (radians).
-    double sub_solar_lon_;
+        /// Sub-solar longitude (degrees).
+        double sub_solar_lon_;
 
-  };
+    };
 
 }
 

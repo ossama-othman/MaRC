@@ -24,29 +24,23 @@
 
 #include "MaRC/MuImage.h"
 
-MaRC::MuImageFactory::MuImageFactory (const OblateSpheroid & body,
+
+MaRC::MuImageFactory::MuImageFactory(OblateSpheroid const & body,
                                       double sub_observ_lat,
                                       double sub_observ_lon,
                                       double range)
-  : body_ (body),
-    sub_observ_lat_ (sub_observ_lat),
-    sub_observ_lon_ (sub_observ_lon),
-    range_ (range)
+    : body_(body)
+    , sub_observ_lat_(sub_observ_lat)
+    , sub_observ_lon_(sub_observ_lon)
+    , range_(range)
 {
 }
 
-MaRC::SourceImage *
-MaRC::MuImageFactory::make (void)
+std::unique_ptr<MaRC::SourceImage>
+MaRC::MuImageFactory::make()
 {
-  return new MaRC::MuImage (this->body_,
-                            this->sub_observ_lat_,
-                            this->sub_observ_lon_,
-                            this->range_);
-}
-
-MaRC::ImageFactory *
-MaRC::MuImageFactory::clone (void) const
-{
-  // Simple copy construction will suffice.
-  return new MuImageFactory (*this);
+    return std::make_unique<MaRC::MuImage>(this->body_,
+                                           this->sub_observ_lat_,
+                                           this->sub_observ_lon_,
+                                           this->range_);
 }

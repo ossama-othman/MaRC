@@ -26,7 +26,6 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/OblateSpheroid.h"
 #include "MaRC/PhotoImage.h"  /* Need complete type for covariant
                                  return type in make() method. */
 
@@ -66,21 +65,20 @@ namespace MaRC
         /// Constructor.
         /**
          * @param[in] filename Name of file containing image.
-         * @param[in] body     Reference to body being mapped
-         *                     (currently must be represented as an
-         *                     oblate spheroid).
+         * @param[in] body     Body being mapped (currently must be
+         *                     represented as an oblate spheroid).
          */
         PhotoImageFactory(char const * filename,
                           OblateSpheroid const & body);
 
         /// Create a @c PhotoImage.
-        virtual return_type * make();
+        virtual std::unique_ptr<return_type> make();
 
         /// Set the filename.
         void filename(char const * name);
 
         /// Set the flat field image filename.
-        void flat_field (char const * name);
+        void flat_field(char const * name);
 
         /// Set the nibbling values.
         void nibbling(std::size_t left,
@@ -89,7 +87,7 @@ namespace MaRC
                       std::size_t bottom);
 
         /// Set the image inversion flags.
-        void invert (bool vertical, bool horizontal);
+        void invert(bool vertical, bool horizontal);
 
         /// Set image interpolation flag.
         void interpolate(bool enable);
@@ -202,7 +200,7 @@ namespace MaRC
          *       code in this implementation assumes that the body is
          *       modeled as an oblate spheroid.
          */
-        OblateSpheroid body_;
+        OblateSpheroid const & body_;
 
         /// Enable/disable geometric correction.
         /**

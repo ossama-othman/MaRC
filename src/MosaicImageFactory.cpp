@@ -22,34 +22,24 @@
 
 #include "MosaicImageFactory.h"
 
-#include <memory>
-
 
 MaRC::MosaicImageFactory::MosaicImageFactory (
-    list_type const & factories,
+    list_type factories,
     MosaicImage::average_type type)
-    : factories_(factories)
+    : factories_(std::move(factories))
     , average_type_(type)
 {
 }
 
-std:unique_ptr<MaRC::SourceImage>
+std::unique_ptr<MaRC::SourceImage>
 MaRC::MosaicImageFactory::make()
 {
     MosaicImage::list_type photos;
 
-    for (auto const & factory : this->factories_) {
-        std::unique_ptr<MaRC::PhotoImageFactory::return_type>
-            source (factory.make());
+    for (auto & factory : this->factories_)
+        photos.push_back(factory->make());
 
-        const PhotoImage & photo =
-#ifndef MARC_HAS_COVARIANT_RETURN_TYPES
-            dynamic_cast<PhotoImage &>
-#endif  /* MARC_HAS_COVARIANT_RETURN_TYPES */
-            (*source);
-
-        photos.push_back (photo);
-    }
-
-  return std::make_unique<MosaicImage>(photos, this->average_type_);
+    return
+        std::make_unique<MosaicImage>(std::move(photos),
+                                      this->average_type_);
 }

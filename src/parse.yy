@@ -905,7 +905,7 @@ image_setup:
           photo_factory->sub_solar (($15).lat, ($15).lon);
           photo_factory->range ($16);
 
-          photo_factories.push_back (*photo_factory);
+          photo_factories.push_back(photo_factory);
         }
 ;
 
