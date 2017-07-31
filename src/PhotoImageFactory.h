@@ -56,12 +56,6 @@ namespace MaRC
     {
     public:
 
-#ifdef MARC_HAS_COVARIANT_RETURN_TYPES
-        typedef PhotoImage return_type;
-#else
-        typedef SourceImage return_type;
-#endif  /* MARC_HAS_COVARIANT_RETURN_TYPES */
-
         /// Constructor.
         /**
          * @param[in] filename Name of file containing image.
@@ -72,7 +66,7 @@ namespace MaRC
                           OblateSpheroid const & body);
 
         /// Create a @c PhotoImage.
-        virtual std::unique_ptr<return_type> make();
+        virtual std::unique_ptr<SourceImage> make();
 
         /// Set the filename.
         void filename(char const * name);

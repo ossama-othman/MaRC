@@ -134,7 +134,7 @@ namespace MaRC
     };
 
     template <>
-    Map_traits<double>
+    struct Map_traits<double>
     {
         static double minimum(double min)
         {

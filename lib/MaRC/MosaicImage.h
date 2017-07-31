@@ -33,8 +33,6 @@
 
 namespace MaRC
 {
-    class PhotoImage;
-
     /**
      * @class MosaicImage
      *
@@ -47,7 +45,7 @@ namespace MaRC
     {
     public:
 
-        using list_type = std::vector<std::unique_ptr<PhotoImage>>;
+        using list_type = std::vector<std::unique_ptr<SourceImage>>;
 
         /**
          * @enum AverageType

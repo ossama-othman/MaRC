@@ -56,13 +56,13 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in] filename  Name of map output file.
-         * @param[in] body_name Name of body being mapped.
-         * @param[in] samples   Number of samples in map.
-         * @param[in] lines     Number of lines in map.
+         * @param[in,out] filename  Name of map output file.
+         * @param[in,out] body_name Name of body being mapped.
+         * @param[in]     samples   Number of samples in map.
+         * @param[in]     lines     Number of lines in map.
          */
-        MapCommand(std::string const & filename,
-                   std::string const & body_name,
+        MapCommand(std::string filename,
+                   std::string body_name,
                    long samples,
                    long lines);
 
@@ -77,7 +77,7 @@ namespace MaRC
         virtual int execute();
 
         /// Get name of projection.
-        virtual const char * projection_name() const = 0;
+        virtual char const * projection_name() const = 0;
 
         /// Create FITS image array HDU.
         virtual void initialize_FITS_image(fitsfile * fptr,

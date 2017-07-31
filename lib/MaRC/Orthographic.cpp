@@ -25,7 +25,6 @@
 #include "MaRC/OblateSpheroid.h"
 #include "MaRC/Constants.h"
 #include "MaRC/Geometry.h"
-#include "MaRC/NaN.h"
 
 #include <sstream>
 #include <cmath>
@@ -36,226 +35,212 @@
 
 template <typename T>
 MaRC::Orthographic<T>::Orthographic (
-  const ValuePtr<OblateSpheroid> & body,
-  double sub_observ_lat,
-  double sub_observ_lon,
-  double PA,
-  double km_per_pixel,
-  const OrthographicCenter & center)
-  : MapFactory<T> (),
-    body_ (body),
-    sub_observ_lat_ (0),
-    sub_observ_lon_ (0),
-    PA_ (0),
-    km_per_pixel_ (-1),
-    sample_center_ (MaRC::NaN),
-    line_center_ (MaRC::NaN),
-    lat_at_center_ (MaRC::NaN),
-    lon_at_center_ (MaRC::NaN),
-    polar_ (false)
+    std::unique_ptr<OblateSpheroid> body,
+    double sub_observ_lat,
+    double sub_observ_lon,
+    double PA,
+    double km_per_pixel,
+    OrthographicCenter const & center)
+    : MapFactory<T>()
+    , body_(std::move(body))
+    , sub_observ_lat_(0)
+    , sub_observ_lon_(0)
+    , PA_(0)
+    , km_per_pixel_(-1)
+    , sample_center_(std::numeric_limits<double>::quiet_NaN())
+    , line_center_(std::numeric_limits<double>::quiet_NaN())
+    , lat_at_center_(std::numeric_limits<double>::quiet_NaN())
+    , lon_at_center_(std::numeric_limits<double>::quiet_NaN())
+    , polar_(false)
 {
-  if (sub_observ_lat >= -90 && sub_observ_lat <= 90)
-    this->sub_observ_lat_ = sub_observ_lat;
+    if (sub_observ_lat >= -90 && sub_observ_lat <= 90)
+        this->sub_observ_lat_ = sub_observ_lat;
 
-  if (sub_observ_lon >= -360 && sub_observ_lon <= 360)
-    {
-      this->sub_observ_lon_ = sub_observ_lon;
+    if (sub_observ_lon >= -360 && sub_observ_lon <= 360) {
+        this->sub_observ_lon_ = sub_observ_lon;
 
-      if (this->sub_observ_lon_ < 0)
-        this->sub_observ_lon_ += 360;
+        if (this->sub_observ_lon_ < 0)
+            this->sub_observ_lon_ += 360;
     }
 
-  if (PA >= -360 && PA <= 360)
-    this->PA_ = PA;
+    if (PA >= -360 && PA <= 360)
+        this->PA_ = PA;
 
-  if (::fabs (::fabs (this->sub_observ_lat_) - 90) < 1e-5)
-    {
-      std::cout << "Assuming POLAR ORTHOGRAPHIC projection." << std::endl;
+    if (::fabs(::fabs(this->sub_observ_lat_) - 90) < 1e-5) {
+        std::cout << "Assuming POLAR ORTHOGRAPHIC projection.\n";
 
-      if ((this->sub_observ_lat_ > 0 && this->body_->prograde ())
-          || (this->sub_observ_lat_ < 0 && !this->body_->prograde ()))
-        {
-          if (this->body_->prograde ())
-            this->PA_ = 180;
-          else
-            this->PA_ = 0;
-        }
-      else
-        {
-          if (this->body_->prograde ())
-            this->PA_ = 0;
-          else
-            this->PA_ = 180;
+        if ((this->sub_observ_lat_ > 0 && this->body_->prograde ())
+            || (this->sub_observ_lat_ < 0 && !this->body_->prograde ())) {
+            if (this->body_->prograde ())
+                this->PA_ = 180;
+            else
+                this->PA_ = 0;
+        } else {
+            if (this->body_->prograde ())
+                this->PA_ = 0;
+            else
+                this->PA_ = 180;
         }
 
-      if (this->sub_observ_lat_ > 0)
-        this->sub_observ_lat_ = 90;
-      else
-        this->sub_observ_lat_ = -90;
+        if (this->sub_observ_lat_ > 0)
+            this->sub_observ_lat_ = 90;
+        else
+            this->sub_observ_lat_ = -90;
 
-      this->sub_observ_lon_ = 0;
-      this->polar_ = true;
+        this->sub_observ_lon_ = 0;
+        this->polar_ = true;
     }
 
-  this->sub_observ_lat_  *= C::degree; // Convert to radians
-  this->sub_observ_lon_  *= C::degree;
-  this->PA_              *= C::degree;
+    this->sub_observ_lat_  *= C::degree; // Convert to radians
+    this->sub_observ_lon_  *= C::degree;
+    this->PA_              *= C::degree;
 
-  if (km_per_pixel > 0)
-    this->km_per_pixel_ = km_per_pixel;
+    if (km_per_pixel > 0)
+        this->km_per_pixel_ = km_per_pixel;
 
-  if (center.geometry == CENTER_GIVEN)
+    if (center.geometry == CENTER_GIVEN)
     {
       this->sample_center_ = center.sample_lat_center;
       this->line_center_   = center.line_lon_center;
-    }
+    } else if (center.geometry == LAT_LON_GIVEN) {
+        // Latitude and Longitude at center of map given (in addition
+        // to KM/pixel)
+        if (center.sample_lat_center >= -90
+            && center.sample_lat_center <= 90)
+            this->lat_at_center_ =
+                center.sample_lat_center * C::degree; // Radians
+        else
+            this->lat_at_center_ = this->sub_observ_lat_;
 
-  // Latitude and Longitude at center of map given (in addition to
-  // KM/pixel)
-  else if (center.geometry == LAT_LON_GIVEN)
-    {
-      if (center.sample_lat_center >= -90
-          && center.sample_lat_center <= 90)
-        this->lat_at_center_ = center.sample_lat_center * C::degree; // Radians
-      else
-        this->lat_at_center_ = this->sub_observ_lat_;
+        if (center.line_lon_center >= -360
+            && center.line_lon_center <= 360) {
+            this->lon_at_center_ = center.line_lon_center; // Degrees
 
-      if (center.line_lon_center >= -360
-          && center.line_lon_center <= 360)
-        {
-          this->lon_at_center_ = center.line_lon_center; // Degrees
+            if (this->lon_at_center_ < 0)
+                this->lon_at_center_ += 360;
 
-          if (this->lon_at_center_ < 0)
-            this->lon_at_center_ += 360;
-
-          this->lon_at_center_ *= C::degree; // Convert to radians
-        }
-      else
-        this->lon_at_center_ = this->sub_observ_lon_;
+            this->lon_at_center_ *= C::degree; // Convert to radians
+        } else
+            this->lon_at_center_ = this->sub_observ_lon_;
     }
 }
 
 template <typename T>
-const char *
+char const *
 MaRC::Orthographic<T>::projection_name (void) const
 {
-  static const char name[] = "Orthographic";
+  static char const name[] = "Orthographic";
 
   return name;
 }
 
 template <typename T>
 typename MaRC::Orthographic<T>::map_type *
-MaRC::Orthographic<T>::make_map (const SourceImage & source,
-                                 unsigned int samples,
-                                 unsigned int lines,
-                                 double minimum,
-                                 double maximum)
+MaRC::Orthographic<T>::make_map(SourceImage const & source,
+                                unsigned int samples,
+                                unsigned int lines,
+                                double minimum,
+                                double maximum)
 {
-  this->init (samples, lines);
+    this->init(samples, lines);
 
-  std::unique_ptr<map_type> map (new map_type (samples, lines));
+    std::unique_ptr<map_type> map (new map_type (samples, lines));
 
-  const unsigned int nelem = samples * lines;
+    unsigned int const nelem = samples * lines;
 
-  DVector ImgCoord, Rotated;
+    DVector ImgCoord, Rotated;
 
-  const DMatrix rotY (MaRC::Geometry::RotYMatrix (-this->PA_));
-  const DMatrix rotX (MaRC::Geometry::RotXMatrix (this->sub_observ_lat_));
+    DMatrix const rotY(MaRC::Geometry::RotYMatrix (-this->PA_));
+    DMatrix const rotX(MaRC::Geometry::RotXMatrix (this->sub_observ_lat_));
 
-  const double a2   = this->body_->eq_rad () * this->body_->eq_rad ();
-  const double c2   = this->body_->pol_rad () * this->body_->pol_rad ();
-  const double diff = a2 - c2;
+    double const a2   = this->body_->eq_rad () * this->body_->eq_rad ();
+    double const c2   = this->body_->pol_rad () * this->body_->pol_rad ();
+    double const diff = a2 - c2;
 
-  // "a" coefficient of the Quadratic Formula.
-  const double CA = diff * ::pow (::sin (this->sub_observ_lat_), 2.0) + c2;
+    // "a" coefficient of the Quadratic Formula.
+    double const CA =
+        diff * ::pow (::sin (this->sub_observ_lat_), 2.0) + c2;
 
-  unsigned int offset = 0;
+    unsigned int offset = 0;
 
-  for (unsigned int k = 0; k < lines; ++k)
-    {
-      const double z = (k + 0.5 - this->line_center_) * this->km_per_pixel_;
+    for (unsigned int k = 0; k < lines; ++k) {
+        double const z =
+            (k + 0.5 - this->line_center_) * this->km_per_pixel_;
 
-      for (unsigned int i = 0; i < samples; ++i, ++offset)
-        {
-          double x = (i + 0.5 - this->sample_center_) * this->km_per_pixel_;
+        for (unsigned int i = 0; i < samples; ++i, ++offset) {
+            double x =
+                (i + 0.5 - this->sample_center_) * this->km_per_pixel_;
           double zz;
 
-          if (!this->polar_)
-            {
+          if (!this->polar_) {
               ImgCoord[0] = x;
               ImgCoord[1] = 0;
               ImgCoord[2] = z;
               Rotated = rotY * ImgCoord;
               x  = Rotated[0];
               zz = Rotated[2];
-            }
-          else
-            zz = z;
+          } else {
+              zz = z;
+          }
 
-          const double CB = diff * zz * ::sin (2 * this->sub_observ_lat_);
-          const double CC =
-            a2 * zz * zz + c2 * x * x - a2 * c2 - diff *
-            zz * zz * ::pow (::sin (this->sub_observ_lat_), 2.0);
+          double const CB = diff * zz * ::sin(2 * this->sub_observ_lat_);
+          double const CC =
+              a2 * zz * zz + c2 * x * x - a2 * c2 - diff *
+              zz * zz * ::pow(::sin(this->sub_observ_lat_), 2.0);
 
-          const double discriminant = CB * CB - 4 * CA * CC;
+          double const discriminant = CB * CB - 4 * CA * CC;
 
-          if (discriminant >= 0)
-            {
-              const double y1 = (-CB + ::sqrt (discriminant)) / 2 / CA;
-              const double y2 = (-CB - ::sqrt (discriminant)) / 2 / CA;
-              double y = std::min (y1, y2);
+          if (discriminant >= 0) {
+              double const y1 = (-CB + ::sqrt(discriminant)) / 2 / CA;
+              double const y2 = (-CB - ::sqrt(discriminant)) / 2 / CA;
+              double y = std::min(y1, y2);
               ImgCoord[0] = x;
               ImgCoord[1] = y;
               ImgCoord[2] = zz;
               Rotated = rotX * ImgCoord;
-              if (this->polar_)
-                {
+              if (this->polar_) {
                   // Rotate about z-axis by (-this->PA_).
-                  x =  Rotated[0] * ::cos (-this->PA_) +
-                    Rotated[1] * ::sin (-this->PA_);
+                  x =  Rotated[0] * ::cos(-this->PA_) +
+                      Rotated[1] * ::sin(-this->PA_);
 
-                  y = -Rotated[0] * ::sin (-this->PA_) +
-                    Rotated[1] * ::cos (-this->PA_);
+                  y = -Rotated[0] * ::sin(-this->PA_) +
+                      Rotated[1] * ::cos(-this->PA_);
 
                   zz=  Rotated[2];
-                }
-              else
-                {
+              } else {
                   x = Rotated[0];
                   y = Rotated[1];
                   zz= Rotated[2];
-                }
+              }
 
               double const lat = ::atan2(zz, ::sqrt (x * x + y * y));
 
               double lon;
 
               if (this->body_->prograde())
-                lon = this->sub_observ_lon_ - ::atan2(-x, y) + C::pi;
+                  lon = this->sub_observ_lon_ - ::atan2(-x, y) + C::pi;
               else
-                lon = this->sub_observ_lon_ + ::atan2(-x, y) - C::pi;
+                  lon = this->sub_observ_lon_ + ::atan2(-x, y) - C::pi;
 
               unsigned char const percent_complete =
                   static_cast<unsigned char>((offset + 1) * 100 / nelem);
 
-              this->plot (source,
-                          lat,
-                          lon,
-                          minimum,
-                          maximum,
-                          percent_complete,
-                          map[offset]))
-            }
-        }
-    }
+              this->plot(source,
+                         lat,
+                         lon,
+                         minimum,
+                         maximum,
+                         percent_complete,
+                         map[offset]);
+          }
+      }
 
-  std::cout
-    << "Body center in ORTHOGRAPHIC projection (line, sample): ("
-    << this->line_center_ << ", " << this->sample_center_ << ")"
-    << std::endl;
+      std::cout
+          << "Body center in ORTHOGRAPHIC projection (line, sample): ("
+          << this->line_center_ << ", " << this->sample_center_ << ")\n";
 
-  return map.release ();
+      return map.release ();
+  }
 }
 
 template <typename T>
@@ -539,8 +524,8 @@ MaRC::Orthographic<T>::init (unsigned int samples, unsigned int lines)
 
       // No longer need lat/lon_at_center_, so prevent this code from
       // running again by resetting them to NaN.
-      this->lat_at_center_ = MaRC::NaN;
-      this->lon_at_center_ = MaRC::NaN;
+      this->lat_at_center_ = std::numeric_limits<double>::quiet_NaN();
+      this->lon_at_center_ = std::numeric_limits<double>::quiet_NaN();
     }
   else if (std::isnan (this->sample_center_) || std::isnan (this->line_center_))
     {
@@ -551,9 +536,9 @@ MaRC::Orthographic<T>::init (unsigned int samples, unsigned int lines)
 
 // ------------------------------------
 
-MaRC::OrthographicCenter::OrthographicCenter (void)
-  : geometry (DEFAULT),
-    sample_lat_center (MaRC::NaN),
-    line_lon_center (MaRC::NaN)
+MaRC::OrthographicCenter::OrthographicCenter()
+    : geometry(DEFAULT)
+    , sample_lat_center(std::numeric_limits<double>::quiet_NaN())
+    , line_lon_center(std::numeric_limits<double>::quiet_NaN())
 {
 }

@@ -71,7 +71,7 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename,
 {
 }
 
-std::unique_ptr<MaRC::PhotoImageFactory::return_type>
+std::unique_ptr<MaRC::SourceImage>
 MaRC::PhotoImageFactory::make()
 {
     fitsfile * fptr = 0;
@@ -134,7 +134,7 @@ MaRC::PhotoImageFactory::make()
 
     // Perform flat fielding if a flat field file was provided.
     std::vector<double> f_img;
-    if (this->flat_field_.length () != 0) {
+    if (!this->flat_field_.empty()) {
         fitsfile * f_fptr = 0;
         (void) fits_open_image(&f_fptr,
                                this->flat_field_.c_str(),
@@ -150,7 +150,7 @@ MaRC::PhotoImageFactory::make()
             s << "Unable to open flat field image \""
               << this->filename_ << "\"";
 
-            throw std::invalid_argument (s.str ());
+            throw std::invalid_argument(s.str());
         }
 
         int f_naxis = 0;
@@ -174,7 +174,7 @@ MaRC::PhotoImageFactory::make()
               << "(" << f_naxes[0] << "x" << f_naxes[1] << ")"
               << "dimensions";
 
-            throw std::runtime_error(s.str ());
+            throw std::runtime_error(s.str());
         }
 
         // Note that we're only reading a 2-dimensional image
@@ -193,16 +193,16 @@ MaRC::PhotoImageFactory::make()
                              &anynul,
                              &status);
 
-        fits_report_error (stderr, status);
+        fits_report_error(stderr, status);
 
-        (void) fits_close_file (fptr, &status);
+        (void) fits_close_file(fptr, &status);
     }
 
     if (status != 0) {
         char fits_error[31] = { 0 };  // 30 char max
         fits_get_errstatus (status, fits_error);
 
-        throw std::runtime_error (fits_error);
+        throw std::runtime_error(fits_error);
     }
 
     // Perform flat fielding if desired.
@@ -261,22 +261,22 @@ MaRC::PhotoImageFactory::make()
     if (this->scale_ > 0)
         photo->scale(this->scale_);
 
-    if (!std::isnan (this->OA_s_))
+    if (!std::isnan(this->OA_s_))
         photo->optical_axis_sample(this->OA_s_);
 
-    if (!std::isnan (this->OA_l_))
+    if (!std::isnan(this->OA_l_))
         photo->optical_axis_line(this->OA_l_);
 
-    if (!std::isnan (this->sample_center_))
+    if (!std::isnan(this->sample_center_))
         photo->body_center_sample(this->sample_center_);
 
-    if (!std::isnan (this->line_center_))
+    if (!std::isnan(this->line_center_))
         photo->body_center_line(this->line_center_);
 
-    if (!std::isnan (this->lat_at_center_))
+    if (!std::isnan(this->lat_at_center_))
         photo->lat_at_center(this->lat_at_center_);
 
-    if (!std::isnan (this->lon_at_center_))
+    if (!std::isnan(this->lon_at_center_))
         photo->lon_at_center(this->lon_at_center_);
 
     if (this->emi_ang_limit_ > 0)

@@ -34,27 +34,27 @@
 #include <unistd.h>
 
 
-MaRC::MapCommand::MapCommand (std::string const & filename,
-                              std::string const & body_name,
-                              long samples,
-                              long lines)
-  : samples_ (samples),
-    lines_ (lines),
-    image_factories_ (),
-    blank_set_ (false),
-    blank_ (0),
-    filename_ (filename),
-    author_ (),
-    origin_ (),
-    comments_ (),
-    xcomments_ (),
-    body_name_ (body_name),
-    lat_interval_ (0),
-    lon_interval_ (0),
-    bscale_ (1),
-    bzero_ (0),
-    transform_data_ (false),
-    create_grid_ (false)
+MaRC::MapCommand::MapCommand(std::string filename,
+                             std::string body_name,
+                             long samples,
+                             long lines)
+    : samples_(samples)
+    , lines_(lines)
+    , image_factories_()
+    , blank_set_ (false)
+    , blank_ (0)
+    , filename_(std::move(filename))
+    , author_()
+    , origin_()
+    , comments_()
+    , xcomments_()
+    , body_name_(std::move(body_name))
+    , lat_interval_(0)
+    , lon_interval_(0)
+    , bscale_(1)
+    , bzero_(0)
+    , transform_data_(false)
+    , create_grid_ (false)
 {
     // Compile-time FITS data type sanity check.
     static_assert(
@@ -77,6 +77,10 @@ MaRC::MapCommand::MapCommand (std::string const & filename,
         && std::is_integral<FITS::long_type>()
         && std::is_signed<FITS::long_type>()
 
+        && sizeof(FITS::longlong_type) == 8
+        && std::is_integral<FITS::longlong_type>()
+        && std::is_signed<FITS::longlong_type>()
+
         // Floating point values are always signed.
         && sizeof(FITS::float_type) == 4
         && std::is_floating_point<FITS::float_type>()
@@ -87,16 +91,16 @@ MaRC::MapCommand::MapCommand (std::string const & filename,
         "Underlying types do not satisfy FITS data type requirements.");
 }
 
-MaRC::MapCommand::~MapCommand (void)
+MaRC::MapCommand::~MapCommand()
 {
 }
 
 int
-MaRC::MapCommand::execute (void)
+MaRC::MapCommand::execute()
 {
-  std::cout << std::endl << "Creating map: " << this->filename_ << std::endl;
+  std::cout << std::endl << "Creating map: " << this->filename_ << '\n';
 
-  (void) unlink (this->filename_.c_str ());
+  (void) unlink(this->filename_.c_str());
 
   // Create the map file.
   fitsfile * fptr = 0;
@@ -320,7 +324,7 @@ MaRC::MapCommand::grid_intervals (float lat_interval, float lon_interval)
 {
     assert(lat_interval > 1 && lon_interval > 1);
 
-    this->create_grid_ = true;
+    this->create_grid_  = true;
     this->lat_interval_ = lat_interval;
     this->lon_interval_ = lon_interval;
 }

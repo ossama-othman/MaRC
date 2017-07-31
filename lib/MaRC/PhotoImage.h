@@ -310,11 +310,11 @@ namespace MaRC
          * @retval @c true  Data retrieved,
          * @retval @c false No data retrieved.
          */
-        bool read_data(double lat,
-                       double lon,
-                       double & data,
-                       std::size_t & weight,
-                       bool scan = true) const;
+        virtual bool read_data(double lat,
+                               double lon,
+                               double & data,
+                               std::size_t & weight,
+                               bool scan = true) const;
 
         /// Returns "true" if latitude and longitude are visible.
         bool is_visible(double lat, double lon) const;

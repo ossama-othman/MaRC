@@ -68,7 +68,7 @@ namespace MaRC
                            decltype(grid_type::value_type)());
 
             this->plot_grid(samples,
-                            line,
+                            lines,
                             lat_interval,
                             lon_interval,
                             grid);
