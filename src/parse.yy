@@ -61,7 +61,6 @@
 
 
 #include <MaRC/Constants.h>
-#include <MaRC/NaN.h>
 
 #include "parse_scan.h"
 #include "calc.h"
@@ -144,18 +143,18 @@
   // whether Galileo images were written summation mode.
   unsigned int photo_samples = 0;
 
-  double minimum = MaRC::NaN;
-  double maximum = MaRC::NaN;
+  double minimum = std::numeric_limits<double>::quiet_NaN();
+  double maximum = std::numeric_limits<double>::quiet_NaN();
 
   unsigned int nibble_left_val;
   unsigned int nibble_right_val;
   unsigned int nibble_top_val;
   unsigned int nibble_bottom_val;
 
-  double sample_center = MaRC::NaN;
-  double line_center   = MaRC::NaN;
-  double lat_at_center = MaRC::NaN;
-  double lon_at_center = MaRC::NaN;
+  double sample_center = std::numeric_limits<double>::quiet_NaN();
+  double line_center   = std::numeric_limits<double>::quiet_NaN();
+  double lat_at_center = std::numeric_limits<double>::quiet_NaN();
+  double lon_at_center = std::numeric_limits<double>::quiet_NaN();
 
   double km_per_pixel_val   = -1;
   double arcsec_per_pix_val = -1;
@@ -167,7 +166,7 @@
   bool graphic_lat = false;
 
   // Conformal projection options
-  double max_lat = MaRC::NaN;
+  double max_lat = std::numeric_limits<double>::quiet_NaN();
 
   // Simple Cylindrical projection options
   double lo_lat = -90;
@@ -178,7 +177,10 @@
   // Orthographic and Perspective projection options
 
   // Sub-observer latitude and longitude.
-  MaRC::SubObserv sub_observation_data = { MaRC::NaN, MaRC::NaN };
+  MaRC::SubObserv sub_observation_data = {
+      std::numeric_limits<double>::quiet_NaN(),
+      std::numeric_limits<double>::quiet_NaN()
+  };
 
   double position_angle_val = -1;   // Position (north) angle
   MaRC::OrthographicCenter ortho_center;
@@ -272,10 +274,10 @@ user_file_parse:
           pp.lat_interval  = lat_interval;
           pp.lon_interval  = lon_interval;
 
-          if (!std::isnan (minimum))
+          if (!std::isnan(minimum))
               pp.minimum = minimum;
 
-          if (!std::isnan (maximum))
+          if (!std::isnan(maximum))
               pp.maximum = maximum;
 
           pp.nibble_left   = nibble_left_val;
@@ -886,18 +888,22 @@ image_setup:
               pixel_scale_val = -1;  // Reset to "bad" value.
             }
 
-          if (!std::isnan (sample_center) && !std::isnan (line_center))
+          if (!std::isnan(sample_center) && !std::isnan(line_center))
             {
-              photo_factory->body_center (sample_center, line_center);
-              sample_center = MaRC::NaN;  // Reset to "bad" value.
-              line_center = MaRC::NaN;  // Reset to "bad" value.
+              photo_factory->body_center(sample_center, line_center);
+
+              // Reset to "bad" value.
+              sample_center = std::numeric_limits<double>::quiet_NaN();
+              line_center   = std::numeric_limits<double>::quiet_NaN();
             }
 
-          if (!std::isnan (lat_at_center) && !std::isnan (lon_at_center))
+          if (!std::isnan(lat_at_center) && !std::isnan(lon_at_center))
             {
               photo_factory->lat_lon_center (lat_at_center, lon_at_center);
-              lat_at_center = MaRC::NaN;  // Reset to "bad" value.
-              lon_at_center = MaRC::NaN;  // Reset to "bad" value.
+
+              // Reset to "bad" value.
+              lat_at_center = std::numeric_limits<double>::quiet_NaN();
+              lon_at_center = std::numeric_limits<double>::quiet_NaN();
             }
 
           photo_factory->sub_observ (($13).lat, ($13).lon);
@@ -1323,7 +1329,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!std::isnan (position_angle_val)
+                        (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1335,7 +1341,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!std::isnan (position_angle_val)
+                        (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1347,7 +1353,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!std::isnan (position_angle_val)
+                        (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1359,7 +1365,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!std::isnan (position_angle_val)
+                        (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1371,7 +1377,7 @@ ortho:  MAP_TYPE ':' _ORTHO
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
-                        (!std::isnan (position_angle_val)
+                        (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
                         ortho_center));
@@ -1386,7 +1392,7 @@ ortho:  MAP_TYPE ':' _ORTHO
           sub_observation_data.lat = 0;
           sub_observation_data.lon = 0;
           km_per_pixel_val = -1;
-          position_angle_val = MaRC::NaN;
+          position_angle_val = std::numeric_limits<double>::quiet_NaN();
           ortho_center.geometry = MaRC::DEFAULT;
         }
 ;
@@ -1405,21 +1411,25 @@ ortho_optsub:
         | position_angle { position_angle_val = $1; }
         | km_per_pixel
         | centers {
-            if (!std::isnan (sample_center) && !std::isnan (line_center))
+            if (!std::isnan(sample_center) && !std::isnan(line_center))
               {
                 ortho_center.geometry = MaRC::CENTER_GIVEN;
                 ortho_center.sample_lat_center = sample_center;
                 ortho_center.line_lon_center   = line_center;
-                sample_center = MaRC::NaN;  // Reset to "bad" value.
-                line_center   = MaRC::NaN;  // Reset to "bad" value.
+
+                // Reset to "bad" value.
+                sample_center = std::numeric_limits<double>::quiet_NaN();
+                line_center   = std::numeric_limits<double>::quiet_NaN();
               }
-            else if (!std::isnan (lat_at_center) && !std::isnan (lon_at_center))
+            else if (!std::isnan(lat_at_center) && !std::isnan(lon_at_center))
               {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
                 ortho_center.sample_lat_center = lat_at_center;
                 ortho_center.line_lon_center   = lon_at_center;
-                lat_at_center = MaRC::NaN;  // Reset to "bad" value.
-                lon_at_center = MaRC::NaN;  // Reset to "bad" value.
+
+                // Reset to "bad" value.
+                lat_at_center = std::numeric_limits<double>::quiet_NaN();
+                lon_at_center = std::numeric_limits<double>::quiet_NaN();
               }
         }
         | sub_observ position_angle {
@@ -1436,21 +1446,26 @@ ortho_optsub:
           sub_observation_data.lat = ($1).lat;
           sub_observation_data.lon = ($1).lon;
             position_angle_val = $2;
-            if (!std::isnan (sample_center) && !std::isnan (line_center))
+            if (!std::isnan(sample_center) && !std::isnan(line_center))
               {
                 ortho_center.geometry = MaRC::CENTER_GIVEN;
                 ortho_center.sample_lat_center = sample_center;
                 ortho_center.line_lon_center   = line_center;
-                sample_center = MaRC::NaN;  // Reset to "bad" value.
-                line_center   = MaRC::NaN;  // Reset to "bad" value.
+
+                // Reset to "bad" value.
+                sample_center = std::numeric_limits<double>::quiet_NaN();
+                line_center   = std::numeric_limits<double>::quiet_NaN();
               }
-            else if (!std::isnan (lat_at_center) && !std::isnan (lon_at_center))
+            else if (!std::isnan(lat_at_center)
+                     && !std::isnan(lon_at_center))
               {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
                 ortho_center.sample_lat_center = lat_at_center;
                 ortho_center.line_lon_center   = lon_at_center;
-                lat_at_center = MaRC::NaN;  // Reset to "bad" value.
-                lon_at_center = MaRC::NaN;  // Reset to "bad" value.
+
+                // Reset to "bad" value.
+                lat_at_center = std::numeric_limits<double>::quiet_NaN();
+                lon_at_center = std::numeric_limits<double>::quiet_NaN();
               }
         }
 ;
@@ -1635,7 +1650,7 @@ p_stereo:
             }
 
           // Reset options
-          max_lat = MaRC::NaN;
+          max_lat = std::numeric_limits<double>::quiet_NaN();
           north_pole = true;
         }
 ;
