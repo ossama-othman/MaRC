@@ -120,12 +120,11 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
          *       @c make_map() so that the map may be initialized with
          *       that value in the integer data typed map case.
          */
-        std::unique_ptr<typename MapFactory<T>::map_type> map(
-            this->factory_->make_map(*image,
-                                     this->samples_,
-                                     this->lines_,
-                                     i->minimum(),
-                                     i->maximum()));
+        auto map(this->factory_->make_map(*image,
+                                          this->samples_,
+                                          this->lines_,
+                                          i->minimum(),
+                                          i->maximum()));
 
         /**
          * @todo Check return value!
@@ -134,7 +133,7 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                        FITS::traits<T>::datatype,
                        fpixel,
                        nelements,
-                       map->get(),
+                       map.data(),
                        &status);
 
         // Set offset in the FITS array to the next plane.

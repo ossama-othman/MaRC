@@ -35,14 +35,14 @@
 
 template <typename T>
 MaRC::Orthographic<T>::Orthographic (
-    std::unique_ptr<OblateSpheroid> body,
+    std::shared_ptr<OblateSpheroid> body,
     double sub_observ_lat,
     double sub_observ_lon,
     double PA,
     double km_per_pixel,
     OrthographicCenter const & center)
     : MapFactory<T>()
-    , body_(std::move(body))
+    , body_(body)
     , sub_observ_lat_(0)
     , sub_observ_lon_(0)
     , PA_(0)
@@ -260,7 +260,7 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                            Geometry::RotXMatrix (this->sub_observ_lat_));
 
     static constexpr auto white =
-        std::numeric_limits<typename grid_type::data_type>::max ();
+        std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
     for (n = -90; n <= 90; n += lat_interval) {
@@ -328,7 +328,7 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                         static_cast<std::size_t>(k) * samples +
                         static_cast<std::size_t>(i);
 
-                    (*grid)[index] = white;
+                    grid[index] = white;
                 }
             }
         }

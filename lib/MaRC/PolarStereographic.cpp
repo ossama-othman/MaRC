@@ -32,7 +32,7 @@
 
 template <typename T>
 MaRC::PolarStereographic<T>::PolarStereographic(
-    std::unique_ptr<OblateSpheroid> body,
+    std::shared_ptr<OblateSpheroid> body,
     double max_lat,
     bool north_pole)
     : MapFactory<T>()
@@ -132,15 +132,13 @@ MaRC::PolarStereographic<T>::plot_map(SourceImage const & source,
             unsigned char const percent_complete =
                 static_cast<unsigned char>((offset + 1) * 100 / nelem);
 
-            double data = 0;
-            if (this->plot(source,
-                           lat,
-                           lon,
-                           minimum,
-                           maximum,
-                           percent_complete,
-                           data))
-                map[offset] = static_cast<T>(data);
+            this->plot(source,
+                       lat,
+                       lon,
+                       minimum,
+                       maximum,
+                       percent_complete,
+                       map[offset]);
         }
     }
 }
@@ -161,7 +159,7 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
     double const pix_conv_val = 2 * rho_max / min_dim;
 
     static constexpr auto white =
-        std::numeric_limits<typename grid_type::data_type>::max();
+        std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
     for (float n = -90 + lat_interval; n < 90; n += lat_interval) {

@@ -384,25 +384,24 @@ map_setup:
                   break;
               }
 
-              map_command->author (map_author);
-              map_command->origin (map_origin);
+              map_command->author(map_author);
+              map_command->origin(map_origin);
 
-              map_command->comment_list (comment_list);
-              map_command->xcomment_list (xcomment_list);
+              map_command->comment_list(comment_list);
+              map_command->xcomment_list(xcomment_list);
 
               if (create_grid)
-                map_command->grid_intervals (lat_interval, lon_interval);
+                map_command->grid_intervals(lat_interval, lon_interval);
 
-              if (transform_data)
-                {
-                  map_command->data_zero (fits_bzero);
-                  map_command->data_scale (fits_bscale);
-                }
+              if (transform_data) {
+                  map_command->data_zero(fits_bzero);
+                  map_command->data_scale(fits_bscale);
+              }
 
               if (blank_set)
-                map_command->data_blank (fits_blank);
+                map_command->data_blank(fits_blank);
 
-              map_command->image_factories (image_factories);
+              map_command->image_factories(std::move(image_factories));
 
               pp.push_command(std::move(map_command));
             }
@@ -415,17 +414,17 @@ map_entry:
           free ($3);
 
           // Reset items that may have been set for the previous map.
-          map_author.clear ();
-          map_origin.clear ();
+          map_author.clear();
+          map_origin.clear();
 
-          comment_list.clear ();
-          xcomment_list.clear ();
+          comment_list.clear();
+          xcomment_list.clear();
 
           create_grid = false;
           transform_data = false;
           blank_set = false;
 
-          image_factories.clear ();
+          image_factories.clear();
 
           // @todo Remove once deprecate plane number support is
           //       removed.
@@ -451,7 +450,7 @@ comment:
 ;
 
 comment_setup:
-        _COMMENT ':' _STRING    { comment_list.push_back ($3); free ($3); }
+        _COMMENT ':' _STRING    { comment_list.push_back($3); free($3); }
 ;
 
 xcomment:
@@ -459,9 +458,8 @@ xcomment:
 ;
 
 xcomment_setup:
-        XCOMMENT ':' _STRING    { xcomment_list.push_back ($3); free ($3); }
+        XCOMMENT ':' _STRING    { xcomment_list.push_back($3); free($3); }
 ;
-
 
 data_info:
         data_offset
@@ -722,7 +720,7 @@ plane_setup:
           image_factory->minimum (minimum);
           image_factory->maximum (maximum);
 
-          image_factories.push_back (image_factory);
+          image_factories.push_back(std::move(image_factory));
 
           photo_factories.clear ();
         }
@@ -827,12 +825,13 @@ plane_type:
 /* -------------------- INPUT IMAGE SETUP -------------------- */
 image:
         image_setup    {
-          image_factory = photo_factory;
+            image_factory = std::move(photo_factory);
         }
         | image_setup image {
             image_factory =
-              std::make_unique<MaRC::MosaicImageFactory>(photo_factories,
-                                                         averaging_type);
+              std::make_unique<MaRC::MosaicImageFactory>(
+                  std::move(photo_factories),
+                  averaging_type);
         }
 ;
 
@@ -911,7 +910,7 @@ image_setup:
           photo_factory->sub_solar (($15).lat, ($15).lon);
           photo_factory->range ($16);
 
-          photo_factories.push_back(photo_factory);
+          photo_factories.push_back(std::move(photo_factory));
         }
 ;
 
@@ -1291,22 +1290,22 @@ mercator:
               break;
 
               case SHORT:
-                map_factory_short.reset (
+                map_factory_short =
                     std::make_unique<MaRC::Mercator<FITS::short_type>>(oblate_spheroid);
                 break;
 
               case LONG:
-                map_factory_long.reset (
+                map_factory_long =
                     std::make_unique<MaRC::Mercator<FITS::long_type>>(oblate_spheroid);
                 break;
 
               case FLOAT:
-                map_factory_float.reset (
+                map_factory_float =
                     std::make_unique<MaRC::Mercator<FITS::float_type>>(oblate_spheroid);
                 break;
 
               case DOUBLE:
-                map_factory_double.reset (
+                map_factory_double =
                     std::make_unique<MaRC::Mercator<FITS::double_type>>(oblate_spheroid);
                 break;
 

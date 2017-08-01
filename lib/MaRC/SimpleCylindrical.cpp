@@ -31,14 +31,14 @@
 
 template <typename T>
 MaRC::SimpleCylindrical<T>::SimpleCylindrical(
-    std::unique_ptr<BodyData> body,
+    std::shared_ptr<BodyData> body,
     double lo_lat,
     double hi_lat,
     double lo_lon,
     double hi_lon,
     bool graphic_lat)
     : MapFactory<T>()
-    , body_(std::move(body))
+    , body_(body)
     , lo_lat_(C::pi_2)
     , hi_lat_(-C::pi_2)
     , lo_lon_(0)
@@ -113,16 +113,14 @@ MaRC::SimpleCylindrical<T>::plot_map(SourceImage const & source,
 
             unsigned char const percent_complete =
                 static_cast<unsigned char>((offset + 1) * 100 / nelem);
-
-            double data = 0;
-            if (this->plot(source,
-                           lat,
-                           lon,
-                           minimum,
-                           maximum,
-                           percent_complete,
-                           data))
-                map[offset] = static_cast<T>(data);
+            
+            this->plot(source,
+                       lat,
+                       lon,
+                       minimum,
+                       maximum,
+                       percent_complete,
+                       map[offset]);
         }
     }
 }
@@ -145,7 +143,7 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
     double const lr = lines / (hi_lat - lo_lat);
 
     static constexpr auto white =
-        std::numeric_limits<typename grid_type::data_type>::max();
+        std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
     for (float n = -90 + lat_interval; n < 90; n += lat_interval) {

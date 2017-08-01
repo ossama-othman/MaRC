@@ -27,6 +27,8 @@
 
 #include "MaRC/VirtualImage.h"
 
+#include <memory>
+
 
 namespace MaRC
 {
@@ -47,13 +49,15 @@ namespace MaRC
 
         /// Constructor
         /**
-         * @param body              Pointer to BodyData object
-         *                          representing body being mapped.
-         *
-         * @param graphic_latitudes Return bodygraphic latitudes instead
-         *                          of bodycentric latitudes.
+         * @param[in] body              Pointer to BodyData object
+         *                              representing body being
+         *                              mapped.
+         * @param[in] graphic_latitudes Return bodygraphic latitudes
+         *                              instead of bodycentric
+         *                              latitudes.
          */
-        LatitudeImage(BodyData const & body, bool graphic_latitudes);
+        LatitudeImage(std::shared_ptr<BodyData> body,
+                      bool graphic_latitudes);
 
     private:
 
@@ -68,7 +72,7 @@ namespace MaRC
     private:
 
         /// Object representing the body being mapped.
-        BodyData const & body_;
+        std::shared_ptr<BodyData> body_;
 
         /// Flag that determines if bodygraphic latitudes are returned
         /// instead of bodycentric latitudes.

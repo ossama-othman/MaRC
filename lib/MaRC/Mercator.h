@@ -59,11 +59,10 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in,out] body Pointer to BodyData object representing
-         *                     body being mapped.  @c Mercator takes
-         *                     ownership.
+         * @param[in] body Pointer to BodyData object representing
+         *                 body being mapped.
          */
-        Mercator(std::unique_ptr<OblateSpheroid> body);
+        Mercator(std::shared_ptr<OblateSpheroid> body);
 
         /// Destructor
         virtual ~Mercator();
@@ -134,7 +133,7 @@ namespace MaRC
     private:
 
         /// BodyData object representing the body being mapped.
-        std::unique_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
     };
 

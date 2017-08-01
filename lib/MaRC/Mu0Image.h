@@ -27,6 +27,8 @@
 
 #include "MaRC/VirtualImage.h"
 
+#include <memory>
+
 
 namespace MaRC
 {
@@ -57,7 +59,7 @@ namespace MaRC
          *                          degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
          */
-        Mu0Image(OblateSpheroid const & body,
+        Mu0Image(std::shared_ptr<OblateSpheroid> body,
                  double sub_solar_lat,
                  double sub_solar_lon);
 
@@ -80,21 +82,21 @@ namespace MaRC
 
     private:
 
-    /// Object representing the body being mapped.
-    /**
-     * @note OblateSpheroid is used instead of BodyData since some
-     *       code in this implementation assumes that the body is
-     *       modeled as an oblate spheroid.
-     */
-    OblateSpheroid const & body_;
+        /// Object representing the body being mapped.
+        /**
+         * @note OblateSpheroid is used instead of BodyData since some
+         *       code in this implementation assumes that the body is
+         *       modeled as an oblate spheroid.
+         */
+        std::shared_ptr<OblateSpheroid> const body_;
 
-    /// Bodycentric sub-solar latitude in radians.
-    const double sub_solar_lat_;
+        /// Bodycentric sub-solar latitude in radians.
+        const double sub_solar_lat_;
 
-    /// Sub-solar longitude in radians.
-    const double sub_solar_lon_;
+        /// Sub-solar longitude in radians.
+        const double sub_solar_lon_;
 
-  };
+    };
 
 } // End MaRC namespace
 

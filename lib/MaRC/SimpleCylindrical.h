@@ -56,21 +56,20 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in,out] body        Pointer to BodyData object
+         * @param[in] body        Pointer to BodyData object
          *                        representing body being mapped.
-         *                        @c SimpleCylindrical takes ownership.
-         * @param[in]     lo_lat      Lower latitude  in simple
+         * @param[in] lo_lat      Lower latitude  in simple
          *                        cylindrical map.
-         * @param[in]     hi_lat      Upper latitude  in simple
+         * @param[in] hi_lat      Upper latitude  in simple
          *                        cylindrical map.
-         * @param[in]     lo_lon      Lower longitude in simple
+         * @param[in] lo_lon      Lower longitude in simple
          *                        cylindrical map.
-         * @param[in]     hi_lon      Upper longitude in simple
+         * @param[in] hi_lon      Upper longitude in simple
          *                        cylindrical map.
-         * @param[in]     graphic_lat Map bodygraphic latitudes instead of
+         * @param[in] graphic_lat Map bodygraphic latitudes instead of
          *                        bodycentric latitudes.
          */
-        SimpleCylindrical(std::unique_ptr<BodyData> body,
+        SimpleCylindrical(std::shared_ptr<BodyData> body,
                           double lo_lat,
                           double hi_lat,
                           double lo_lon,
@@ -128,7 +127,7 @@ namespace MaRC
     private:
 
         /// BodyData object representing the body being mapped.
-        std::unique_ptr<BodyData> const body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Lower latitude in simple cylindrical map.
         double lo_lat_;

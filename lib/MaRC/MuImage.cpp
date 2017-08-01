@@ -28,7 +28,7 @@
 #include <cmath>
 
 
-MaRC::MuImage::MuImage(OblateSpheroid const & body,
+MaRC::MuImage::MuImage(std::shared_ptr<OblateSpheroid> body,
                        double sub_observ_lat,
                        double sub_observ_lon,
                        double range)
@@ -43,11 +43,11 @@ MaRC::MuImage::MuImage(OblateSpheroid const & body,
 bool
 MaRC::MuImage::read_data_i(double lat, double lon, double & data) const
 {
-    data = this->body_.mu(this->sub_observ_lat_,
-                          this->sub_observ_lon_,
-                          lat,
-                          lon,
-                          this->range_);
+    data = this->body_->mu(this->sub_observ_lat_,
+                           this->sub_observ_lon_,
+                           lat,
+                           lon,
+                           this->range_);
 
     return true;
 }
@@ -102,7 +102,7 @@ MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
 bool
 MaRC::MuImage::is_visible(double lat, double lon) const
 {
-    return MaRC::MuImage::is_visible_i(this->body_,
+    return MaRC::MuImage::is_visible_i(*this->body_,
                                        this->sub_observ_lat_,
                                        this->sub_observ_lon_,
                                        lat,

@@ -57,9 +57,8 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in,out] body       Pointer to OblateSpheroid object
-         *                           representing body
-         *                           @c Orthographic takes ownership.
+         * @param[in] body           Pointer to @c OblateSpheroid
+         *                           object representing body.
          * @param[in] sub_observ_lat Bodycentric sub-observer latitude
          *                           in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
@@ -72,7 +71,7 @@ namespace MaRC
          *                           information to be used in the
          *                           projection.
          */
-        Orthographic(std::unique_ptr<OblateSpheroid> body,
+        Orthographic(std::shared_ptr<OblateSpheroid> body,
                      double sub_observ_lat,
                      double sub_observ_lon,
                      double position_angle,
@@ -90,7 +89,6 @@ namespace MaRC
         //@{
         virtual char const * projection_name() const;
         //@}
-
 
     private:
 
@@ -123,7 +121,7 @@ namespace MaRC
     private:
 
         /// OblateSpheroid object representing the body being mapped.
-        std::unique_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Sub-observation latitude.
         double sub_observ_lat_;

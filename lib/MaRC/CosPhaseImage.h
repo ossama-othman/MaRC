@@ -27,6 +27,8 @@
 
 #include "MaRC/VirtualImage.h"
 
+#include <memory>
+
 
 namespace MaRC
 {
@@ -59,7 +61,7 @@ namespace MaRC
          * @param[in] range          Observer to target center
          *                           distance.
          */
-        CosPhaseImage(OblateSpheroid const & body,
+        CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
                       double sub_observ_lat,
                       double sub_observ_lon,
                       double sub_solar_lat,
@@ -91,7 +93,7 @@ namespace MaRC
          *       code in this implementation assumes that the body is
          *       modeled as an oblate spheroid.
          */
-        OblateSpheroid const & body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Bodycentric sub-observer latitude in radians.
         double const sub_observ_lat_;

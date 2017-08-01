@@ -32,9 +32,9 @@
 
 
 template <typename T>
-MaRC::Mercator<T>::Mercator(std::unique_ptr<OblateSpheroid> body)
+MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body)
     : MapFactory<T>()
-    , body_(std::move(body))
+    , body_(body)
 {
 }
 
@@ -99,8 +99,6 @@ MaRC::Mercator<T>::plot_map(SourceImage const & source,
                        map[offset]);
         }
     }
-
-  return map;
 }
 
 template <typename T>
@@ -117,7 +115,7 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
     double const pix_conv_val = xmax / lines * 2;
 
     static constexpr auto white =
-        std::numeric_limits<typename grid_type::data_type>::max();
+        std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
     for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
@@ -128,11 +126,13 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
             ::rint(this->mercator_x(nn) / pix_conv_val + lines / 2.0);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
-            auto const offset =
-                std::advance(std::begin(grid),
-                             static_cast<std::size_t>(k) * samples);
+            auto const first =
+                std::begin(grid)
+                + static_cast<std::size_t>(k) * samples;
 
-            std::fill(offset, offset + samples, white);
+            auto const last = first + samples;
+
+            std::fill(first, last, white);
         }
     }
 
@@ -150,8 +150,6 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
                 grid[k * lines + static_cast<std::size_t>(i)] = white;
         }
     }
-
-  return grid;
 }
 
 template <typename T>

@@ -27,7 +27,7 @@
 #include "Constants.h"
 
 
-MaRC::CosPhaseImage::CosPhaseImage(OblateSpheroid const & body,
+MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
                                    double sub_observ_lat,
                                    double sub_observ_lon,
                                    double sub_solar_lat,
@@ -48,13 +48,13 @@ MaRC::CosPhaseImage::read_data_i(double lat,
                                  double lon,
                                  double & data) const
 {
-    data = this->body_.cos_phase(this->sub_observ_lat_,
-                                 this->sub_observ_lon_,
-                                 this->sub_solar_lat_,
-                                 this->sub_solar_lon_,
-                                 lat,
-                                 lon,
-                                 this->range_);
+    data = this->body_->cos_phase(this->sub_observ_lat_,
+                                  this->sub_observ_lon_,
+                                  this->sub_solar_lat_,
+                                  this->sub_solar_lon_,
+                                  lat,
+                                  lon,
+                                  this->range_);
 
     return true;
 }
@@ -65,7 +65,7 @@ MaRC::CosPhaseImage::is_visible(double lat, double lon) const
     // This implementation is as the same as the one used by the
     // MuImage class.
 
-    return MaRC::MuImage::is_visible_i(this->body_,
+    return MaRC::MuImage::is_visible_i(*this->body_,
                                        this->sub_observ_lat_,
                                        this->sub_observ_lon_,
                                        lat,

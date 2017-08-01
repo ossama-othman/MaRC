@@ -214,13 +214,13 @@ namespace MaRC
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
          */
-        void  plot(SourceImage const & source,
-                   double lat,
-                   double lon,
-                   double minimum,
-                   double maximum,
-                   unsigned char percent_complete,
-                   T & data);
+        void plot(SourceImage const & source,
+                  double lat,
+                  double lon,
+                  double minimum,
+                  double maximum,
+                  unsigned char percent_complete,
+                  T & data);
 
     private:
 

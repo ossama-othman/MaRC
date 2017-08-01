@@ -57,16 +57,14 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in,out] body   Pointer to BodyData object
+         * @param[in] body       Pointer to BodyData object
          *                       representing body being mapped.
-         *                       @c PolarStereographic takes
-         *                       ownership.
          * @param[in] max_lat    Maximum bodyCENTRIC latitude to map
          *                       in degrees.
          * @param[in] north_pole Place north_pole if @c true.  South
          *                       pole otherwise.
          */
-        PolarStereographic(std::unique_ptr<OblateSpheroid> body,
+        PolarStereographic(std::shared_ptr<OblateSpheroid> body,
                            double max_lat,
                            bool north_pole);
 
@@ -130,7 +128,7 @@ namespace MaRC
     private:
 
         /// BodyData object representing the body being mapped.
-        std::unique_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Maximum bodyCENTRIC latitude to map in radians.
         double const max_lat_;

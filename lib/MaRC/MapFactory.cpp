@@ -48,7 +48,7 @@ MaRC::MapFactory<T>::make_map(SourceImage const & source,
                               double minimum,
                               double maximum)
 {
-    map_type map(samples * lines, Map_traits<T>::empty_value);
+    map_type map(samples * lines, Map_traits<T>::empty_value());
 
     this->plot_map(source,
                    samples,

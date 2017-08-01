@@ -50,8 +50,10 @@ namespace MaRC
          * allows for easy disambiguation between actual data and
          * areas of the map that contain no data.
          */
-        static constexpr T empty_value =
-            std::numeric_limits<T>::quiet_NaN();
+        static constexpr T empty_value()
+        {
+            return std::numeric_limits<T>::quiet_NaN();
+        }
 
         /// Make sure given minimum value falls within map data type
         /// range.
@@ -77,7 +79,7 @@ namespace MaRC
          */
         static T minimum(double min)
         {
-            static constexpr T absolute_min =
+            static constexpr T const absolute_min =
                 std::numeric_limits<T>::lowest();
 
             return (min < absolute_min
@@ -102,7 +104,7 @@ namespace MaRC
          */
         static T maximum(double max)
         {
-            static constexpr T absolute_max =
+            static constexpr T const absolute_max =
                 std::numeric_limits<T>::max();
             return (max > absolute_max
                     ? absolute_max : static_cast<T>(max));
@@ -113,12 +115,17 @@ namespace MaRC
     template <>
     struct Map_traits<float>
     {
+        static constexpr float empty_value()
+        {
+            return std::numeric_limits<float>::quiet_NaN();
+        }
+
         static float minimum(double min)
         {
             /**
              * @todo Why do we need to add one here?
              */
-            static constexpr float absolute_min =
+            static constexpr float const absolute_min =
                 std::numeric_limits<float>::lowest() + 1;
 
             return (min < absolute_min ? absolute_min : min);
@@ -126,7 +133,7 @@ namespace MaRC
 
         static float maximum(double max)
         {
-            static constexpr float absolute_max =
+            static constexpr float const absolute_max =
                 std::numeric_limits<float>::max();
 
             return (max > absolute_max ? absolute_max : max);
@@ -136,6 +143,11 @@ namespace MaRC
     template <>
     struct Map_traits<double>
     {
+        static constexpr double empty_value()
+        {
+            return std::numeric_limits<double>::quiet_NaN();
+        }
+
         static double minimum(double min)
         {
             // No clipping is necessary since the data types are the
