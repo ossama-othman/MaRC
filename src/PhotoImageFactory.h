@@ -63,7 +63,7 @@ namespace MaRC
          *                     represented as an oblate spheroid).
          */
         PhotoImageFactory(char const * filename,
-                          OblateSpheroid const & body);
+                          std::shared_ptr<OblateSpheroid> body);
 
         /// Create a @c PhotoImage.
         virtual std::unique_ptr<SourceImage> make();
@@ -194,7 +194,7 @@ namespace MaRC
          *       code in this implementation assumes that the body is
          *       modeled as an oblate spheroid.
          */
-        OblateSpheroid const & body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Enable/disable geometric correction.
         /**

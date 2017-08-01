@@ -145,7 +145,7 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
 }
 
 template <typename T>
-MaRC::Grid *
+typename MaRC::MapCommand_T<T>::grid_type
 MaRC::MapCommand_T<T>::make_grid(long samples,
                                  long lines,
                                  float lat_interval,

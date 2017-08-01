@@ -67,17 +67,17 @@ namespace MaRC
         virtual char const * projection_name() const;
         virtual void initialize_FITS_image(fitsfile * fptr, int & status);
         virtual void make_map_planes(fitsfile * fptr, int & status);
-        virtual Grid * make_grid(long samples,
-                                 long lines,
-                                 float lat_interval,
-                                 float lon_interval);
+        virtual grid_type make_grid(long samples,
+                                    long lines,
+                                    float lat_interval,
+                                    float lon_interval);
         //@}
 
     private:
 
         /// @c MapFactory object responsible for creating maps and
         /// grids.
-        std::unique_ptr<MapFactory<T>> factory_;
+        std::unique_ptr<MapFactory<T>> const factory_;
 
     };
 

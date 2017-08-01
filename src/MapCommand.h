@@ -26,6 +26,8 @@
 
 #include "ImageFactory.h"
 
+#include <MaRC/MapFactory.h>
+
 #include <fitsio.h>
 
 #include <list>
@@ -35,7 +37,6 @@
 
 namespace MaRC
 {
-    class Grid;
 
     /**
      * @class MapCommand
@@ -50,9 +51,10 @@ namespace MaRC
     {
     public:
 
-        typedef std::list<std::string> comment_list_type;
-        typedef std::list<std::unique_ptr<MaRC::ImageFactory>>
-        image_factories_type;
+        using grid_type = MaRC::MapFactoryBase::grid_type;
+        using comment_list_type = std::list<std::string>;
+        using image_factories_type =
+            std::list<std::unique_ptr<MaRC::ImageFactory>>;
 
         /// Constructor.
         /**
@@ -90,31 +92,18 @@ namespace MaRC
          */
         virtual void make_map_planes(fitsfile * fptr, int & status) = 0;
 
-        /// Create and write grid image.
-        /**
-         * This is a "template method" (the design pattern, not a C++
-         * method) that calls back on the type-specific MapFactory to
-         * create the grid.
-         *
-         * @return @c Grid object containing grid image.
-         */
-        virtual Grid * make_grid(long samples,
-                                 long lines,
-                                 float lat_interval,
-                                 float lon_interval) = 0;
-
         /// Set map author.
-        void author(std::string const & author);
+        void author(std::string author);
 
         /// Set organization or institution responsible for creating
         /// map.
-        void origin(std::string const & origin);
+        void origin(std::string origin);
 
         /// Set list of map comments to be written to FITS file.
-        void comment_list (comment_list_type const & comments);
+        void comment_list (comment_list_type comments);
 
         /// Set list of grid comments to be written to FITS file.
-        void xcomment_list(comment_list_type const & comments);
+        void xcomment_list(comment_list_type comments);
 
         /**
          * Set the latitude and longitude grid intervals.
@@ -167,7 +156,22 @@ namespace MaRC
 
         /// Set the list of @c ImageFactorys responsible for creating
         /// each of the planes in the map.
-        void image_factories(image_factories_type const & factories);
+        void image_factories(image_factories_type factories);
+
+    private:
+
+        /// Create and write grid image.
+        /**
+         * This is a "template method" (the design pattern, not a C++
+         * method) that calls back on the type-specific MapFactory to
+         * create the grid.
+         *
+         * @return @c Grid object containing grid image.
+         */
+        virtual grid_type make_grid(long samples,
+                                    long lines,
+                                    float lat_interval,
+                                    float lon_interval) = 0;
 
     protected:
 

@@ -79,7 +79,7 @@ namespace MaRC
          * @param[in,out] gc      Geometric correction strategy.
          *                        (@c PhotoImage assumes ownership).
          */
-        PhotoImage(OblateSpheroid const & body,
+        PhotoImage(std::shared_ptr<OblateSpheroid> body,
                    std::vector<double> image, // moved, not copied!
                    std::size_t samples,
                    std::size_t lines,
@@ -387,7 +387,7 @@ namespace MaRC
          *       code in this implementation assumes that the body is
          *       modeled as an oblate spheroid.
          */
-        OblateSpheroid const & body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Pointer to the image array.
         std::vector<double> const image_;

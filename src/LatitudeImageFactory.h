@@ -51,7 +51,7 @@ namespace MaRC
          *                              instead of bodycentric
          *                              latitudes.
          */
-        LatitudeImageFactory(BodyData const & body,
+        LatitudeImageFactory(std::shared_ptr<BodyData> body,
                              bool graphic_latitudes);
 
         /// Create a @c LatitudeImage.
@@ -60,7 +60,7 @@ namespace MaRC
     private:
 
         /// Object representing the body being mapped.
-        BodyData const & body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Flag that determines if bodygraphic latitudes are returned
         /// instead of bodycentric latitudes.

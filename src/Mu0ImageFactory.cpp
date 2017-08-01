@@ -24,9 +24,10 @@
 
 #include "MaRC/Mu0Image.h"
 
-MaRC::Mu0ImageFactory::Mu0ImageFactory(OblateSpheroid const & body,
-                                       double sub_solar_lat,
-                                       double sub_solar_lon)
+MaRC::Mu0ImageFactory::Mu0ImageFactory(
+    std::shared_ptr<OblateSpheroid> body,
+    double sub_solar_lat,
+    double sub_solar_lon)
     : body_(body)
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)

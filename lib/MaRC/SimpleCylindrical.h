@@ -49,32 +49,33 @@ namespace MaRC
     public:
 
         /// @typedef Type of map passed to @c plot_map() method.
-        using MapFactory<T>::map_type;
+        using typename MapFactory<T>::map_type;
 
         /// @typedef Type of grid passed to @c plot_grid() method.
-        using MapFactory<T>::grid_type;
+        using typename MapFactory<T>::grid_type;
 
         /// Constructor.
         /**
-         * @param[in] body        Pointer to BodyData object
+         * @param[in,out] body        Pointer to BodyData object
          *                        representing body being mapped.
-         * @param[in] lo_lat      Lower latitude  in simple
+         *                        @c SimpleCylindrical takes ownership.
+         * @param[in]     lo_lat      Lower latitude  in simple
          *                        cylindrical map.
-         * @param[in] hi_lat      Upper latitude  in simple
+         * @param[in]     hi_lat      Upper latitude  in simple
          *                        cylindrical map.
-         * @param[in] lo_lon      Lower longitude in simple
+         * @param[in]     lo_lon      Lower longitude in simple
          *                        cylindrical map.
-         * @param[in] hi_lon      Upper longitude in simple
+         * @param[in]     hi_lon      Upper longitude in simple
          *                        cylindrical map.
-         * @param[in] graphic_lat Map bodygraphic latitudes instead of
+         * @param[in]     graphic_lat Map bodygraphic latitudes instead of
          *                        bodycentric latitudes.
          */
-        SimpleCylindrical (BodyData const & body,
-                           double lo_lat,
-                           double hi_lat,
-                           double lo_lon,
-                           double hi_lon,
-                           bool graphic_lat);
+        SimpleCylindrical(std::unique_ptr<BodyData> body,
+                          double lo_lat,
+                          double hi_lat,
+                          double lo_lon,
+                          double hi_lon,
+                          bool graphic_lat);
 
         /// Destructor
         virtual ~SimpleCylindrical();
@@ -87,32 +88,33 @@ namespace MaRC
          * @see @c MapFactory
          */
         //@{
-        virtual const char * projection_name() const;
+        virtual char const * projection_name() const;
         //@}
 
-  private:
+    private:
 
         /**
-         * @name Private @c MapFactory Methods
+         * Create the Simple Cylindrical map projection.
          *
-         * Methods required by the @c MapFactory abstract base class.
-         *
-         * @see @c MapFactory and @c MapFactoryBase
+         * @see @c MaRC::MapFactory<T>::plot_map().
          */
-        //@{
-        virtual const char * projection_name() const;
         virtual void plot_map(SourceImage const & source,
-                              unsigned int samples,
-                              unsigned int lines,
+                              std::size_t samples,
+                              std::size_t lines,
                               double minimum,
                               double maximum,
                               map_type & map);
-        virtual void plot_grid(unsigned int samples,
-                               unsigned int lines,
+
+        /**
+         * Create the Simple Cylindrical map latitude/longitude grid.
+         *
+         * @see @c MaRC::MapFactoryBase::plot_grid().
+         */
+        virtual void plot_grid(std::size_t samples,
+                               std::size_t lines,
                                float lat_interval,
                                float lon_interval,
                                grid_type & grid);
-        //@}
 
         /// Orient longitude according to rotation direction
         /// (prograde/retrograde).
@@ -120,13 +122,13 @@ namespace MaRC
          * @param[in] i       Sample in map being mapped.
          * @param[in] samples Number of samples in image.
          */
-        inline double get_longitude (unsigned int i,
-                                     unsigned int samples) const;
+        inline double get_longitude(std::size_t i,
+                                    std::size_t samples) const;
 
     private:
 
         /// BodyData object representing the body being mapped.
-        BodyData const & body_;
+        std::unique_ptr<BodyData> const body_;
 
         /// Lower latitude in simple cylindrical map.
         double lo_lat_;

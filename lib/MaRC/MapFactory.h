@@ -65,7 +65,7 @@ namespace MaRC
                             float lon_interval)
         {
             grid_type grid(samples * lines,
-                           decltype(grid_type::value_type)());
+                           grid_type::value_type());
 
             this->plot_grid(samples,
                             lines,
@@ -81,28 +81,23 @@ namespace MaRC
         /// Create the latitude/longitude grid for the desired map
         /// projection.
         /**
-         * @param[in] samples      Number of samples in grid.
-         * @param[in] lines        Number of lines   in grid.
-         * @param[in] lat_interval Number of degrees between each
-         *                         latitude grid line.
-         * @param[in] lon_interval Number of degrees between each
-         *                         longitude grid line.
-         * @param[in,out] map      Grid container to be populated with
-         *                         grid data.  The caller owns the
-         *                         storage.  Subclass implementations
-         *                         should only populate the grid with
-         *                         data.
-         *
-         * @return The generated grid image.
-         *
-         * @note We rely on C++11 move semantics to avoid deep copying
-         *       the returned grid.
+         * @param[in]     samples      Number of samples in grid.
+         * @param[in]     lines        Number of lines   in grid.
+         * @param[in]     lat_interval Number of degrees between each
+         *                             latitude grid line.
+         * @param[in]     lon_interval Number of degrees between each
+         *                             longitude grid line.
+         * @param[in,out] grid         Grid container to be populated
+         *                             with grid data.  The caller
+         *                             owns the storage.  Subclass
+         *                             implementations should only
+         *                             populate the grid with data.
          */
-        virtual grid_type plot_grid(std::size_t samples,
-                                    std::size_t lines,
-                                    float lat_interval,
-                                    float lon_interval,
-                                    grid_type & grid) = 0;
+        virtual void plot_grid(std::size_t samples,
+                               std::size_t lines,
+                               float lat_interval,
+                               float lon_interval,
+                               grid_type & grid) = 0;
 
     };
 
@@ -213,22 +208,19 @@ namespace MaRC
          * @param[out] data            Data retrieved from source
          *                             image.
          *
-         * @return true if data was found at given latitude and
-         *         longitude.
-         *
          * @todo Currently subclasses must call this method in their
          *       @c plot_map() implementation.  That seems like a
          *       rather roundabout way of mapping the data.  Ideally
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
          */
-        bool plot(const SourceImage & source,
-                  double lat,
-                  double lon,
-                  double minimum,
-                  double maximum,
-                  unsigned char percent_complete,
-                  double & data);
+        void  plot(SourceImage const & source,
+                   double lat,
+                   double lon,
+                   double minimum,
+                   double maximum,
+                   unsigned char percent_complete,
+                   T & data);
 
     private:
 

@@ -52,20 +52,21 @@ namespace MaRC
     public:
 
         /// @typedef Type returned from @c make_map() method.
-        using MapFactory<T>::map_type;
+        using typename MapFactory<T>::map_type;
 
         /// @typedef Type returned from @c make_grid() method.
-        using MapFactory<T>::grid_type;
+        using typename MapFactory<T>::grid_type;
 
         /// Constructor.
         /**
          * @param[in,out] body Pointer to BodyData object representing
-         *                     body being mapped.
+         *                     body being mapped.  @c Mercator takes
+         *                     ownership.
          */
         Mercator(std::unique_ptr<OblateSpheroid> body);
 
         /// Destructor
-        ~Mercator();
+        virtual ~Mercator();
 
         /**
          * @name @c MapFactory Methods
@@ -76,20 +77,33 @@ namespace MaRC
          * @see @c MapFactory
          */
         //@{
-        virtual const char * projection_name() const;
-        virtual grid_type make_grid(std::size_t samples,
-                                    std::size_t lines,
-                                    float lat_interval,
-                                    float lon_interval);
+        virtual char const * projection_name() const;
         //@}
 
     private:
 
-        virtual map_type make_map_i(SourceImage const & source,
-                                    std::size_t samples,
-                                    std::size_t lines,
-                                    double minimum,
-                                    double maximum);
+        /**
+         * Create the Mercator map projection.
+         *
+         * @see @c MaRC::MapFactory<T>::plot_map().
+         */
+        virtual void plot_map(SourceImage const & source,
+                              std::size_t samples,
+                              std::size_t lines,
+                              double minimum,
+                              double maximum,
+                              map_type & map);
+
+        /**
+         * Create the Mercator map latitude/longitude grid.
+         *
+         * @see @c MaRC::MapFactoryBase::plot_grid().
+         */
+        virtual void plot_grid(std::size_t samples,
+                               std::size_t lines,
+                               float lat_interval,
+                               float lon_interval,
+                               grid_type & grid);
 
         /// Orient longitude according to rotation direction
         /// (prograde/retrograde).

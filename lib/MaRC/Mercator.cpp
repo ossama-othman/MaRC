@@ -32,9 +32,9 @@
 
 
 template <typename T>
-MaRC::Mercator<T>::Mercator (std::unique_ptr<OblateSpheroid> body)
+MaRC::Mercator<T>::Mercator(std::unique_ptr<OblateSpheroid> body)
     : MapFactory<T>()
-    ,  body_(body)
+    , body_(std::move(body))
 {
 }
 
@@ -45,7 +45,7 @@ MaRC::Mercator<T>::~Mercator()
 
 template <typename T>
 char const *
-MaRC::Mercator<T>::projection_name (void) const
+MaRC::Mercator<T>::projection_name() const
 {
   static char const name[] = "Transverse Mercator (Conformal)";
 
@@ -54,11 +54,12 @@ MaRC::Mercator<T>::projection_name (void) const
 
 template <typename T>
 void
-MaRC::Mercator<T>::make_map_i(SourceImage const & source,
-                              std::size_t samples,
-                              std::size_t lines,
-                              double minimum,
-                              double maximum)
+MaRC::Mercator<T>::plot_map(SourceImage const & source,
+                            std::size_t samples,
+                            std::size_t lines,
+                            double minimum,
+                            double maximum,
+                            map_type & map)
 {
     std::size_t const nelem = samples * lines;
 
@@ -103,21 +104,19 @@ MaRC::Mercator<T>::make_map_i(SourceImage const & source,
 }
 
 template <typename T>
-std::unique_ptr<typename MaRC::Mercator<T>::grid_type>
-MaRC::Mercator<T>::make_grid(unsigned int samples,
-                             unsigned int lines,
+void
+MaRC::Mercator<T>::plot_grid(std::size_t samples,
+                             std::size_t lines,
                              float lat_interval,
-                             float lon_interval)
+                             float lon_interval,
+                             grid_type & grid)
 {
-    std::unique_ptr<grid_type> grid(
-        std::make_unique<grid_type>(samples, lines));
-
     // No need to take absolute value.  Always positive.
     double const xmax = static_cast<double>(lines) / samples * C::pi;
 
     double const pix_conv_val = xmax / lines * 2;
 
-    static const typename grid_type::data_type white =
+    static constexpr auto white =
         std::numeric_limits<typename grid_type::data_type>::max();
 
     // Draw latitude lines
@@ -129,11 +128,11 @@ MaRC::Mercator<T>::make_grid(unsigned int samples,
             ::rint(this->mercator_x(nn) / pix_conv_val + lines / 2.0);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
-            std::size_t const offset =
-                static_cast<std::size_t>(k) * samples;
+            auto const offset =
+                std::advance(std::begin(grid),
+                             static_cast<std::size_t>(k) * samples);
 
-            for (std::size_t i = 0; i < samples; ++i)
-                (*grid)[offset + i] = white;
+            std::fill(offset, offset + samples, white);
         }
     }
 
@@ -146,9 +145,9 @@ MaRC::Mercator<T>::make_grid(unsigned int samples,
         else
             i = static_cast<int> (::rint (m * samples / 360.0));
 
-        if (i >= 0 && static_cast<unsigned int> (i) < samples) {
-            for (unsigned int k = 0; k < lines; ++k)
-                (*grid)(static_cast<unsigned int>(i), k) = white;
+        if (i >= 0 && static_cast<std::size_t>(i) < samples) {
+            for (std::size_t k = 0; k < lines; ++k)
+                grid[k * lines + static_cast<std::size_t>(i)] = white;
         }
     }
 
@@ -157,8 +156,8 @@ MaRC::Mercator<T>::make_grid(unsigned int samples,
 
 template <typename T>
 double
-MaRC::Mercator<T>::get_longitude(unsigned int i,
-                                 unsigned int samples) const
+MaRC::Mercator<T>::get_longitude(std::size_t i,
+                                 std::size_t samples) const
 {
     // Compute longitude at center of pixel.
     double lon = (i + 0.5) / samples * C::_2pi;

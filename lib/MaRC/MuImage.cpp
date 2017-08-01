@@ -60,21 +60,26 @@ MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
                             double lon,
                             double range)
 {
-    double const latg   = body.graphic_latitude (lat);
+    /**
+     * @todo This is ugly.  The visibility check is specific to an
+     *       oblate spheroid.  It should really be moved to the
+     *       @c OblateSpheroid strategy.
+     */
 
-    double const radius = body.centric_radius (lat);
+    double const latg   = body.graphic_latitude(lat);
+
+    double const radius = body.centric_radius(lat);
 
     double const cosine =
-        (radius * ::cos (lat - latg) -
-         range * ::sin (sub_observ_lat) *
-         ::sin (latg)) /
-        range /::cos (sub_observ_lat) / ::cos (latg);
+        (radius * ::cos(lat - latg)
+         - range * ::sin(sub_observ_lat) * ::sin (latg))
+        / range /::cos(sub_observ_lat) / ::cos(latg);
 
     if (cosine >= -1 && cosine <= 1) {
         // Partial range of longitudes are visible
 
-        double const lower = sub_observ_lon - ::fabs(::acos (cosine));
-        double const upper = sub_observ_lon + ::fabs(::acos (cosine));
+        double const lower = sub_observ_lon - ::fabs(::acos(cosine));
+        double const upper = sub_observ_lon + ::fabs(::acos(cosine));
 
         // Now check if longitude at given latitude is visible
         double l = lon;

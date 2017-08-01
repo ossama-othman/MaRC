@@ -61,19 +61,6 @@ MaRC::MapFactory<T>::make_map(SourceImage const & source,
 }
 
 template <typename T>
-typename MaRC::MapFactory<T>::grid_type
-MaRC::MapFactory<T>::make_grid(std::size_t samples,
-                               std::size_t lines)
-{
-    grid_type grid(samples * lines, 0);
-
-    this->plot_grid(samples, line, grid);
-
-    return std::move(grid);
-}
-
-
-template <typename T>
 void
 MaRC::MapFactory<T>::plot(SourceImage const & source,
                           double lat,
@@ -81,7 +68,7 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
                           double minimum,
                           double maximum,
                           unsigned char percent_complete,
-                          T & map_datum)
+                          T & data)
 {
     // Clip minimum, maximum and datum to fit within map data type
     // range, if necessary.
@@ -89,11 +76,11 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
 
     bool const found_data =
         (source.read_data(lat, lon, datum)
-         && data > Map_traits<T>::minimum(minimum)
-         && data < Map_traits<T>::maximum(maximum));
+         && datum > Map_traits<T>::minimum(minimum)
+         && datum < Map_traits<T>::maximum(maximum));
 
     if (found_data)
-        map_datum = static_cast<T>(datum);
+        data = static_cast<T>(datum);
 
     /**
      * @todo Remove map progress output.  Library calls should not

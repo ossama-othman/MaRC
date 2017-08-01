@@ -54,7 +54,7 @@ namespace MaRC
          * @param[in] range          Observer to target center
          *                           distance.
          */
-        MuImageFactory(OblateSpheroid const & body,
+        MuImageFactory(std::shared_ptr<OblateSpheroid> body,
                        double sub_observ_lat,
                        double sub_observ_lon,
                        double range);
@@ -70,7 +70,7 @@ namespace MaRC
          *       code in this implementation assumes that the body is
          *       modeled as an oblate spheroid.
          */
-        OblateSpheroid const & body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Sub-Observer Latitude -- BodyCENTRIC (degrees).
         double sub_observ_lat_;

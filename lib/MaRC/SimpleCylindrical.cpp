@@ -37,8 +37,8 @@ MaRC::SimpleCylindrical<T>::SimpleCylindrical(
     double lo_lon,
     double hi_lon,
     bool graphic_lat)
-    : MapFactory<T> ()
-    , body_(std::move(body)),
+    : MapFactory<T>()
+    , body_(std::move(body))
     , lo_lat_(C::pi_2)
     , hi_lat_(-C::pi_2)
     , lo_lon_(0)
@@ -55,8 +55,8 @@ MaRC::SimpleCylindrical<T>::SimpleCylindrical(
 
     // Convert to GRAPHIC latitude if requested.
     if (graphic_lat) {
-        this->lo_lat_ = this->body_->graphic_latitude (this->lo_lat_);
-        this->hi_lat_ = this->body_->graphic_latitude (this->hi_lat_);
+        this->lo_lat_ = this->body_->graphic_latitude(this->lo_lat_);
+        this->hi_lat_ = this->body_->graphic_latitude(this->hi_lat_);
     }
 
     // Set longitude range
@@ -71,13 +71,13 @@ MaRC::SimpleCylindrical<T>::SimpleCylindrical(
 }
 
 template <typename T>
-MaRC::SimpleCylindrical<T>::~SimpleCylindrical (void)
+MaRC::SimpleCylindrical<T>::~SimpleCylindrical()
 {
 }
 
 template <typename T>
-const char *
-MaRC::SimpleCylindrical<T>::projection_name (void) const
+char const *
+MaRC::SimpleCylindrical<T>::projection_name() const
 {
     static const char name[] = "Simple Cylindrical";
 
@@ -86,7 +86,7 @@ MaRC::SimpleCylindrical<T>::projection_name (void) const
 
 template <typename T>
 void
-MaRC::SimpleCylindrical<T>::plot_map(SourceImage & source,
+MaRC::SimpleCylindrical<T>::plot_map(SourceImage const & source,
                                      std::size_t samples,
                                      std::size_t lines,
                                      double minimum,
@@ -96,7 +96,7 @@ MaRC::SimpleCylindrical<T>::plot_map(SourceImage & source,
     // Conversion factor -- latitudes per line
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
 
-    const std::size_t nelem = samples * lines;
+    std::size_t const nelem = samples * lines;
 
     std::size_t offset = 0;
 
@@ -111,24 +111,24 @@ MaRC::SimpleCylindrical<T>::plot_map(SourceImage & source,
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double const lon = this->get_longitude(i, samples);
 
-          unsigned char const percent_complete =
-              static_cast<unsigned char>((offset + 1) * 100 / nelem);
+            unsigned char const percent_complete =
+                static_cast<unsigned char>((offset + 1) * 100 / nelem);
 
-          double data = 0;
-          if (this->plot(source,
-                         lat,
-                         lon,
-                         minimum,
-                         maximum,
-                         percent_complete,
-                         data))
-              map[offset] = static_cast<T>(data);
+            double data = 0;
+            if (this->plot(source,
+                           lat,
+                           lon,
+                           minimum,
+                           maximum,
+                           percent_complete,
+                           data))
+                map[offset] = static_cast<T>(data);
         }
     }
 }
 
 template <typename T>
-typename MaRC::SimpleCylindrical<T>::grid_type *
+void
 MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
                                       std::size_t lines,
                                       float lat_interval,
@@ -144,8 +144,8 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
     // Line-to-latitude ratio.
     double const lr = lines / (hi_lat - lo_lat);
 
-    static constexpr grid_type::value_type white =
-        std::numeric_limits<grid_type::data_type>::max();
+    static constexpr auto white =
+        std::numeric_limits<typename grid_type::data_type>::max();
 
     // Draw latitude lines
     for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
@@ -180,7 +180,7 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
         else
             i = static_cast<int>(::rint((m - lo_lon_2) * sr));
 
-        if (i >= 0 && static_cast<std::size_t> (i) < samples) {
+        if (i >= 0 && static_cast<std::size_t>(i) < samples) {
             for (std::size_t k = 0; k < lines; ++k)
                 grid[k * samples + static_cast<std::size_t>(i)] = white;
         }

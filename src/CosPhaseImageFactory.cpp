@@ -26,7 +26,7 @@
 
 
 MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
-    OblateSpheroid const & body,
+    std::shared_ptr<OblateSpheroid> body,
     double sub_observ_lat,
     double sub_observ_lon,
     double sub_solar_lat,

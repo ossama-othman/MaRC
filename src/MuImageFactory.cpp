@@ -25,10 +25,10 @@
 #include "MaRC/MuImage.h"
 
 
-MaRC::MuImageFactory::MuImageFactory(OblateSpheroid const & body,
-                                      double sub_observ_lat,
-                                      double sub_observ_lon,
-                                      double range)
+MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<OblateSpheroid> body,
+                                     double sub_observ_lat,
+                                     double sub_observ_lon,
+                                     double range)
     : body_(body)
     , sub_observ_lat_(sub_observ_lat)
     , sub_observ_lon_(sub_observ_lon)

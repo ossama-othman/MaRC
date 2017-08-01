@@ -26,7 +26,7 @@
 
 
 MaRC::LatitudeImageFactory::LatitudeImageFactory(
-    BodyData const & body,
+    std::shared_ptr<BodyData> body,
     bool graphic_latitudes)
     : body_ (body)
     , graphic_latitudes_(graphic_latitudes)

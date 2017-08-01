@@ -77,7 +77,7 @@
   std::string map_filename;
 
   std::string body_name;
-  std::unique_ptr<MaRC::OblateSpheroid> oblate_spheroid;
+  std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
   std::string map_author;
   std::string map_origin;
@@ -645,10 +645,10 @@ body:   BODY ':' _STRING
           free ($3);
 
           oblate_spheroid =
-              std::make_unique<MaRC::OblateSpheroid>($5,
+              std::make_shared<MaRC::OblateSpheroid>($5,
                                                      ($4).eq_rad,
                                                      ($4).pol_rad,
-                                                     ($4).flattening));
+                                                     ($4).flattening);
         }
 ;
 
@@ -831,8 +831,8 @@ image:
         }
         | image_setup image {
             image_factory =
-              std::unique<MaRC::MosaicImageFactory>(photo_factories,
-                                                    averaging_type));
+              std::make_unique<MaRC::MosaicImageFactory>(photo_factories,
+                                                         averaging_type);
         }
 ;
 
@@ -921,7 +921,7 @@ image_initialize:
             photo_factory =
                 std::make_unique<MaRC::PhotoImageFactory>(
                     $3,
-                    *oblate_spheroid);
+                    oblate_spheroid);
                 free ($3);
         }
 ;
@@ -1045,10 +1045,10 @@ mu:     _MU ':'
         sub_solar       {
             // Mu * 10000
             image_factory =
-                std::make_unique<MaRC::MuImageFactory>(*oblate_spheroid,
+                std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
                                                        ($3).lat,
                                                        ($3).lon,
-                                                       $4));
+                                                       $4);
         }
 ;
 
@@ -1058,10 +1058,9 @@ mu0:    _MU0 ':'
         sub_solar       {
           // Mu0 * 10000
           image_factory =
-            MaRC::ValuePtr<MaRC::Mu0ImageFactory> (
-              new MaRC::Mu0ImageFactory (*oblate_spheroid,
-                                         ($5).lat,
-                                         ($5).lon));
+              std::make_unique<MaRC::Mu0ImageFactory>(oblate_spheroid,
+                                                      ($5).lat,
+                                                      ($5).lon);
         }
 ;
 
@@ -1071,13 +1070,13 @@ phase:  _PHASE ':'
         sub_solar       {
           // cos (phase angle) * 10000
           image_factory =
-            MaRC::ValuePtr<MaRC::CosPhaseImageFactory> (
-              new MaRC::CosPhaseImageFactory (*oblate_spheroid,
-                                              ($3).lat,
-                                              ($3).lon,
-                                              ($5).lat,
-                                              ($5).lon,
-                                              $4));
+              std::make_unique<MaRC::CosPhaseImageFactory>(
+                  oblate_spheroid,
+                  ($3).lat,
+                  ($3).lon,
+                  ($5).lat,
+                  ($5).lon,
+                  $4);
         }
 ;
 
@@ -1086,7 +1085,7 @@ lat_plane: LATITUDE ':' lat_type {
 
             image_factory =
                 std::make_unique<MaRC::LatitudeImageFactory>(
-                    *oblate_spheroid, graphic_lat));
+                    oblate_spheroid, graphic_lat);
            }
 ;
 
@@ -1293,26 +1292,26 @@ mercator:
 
               case SHORT:
                 map_factory_short.reset (
-                  new MaRC::Mercator<FITS::short_type> (oblate_spheroid));
+                    std::make_unique<MaRC::Mercator<FITS::short_type>>(oblate_spheroid);
                 break;
 
               case LONG:
                 map_factory_long.reset (
-                  new MaRC::Mercator<FITS::long_type> (oblate_spheroid));
+                    std::make_unique<MaRC::Mercator<FITS::long_type>>(oblate_spheroid);
                 break;
 
               case FLOAT:
                 map_factory_float.reset (
-                  new MaRC::Mercator<FITS::float_type> (oblate_spheroid));
+                    std::make_unique<MaRC::Mercator<FITS::float_type>>(oblate_spheroid);
                 break;
 
               case DOUBLE:
                 map_factory_double.reset (
-                  new MaRC::Mercator<FITS::double_type> (oblate_spheroid));
+                    std::make_unique<MaRC::Mercator<FITS::double_type>>(oblate_spheroid);
                 break;
 
               default:
-                throw std::invalid_argument ("Unrecognized map data type");
+                throw std::invalid_argument("Unrecognized map data type");
                 break;
             }
         }

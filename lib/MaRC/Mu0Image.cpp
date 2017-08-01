@@ -28,9 +28,9 @@
 #include <cmath>
 
 
-MaRC::Mu0Image::Mu0Image (OblateSpheroid const & body,
-                          double sub_solar_lat,
-                          double sub_solar_lon)
+MaRC::Mu0Image::Mu0Image(OblateSpheroid const & body,
+                         double sub_solar_lat,
+                         double sub_solar_lon)
     : VirtualImage(10000, 0)
     , body_(body)
     , sub_solar_lat_(sub_solar_lat * C::degree)  // Radians
@@ -41,10 +41,10 @@ MaRC::Mu0Image::Mu0Image (OblateSpheroid const & body,
 bool
 MaRC::Mu0Image::read_data_i(double lat, double lon, double & data) const
 {
-  data = this->body_.mu0 (this->sub_solar_lat_,
-                          this->sub_solar_lon_,
-                          lat,
-                          lon);
+  data = this->body_.mu0(this->sub_solar_lat_,
+                         this->sub_solar_lon_,
+                         lat,
+                         lon);
 
   return true;
 }
@@ -57,7 +57,7 @@ MaRC::Mu0Image::is_visible(double lat, double lon) const
      *       oblate spheroid.  It should really be moved to
      *       OblateSpheroid strategy.
      */
-    double const latg = this->body_.graphic_latitude (lat);
+    double const latg = this->body_.graphic_latitude(lat);
 
     // When creating cosine of incidence angle map use terminator
     // instead of limb so that entire incidence angle map is created

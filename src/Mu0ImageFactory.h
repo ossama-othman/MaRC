@@ -50,7 +50,7 @@ namespace MaRC
          * @param[in] sub_solar_lat Sub-solar latitude in degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
          */
-        Mu0ImageFactory(OblateSpheroid const & body,
+        Mu0ImageFactory(std::shared_ptr<OblateSpheroid> body,
                         double sub_solar_lat,
                         double sub_solar_lon);
 
@@ -65,7 +65,7 @@ namespace MaRC
          *       code in this implementation assumes that the body is
          *       modeled as an oblate spheroid.
          */
-        OblateSpheroid const & body_;
+        std::shared_ptr<OblateSpheroid> const body_;
 
         /// Sub-solar latitude (degrees).
         double sub_solar_lat_;

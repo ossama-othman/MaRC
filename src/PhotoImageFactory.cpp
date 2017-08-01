@@ -35,8 +35,9 @@
 #include <cassert>
 
 
-MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename,
-                                           OblateSpheroid const & body)
+MaRC::PhotoImageFactory::PhotoImageFactory(
+    char const * filename,
+    std::shared_ptr<OblateSpheroid> body)
     : filename_(filename)
     , flat_field_()
     , body_(body)
