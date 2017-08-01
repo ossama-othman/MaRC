@@ -80,7 +80,7 @@ namespace MaRC
          *                        (@c PhotoImage assumes ownership).
          */
         PhotoImage(std::shared_ptr<OblateSpheroid> body,
-                   std::vector<double> image, // moved, not copied!
+                   std::vector<double> && image, // moved, not copied!
                    std::size_t samples,
                    std::size_t lines,
                    std::unique_ptr<GeometricCorrection> gc);
@@ -115,7 +115,7 @@ namespace MaRC
         /// to pixel conversion, and vice-versa.
         int geometric_correction(
             std::unique_ptr<GeometricCorrection> strategy);
-        
+
 
         /// Set the photometric correction strategy.
         int photometric_correction(
@@ -300,7 +300,7 @@ namespace MaRC
          * @param[in]     lon    Longitude in radians.
          * @param[out]    data   Data retrieved from image.
          * @param[in,out] weight Distance from pixel to closest edge
-         *                       or blank pixel. 
+         *                       or blank pixel.
          * @param[in]     scan   Flag that determines if a data weight
          *                       scan is performed.  It is generally
          *                       only used by the version of
@@ -329,7 +329,7 @@ namespace MaRC
          *
          * @retval @c true  Conversion succeeded.
          * @retval @c false Conversion failed.
-         * 
+         *
          * @note Since @a x and @a z potentially include fractional
          *       pixel components, they are more accurate than their
          *       integer counterparts.

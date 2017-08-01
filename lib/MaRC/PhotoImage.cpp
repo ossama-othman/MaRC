@@ -52,7 +52,7 @@
 
 
 MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
-                             std::vector<double> image,
+                             std::vector<double> && image,
                              std::size_t samples,
                              std::size_t lines,
                              std::unique_ptr<GeometricCorrection> gc)

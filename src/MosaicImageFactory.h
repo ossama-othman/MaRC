@@ -54,7 +54,7 @@ namespace MaRC
         using list_type = std::list<std::unique_ptr<PhotoImageFactory>>;
 
         /// Constructor.
-        MosaicImageFactory(list_type factories,
+        MosaicImageFactory(list_type && factories,
                            MosaicImage::average_type type);
 
         /// Create a @c MosaicImage.

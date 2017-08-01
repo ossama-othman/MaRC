@@ -82,7 +82,7 @@ namespace MaRC
          * @param[in]     lon    Longitude in radians.
          * @param[out]    data   Data retrieved from image.
          * @param[in,out] weight Distance from pixel to closest edge
-         *                       or blank pixel. 
+         *                       or blank pixel.
          * @param[in]     scan   Flag that determines if a data weight
          *                       scan is performed..
          *

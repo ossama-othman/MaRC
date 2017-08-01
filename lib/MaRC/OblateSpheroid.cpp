@@ -277,12 +277,12 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
           (i.e. k[1] < k[0])
 
       output:
-  
+
       - lat --  equivalent to a planetocentric latitude
       - lon --  equivalent to a planetocentric longitude
-  
+
       output_ (intermediate):
-  
+
       - k[2]   scalar k in (vec> + k * dvec>) - up to 2 solutions possible
       - solutions returned: -1 (bad inputs), 1 (no solution) or 0 (successful)
     */

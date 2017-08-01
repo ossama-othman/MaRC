@@ -113,7 +113,7 @@ MaRC::SimpleCylindrical<T>::plot_map(SourceImage const & source,
 
             unsigned char const percent_complete =
                 static_cast<unsigned char>((offset + 1) * 100 / nelem);
-            
+
             this->plot(source,
                        lat,
                        lon,

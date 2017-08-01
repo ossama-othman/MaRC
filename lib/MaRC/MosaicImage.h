@@ -64,7 +64,7 @@ namespace MaRC
          *                       C++11 move.
          * @param[in]     type   The type of averaging to be performed.
          */
-        MosaicImage(list_type images, average_type type);
+        MosaicImage(list_type && images, average_type type);
 
         /// Retrieve data from mosaic images.
         /**

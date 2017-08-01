@@ -27,7 +27,7 @@
 #include <cmath>
 
 
-MaRC::MosaicImage::MosaicImage(list_type images,
+MaRC::MosaicImage::MosaicImage(list_type && images,
                                average_type type)
     : images_(std::move(images))
     , average_type_(images.size() < 2 ? AVG_NONE : type)

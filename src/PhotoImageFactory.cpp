@@ -113,9 +113,7 @@ MaRC::PhotoImageFactory::make()
     std::vector<double> img(nelements,
                             std::numeric_limits<double>::quiet_NaN());
 
-    long fpixel[MAXDIM];
-    fpixel[0] = 1;
-    fpixel[1] = 1;
+    long fpixel[MAXDIM] = { 1, 1 };
 
     double nulval = std::numeric_limits<double>::quiet_NaN();
     int anynul = 0;  // Unused
@@ -240,7 +238,7 @@ MaRC::PhotoImageFactory::make()
     std::unique_ptr<PhotoImage> photo(
         std::make_unique<MaRC::PhotoImage>(
             this->body_,
-            img,
+            std::move(img),
             static_cast<std::size_t>(naxes[0]), // samples
             static_cast<std::size_t>(naxes[1]), // lines
             std::move(gc)));

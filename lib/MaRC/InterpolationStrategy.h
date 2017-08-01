@@ -42,7 +42,7 @@ namespace MaRC
     public:
 
         InterpolationStrategy() = default;
-        
+
         // Disallow copying.
         InterpolationStrategy(InterpolationStrategy const &) = delete;
         InterpolationStrategy & operator=(
