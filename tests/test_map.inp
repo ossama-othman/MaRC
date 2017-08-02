@@ -7,7 +7,7 @@ XCOMMENT: Test FITS extension comment.
                 POL_RAD:        66854
                 ROTATION:       PROGRADE
 
-        DATA_TYPE:              LONG
+        DATA_TYPE:              LONGLONG
         GRID:                   YES
         GRID_INTERVAL:          2
         TYPE:                   SIMPLE_C

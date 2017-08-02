@@ -107,6 +107,14 @@ namespace MaRC
         };
 
         template <>
+        struct traits<longlong_type>
+        {
+            static constexpr int  bitpix                 = LONGLONG_IMG;
+            static constexpr int  datatype               = TLONGLONG;
+            static constexpr bool supports_blank_keyword = true;
+        };
+
+        template <>
         struct traits<float>
         {
             static constexpr int  bitpix                 = FLOAT_IMG;
