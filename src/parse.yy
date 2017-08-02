@@ -470,14 +470,14 @@ data_info:
 
 data_offset:
         | DATA_OFFSET ':' size  {
-            fits_bzero = static_cast<FITS::float_type> ($3);
+            fits_bzero = static_cast<FITS::float_type>($3);
             transform_data = true;
         }
 ;
 
 data_scale:
         | DATA_SCALE ':' size   {
-            fits_bscale = static_cast<FITS::float_type> ($3);
+            fits_bscale = static_cast<FITS::float_type>($3);
             transform_data = true;
         }
 ;
@@ -493,11 +493,11 @@ data_type:
 data_blank:
         | DATA_BLANK ':' expr {
           if (map_data_type == FLOAT || map_data_type == DOUBLE)
-            throw std::invalid_argument ("\"BLANK\" keyword not valid with "
-                                         "floating point types.");
+            throw std::invalid_argument("\"BLANK\" keyword not valid with "
+                                        "floating point types.");
           else
             {
-              fits_blank = static_cast<int> ($3);
+              fits_blank = static_cast<int>($3);
               blank_set = true;
             }
           ;
@@ -603,7 +603,7 @@ planes: | PLANES ':' size         {
           // planes or the plane number any more.  The number of
           // planes is set dynamically as source images are queued.
           if ($3 > 0)
-            num_planes = static_cast<unsigned int> ($3);
+            num_planes = static_cast<unsigned int>($3);
           else
             std::cerr << "Incorrect number of planes entered: "
                       << $3 << std::endl;
@@ -741,7 +741,7 @@ plane_size:
                         << "definition." << std::endl;
             }
 
-          const unsigned int map_plane = static_cast<unsigned int> ($3);
+          const unsigned int map_plane = static_cast<unsigned int>($3);
 
           if (map_plane == expected_plane)
             {
@@ -814,7 +814,17 @@ plane_data_range:
 ;
 
 plane_type:
-        image
+        image {
+            if (photo_factories.size() == 1) {
+                image_factory = std::move(photo_factories.back());
+                photo_factories.pop_back();
+            } else {
+                image_factory =
+                    std::make_unique<MaRC::MosaicImageFactory>(
+                        std::move(photo_factories),
+                        averaging_type);
+            }
+        }
         | mu
         | mu0
         | phase
@@ -824,15 +834,8 @@ plane_type:
 
 /* -------------------- INPUT IMAGE SETUP -------------------- */
 image:
-        image_setup    {
-            image_factory = std::move(photo_factory);
-        }
-        | image_setup image {
-            image_factory =
-              std::make_unique<MaRC::MosaicImageFactory>(
-                  std::move(photo_factories),
-                  averaging_type);
-        }
+        image_setup
+        | image image_setup
 ;
 
 image_setup:
@@ -909,13 +912,13 @@ image_setup:
           photo_factory->position_angle ($14);
           photo_factory->sub_solar (($15).lat, ($15).lon);
           photo_factory->range ($16);
-
           photo_factories.push_back(std::move(photo_factory));
         }
 ;
 
 image_initialize:
-        /* Parse input image filename and initialize SourceImage object */
+        // Parse input image filename and initialize PhotoImageFactory
+        // object.
         _IMAGE ':' _STRING {
             photo_factory =
                 std::make_unique<MaRC::PhotoImageFactory>(
@@ -937,10 +940,10 @@ nibble:
         NIBBLE ':' size {
           if ($3 >= 0)
             {
-              nibble_left_val   = static_cast<unsigned int> ($3);
-              nibble_right_val  = static_cast<unsigned int> ($3);
-              nibble_top_val    = static_cast<unsigned int> ($3);
-              nibble_bottom_val = static_cast<unsigned int> ($3);
+              nibble_left_val   = static_cast<unsigned int>($3);
+              nibble_right_val  = static_cast<unsigned int>($3);
+              nibble_top_val    = static_cast<unsigned int>($3);
+              nibble_bottom_val = static_cast<unsigned int>($3);
             }
           else
             {
@@ -969,7 +972,7 @@ nibble_left:
         NIBBLE_LEFT ':' size {
           if ($3 >= 0)
             {
-              nibble_left_val = static_cast<unsigned int> ($3);
+              nibble_left_val = static_cast<unsigned int>($3);
             }
           else
             {
@@ -983,7 +986,7 @@ nibble_right:
         NIBBLE_RIGHT ':' size {
           if ($3 >= 0)
             {
-              nibble_right_val = static_cast<unsigned int> ($3);
+              nibble_right_val = static_cast<unsigned int>($3);
             }
           else
             {
@@ -997,7 +1000,7 @@ nibble_top:
         NIBBLE_TOP ':' size {
           if ($3 >= 0)
             {
-              nibble_top_val = static_cast<unsigned int> ($3);
+              nibble_top_val = static_cast<unsigned int>($3);
             }
           else
             {
@@ -1011,7 +1014,7 @@ nibble_bottom:
         NIBBLE_BOTTOM ':' size {
           if ($3 >= 0)
             {
-              nibble_bottom_val = static_cast<unsigned int> ($3);
+              nibble_bottom_val = static_cast<unsigned int>($3);
             }
           else
             {
@@ -1322,67 +1325,67 @@ ortho:  MAP_TYPE ':' _ORTHO
           switch (map_data_type)
             {
               case BYTE:
-                map_factory_byte.reset (
-                  new MaRC::Orthographic<FITS::byte_type> (
+                map_factory_byte =
+                    std::make_unique<MaRC::Orthographic<FITS::byte_type>>(
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
                         (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
-                        ortho_center));
+                        ortho_center);
                 break;
 
               case SHORT:
-                map_factory_short.reset (
-                  new MaRC::Orthographic<FITS::short_type> (
+                map_factory_short =
+                    std::make_unique<MaRC::Orthographic<FITS::short_type>>(
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
                         (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
-                        ortho_center));
+                        ortho_center);
                 break;
 
               case LONG:
-                map_factory_long.reset (
-                  new MaRC::Orthographic<FITS::long_type> (
+                map_factory_long =
+                    std::make_unique<MaRC::Orthographic<FITS::long_type>>(
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
                         (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
-                        ortho_center));
+                        ortho_center);
                 break;
 
               case FLOAT:
-                map_factory_float.reset (
-                  new MaRC::Orthographic<FITS::float_type> (
+                map_factory_float =
+                    std::make_unique<MaRC::Orthographic<FITS::float_type>>(
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
                         (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
-                        ortho_center));
+                        ortho_center);
                 break;
 
               case DOUBLE:
-                map_factory_double.reset (
-                  new MaRC::Orthographic<FITS::double_type> (
+                map_factory_double =
+                    std::make_unique<MaRC::Orthographic<FITS::double_type>>(
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
                         (!std::isnan(position_angle_val)
                          ? position_angle_val : 0),
                         (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
-                        ortho_center));
+                        ortho_center);
                 break;
 
               default:
-                throw std::invalid_argument ("Unrecognized map data type");
+                throw std::invalid_argument("Unrecognized map data type");
                 break;
             }
 
@@ -1409,8 +1412,7 @@ ortho_optsub:
         | position_angle { position_angle_val = $1; }
         | km_per_pixel
         | centers {
-            if (!std::isnan(sample_center) && !std::isnan(line_center))
-              {
+            if (!std::isnan(sample_center) && !std::isnan(line_center)) {
                 ortho_center.geometry = MaRC::CENTER_GIVEN;
                 ortho_center.sample_lat_center = sample_center;
                 ortho_center.line_lon_center   = line_center;
@@ -1418,9 +1420,8 @@ ortho_optsub:
                 // Reset to "bad" value.
                 sample_center = std::numeric_limits<double>::quiet_NaN();
                 line_center   = std::numeric_limits<double>::quiet_NaN();
-              }
-            else if (!std::isnan(lat_at_center) && !std::isnan(lon_at_center))
-              {
+            } else if (!std::isnan(lat_at_center)
+                       && !std::isnan(lon_at_center)) {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
                 ortho_center.sample_lat_center = lat_at_center;
                 ortho_center.line_lon_center   = lon_at_center;
@@ -1428,7 +1429,7 @@ ortho_optsub:
                 // Reset to "bad" value.
                 lat_at_center = std::numeric_limits<double>::quiet_NaN();
                 lon_at_center = std::numeric_limits<double>::quiet_NaN();
-              }
+            }
         }
         | sub_observ position_angle {
           sub_observation_data.lat = ($1).lat;
@@ -1444,8 +1445,7 @@ ortho_optsub:
           sub_observation_data.lat = ($1).lat;
           sub_observation_data.lon = ($1).lon;
             position_angle_val = $2;
-            if (!std::isnan(sample_center) && !std::isnan(line_center))
-              {
+            if (!std::isnan(sample_center) && !std::isnan(line_center)) {
                 ortho_center.geometry = MaRC::CENTER_GIVEN;
                 ortho_center.sample_lat_center = sample_center;
                 ortho_center.line_lon_center   = line_center;
@@ -1453,10 +1453,8 @@ ortho_optsub:
                 // Reset to "bad" value.
                 sample_center = std::numeric_limits<double>::quiet_NaN();
                 line_center   = std::numeric_limits<double>::quiet_NaN();
-              }
-            else if (!std::isnan(lat_at_center)
-                     && !std::isnan(lon_at_center))
-              {
+            } else if (!std::isnan(lat_at_center)
+                       && !std::isnan(lon_at_center)) {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
                 ortho_center.sample_lat_center = lat_at_center;
                 ortho_center.line_lon_center   = lon_at_center;
@@ -1464,7 +1462,7 @@ ortho_optsub:
                 // Reset to "bad" value.
                 lat_at_center = std::numeric_limits<double>::quiet_NaN();
                 lon_at_center = std::numeric_limits<double>::quiet_NaN();
-              }
+            }
         }
 ;
 
@@ -1608,42 +1606,47 @@ p_stereo:
           switch (map_data_type)
             {
               case BYTE:
-                map_factory_byte.reset (
-                  new MaRC::PolarStereographic<FITS::byte_type> (oblate_spheroid,
-                                                               max_lat,
-                                                               north_pole));
+                map_factory_byte =
+                    std::make_unique<MaRC::PolarStereographic<FITS::byte_type>>(
+                        oblate_spheroid,
+                        max_lat,
+                        north_pole);
                 break;
 
               case SHORT:
-                map_factory_short.reset (
-                  new MaRC::PolarStereographic<FITS::short_type> (oblate_spheroid,
-                                                       max_lat,
-                                                       north_pole));
+                map_factory_short =
+                    std::make_unique<MaRC::PolarStereographic<FITS::short_type>>(
+                        oblate_spheroid,
+                        max_lat,
+                        north_pole);
                 break;
 
               case LONG:
-                map_factory_long.reset (
-                  new MaRC::PolarStereographic<FITS::long_type> (oblate_spheroid,
-                                                            max_lat,
-                                                            north_pole));
+                map_factory_long =
+                    std::make_unique<MaRC::PolarStereographic<FITS::long_type>>(
+                        oblate_spheroid,
+                        max_lat,
+                        north_pole);
                 break;
 
               case FLOAT:
-                map_factory_float.reset (
-                  new MaRC::PolarStereographic<FITS::float_type> (oblate_spheroid,
-                                                       max_lat,
-                                                       north_pole));
+                map_factory_float =
+                    std::make_unique<MaRC::PolarStereographic<FITS::float_type>>(
+                        oblate_spheroid,
+                        max_lat,
+                        north_pole);
                 break;
 
               case DOUBLE:
-                map_factory_double.reset (
-                  new MaRC::PolarStereographic<FITS::double_type> (oblate_spheroid,
-                                                        max_lat,
-                                                        north_pole));
+                map_factory_double =
+                    std::make_unique<MaRC::PolarStereographic<FITS::double_type>>(
+                         oblate_spheroid,
+                         max_lat,
+                         north_pole);
                 break;
 
               default:
-                throw std::invalid_argument ("Unrecognized map data type");
+                throw std::invalid_argument("Unrecognized map data type");
                 break;
             }
 
@@ -1667,59 +1670,62 @@ simple_c:
           switch (map_data_type)
             {
               case BYTE:
-                map_factory_byte.reset (
-                  new MaRC::SimpleCylindrical<FITS::byte_type>(
+                map_factory_byte =
+                    std::make_unique<MaRC::SimpleCylindrical<FITS::byte_type>>(
                         oblate_spheroid,
                         lo_lat,
                         hi_lat,
                         lo_lon,
                         hi_lon,
-                        graphic_lat));
+                        graphic_lat);
                 break;
 
               case SHORT:
-                map_factory_short.reset (
-                  new MaRC::SimpleCylindrical<FITS::short_type>(oblate_spheroid,
-                                                      lo_lat,
-                                                      hi_lat,
-                                                      lo_lon,
-                                                      hi_lon,
-                                                      graphic_lat));
+                map_factory_short =
+                    std::make_unique<MaRC::SimpleCylindrical<FITS::short_type>>(
+                        oblate_spheroid,
+                        lo_lat,
+                        hi_lat,
+                        lo_lon,
+                        hi_lon,
+                        graphic_lat);
                 break;
 
               case LONG:
-                map_factory_long.reset (
-                  new MaRC::SimpleCylindrical<FITS::long_type> (
-                    oblate_spheroid,
-                    lo_lat,
-                    hi_lat,
-                    lo_lon,
-                    hi_lon,
-                    graphic_lat));
+                map_factory_long =
+                    std::make_unique<MaRC::SimpleCylindrical<FITS::long_type>>(
+                        oblate_spheroid,
+                        lo_lat,
+                        hi_lat,
+                        lo_lon,
+                        hi_lon,
+                        graphic_lat);
                 break;
 
               case FLOAT:
-                map_factory_float.reset (
-                  new MaRC::SimpleCylindrical<FITS::float_type> (oblate_spheroid,
-                                                      lo_lat,
-                                                      hi_lat,
-                                                      lo_lon,
-                                                      hi_lon,
-                                                      graphic_lat));
+                map_factory_float =
+                    std::make_unique<MaRC::SimpleCylindrical<FITS::float_type>>(
+                        oblate_spheroid,
+                        lo_lat,
+                        hi_lat,
+                        lo_lon,
+                        hi_lon,
+                        graphic_lat);
                 break;
 
               case DOUBLE:
-                map_factory_double.reset (
-                  new MaRC::SimpleCylindrical<FITS::double_type>(oblate_spheroid,
-                                                       lo_lat,
-                                                       hi_lat,
-                                                       lo_lon,
-                                                       hi_lon,
-                                                       graphic_lat));
+                map_factory_double =
+                    std::make_unique<MaRC::SimpleCylindrical<FITS::double_type>>(
+                        oblate_spheroid,
+                        lo_lat,
+                        hi_lat,
+                        lo_lon,
+                        hi_lon,
+                        graphic_lat);
                 break;
 
               default:
-                throw std::invalid_argument ("Unrecognized map data type");
+                throw std::invalid_argument("Unrecognized map data type");
                 break;
             }
 

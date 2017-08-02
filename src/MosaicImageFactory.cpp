@@ -22,6 +22,9 @@
 
 #include "MosaicImageFactory.h"
 
+#include <stdexcept>
+#include <iostream>
+
 
 MaRC::MosaicImageFactory::MosaicImageFactory (
     list_type && factories,
@@ -29,6 +32,8 @@ MaRC::MosaicImageFactory::MosaicImageFactory (
     : factories_(std::move(factories))
     , average_type_(type)
 {
+    if (this->factories_.empty())
+        throw std::invalid_argument("Empty PhotoImageFactory list.");
 }
 
 std::unique_ptr<MaRC::SourceImage>

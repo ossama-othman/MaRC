@@ -101,10 +101,6 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     //,  max_lon_(0)        // Initialize to minimum possible
     , flags_(0)
 {
-    if (image.empty())
-        throw std::invalid_argument(
-            "PhotoImage: Empty source image array.");
-
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
         std::ostringstream s;
@@ -112,10 +108,10 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
           << ") and lines (" << lines
           << ") must both be greater than one.";
 
-        throw std::invalid_argument(s.str ());
+        throw std::invalid_argument(s.str());
     }
 
-    if (image.size() != samples * lines) {
+    if (this->image_.size() != samples * lines) {
         throw std::invalid_argument(
             "Source image size does not match samples and lines");
     }
