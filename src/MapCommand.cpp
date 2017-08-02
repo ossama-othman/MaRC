@@ -111,10 +111,25 @@ MaRC::MapCommand::execute()
     // Create primary image array HDU.
     this->initialize_FITS_image (fptr, status);
 
+    /**
+     * Establish that MaRC created this FITS files, e.g. "MaRC 1.0".
+     *
+     * @note The @c CREATOR keyword is a commonly used, but not part
+     *       of the FITS standard.
+     * @note We could also use the @c PROGRAM keyword here instead.
+     *       It is also commonly used but not in the FITS standard.
+     */
+    fits_update_key(fptr,
+                    TSTRING,
+                    "CREATOR",
+                    const_cast<char *>(PACKAGE_STRING),
+                    "Software that created this FITS file",
+                    &status);
+
     // Write the author name if supplied.
     if (!this->author_.empty()) {
       char const * const author = this->author_.c_str();
-      fits_update_key (fptr,
+      fits_update_key(fptr,
                        TSTRING,
                        "AUTHOR",
                        const_cast<char *>(author),
@@ -126,12 +141,12 @@ MaRC::MapCommand::execute()
     // for creating the FITS file, if supplied.
     if (!this->origin_.empty()) {
         char const * const origin = this->origin_.c_str ();
-        fits_update_key (fptr,
-                       TSTRING,
-                       "ORIGIN",
-                       const_cast<char *>(origin),
-                       "Map creator organization",
-                       &status);
+        fits_update_key(fptr,
+                        TSTRING,
+                        "ORIGIN",
+                        const_cast<char *>(origin),
+                        "Map creator organization",
+                        &status);
     }
 
     // Write the current date and time (i.e. the creation time) into
