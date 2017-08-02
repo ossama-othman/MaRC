@@ -18,6 +18,10 @@
 
 SUBDIRS = doc lib src tests
 
-EXTRA_DIST = FAQ BUGS ChangeLog.0
-
 ACLOCAL_AMFLAGS = -I m4
+
+## Doxygen
+@DX_RULES@
+MOSTLYCLEANFILES = $(DX_CLEANFILES)
+
+EXTRA_DIST = FAQ BUGS ChangeLog.0 Doxyfile marc.dox

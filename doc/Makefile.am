@@ -34,3 +34,5 @@ dist_example_DATA = \
 all-local: pdf # ps html
 
 #dist_noinst_DATA = MaRC_input.texi
+
+@DX_RULES@
