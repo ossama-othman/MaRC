@@ -26,51 +26,49 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/OblateSpheroid.h"
-
 
 namespace MaRC
 {
-  /**
-   * @class LatitudeImageFactory
-   *
-   * @brief Factory class that creates LatitudeImage objects.
-   *
-   * This class creates LatitudeImage objects.
-   */
-  class LatitudeImageFactory : public ImageFactory
-  {
-  public:
+    class BodyData;
 
-    /// Constructor.
     /**
-     * @param body              Pointer to BodyData object
-     *                          representing body being mapped.
+     * @class LatitudeImageFactory
      *
-     * @param graphic_latitudes Return bodygraphic latitudes instead
-     *                          of bodycentric latitudes.
+     * @brief Factory class that creates @c LatitudeImage objects.
+     *
+     * This class creates @c LatitudeImage objects.
      */
-    LatitudeImageFactory (const ValuePtr<BodyData> & body,
-                          bool graphic_latitudes);
+    class LatitudeImageFactory : public ImageFactory
+    {
+    public:
 
-    /// Create a @c LatitudeImage.
-    virtual SourceImage * make (void);
+        /// Constructor.
+        /**
+         * @param[in] body              Pointer to BodyData object
+         *                              representing body being
+         *                              mapped.
+         * @param[in] graphic_latitudes Return bodygraphic latitudes
+         *                              instead of bodycentric
+         *                              latitudes.
+         */
+        LatitudeImageFactory(std::shared_ptr<BodyData> body,
+                             bool graphic_latitudes);
 
-    /// Clone operation that polymorphically copies this
-    /// @c LatitudeImageFactory object.
-    virtual ImageFactory * clone (void) const;
+        /// Create a @c LatitudeImage.
+        virtual std::unique_ptr<SourceImage> make();
 
-  private:
+    private:
 
-    /// Object representing the body being mapped.
-    const ValuePtr<BodyData> body_;
+        /// Object representing the body being mapped.
+        std::shared_ptr<BodyData> const body_;
 
-    /// Flag that determines if bodygraphic latitudes are returned
-    /// instead of bodycentric latitudes.
-    const bool graphic_latitudes_;
+        /// Flag that determines if bodygraphic latitudes are returned
+        /// instead of bodycentric latitudes.
+        bool const graphic_latitudes_;
 
-  };
+    };
 
 }
+
 
 #endif  /* MARC_LATITUDE_IMAGE_FACTORY_H */

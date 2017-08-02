@@ -25,15 +25,8 @@
 #include "MaRC/LongitudeImage.h"
 
 
-MaRC::SourceImage *
-MaRC::LongitudeImageFactory::make (void)
+std::unique_ptr<MaRC::SourceImage>
+MaRC::LongitudeImageFactory::make()
 {
-  return new MaRC::LongitudeImage;
-}
-
-MaRC::ImageFactory *
-MaRC::LongitudeImageFactory::clone (void) const
-{
-  // We're stateless.  Just create a default constructed instance.
-  return new LongitudeImageFactory;
+    return std::make_unique<MaRC::LongitudeImage>();
 }

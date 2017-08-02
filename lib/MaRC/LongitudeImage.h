@@ -31,28 +31,29 @@
 namespace MaRC
 {
 
-  /**
-   * @class LongitudeImage
-   *
-   * @brief Longitude virtual image.
-   *
-   * This concrete VirtualImage returns the given longitude in
-   * degrees.
-   */
-  class LongitudeImage : public VirtualImage
-  {
-  private:
-
-    /// Simply return the given longitude in degrees.
     /**
-     * @see MaRC::VirtualImage::read_data_i().
+     * @class LongitudeImage
+     *
+     * @brief Longitude virtual image.
+     *
+     * This concrete VirtualImage returns the given longitude in
+     * degrees.
      */
-    virtual bool read_data_i (double lat,
-                              double lon,
-                              double & data) const;
+    class LongitudeImage : public VirtualImage
+    {
+    private:
 
-  };
+        /// Simply return the given longitude in degrees.
+        /**
+         * @see MaRC::VirtualImage::read_data_i().
+         */
+        virtual bool read_data_i(double lat,
+                                 double lon,
+                                 double & data) const;
+
+    };
 
 } // End MaRC namespace
+
 
 #endif  /* MARC_LONGITUDE_IMAGE_H */

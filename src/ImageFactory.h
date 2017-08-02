@@ -24,77 +24,66 @@
 #ifndef MARC_IMAGE_FACTORY_H
 #define MARC_IMAGE_FACTORY_H
 
-#include "MaRC/ValuePtr.h"
+#include <memory>
 
 
 namespace MaRC
 {
-  class SourceImage;
+    class SourceImage;
 
-  /**
-   * @class ImageFactory
-   *
-   * @brief Abstract factory class containing interface for image
-   *        factories.
-   *
-   * @note An @c ImageFactory can be considered a map plane factory as
-   *       well.
-   */
-  class ImageFactory
-  {
-  public:
-
-    /// Constructor.
-    ImageFactory (void);
-
-    /// Destructor.
-    virtual ~ImageFactory (void);
-
-    /// Create an Image.
-    virtual SourceImage * make (void) = 0;
-
-    /// Clone operation that polymorphically copies the concrete
-    /// @c ImageFactory object.
     /**
-     * This clone operation is generally used in conjunction with the
-     * VP_traits<ImageFactory> template specialization to prevent the
-     * slicing that occurs when copying through a copy constructor
-     * instead.
+     * @class ImageFactory
+     *
+     * @brief Abstract factory class containing interface for image
+     *        factories.
+     *
+     * @note An @c ImageFactory can be considered a map plane factory as
+     *       well.
      */
-    virtual ImageFactory * clone (void) const = 0;
-
-    /// Set minimum allowed data value in map plane.  (data > minimum)
-    void minimum (double m) { this->minimum_ = m; }
-
-    /// Set maximum allowed data value in map plane.  (data < maximum)
-    void maximum (double m) { this->maximum_ = m; }
-
-    /// Return minimum allowed data value in map plane.  (data > minimum)
-    double minimum (void) const { return this->minimum_; }
-
-    /// Return maximum allowed data value in map plane.  (data < maximum)
-    double maximum (void) const { return this->maximum_; }
-
-  private:
-
-    /// Minimum allowed data value in map plane.  (data > minimum)
-    double minimum_;
-
-    /// Maximum allowed data value in map plane.  (data < maximum)
-    double maximum_;
-
-  };
-
-  // ImageFactory specialization of the ValuePtr traits template.
-  template<>
-  struct VP_traits<ImageFactory>
-  {
-    static ImageFactory * clone (const ImageFactory * p)
+    class ImageFactory
     {
-      return p->clone ();
-    }
-  };
+    public:
+
+        /// Constructor.
+        ImageFactory();
+
+        // Disallow copying.
+        ImageFactory(ImageFactory const &) = delete;
+        ImageFactory & operator=(ImageFactory const &) = delete;
+
+        /// Destructor.
+        virtual ~ImageFactory();
+
+        /// Create an Image.
+        virtual std::unique_ptr<SourceImage> make() = 0;
+
+        /// Set minimum allowed data value in map plane.
+        /// (data > minimum)
+        void minimum(double m) { this->minimum_ = m; }
+
+        /// Set maximum allowed data value in map plane.
+        /// (data < maximum)
+        void maximum(double m) { this->maximum_ = m; }
+
+        /// Return minimum allowed data value in map plane.
+        /// (data > minimum)
+        double minimum() const { return this->minimum_; }
+
+        /// Return maximum allowed data value in map plane.
+        /// (data < maximum)
+        double maximum() const { return this->maximum_; }
+
+    private:
+
+        /// Minimum allowed data value in map plane.  (data > minimum)
+        double minimum_;
+
+        /// Maximum allowed data value in map plane.  (data < maximum)
+        double maximum_;
+
+    };
 
 }
+
 
 #endif  /* MARC_IMAGE_FACTORY_H */

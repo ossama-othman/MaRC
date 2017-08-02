@@ -25,478 +25,446 @@
 #include "MaRC/PhotoImage.h"
 #include "MaRC/GLLGeometricCorrection.h"
 #include "MaRC/NullGeometricCorrection.h"
-#include "MaRC/NaN.h"
 
 #include <fitsio.h>
 
 #include <stdexcept>
-#include <cmath>
 #include <sstream>
 #include <memory>
+#include <cmath>
+#include <cassert>
 
 
-MaRC::PhotoImageFactory::PhotoImageFactory (const char * filename,
-                                            const OblateSpheroid & body)
-  : filename_ (filename),
-    flat_field_ (),
-    body_ (body),
-    geometric_correction_ (false),
-    photometric_correction_ (false),
-    sub_observ_lat_ (0),
-    sub_observ_lon_ (0),
-    sub_solar_lat_ (0),
-    sub_solar_lon_ (0),
-    range_ (-1),
-    position_angle_ (0),
-    arcsec_per_pixel_ (0),
-    km_per_pixel_ (-1),
-    focal_length_ (-1),
-    scale_ (-1),
-    OA_s_ (MaRC::NaN),
-    OA_l_ (MaRC::NaN),
-    nibble_left_ (0),
-    nibble_right_ (0),
-    nibble_top_ (0),
-    nibble_bottom_ (0),
-    sample_center_ (0),
-    line_center_ (0),
-    lat_at_center_ (MaRC::NaN),
-    lon_at_center_ (MaRC::NaN),
-    emi_ang_limit_ (-1),
-    remove_sky_ (true),
-    interpolate_ (false),
-    use_terminator_ (true),
-    invert_v_ (false),
-    invert_h_ (false)
+MaRC::PhotoImageFactory::PhotoImageFactory(
+    char const * filename,
+    std::shared_ptr<OblateSpheroid> body)
+    : filename_(filename)
+    , flat_field_()
+    , body_(body)
+    , geometric_correction_(false)
+    , photometric_correction_(false)
+    , sub_observ_lat_(0)
+    , sub_observ_lon_(0)
+    , sub_solar_lat_(0)
+    , sub_solar_lon_(0)
+    , range_(-1)
+    , position_angle_(0)
+    , arcsec_per_pixel_(0)
+    , km_per_pixel_(-1)
+    , focal_length_(-1)
+    , scale_(-1)
+    , OA_s_(std::numeric_limits<double>::quiet_NaN())
+    , OA_l_(std::numeric_limits<double>::quiet_NaN())
+    , nibble_left_(0)
+    , nibble_right_(0)
+    , nibble_top_(0)
+    , nibble_bottom_(0)
+    , sample_center_(0)
+    , line_center_(0)
+    , lat_at_center_(std::numeric_limits<double>::quiet_NaN())
+    , lon_at_center_(std::numeric_limits<double>::quiet_NaN())
+    , emi_ang_limit_(-1)
+    , remove_sky_(true)
+    , interpolate_(false)
+    , use_terminator_(true)
+    , invert_v_(false)
+    , invert_h_(false)
 {
 }
 
-MaRC::PhotoImageFactory::return_type *
-MaRC::PhotoImageFactory::make (void)
+std::unique_ptr<MaRC::SourceImage>
+MaRC::PhotoImageFactory::make()
 {
-  fitsfile * fptr = 0;
-  static const int mode = READONLY;
-  int status = 0;  // CFITSIO requires initialization of status
-                   // variable.
+    fitsfile * fptr = 0;
+    static const int mode = READONLY;
+    int status = 0;  // CFITSIO requires initialization of status
+                     // variable.
 
-  (void) fits_open_image (&fptr, this->filename_.c_str (), mode, &status);
+    (void) fits_open_image(&fptr,
+                           this->filename_.c_str(),
+                           mode,
+                           &status);
 
-  if (status != 0)
-    {
-      // Report any errors before creating the map since map creation can
-      // be time consuming.
-      fits_report_error (stderr, status);
+    if (status != 0) {
+        // Report any errors before creating the map since map
+        // creation can be time consuming.
+        fits_report_error(stderr, status);
 
-      std::ostringstream s;
-      s << "Unable to open image \"" << this->filename_ << "\"";
+        std::ostringstream s;
+        s << "Unable to open image \"" << this->filename_ << "\"";
 
-      throw std::invalid_argument (s.str ());
+        throw std::invalid_argument(s.str());
     }
 
-  int naxis = 0;
-  static const unsigned int MAXDIM = 2;
-  long naxes[MAXDIM] = { 0 };
-  int bitpix = 0;
-  (void) fits_get_img_param (fptr,
-                             MAXDIM,
-                             &bitpix,
-                             &naxis,
-                             naxes,
-                             &status);
-
-  const long nelements = naxes[0] * naxes[1];
-
-  // Note that we're only reading a 2-dimensional image
-  // above.
-  double * img = new double[nelements];
-
-  long fpixel[MAXDIM];
-  fpixel[0] = 1;
-  fpixel[1] = 1;
-
-  double nulval = MaRC::NaN;
-  int anynul;  // Unused
-
-  (void) fits_read_pix (fptr,
-                        TDOUBLE, // Array of type "double".
-                        fpixel,
-                        nelements,
-                        &nulval,
-                        img,
-                        &anynul,
-                        &status);
-
-  fits_report_error (stderr, status);
-
-  (void) fits_close_file (fptr, &status);
-
-  // Perform flat fielding if a flat field file was provided.
-  double * f_img = 0;
-  if (this->flat_field_.length () != 0)
-    {
-      fitsfile * f_fptr = 0;
-      (void) fits_open_image (&f_fptr,
-                              this->flat_field_.c_str (),
-                              mode,
+    int naxis = 0;
+    static constexpr unsigned int MAXDIM = 2;
+    long naxes[MAXDIM] = { 0 };
+    int bitpix = 0;
+    (void) fits_get_img_param(fptr,
+                              MAXDIM,
+                              &bitpix,
+                              &naxis,
+                              naxes,
                               &status);
 
-      if (status != 0)
-        {
-          // Report any errors before creating the map since map creation can
-          // be time consuming.
-          fits_report_error (stderr, status);
+    const long nelements = naxes[0] * naxes[1];
 
-          std::ostringstream s;
-          s << "Unable to open flat field image \"" << this->filename_ << "\"";
+    // Note that we're only reading a 2-dimensional image above.
+    std::vector<double> img(nelements,
+                            std::numeric_limits<double>::quiet_NaN());
 
-          throw std::invalid_argument (s.str ());
+    long fpixel[MAXDIM] = { 1, 1 };
+
+    double nulval = std::numeric_limits<double>::quiet_NaN();
+    int anynul = 0;  // Unused
+
+    (void) fits_read_pix(fptr,
+                         TDOUBLE, // Array of type "double".
+                         fpixel,
+                         nelements,
+                         &nulval,
+                         img.data(),
+                         &anynul,
+                         &status);
+
+    fits_report_error(stderr, status);
+
+    (void) fits_close_file(fptr, &status);
+
+    // Perform flat fielding if a flat field file was provided.
+    std::vector<double> f_img;
+    if (!this->flat_field_.empty()) {
+        fitsfile * f_fptr = 0;
+        (void) fits_open_image(&f_fptr,
+                               this->flat_field_.c_str(),
+                               mode,
+                               &status);
+
+        if (status != 0) {
+            // Report any errors before creating the map since map
+            // creation can be time consuming.
+            fits_report_error(stderr, status);
+
+            std::ostringstream s;
+            s << "Unable to open flat field image \""
+              << this->filename_ << "\"";
+
+            throw std::invalid_argument(s.str());
         }
 
-      int f_naxis = 0;
-      long f_naxes[MAXDIM] = { 0 };
-      int f_bitpix = 0;
-      (void) fits_get_img_param (f_fptr,
-                                 MAXDIM,
-                                 &f_bitpix,
-                                 &f_naxis,
-                                 f_naxes,
-                                 &status);
+        int f_naxis = 0;
+        long f_naxes[MAXDIM] = { 0 };
+        int f_bitpix = 0;
+        (void) fits_get_img_param(f_fptr,
+                                  MAXDIM,
+                                  &f_bitpix,
+                                  &f_naxis,
+                                  f_naxes,
+                                  &status);
 
-      // Verify flat field image is same size as source photo
-      // image.
-      if (f_naxes[0] != naxes[0] && f_naxes[1] != naxes[1])
-        {
-          (void) fits_close_file (fptr, &status);
-          delete [] img;
+        // Verify flat field image is same size as source photo
+        // image.
+        if (f_naxes[0] != naxes[0] && f_naxes[1] != naxes[1]) {
+            (void) fits_close_file(fptr, &status);
 
-          std::ostringstream s;
-          s << "Mismatched source (" << naxes[0] << "x" << naxes[1] << ")"
-            << " and flat field image "
-            << "(" << f_naxes[0] << "x" << f_naxes[1] << ")" << "dimensions";
+            std::ostringstream s;
+            s << "Mismatched source (" << naxes[0] << "x" << naxes[1] << ")"
+              << " and flat field image "
+              << "(" << f_naxes[0] << "x" << f_naxes[1] << ")"
+              << "dimensions";
 
-          throw std::runtime_error (s.str ());
+            throw std::runtime_error(s.str());
         }
 
-      // Note that we're only reading a 2-dimensional image
-      // above.
-      f_img = new double[nelements];
+        // Note that we're only reading a 2-dimensional image
+        // above.
+        f_img.resize(nelements);
 
-      double nulval = MaRC::NaN;
-      int anynul;  // Unused
+        double nulval = std::numeric_limits<double>::quiet_NaN();
+        int anynul;  // Unused
 
-      (void) fits_read_pix (fptr,
-                            TDOUBLE, // Array of type "double".
-                            fpixel,
-                            nelements,
-                            &nulval,
-                            f_img,
-                            &anynul,
-                            &status);
+        (void) fits_read_pix(fptr,
+                             TDOUBLE, // Array of type "double".
+                             fpixel,
+                             nelements,
+                             &nulval,
+                             f_img.data(),
+                             &anynul,
+                             &status);
 
-      fits_report_error (stderr, status);
+        fits_report_error(stderr, status);
 
-      (void) fits_close_file (fptr, &status);
+        (void) fits_close_file(fptr, &status);
     }
 
-  if (status != 0)
-    {
-      delete [] f_img;
-      delete [] img;
+    if (status != 0) {
+        char fits_error[31] = { 0 };  // 30 char max
+        fits_get_errstatus (status, fits_error);
 
-      char fits_error[30] = { 0 };
-      fits_get_errstatus (status, fits_error);
-
-      throw std::runtime_error (fits_error);
+        throw std::runtime_error(fits_error);
     }
 
-  // Perform flat fielding if desired.
-  if (f_img != 0)
-    for (long i = 0; i < nelements; ++i)
-      img[i] -= f_img[i];
+    // Perform flat fielding if desired.
+    if (!f_img.empty()) {
+        std::size_t const size = img.size();
+        assert(size == f_img.size());
+        for (std::size_t i = 0; i < size; ++i)
+            img[i] -= f_img[i];
 
-  delete [] f_img; // No longer need the flat field image.
-
-  // Invert image if desired.
-  if (this->invert_h_)
-    this->invert_h (img,
-                    static_cast<unsigned int> (naxes[0]),
-                    static_cast<unsigned int> (naxes[1]));
-
-  if (this->invert_v_)
-    this->invert_v (img,
-                    static_cast<unsigned int> (naxes[0]),
-                    static_cast<unsigned int> (naxes[1]));
-
-  // Potential memory leak here. If the below allocation
-  // fails, "img" will be leaked since it is raw C++ array.
-
-  std::unique_ptr<MaRC::GeometricCorrection> gc;
-  if (this->geometric_correction_)
-    {
-      MaRC::GeometricCorrection * gll =
-        new MaRC::GLLGeometricCorrection (
-          static_cast<unsigned int> (naxes[0]) /* samples */);
-
-      gc.reset (gll);
-    }
-  else
-    {
-      MaRC::GeometricCorrection * nullcor =
-        new MaRC::NullGeometricCorrection;
-
-      gc.reset (nullcor);
+        f_img.clear();         // No longer need the flat field image.
+        f_img.shrink_to_fit();
     }
 
-  std::unique_ptr<PhotoImage> photo (
-    new MaRC::PhotoImage (this->body_,
-                          img,
-                          static_cast<unsigned int> (naxes[0]), // samples
-                          static_cast<unsigned int> (naxes[1]), // lines
-                          gc.get ()));
+    // Invert image if desired.
+    if (this->invert_h_)
+        this->invert_h(img,
+                       static_cast<std::size_t>(naxes[0]),
+                       static_cast<std::size_t>(naxes[1]));
 
-  (void) gc.release (); // Don't need to hold on to it any more.
+    if (this->invert_v_)
+        this->invert_v(img,
+                       static_cast<std::size_t>(naxes[0]),
+                       static_cast<std::size_t>(naxes[1]));
 
-  photo->nibble_left   (this->nibble_left_);
-  photo->nibble_right  (this->nibble_right_);
-  photo->nibble_top    (this->nibble_top_);
-  photo->nibble_bottom (this->nibble_bottom_);
+    std::unique_ptr<MaRC::GeometricCorrection> gc;
+    if (this->geometric_correction_) {
+        gc =
+            std::make_unique<MaRC::GLLGeometricCorrection>(
+                static_cast<std::size_t>(naxes[0]) /* samples */);
+    } else {
+        gc = std::make_unique<MaRC::NullGeometricCorrection>();
+    }
 
-  if (this->km_per_pixel_ > 0)
-    photo->km_per_pixel (this->km_per_pixel_);
+    std::unique_ptr<PhotoImage> photo(
+        std::make_unique<MaRC::PhotoImage>(
+            this->body_,
+            std::move(img),
+            static_cast<std::size_t>(naxes[0]), // samples
+            static_cast<std::size_t>(naxes[1]), // lines
+            std::move(gc)));
 
-  if (this->arcsec_per_pixel_ > 0)
-    photo->arcsec_per_pixel (this->arcsec_per_pixel_);
+    photo->nibble_left  (this->nibble_left_);
+    photo->nibble_right (this->nibble_right_);
+    photo->nibble_top   (this->nibble_top_);
+    photo->nibble_bottom(this->nibble_bottom_);
 
-  if (this->focal_length_ > 0)
-    photo->focal_length (this->focal_length_);
+    if (this->km_per_pixel_ > 0)
+        photo->km_per_pixel(this->km_per_pixel_);
 
-  if (this->scale_ > 0)
-    photo->scale (this->scale_);
+    if (this->arcsec_per_pixel_ > 0)
+        photo->arcsec_per_pixel(this->arcsec_per_pixel_);
 
-  if (!std::isnan (this->OA_s_))
-    photo->optical_axis_sample (this->OA_s_);
+    if (this->focal_length_ > 0)
+        photo->focal_length(this->focal_length_);
 
-  if (!std::isnan (this->OA_l_))
-    photo->optical_axis_line (this->OA_l_);
+    if (this->scale_ > 0)
+        photo->scale(this->scale_);
 
-  if (!std::isnan (this->sample_center_))
-    photo->body_center_sample (this->sample_center_);
+    if (!std::isnan(this->OA_s_))
+        photo->optical_axis_sample(this->OA_s_);
 
-  if (!std::isnan (this->line_center_))
-    photo->body_center_line (this->line_center_);
+    if (!std::isnan(this->OA_l_))
+        photo->optical_axis_line(this->OA_l_);
 
-  if (!std::isnan (this->lat_at_center_))
-    photo->lat_at_center (this->lat_at_center_);
+    if (!std::isnan(this->sample_center_))
+        photo->body_center_sample(this->sample_center_);
 
-  if (!std::isnan (this->lon_at_center_))
-    photo->lon_at_center (this->lon_at_center_);
+    if (!std::isnan(this->line_center_))
+        photo->body_center_line(this->line_center_);
 
-  if (this->emi_ang_limit_ > 0)
-    photo->emi_ang_limit (this->emi_ang_limit_);
+    if (!std::isnan(this->lat_at_center_))
+        photo->lat_at_center(this->lat_at_center_);
 
-  photo->sub_observ (this->sub_observ_lat_, this->sub_observ_lon_);
-  photo->position_angle (this->position_angle_);
-  photo->sub_solar (this->sub_solar_lat_, this->sub_solar_lon_);
-  photo->range (this->range_);
+    if (!std::isnan(this->lon_at_center_))
+        photo->lon_at_center(this->lon_at_center_);
 
-  photo->remove_sky (this->remove_sky_);
-  photo->interpolate (this->interpolate_);
-  photo->use_terminator (this->use_terminator_);
+    if (this->emi_ang_limit_ > 0)
+        photo->emi_ang_limit(this->emi_ang_limit_);
 
-  photo->finalize_setup ();
+    photo->sub_observ(this->sub_observ_lat_, this->sub_observ_lon_);
+    photo->position_angle(this->position_angle_);
+    photo->sub_solar(this->sub_solar_lat_, this->sub_solar_lon_);
+    photo->range(this->range_);
 
-  /**
-   * @todo Improve exception safety.
-   */
-  return photo.release ();
-}
+    photo->remove_sky(this->remove_sky_);
+    photo->interpolate(this->interpolate_);
+    photo->use_terminator(this->use_terminator_);
 
-MaRC::ImageFactory *
-MaRC::PhotoImageFactory::clone (void) const
-{
-  // Simple copy construction will suffice.
-  return new PhotoImageFactory (*this);
-}
+    photo->finalize_setup();
 
-void
-MaRC::PhotoImageFactory::filename (const char * name)
-{
-  this->filename_ = name;
-}
-
-void
-MaRC::PhotoImageFactory::flat_field (const char * name)
-{
-  this->flat_field_ = name;
+    return std::move(photo);
 }
 
 void
-MaRC::PhotoImageFactory::nibbling (unsigned int left,
-                                   unsigned int right,
-                                   unsigned int top,
-                                   unsigned int bottom)
+MaRC::PhotoImageFactory::filename(char const * name)
 {
-  this->nibble_left_   = left;
-  this->nibble_right_  = right;
-  this->nibble_top_    = top;
-  this->nibble_bottom_ = bottom;
+    this->filename_ = name;
 }
 
 void
-MaRC::PhotoImageFactory::invert (bool vertical, bool horizontal)
+MaRC::PhotoImageFactory::flat_field(char const * name)
 {
-  this->invert_v_ = vertical;
-  this->invert_h_ = horizontal;
+    this->flat_field_ = name;
 }
 
 void
-MaRC::PhotoImageFactory::interpolate (bool i)
+MaRC::PhotoImageFactory::nibbling(std::size_t left,
+                                  std::size_t right,
+                                  std::size_t top,
+                                  std::size_t bottom)
 {
-  this->interpolate_ = i;
+    this->nibble_left_   = left;
+    this->nibble_right_  = right;
+    this->nibble_top_    = top;
+    this->nibble_bottom_ = bottom;
 }
 
 void
-MaRC::PhotoImageFactory::remove_sky (bool r)
+MaRC::PhotoImageFactory::invert(bool vertical, bool horizontal)
 {
-  this->remove_sky_ = r;
+    this->invert_v_ = vertical;
+    this->invert_h_ = horizontal;
 }
 
 void
-MaRC::PhotoImageFactory::emi_ang_limit (double angle)
+MaRC::PhotoImageFactory::interpolate(bool enable)
 {
-  this->emi_ang_limit_ = angle;
+    this->interpolate_ = enable;
 }
 
 void
-MaRC::PhotoImageFactory::body_center (double sample, double line)
+MaRC::PhotoImageFactory::remove_sky(bool enable)
 {
-  this->sample_center_ = sample;
-  this->line_center_   = line;
+    this->remove_sky_ = enable;
 }
 
 void
-MaRC::PhotoImageFactory::lat_lon_center (double lat, double lon)
+MaRC::PhotoImageFactory::emi_ang_limit(double angle)
 {
-  this->lat_at_center_ = lat;
-  this->lon_at_center_ = lon;
+    this->emi_ang_limit_ = angle;
 }
 
 void
-MaRC::PhotoImageFactory::optical_axis (double sample, double line)
+MaRC::PhotoImageFactory::body_center(double sample, double line)
 {
-  this->OA_s_ = sample;
-  this->OA_l_ = line;
+    this->sample_center_ = sample;
+    this->line_center_   = line;
 }
 
 void
-MaRC::PhotoImageFactory::geometric_correction (bool g)
+MaRC::PhotoImageFactory::lat_lon_center(double lat, double lon)
 {
-  this->geometric_correction_ = g;
+    this->lat_at_center_ = lat;
+    this->lon_at_center_ = lon;
 }
 
 void
-MaRC::PhotoImageFactory::photometric_correction (bool p)
+MaRC::PhotoImageFactory::optical_axis(double sample, double line)
 {
-  this->photometric_correction_ = p;
+    this->OA_s_ = sample;
+    this->OA_l_ = line;
 }
 
 void
-MaRC::PhotoImageFactory::sub_observ (double lat, double lon)
+MaRC::PhotoImageFactory::geometric_correction(bool enable)
 {
-  this->sub_observ_lat_ = lat;
-  this->sub_observ_lon_ = lon;
+    this->geometric_correction_ = enable;
 }
 
 void
-MaRC::PhotoImageFactory::sub_solar (double lat, double lon)
+MaRC::PhotoImageFactory::photometric_correction(bool enable)
 {
-  this->sub_solar_lat_ = lat;
-  this->sub_solar_lon_ = lon;
+    this->photometric_correction_ = enable;
 }
 
 void
-MaRC::PhotoImageFactory::range (double r)
+MaRC::PhotoImageFactory::sub_observ(double lat, double lon)
 {
-  this->range_ = r;
+    this->sub_observ_lat_ = lat;
+    this->sub_observ_lon_ = lon;
 }
 
 void
-MaRC::PhotoImageFactory::focal_length (double len)
+MaRC::PhotoImageFactory::sub_solar(double lat, double lon)
 {
-  this->focal_length_ = len;
+    this->sub_solar_lat_ = lat;
+    this->sub_solar_lon_ = lon;
 }
 
 void
-MaRC::PhotoImageFactory::scale (double s)
+MaRC::PhotoImageFactory::range(double r)
 {
-  this->scale_ = s;
+    this->range_ = r;
 }
 
 void
-MaRC::PhotoImageFactory::position_angle (double north)
+MaRC::PhotoImageFactory::focal_length(double len)
 {
-  this->position_angle_ = north;
+    this->focal_length_ = len;
 }
 
 void
-MaRC::PhotoImageFactory::arcsec_per_pixel (double a)
+MaRC::PhotoImageFactory::scale(double s)
 {
-  this->arcsec_per_pixel_ = a;
+    this->scale_ = s;
 }
 
 void
-MaRC::PhotoImageFactory::km_per_pixel (double k)
+MaRC::PhotoImageFactory::position_angle(double north)
 {
-  this->km_per_pixel_ = k;
+    this->position_angle_ = north;
 }
 
 void
-MaRC::PhotoImageFactory::use_terminator (bool u)
+MaRC::PhotoImageFactory::arcsec_per_pixel(double a)
 {
-  this->use_terminator_ = u;
+    this->arcsec_per_pixel_ = a;
 }
 
 void
-MaRC::PhotoImageFactory::invert_h (double * image,
-                                   unsigned int samples,
-                                   unsigned int lines)
+MaRC::PhotoImageFactory::km_per_pixel(double k)
 {
-// Invert image from left to right.
+    this->km_per_pixel_ = k;
+}
 
-  const unsigned int middle = samples / 2;
+void
+MaRC::PhotoImageFactory::use_terminator(bool u)
+{
+    this->use_terminator_ = u;
+}
 
-  for (unsigned int line = 0; line < lines; ++line)
-    {
-      for (unsigned int sample = 0; sample < middle; ++sample)
-        {
-          const unsigned int offset = samples - sample - 1;
-
-          const double temp = image[sample];
-
-          image[sample] = image[offset];
-          image[offset] = temp;
-        }
+void
+MaRC::PhotoImageFactory::invert_h(std::vector<double> & image,
+                                  std::size_t samples,
+                                  std::size_t lines)
+{
+    // Invert image from left to right.
+    auto begin = image.begin();
+    for (std::size_t line = 0; line < lines; ++line) {
+        auto const end = begin + samples;
+        std::reverse(begin, end);
+        begin = end;
     }
 }
 
 void
-MaRC::PhotoImageFactory::invert_v (double * image,
-                                   unsigned int samples,
-                                   unsigned int lines)
+MaRC::PhotoImageFactory::invert_v(std::vector<double> & image,
+                                  std::size_t samples,
+                                  std::size_t lines)
 {
-  // Invert image from top to bottom.
-  const unsigned int middle = lines / 2;
+    // Invert image from top to bottom.
+    std::size_t const middle = lines / 2;
 
-  for (unsigned int line = 0; line < middle; ++line)
-    {
-      const unsigned int offset  = (lines - line - 1) * samples;
+    for (std::size_t line = 0; line < middle; ++line) {
+        // Line from the one end.
+        auto const top_begin = image.begin() + line * samples;
+        auto const top_end   = top_begin + samples;
 
-      for (unsigned int sample = 0; sample < samples; ++sample)
-        {
-          const double temp = image[samples * line + sample];
+        // Line from the other end.
+        std::size_t const offset = (lines - line - 1) * samples;
+        auto const bottom_begin = image.begin() + offset;
 
-          image[sample] = image[offset];
-          image[offset] = temp;
-        }
+        // Swap the lines.
+        std::swap_ranges(top_begin, top_end, bottom_begin);
     }
 }

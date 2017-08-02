@@ -26,76 +26,77 @@
 #define MARC_MU0_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
-#include "MaRC/OblateSpheroid.h"
+
+#include <memory>
 
 
 namespace MaRC
 {
+    class OblateSpheroid;
 
-  class OblateSpheroid;
-
-  /**
-   * @class Mu0Image
-   *
-   * @brief Cosine of the incidence angle virtual image.
-   *
-   * This concrete VirtualImage returns the cosine of the
-   * sun-local-normal (incidence) angle on the body being mapped.  The
-   * sun is assumed to be an infinite distance away.
-   *
-   * @note This implementation requires that the body under
-   *       observation is modeled as an oblate spheroid.
-   */
-  class Mu0Image : public VirtualImage
-  {
-  public:
-
-    /// Constructor
     /**
-     * @param body          @c OblateSpheroid object representing the
-     *                      body being mapped.
-     * @param sub_solar_lat Bodycentric sub-solar latitude in degrees.
-     * @param sub_solar_lon Sub-solar longitude in degrees.
+     * @class Mu0Image
+     *
+     * @brief Cosine of the incidence angle virtual image.
+     *
+     * This concrete @c VirtualImage returns the cosine of the
+     * sun-local-normal (incidence) angle on the body being mapped.
+     * The sun is assumed to be an infinite distance away.
+     *
+     * @note This implementation requires that the body under
+     *       observation is modeled as an oblate spheroid.
      */
-    Mu0Image (const OblateSpheroid & body,
-              double sub_solar_lat,
-              double sub_solar_lon);
+    class Mu0Image : public VirtualImage
+    {
+    public:
 
-  private:
+        /// Constructor
+        /**
+         * @param[in] body          @c OblateSpheroid object
+         *                          representing the body being
+         *                          mapped.
+         * @param[in] sub_solar_lat Bodycentric sub-solar latitude in
+         *                          degrees.
+         * @param[in] sub_solar_lon Sub-solar longitude in degrees.
+         */
+        Mu0Image(std::shared_ptr<OblateSpheroid> body,
+                 double sub_solar_lat,
+                 double sub_solar_lon);
 
-    /// Compute cosine of the incidence angle.
-    /**
-     * @see MaRC::VirtualImage::read_data_i().
-     */
-    virtual bool read_data_i (double Latitude,
-                              double Longitude,
-                              double & Data) const;
+    private:
 
+        /// Compute cosine of the incidence angle.
+        /**
+         * @see MaRC::VirtualImage::read_data_i().
+         */
+        virtual bool read_data_i(double Latitude,
+                                 double Longitude,
+                                 double & Data) const;
 
-    /// Is point at given latitude and longitude visible to the
-    /// observer?
-    /**
-     * @see MaRC::VirtualImage::is_visible().
-     */
-    virtual bool is_visible (double lat, double lon) const;
+        /// Is point at given latitude and longitude visible to the
+        /// observer?
+        /**
+         * @see MaRC::VirtualImage::is_visible().
+         */
+        virtual bool is_visible(double lat, double lon) const;
 
-  private:
+    private:
 
-    /// Object representing the body being mapped.
-    /**
-     * @note OblateSpheroid is used instead of BodyData since some
-     *       code in this implementation assumes that the body is
-     *       modeled as an oblate spheroid.
-     */
-    const OblateSpheroid body_;
+        /// Object representing the body being mapped.
+        /**
+         * @note OblateSpheroid is used instead of BodyData since some
+         *       code in this implementation assumes that the body is
+         *       modeled as an oblate spheroid.
+         */
+        std::shared_ptr<OblateSpheroid> const body_;
 
-    /// Bodycentric sub-solar latitude in radians.
-    const double sub_solar_lat_;
+        /// Bodycentric sub-solar latitude in radians.
+        const double sub_solar_lat_;
 
-    /// Sub-solar longitude in radians.
-    const double sub_solar_lon_;
+        /// Sub-solar longitude in radians.
+        const double sub_solar_lon_;
 
-  };
+    };
 
 } // End MaRC namespace
 

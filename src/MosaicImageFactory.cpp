@@ -22,42 +22,29 @@
 
 #include "MosaicImageFactory.h"
 
-#include <memory>
+#include <stdexcept>
+#include <iostream>
 
 
-MaRC::MosaicImageFactory::MosaicImageFactory (const list_type & factories,
-                                              MosaicImage::average_type type)
-  : factories_ (factories),
-    average_type_ (type)
+MaRC::MosaicImageFactory::MosaicImageFactory (
+    list_type && factories,
+    MosaicImage::average_type type)
+    : factories_(std::move(factories))
+    , average_type_(type)
 {
+    if (this->factories_.empty())
+        throw std::invalid_argument("Empty PhotoImageFactory list.");
 }
 
-MaRC::SourceImage *
-MaRC::MosaicImageFactory::make (void)
+std::unique_ptr<MaRC::SourceImage>
+MaRC::MosaicImageFactory::make()
 {
-  MosaicImage::list_type photos;
+    MosaicImage::list_type photos;
 
-  list_type::const_iterator end = this->factories_.end ();
-  for (list_type::iterator i = this->factories_.begin (); i != end; ++i)
-    {
-      std::unique_ptr<MaRC::PhotoImageFactory::return_type>
-        source ((*i).make ());
+    for (auto & factory : this->factories_)
+        photos.push_back(factory->make());
 
-      const PhotoImage & photo =
-#ifndef MARC_HAS_COVARIANT_RETURN_TYPES
-        dynamic_cast<PhotoImage &>
-#endif  /* MARC_HAS_COVARIANT_RETURN_TYPES */
-        (*source);
-
-      photos.push_back (photo);
-    }
-
-  return new MosaicImage (photos, this->average_type_);
-}
-
-MaRC::ImageFactory *
-MaRC::MosaicImageFactory::clone (void) const
-{
-  // Simple copy construction will suffice.
-  return new MosaicImageFactory (*this);
+    return
+        std::make_unique<MosaicImage>(std::move(photos),
+                                      this->average_type_);
 }

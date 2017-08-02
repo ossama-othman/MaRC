@@ -26,58 +26,61 @@
 #define MARC_LATITUDE_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
-#include "MaRC/BodyData.h"
-#include "MaRC/ValuePtr.h"
+
+#include <memory>
 
 
 namespace MaRC
 {
+    class BodyData;
 
-  /**
-   * @class LatitudeImage
-   *
-   * @brief Latitude virtual image.
-   *
-   * This concrete VirtualImage returns the given latitude in
-   * degrees.  This class may be configured to return bodygraphic
-   * latitudes instead of bodycentric latitudes.
-   */
-  class LatitudeImage : public VirtualImage
-  {
-  public:
-
-    /// Constructor
     /**
-     * @param body              Pointer to BodyData object
-     *                          representing body being mapped.
+     * @class LatitudeImage
      *
-     * @param graphic_latitudes Return bodygraphic latitudes instead
-     *                          of bodycentric latitudes.
+     * @brief Latitude virtual image.
+     *
+     * This concrete VirtualImage returns the given latitude in
+     * degrees.  This class may be configured to return bodygraphic
+     * latitudes instead of bodycentric latitudes.
      */
-    LatitudeImage (const ValuePtr<BodyData> & body,
-                   bool graphic_latitudes);
+    class LatitudeImage : public VirtualImage
+    {
+    public:
 
-  private:
+        /// Constructor
+        /**
+         * @param[in] body              Pointer to BodyData object
+         *                              representing body being
+         *                              mapped.
+         * @param[in] graphic_latitudes Return bodygraphic latitudes
+         *                              instead of bodycentric
+         *                              latitudes.
+         */
+        LatitudeImage(std::shared_ptr<BodyData> body,
+                      bool graphic_latitudes);
 
-    /// Simply return the given latitude in degrees.
-    /**
-     * @see MaRC::VirtualImage::read_data_i().
-     */
-    virtual bool read_data_i (double lat,
-                              double lon,
-                              double & data) const;
+    private:
 
-  private:
+        /// Simply return the given latitude in degrees.
+        /**
+         * @see MaRC::VirtualImage::read_data_i().
+         */
+        virtual bool read_data_i(double lat,
+                                 double lon,
+                                 double & data) const;
 
-    /// Object representing the body being mapped.
-    const ValuePtr<BodyData> body_;
+    private:
 
-    /// Flag that determines if bodygraphic latitudes are returned
-    /// instead of bodycentric latitudes.
-    const bool graphic_latitudes_;
+        /// Object representing the body being mapped.
+        std::shared_ptr<BodyData> body_;
+
+        /// Flag that determines if bodygraphic latitudes are returned
+        /// instead of bodycentric latitudes.
+        bool const graphic_latitudes_;
 
   };
 
 } // End MaRC namespace
+
 
 #endif  /* MARC_LATITUDE_IMAGE_H */

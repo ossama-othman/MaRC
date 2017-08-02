@@ -27,3 +27,13 @@
 MaRC::SourceImage::~SourceImage (void)
 {
 }
+
+bool
+MaRC::SourceImage::read_data(double lat,
+                             double lon,
+                             double & data,
+                             std::size_t & /* weight */,
+                             bool /* scan */) const
+{
+    return this->read_data(lat, lon, data);
+}

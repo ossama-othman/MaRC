@@ -30,140 +30,155 @@
 
 namespace MaRC
 {
-  class OblateSpheroid;
-  struct OrthographicCenter;
+    class OblateSpheroid;
+    struct OrthographicCenter;
 
-  enum GeometryType {DEFAULT, CENTER_GIVEN, LAT_LON_GIVEN};
-
-  /**
-   * @class Orthographic
-   *
-   * @brief Orthographic concrete map factory.
-   *
-   * This class creates orthographic map projections.  Observers in
-   * orthographic projections are an infinite distance away (range
-   * approaches infinity).
-   *
-   * @note Only bodies modeled as oblate spheroids are supported by
-   *       this implementation.
-   */
-  template <typename T>
-  class Orthographic : public MapFactory<T> {
-  public:
-
-    typedef typename MapFactory<T>::map_type  map_type;
-    typedef typename MapFactory<T>::grid_type grid_type;
-
-    /// Constructor.
-    /**
-     * @param body           Pointer to OblateSpheroid object
-     *                       representing body.
-     * @param sub_observ_lat Bodycentric sub-observer latitude in degrees.
-     * @param sub_observ_lon Sub-observer longitude in degrees.
-     * @param position_angle Position (north) angle of body in
-     *                       orthographic projection.
-     * @param km_per_pixel   Number of kilometer per pixel in
-     *                       orthographic projection.
-     * @param center         Structure containing body center
-     *                       information to be used in the
-     *                       projection.
-     */
-    Orthographic (const ValuePtr<OblateSpheroid> & body,
-                  double sub_observ_lat,
-                  double sub_observ_lon,
-                  double position_angle,
-                  double km_per_pixel,
-                  const OrthographicCenter & center);
+    enum GeometryType { DEFAULT, CENTER_GIVEN, LAT_LON_GIVEN };
 
     /**
-     * @name @c MapFactory Methods
+     * @class Orthographic
      *
-     * Factory methods required by the @c MapFactory abstract base
-     * class.
+     * @brief Orthographic concrete map factory.
      *
-     * @see @c MapFactory
+     * This class creates orthographic map projections.  Observers in
+     * orthographic projections are an infinite distance away (range
+     * approaches infinity).
+     *
+     * @note Only bodies modeled as oblate spheroids are supported by
+     *       this implementation.
      */
-    //@{
-    virtual MapFactory<T> * clone (void) const;
-    virtual const char * projection_name (void) const;
-    virtual map_type * make_map (const SourceImage & source,
-                                 unsigned int samples,
-                                 unsigned int lines,
-                                 double minimum,
-                                 double maximum);
-    virtual grid_type * make_grid (unsigned int samples,
-                                   unsigned int lines,
-                                   float lat_interval,
-                                   float lon_interval);
-    //@}
+    template <typename T>
+    class Orthographic : public MapFactory<T>
+    {
+    public:
 
+        typedef typename MapFactory<T>::map_type  map_type;
+        typedef typename MapFactory<T>::grid_type grid_type;
 
-  private:
+        /// Constructor.
+        /**
+         * @param[in] body           Pointer to @c OblateSpheroid
+         *                           object representing body.
+         * @param[in] sub_observ_lat Bodycentric sub-observer latitude
+         *                           in degrees.
+         * @param[in] sub_observ_lon Sub-observer longitude in
+         *                           degrees.
+         * @param[in] position_angle Position (north) angle of body in
+         *                           orthographic projection.
+         * @param[in] km_per_pixel   Number of kilometer per pixel in
+         *                           orthographic projection.
+         * @param[in] center         Structure containing body center
+         *                           information to be used in the
+         *                           projection.
+         */
+        Orthographic(std::shared_ptr<OblateSpheroid> body,
+                     double sub_observ_lat,
+                     double sub_observ_lon,
+                     double position_angle,
+                     double km_per_pixel,
+                     OrthographicCenter const & center);
 
-    /// Initialize all attributes.
-    void init (unsigned int samples, unsigned int lines);
+        /**
+         * @name @c MapFactory Methods
+         *
+         * Factory methods required by the @c MapFactory abstract base
+         * class.
+         *
+         * @see @c MapFactory
+         */
+        //@{
+        virtual char const * projection_name() const;
+        //@}
 
-  private:
+    private:
 
-    /// OblateSpheroid object representing the body being mapped.
-    ValuePtr<OblateSpheroid> body_;
+        /// Initialize all attributes.
+        void init (std::size_t samples, std::size_t lines);
 
-    /// Sub-observation latitude.
-    double sub_observ_lat_;
+        /**
+         * Create the Orthographic map projection.
+         *
+         * @see @c MaRC::MapFactory<T>::plot_map().
+         */
+        virtual void plot_map(SourceImage const & source,
+                              std::size_t samples,
+                              std::size_t lines,
+                              double minimum,
+                              double maximum,
+                              map_type & map);
 
-    /// Sub-observation longitude.
-    double sub_observ_lon_;
+        /**
+         * Create the Orthographic map latitude/longitude grid.
+         *
+         * @see @c MaRC::MapFactoryBase::plot_grid().
+         */
+        virtual void plot_grid(std::size_t samples,
+                               std::size_t lines,
+                               float lat_interval,
+                               float lon_interval,
+                               grid_type & grid);
 
-    /// Map position angle (measured counter-clockwise positive).
-    double PA_;
+    private:
 
-    /// The number of kilometers per pixel in the orthographic
-    /// projection.
-    double km_per_pixel_;
+        /// OblateSpheroid object representing the body being mapped.
+        std::shared_ptr<OblateSpheroid> const body_;
 
-    /// Body center sample in projection (measured from left edge).
-    double sample_center_;
+        /// Sub-observation latitude.
+        double sub_observ_lat_;
 
-    /// Body center line in projection (measured from bottom edge).
-    double line_center_;
+        /// Sub-observation longitude.
+        double sub_observ_lon_;
 
-    /// Latitude at center of projection (measured from left edge).
-    double lat_at_center_;
+        /// Map position angle (measured counter-clockwise positive).
+        double PA_;
 
-    /// Line center of projection (measured from bottom edge).
-    double lon_at_center_;
+        /// The number of kilometers per pixel in the orthographic
+        /// projection.
+        double km_per_pixel_;
 
-    /// True if creating polar projection.
-    bool polar_;
+        /// Body center sample in projection (measured from left edge).
+        double sample_center_;
 
-  };
+        /// Body center line in projection (measured from bottom edge).
+        double line_center_;
 
-  /**
-   * @struct OrthographicCenter
-   *
-   * @brief Center of body in orthographic projection.
-   *
-   * These values dictate where the center of the body being mapped
-   * will be placed in the orthographic projection.
-   */
-  struct OrthographicCenter
-  {
-    OrthographicCenter (void);
+        /// Latitude at center of projection (measured from left edge).
+        double lat_at_center_;
 
-    /// Type of body center geometry.
-    GeometryType geometry;
+        /// Line center of projection (measured from bottom edge).
+        double lon_at_center_;
 
-    /// Sample or latitude at center of body.
-    double sample_lat_center;
+        /// True if creating polar projection.
+        bool polar_;
 
-    /// Line or longitude at center of body.
-    double line_lon_center;
+    };
 
-  };
+    /**
+     * @struct OrthographicCenter
+     *
+     * @brief Center of body in orthographic projection.
+     *
+     * These values dictate where the center of the body being mapped
+     * will be placed in the orthographic projection.
+     */
+    struct OrthographicCenter
+    {
+        OrthographicCenter();
+
+        /// Type of body center geometry.
+        GeometryType geometry;
+
+        /// Sample or latitude at center of body.
+        double sample_lat_center;
+
+        /// Line or longitude at center of body.
+        double line_lon_center;
+
+    };
 
 }
 
-#include "MaRC/Orthographic.cpp"
 
+#include "MaRC/Orthographic.cpp"
 
 #endif  /* MARC_ORTHOGRAPHIC_H */

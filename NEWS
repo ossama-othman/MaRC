@@ -1,3 +1,11 @@
+- Improved memory management.
+  - Better C++ exception safety.
+  - Reduced run-time memory requirements.
+  - Slighty improved performance due to less deep copies of large
+    arrays.
+- Fixed inversion of source photo images from left to right and top to
+  bottom.
+
 24 July 2017 - MaRC 0.9.8
 
 - MaRC now requires C++14 conforming compilers.  The 'configure'

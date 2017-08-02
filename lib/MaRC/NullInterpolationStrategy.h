@@ -51,10 +51,6 @@ namespace MaRC
                               double,
                               double,
                               double &) const;
-
-    /// Copy this NullInterpolationStrategy object.
-    virtual InterpolationStrategy * clone (void) const;
-
   };
 
 }

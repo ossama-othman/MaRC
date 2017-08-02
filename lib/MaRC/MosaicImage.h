@@ -26,83 +26,89 @@
 #define MARC_MOSAIC_IMAGE_H
 
 #include <MaRC/SourceImage.h>
-#include <MaRC/PhotoImage.h>
 
+#include <memory>
 #include <vector>
 
 
 namespace MaRC
 {
-  /**
-   * @class MosaicImage
-   *
-   * @brief Source image comprised of multiple @c PhotoImages.
-   *
-   * Mosaics may be comprised of multiple photographs, each taken at
-   * different viewing geometries.
-   */
-  class MosaicImage : public SourceImage
-  {
-  public:
-
-    typedef std::vector<PhotoImage> list_type;
-
     /**
-     * @enum AverageType
+     * @class MosaicImage
      *
-     * The type of averaging to be performed on data retrieved from
-     * multiple images that contain data at the given latitude and
-     * longitude.
+     * @brief Source image comprised of multiple @c PhotoImages.
+     *
+     * Mosaics may be comprised of multiple photographs, each taken at
+     * different viewing geometries.
      */
-    enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
+    class MosaicImage : public SourceImage
+    {
+    public:
 
-    /// Constructor.
-    /**
-     * @param images The set of images to be mosaiced.
-     * @param type   The type of averaging to be performed.
-     */
-    MosaicImage (const list_type & images, average_type type);
+        using list_type = std::vector<std::unique_ptr<SourceImage>>;
 
-    /// Retrieve data from mosaic images.
-    /**
-     * Retrieve data from all mosaic images that have data at the
-     * given latitude and longitude.  The configured data averaging
-     * strategy will be applied in cases where multiple images have
-     * data at the given longitude and latitude.
-     *
-     * @param lat  Bodycentric (e.g. planetocentric) latitude in radians.
-     * @param lon  Longitude in radians.
-     *
-     * @param[out] data Data retrieved from image.
-     *
-     * @return @c true - Data retrieved, @c false - No data retrieved.
-     */
-    virtual bool read_data (double lat,
-                            double lon,
-                            double & data) const;
+        /**
+         * @enum AverageType
+         *
+         * The type of averaging to be performed on data retrieved
+         * from multiple images that contain data at the given
+         * latitude and longitude.
+         */
+        enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
 
-  private:
+        /// Constructor.
+        /**
+         * @param[in,out] images The list of images to be mosaiced.
+         *                       Ownership of the list is transferred
+         *                       to the @c MosaicImage by peforming a
+         *                       C++11 move.
+         * @param[in]     type   The type of averaging to be performed.
+         */
+        MosaicImage(list_type && images, average_type type);
 
-    /// Should the given @a data value be considered zero?
-    /**
-     * Since a zero floating point value is not always represented as
-     * exactly zero (e.g. as the result of a computation), interpret
-     * values less than some threshold to be zero.
-     *
-     * @return @c true if @a data is considered to be zero.
-     */
-    static bool is_zero (double data);
+        /// Retrieve data from mosaic images.
+        /**
+         * Retrieve data from all mosaic images that have data at the
+         * given latitude and longitude.  The configured data
+         * averaging strategy will be applied in cases where multiple
+         * images have data at the given longitude and latitude.
+         *
+         * @param[in]  lat  Bodycentric (e.g. planetocentric) latitude
+         *                  in radians.
+         * @param[in]  lon  Longitude in radians.
+         * @param[out] data Data retrieved from image.
+         *
+         * @retval @c true  Data retrieved,
+         * @retval @c false No data retrieved.
+         *
+         * @see @c MaRC::SourceImage::read_data();
+         */
+        virtual bool read_data(double lat,
+                               double lon,
+                               double & data) const;
 
-  private:
+    private:
 
-    /// Set of images
-    const list_type images_;
+        /// Should the given @a data value be considered zero?
+        /**
+         * Since a zero floating point value is not always represented
+         * as exactly zero (e.g. as the result of a computation),
+         * interpret values less than some threshold to be zero.
+         *
+         * @return @c true if @a data is considered to be zero.
+         */
+        static bool is_zero(double data);
 
-    /// The type of averaging to perform on data retrieved from
-    /// multiple images.
-    const average_type average_type_;
+    private:
 
-  };
+        /// Set of images
+        list_type const images_;
+
+        /// The type of averaging to perform on data retrieved from
+        /// multiple images.
+        average_type const average_type_;
+
+    };
 
 } // End MaRC namespace
 

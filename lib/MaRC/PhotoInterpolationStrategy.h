@@ -27,6 +27,8 @@
 
 #include "InterpolationStrategy.h"
 
+#include <cstddef>
+
 
 namespace MaRC
 {
@@ -43,51 +45,51 @@ namespace MaRC
   {
   public:
 
-    /// Destructor.
-    virtual ~PhotoInterpolationStrategy (void);
+      /// Constructor
+      /**
+       * @param[in] samples        Number of samples in image.
+       * @param[in] lines          Number of lines   in image.
+       * @param[in] nibble_left    Left   nibble value.
+       * @param[in] nibble_right   Right  nibble value.
+       * @param[in] nibble_top     Top    nibble value.
+       * @param[in] nibble_bottom  Bottom nibble value.
+       */
+      PhotoInterpolationStrategy(std::size_t samples,
+                                 std::size_t lines,
+                                 std::size_t nibble_left,
+                                 std::size_t nibble_right,
+                                 std::size_t nibble_top,
+                                 std::size_t nibble_bottom);
 
-    /// Constructor
-    /**
-     * @param samples        Number of samples in image.
-     * @param lines          Number of lines   in image.
-     * @param nibble_left    Left   nibble value.
-     * @param nibble_right   Right  nibble value.
-     * @param nibble_top     Top    nibble value.
-     * @param nibble_bottom  Bottom nibble value.
-     */
-    PhotoInterpolationStrategy (unsigned int samples,
-                                unsigned int lines,
-                                unsigned int nibble_left,
-                                unsigned int nibble_right,
-                                unsigned int nibble_top,
-                                unsigned int nibble_bottom);
+      /// Destructor.
+      virtual ~PhotoInterpolationStrategy();
 
-    /// Perform bilinear interpolation over a 2x2 area of pixels on
-    /// the given pixel.
-    virtual bool interpolate (const double * image,
-                              double x,
-                              double z,
-                              double & data) const;
-
-    /// Copy this PhotoInterpolationStrategy object.
-    virtual InterpolationStrategy * clone (void) const;
+      /// Perform bilinear interpolation over a 2x2 area of pixels on
+      /// the given pixel.
+      /**
+       * @todo Document parameters.
+       */
+      virtual bool interpolate(double const * image,
+                               double x,
+                               double z,
+                               double & data) const;
 
   private:
 
-    /// Number of samples in image.
-    const unsigned int samples_;
+      /// Number of samples in image.
+      std::size_t const samples_;
 
-    /// Left most sample in image.
-    const unsigned int left_;
+      /// Left most sample in image.
+      std::size_t const left_;
 
-    /// Right most sample in image.
-    const unsigned int right_;
+      /// Right most sample in image.
+      std::size_t const right_;
 
-    /// Top most line in image.
-    const unsigned int top_;
+      /// Top most line in image.
+      std::size_t const top_;
 
-    /// Bottom most line in image.
-    const unsigned int bottom_;
+      /// Bottom most line in image.
+      std::size_t const bottom_;
 
   };
 

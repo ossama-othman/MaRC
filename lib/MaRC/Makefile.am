@@ -22,8 +22,6 @@ AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 lib_LTLIBRARIES = libMaRC.la
 
 libMaRC_la_SOURCES = \
-  NaN.cpp \
-  \
   Geometry.cpp \
   \
   BodyData.cpp \
@@ -50,14 +48,10 @@ libMaRC_la_SOURCES = \
   PhotoImage.cpp \
   MosaicImage.cpp \
   \
-  Grid.cpp \
-  \
   Version.cpp
 
 pkginclude_HEADERS = \
   config.h \
-  \
-  NaN.h \
   \
   Matrix.h \
   Vector.h \
@@ -66,9 +60,6 @@ pkginclude_HEADERS = \
   \
   BodyData.h \
   OblateSpheroid.h \
-  \
-  misc.h \
-  root_find.h \
   \
   SourceImage.h \
   VirtualImage.h \
@@ -89,10 +80,6 @@ pkginclude_HEADERS = \
   PhotometricCorrection.h \
   NullPhotometricCorrection.h \
   \
-  Image.h \
-  Image.cpp \
-  Grid.h \
-  \
   Map_traits.h \
   MapFactory.h \
   MapFactory.cpp \
@@ -106,10 +93,12 @@ pkginclude_HEADERS = \
   SimpleCylindrical.cpp \
   \
   Constants.h \
-  ValuePtr.h \
   \
   Version.h
 
 noinst_HEADERS = \
+  misc.h \
+  root_find.h \
+  \
   NullInterpolationStrategy.h \
   PhotoInterpolationStrategy.h
