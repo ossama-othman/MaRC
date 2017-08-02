@@ -85,17 +85,18 @@
     std::list<std::string> comment_list;
     std::list<std::string> xcomment_list;
 
-    typedef enum { BYTE, SHORT, LONG, FLOAT, DOUBLE } data_type;
+    typedef enum { BYTE, SHORT, LONG, _LONGLONG, FLOAT, DOUBLE } data_type;
 
     data_type map_data_type;
 
     using namespace MaRC;
 
-    std::unique_ptr<MapFactory<FITS::byte_type>>   map_factory_byte;
-    std::unique_ptr<MapFactory<FITS::short_type>>  map_factory_short;
-    std::unique_ptr<MapFactory<FITS::long_type>>   map_factory_long;
-    std::unique_ptr<MapFactory<FITS::float_type>>  map_factory_float;
-    std::unique_ptr<MapFactory<FITS::double_type>> map_factory_double;
+    std::unique_ptr<MapFactory<FITS::byte_type>>     map_factory_byte;
+    std::unique_ptr<MapFactory<FITS::short_type>>    map_factory_short;
+    std::unique_ptr<MapFactory<FITS::long_type>>     map_factory_long;
+    std::unique_ptr<MapFactory<FITS::longlong_type>> map_factory_longlong;
+    std::unique_ptr<MapFactory<FITS::float_type>>    map_factory_float;
+    std::unique_ptr<MapFactory<FITS::double_type>>   map_factory_double;
 
     // CFITSIO's "naxes" parameter is an array of long values.
     long map_samples = 0;
@@ -279,7 +280,7 @@
 %token SUB_OBSERV_LAT SUB_OBSERV_LON POSITION_ANGLE
 %token SUB_SOLAR_LAT SUB_SOLAR_LON RANGE _REMOVE_SKY
 %token FOCAL_LENGTH PIXEL_SCALE ARCSEC_PER_PIX KM_PER_PIXEL
-%token BYTE_DATA SHORT_DATA LONG_DATA FLOAT_DATA DOUBLE_DATA
+%token BYTE_DATA SHORT_DATA LONG_DATA LONGLONG_DATA FLOAT_DATA DOUBLE_DATA
 %token CW CCW
 %token YES NO UNMATCHED
 
@@ -380,6 +381,16 @@ map_setup:
                             std::move(map_filename),
                             std::move(body_name),
                             std::move(map_factory_long),
+                            map_samples,
+                            map_lines);
+                    break;
+
+                case _LONGLONG:
+                    map_command =
+                        std::make_unique<MaRC::MapCommand_T<FITS::longlong_type>>(
+                            std::move(map_filename),
+                            std::move(body_name),
+                            std::move(map_factory_longlong),
                             map_samples,
                             map_lines);
                     break;
@@ -517,11 +528,12 @@ data_scale:
 ;
 
 data_type:
-        _DATA_TYPE ':' BYTE_DATA         { map_data_type = BYTE;   }
-        | _DATA_TYPE ':' SHORT_DATA      { map_data_type = SHORT;  }
-        | _DATA_TYPE ':' LONG_DATA       { map_data_type = LONG;   }
-        | _DATA_TYPE ':' FLOAT_DATA      { map_data_type = FLOAT;  }
-        | _DATA_TYPE ':' DOUBLE_DATA     { map_data_type = DOUBLE; }
+        _DATA_TYPE ':' BYTE_DATA       { map_data_type = BYTE;      }
+        | _DATA_TYPE ':' SHORT_DATA    { map_data_type = SHORT;     }
+        | _DATA_TYPE ':' LONG_DATA     { map_data_type = LONG;      }
+        | _DATA_TYPE ':' LONGLONG_DATA { map_data_type = _LONGLONG; }
+        | _DATA_TYPE ':' FLOAT_DATA    { map_data_type = FLOAT;     }
+        | _DATA_TYPE ':' DOUBLE_DATA   { map_data_type = DOUBLE;    }
 ;
 
 data_blank:
@@ -1333,6 +1345,11 @@ mercator:
                     std::make_unique<MaRC::Mercator<FITS::long_type>>(oblate_spheroid);
                 break;
 
+              case _LONGLONG:
+                map_factory_longlong =
+                    std::make_unique<MaRC::Mercator<FITS::longlong_type>>(oblate_spheroid);
+                break;
+
               case FLOAT:
                 map_factory_float =
                     std::make_unique<MaRC::Mercator<FITS::float_type>>(oblate_spheroid);
@@ -1382,6 +1399,18 @@ ortho:  MAP_TYPE ':' _ORTHO
               case LONG:
                 map_factory_long =
                     std::make_unique<MaRC::Orthographic<FITS::long_type>>(
+                        oblate_spheroid,
+                        sub_observation_data.lat,
+                        sub_observation_data.lon,
+                        (!std::isnan(position_angle_val)
+                         ? position_angle_val : 0),
+                        (km_per_pixel_val > 0 ? km_per_pixel_val : 0),
+                        ortho_center);
+                break;
+
+              case _LONGLONG:
+                map_factory_longlong =
+                    std::make_unique<MaRC::Orthographic<FITS::longlong_type>>(
                         oblate_spheroid,
                         sub_observation_data.lat,
                         sub_observation_data.lon,
@@ -1658,6 +1687,14 @@ p_stereo:
                         north_pole);
                 break;
 
+              case _LONGLONG:
+                map_factory_longlong =
+                    std::make_unique<MaRC::PolarStereographic<FITS::longlong_type>>(
+                        oblate_spheroid,
+                        max_lat,
+                        north_pole);
+                break;
+
               case FLOAT:
                 map_factory_float =
                     std::make_unique<MaRC::PolarStereographic<FITS::float_type>>(
@@ -1723,6 +1760,17 @@ simple_c:
               case LONG:
                 map_factory_long =
                     std::make_unique<MaRC::SimpleCylindrical<FITS::long_type>>(
+                        oblate_spheroid,
+                        lo_lat,
+                        hi_lat,
+                        lo_lon,
+                        hi_lon,
+                        graphic_lat);
+                break;
+
+              case _LONGLONG:
+                map_factory_longlong =
+                    std::make_unique<MaRC::SimpleCylindrical<FITS::longlong_type>>(
                         oblate_spheroid,
                         lo_lat,
                         hi_lat,

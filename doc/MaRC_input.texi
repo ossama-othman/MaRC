@@ -445,6 +445,7 @@ types are:
 @cindex @code{BYTE}
 @cindex @code{SHORT}
 @cindex @code{LONG}
+@cindex @code{LONGLONG}
 @cindex @code{FLOAT}
 @cindex @code{DOUBLE}
 
@@ -458,6 +459,9 @@ types are:
 
 @item LONG
 4 byte (32 bits) signed integer
+
+@item LONGLONG
+8 byte (64 bits) signed integer
 
 @item FLOAT
 4 byte (32 bits) floating point number
