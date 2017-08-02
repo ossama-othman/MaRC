@@ -30,6 +30,7 @@
 #include <iostream>
 #include <memory>
 #include <type_traits>  // For sanity check below.
+#include <cassert>
 
 #include <unistd.h>
 
@@ -259,9 +260,12 @@ MaRC::MapCommand::execute()
                                        this->lat_interval_,
                                        this->lon_interval_));
 
+        // Sanity check.
+        assert(grid.size() == this->samples_ * this->lines_);
+
         // LONGLONG is a CFITSIO type.
         constexpr LONGLONG fpixel = 1;  // First pixel/element
-        LONGLONG const nelements = this->samples_ * this->lines_;
+        LONGLONG const nelements = grid.size();
 
         /**
          * @todo Check return value!

@@ -23,6 +23,10 @@
 #include "MapCommand_T.h"
 #include "FITS_traits.h"
 
+#include <MaRC/config.h>  // For NDEBUG
+
+#include <cassert>
+
 #include <fitsio.h>
 
 
@@ -98,8 +102,6 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
     // LONGLONG is a CFITSIO type.
     LONGLONG fpixel = 1;  // First pixel.
 
-    LONGLONG const nelements = this->samples_ * this->lines_;
-
     // Keep track of mapped planes for reporting to user.
     int plane_count = 1;
     std::size_t const num_planes = this->image_factories_.size();
@@ -125,6 +127,11 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                                           this->lines_,
                                           i->minimum(),
                                           i->maximum()));
+
+        // Sanity check.
+        assert(map.size() == this->samples_ * this->lines_);
+
+        LONGLONG const nelements = map.size();
 
         /**
          * @todo Check return value!
