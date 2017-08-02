@@ -36,29 +36,34 @@ double rint (double x) { return ::floor (x + 0.5); }
 
 namespace MaRC
 {
-  namespace flags
-  {
-    /// Set feature flags
-    inline void
-    set (unsigned long & bitset, unsigned long flags)
+    /**
+     * @namespace flags
+     *
+     * @brief MaRC feature flag operations.
+     */
+    namespace flags
     {
-      bitset |= flags;
-    }
+        /// Set feature flags
+        inline void
+        set(unsigned long & bitset, unsigned long flags)
+        {
+            bitset |= flags;
+        }
 
-    /// Unset feature flags
-    inline void
-    unset (unsigned long & bitset, unsigned long flags)
-    {
-      bitset &= ~flags;  // Notice the "~" !!!
-    }
+        /// Unset feature flags
+        inline void
+        unset(unsigned long & bitset, unsigned long flags)
+        {
+            bitset &= ~flags;  // Notice the "~" !!!
+        }
 
-    /// Check if flags are set
-    inline bool
-    check (const unsigned long & bitset, unsigned long flags)
-    {
-      return (bitset & flags);
-    }
-  }  // flags
+        /// Check if flags are set
+        inline bool
+        check(const unsigned long & bitset, unsigned long flags)
+        {
+            return (bitset & flags);
+        }
+    }  // flags
 } // MaRC
 
 

@@ -29,6 +29,7 @@ core*
 doc/*.t2p/
 doc/*.info
 doc/*.pdf
+doc/doxygen/
 doc/mdate-sh
 doc/texinfo.tex
 doc/version.texi

@@ -50,6 +50,19 @@ AM_PROG_LEX
 ##AC_CHECK_PROGS([TEXI2PDF], [texi2pdf ps2pdf], [])
 ##AC_CHECK_PROG([DVIPS], [dvips], [dvips], [])
 
+# Check for Doxygen
+DX_DOXYGEN_FEATURE(ON)
+DX_DOT_FEATURE(ON)
+DX_HTML_FEATURE(ON)
+DX_CHM_FEATURE(OFF)
+DX_CHI_FEATURE(OFF)
+DX_MAN_FEATURE(OFF)
+DX_RTF_FEATURE(OFF)
+DX_XML_FEATURE(OFF)
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
+DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
+
 AC_LANG([C++])
 
 dnl Enable C99 extensions if not already enabled.  Needed for NaN

@@ -28,6 +28,11 @@
 #include <limits>
 
 
+/**
+ * @namespace MaRC
+ *
+ * @brief Code specific to the MaRC library and program.
+ */
 namespace MaRC
 {
 

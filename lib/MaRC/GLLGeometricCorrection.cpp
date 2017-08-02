@@ -27,8 +27,11 @@
 
 namespace MaRC
 {
-    // Note that these values are specific to Galileo spacecraft
-    // images.
+    /**
+     * @namespace GLL
+     *
+     * @brief Galileo spacecraft lens aberration constants.
+     */
     namespace GLL
     {
         // The distortion constant must be a positive number.
@@ -56,9 +59,9 @@ void
 MaRC::GLLGeometricCorrection::image_to_object(double & line,
                                               double & sample)
 {
-  // -------------- Image Space to Object Space  --------------------
+    // -------------- Image Space to Object Space  --------------------
 
-  double x, y;  //  Optical axis corrected location
+    double x, y;  //  Optical axis corrected location
 
     if (this->summation_mode_) {
         // Convert to full-frame coordinates.
@@ -101,7 +104,7 @@ void
 MaRC::GLLGeometricCorrection::object_to_image(double & line,
                                               double & sample)
 {
-  // -------------- Object Space to Image Space  --------------------
+    // -------------- Object Space to Image Space  --------------------
 
     double x, y;  //  Optical axis corrected location
 
