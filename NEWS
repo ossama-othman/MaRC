@@ -5,6 +5,13 @@
     arrays.
 - Fixed inversion of source photo images from left to right and top to
   bottom.
+- Support for maps containing 64 bit signed integer data has been
+  added.  Set the data to LONGLONG to use this feature.
+- Initial support for Doxygen based MaRC source code documentation
+  generation is now available.  Assuming Doxygen is installed, run
+  `make doxygen-doc' from the top-level MaRC source directory to
+  generate MaRC library and program source code documentation.
+  Generated documentation will reside in the doc/doxygen directory.
 
 24 July 2017 - MaRC 0.9.8
 
