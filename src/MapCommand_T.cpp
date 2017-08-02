@@ -129,7 +129,8 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                                           i->maximum()));
 
         // Sanity check.
-        assert(map.size() == this->samples_ * this->lines_);
+        assert(map.size()
+               == static_cast<std::size_t>(this->samples_) * this->lines_);
 
         LONGLONG const nelements = map.size();
 

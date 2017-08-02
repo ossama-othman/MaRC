@@ -261,7 +261,8 @@ MaRC::MapCommand::execute()
                                        this->lon_interval_));
 
         // Sanity check.
-        assert(grid.size() == this->samples_ * this->lines_);
+        assert(grid.size()
+               == static_cast<std::size_t>(this->samples_) * this->lines_);
 
         // LONGLONG is a CFITSIO type.
         constexpr LONGLONG fpixel = 1;  // First pixel/element
