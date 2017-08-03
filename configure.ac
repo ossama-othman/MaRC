@@ -21,7 +21,7 @@ dnl An autoconf script to automatically configure MaRC.
 
 
 AC_PREREQ([2.69])
-AC_INIT([MaRC], [0.9.8], [othman@users.sourceforge.net], [marc])
+AC_INIT([MaRC], [0.9.9-beta], [othman@users.sourceforge.net], [marc])
 
 dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
@@ -46,9 +46,6 @@ AX_CXX_COMPILE_STDCXX_14
 AC_PROG_LN_S
 AC_PROG_YACC
 AM_PROG_LEX
-##AC_CHECK_PROG([TEXI2DVI], [texi2dvi], [texi2dvi], [])
-##AC_CHECK_PROGS([TEXI2PDF], [texi2pdf ps2pdf], [])
-##AC_CHECK_PROG([DVIPS], [dvips], [dvips], [])
 
 # Check for Doxygen
 DX_DOXYGEN_FEATURE(ON)
