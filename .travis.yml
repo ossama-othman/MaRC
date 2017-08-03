@@ -1,94 +1,28 @@
 language: cpp
+
+sudo: false
+
+os:
+  - linux
+  - osx
+
 compiler:
   - clang
   - gcc
 
-matrix:
-  include:
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - clang-3.6
-      env:
-        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+addons:
+  apt:
+    packages:
+      - cfitsio-dev
+      - bison
+      - flex
+      - texinfo
 
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.7
-      env:
-        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-          packages:
-            - clang-3.8
-      env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-
-    # works on Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-
-    # works on Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - clang-4.0
-      env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-
-    # works on Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty
-          packages:
-            - clang-5.0
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
-
-    - os: osx
-      osx_image: xcode8
-      env:
-        - MATRIX_EVAL="brew install gcc && CC=gcc-6 && CXX=g++-6"
+before_script:
+  - ./bootstrap
+  - ./configure --disable-silent-rules && make && make check
 
 before_install:
-  - eval "${MATRIX_EVAL}"
-  - if [ $TRAVIS_OS_NAME = linux ]; then sudo apt-get install libcfitsio-dev bison flex; else brew install cfitsio bison flex ; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then brew tap homebrew/science; fi
+  - if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then brew install cfitsio bison flex texinfo; fi
