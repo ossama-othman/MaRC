@@ -17,12 +17,16 @@ addons:
       - bison
       - flex
       - texinfo
+      - g++-4.9
+      - libc++-dev
 
 before_script:
+  - if [[ "$CXX" == "g++"* ]]; then export CXX="g++-4.9"; fi
+  - if [[ "$CXX" == "clang++"* ]]; then export CXXFLAGS="$CXXFLAGS -stdlib=libc++"; fi
   - ./bootstrap
   - ./configure --disable-silent-rules && make && make check
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then brew tap homebrew/science; fi
-  - if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then brew install cfitsio bison flex texinfo; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cfitsio bison flex texinfo; fi
