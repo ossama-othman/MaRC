@@ -22,16 +22,13 @@ matrix:
             - llvm-toolchain-trusty-3.9
           packages:
             - clang-3.9
-	    - clang++-3.9
+            - clang++-3.9
       env:
         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
 
     - os: osx
-      osx_image: xcode8
       env:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
-	
-
 
 before_install:
     - eval "${MATRIX_EVAL}"
