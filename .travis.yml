@@ -2,31 +2,39 @@ language: cpp
 
 sudo: false
 
-os:
-  - linux
-  - osx
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
+      env:
+         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
 
-compiler:
-  - clang
-  - gcc
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-3.9
+          packages:
+            - clang-3.9
+	    - clang++-3.9
+      env:
+        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
 
-addons:
-  apt:
-    packages:
-      - cfitsio-dev
-      - bison
-      - flex
-      - texinfo
-      - g++-4.9
-      - libc++-dev
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="CC=clang && CXX=clang++"
+	
 
-before_script:
-  - if [[ "$CXX" == "g++"* ]]; then export CXX="g++-4.9"; fi
-  - if [[ "$CXX" == "clang++"* ]]; then export CXXFLAGS="$CXXFLAGS -stdlib=libc++"; fi
-  - ./bootstrap
-  - ./configure --disable-silent-rules && make && make check
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cfitsio bison flex texinfo; fi
+    - eval "${MATRIX_EVAL}"
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cfitsio bison flex texinfo; fi
