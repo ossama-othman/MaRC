@@ -17,7 +17,7 @@ matrix:
             - cfitsio-dev
 
       env:
-         - MATRIX_EVAL="CC=gcc-5.0 && CXX=g++-5.0"
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 
     - os: linux
       addons:
@@ -28,13 +28,14 @@ matrix:
           packages:
             - clang-3.9
             - clang++-3.9
+            - libc++-dev
             - bison
             - flex
             - texinfo
             - cfitsio-dev
 
       env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9 && CXXFLAGS=-stdlib=libc++"
 
     - os: osx
       env:
