@@ -11,10 +11,10 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5.0
-	    - bison
+            - bison
             - flex
             - texinfo
-	    - cfitsio-dev
+            - cfitsio-dev
 
       env:
          - MATRIX_EVAL="CC=gcc-5.0 && CXX=g++-5.0"
@@ -28,10 +28,10 @@ matrix:
           packages:
             - clang-3.9
             - clang++-3.9
-	    - bison
+            - bison
             - flex
             - texinfo
-	    - cfitsio-dev
+            - cfitsio-dev
 
       env:
         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
