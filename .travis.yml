@@ -10,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5.0
+            - g++-5
             - bison
             - flex
             - texinfo
