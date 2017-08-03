@@ -133,7 +133,7 @@ MaRC::MapCommand::execute()
                        TSTRING,
                        "AUTHOR",
                        const_cast<char *>(author),
-                       "Map creator",
+                       "Who compiled original data that was mapped",
                        &status);
     }
 
