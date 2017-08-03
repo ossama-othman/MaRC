@@ -35,7 +35,7 @@ matrix:
             - cfitsio-dev
 
       env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9 && CXXFLAGS=-stdlib=libc++"
+        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9 && CXXFLAGS='-stdlib=libc++'"
 
     - os: osx
       env:
@@ -43,6 +43,8 @@ matrix:
 
 before_script:
     - ./bootstrap
+
+script:
     - ./configure --disable-silent-rules && make && make check
 
 before_install:
