@@ -28,72 +28,70 @@
 #include <cmath>
 
 
-namespace
-{
-  struct init
-  {
-    const char * fname;
-    double (*fnct)(double);
-  };
+// ---------------------------------------------------------------
 
-  init const arith_fncts[] =
+MaRC::sym_entry::sym_entry(double (*fnct)(double))
+    : type(FNCT)
+{
+    value.fnctptr = fnct;
+}
+
+MaRC::sym_entry::sym_entry(double var)
+    : type(VAR)
+{
+    value.var = var;
+}
+
+// ---------------------------------------------------------------
+
+MaRC::symrec::symrec()
+    : table_()
+{
+    struct init
     {
-      { "sin", sin },
-      { "cos", cos },
-      { "tan", tan },
-      { "asin", asin },
-      { "acos", acos },
-      { "atan", atan },
-      { "ln", log },
-      { "exp", exp },
-      { "sqrt", sqrt },
-      { 0, 0 }
+        char const * const fname;
+        double (*fnct)(double);
     };
-}
 
-// ---------------------------------------------------------------
-
-MaRC::sym_entry::sym_entry (void)
-   : type()
-{
-  value.var = 0; /* set value to 0 even if fctn.  */
-}
-
-// ---------------------------------------------------------------
-
-MaRC::symrec::symrec (void)
-  : table_ ()
-{
-  for (init const * i = arith_fncts; i->fname != 0; ++i)
+    static init const arith_fncts[] =
     {
-      sym_entry s;
-      s.type = FNCT;
-      s.value.fnctptr = i->fnct;
+        { "sin",  sin  },
+        { "cos",  cos  },
+        { "tan",  tan  },
+        { "asin", asin },
+        { "acos", acos },
+        { "atan", atan },
+        { "ln",   log  },
+        { "exp",  exp  },
+        { "sqrt", sqrt }
+    };
 
-      this->table_[i->fname] = s;
-    }
+    // Pre-populate the symbol table with "built-in" functions.
+    for (auto & i : arith_fncts)
+        this->table_.emplace(std::make_pair(i.fname,
+                                            sym_entry(i.fnct)));
 }
 
 void
-MaRC::symrec::putsym (char const * name, int type)
+MaRC::symrec::putsym(char const * name, int /* type */)
 {
-  sym_entry s;
-  s.type = type;
+    /**
+     * @todo Do we need the @a type argument? Isn't @a type always
+     *       @c VAR?
+     */
 
-  Table::value_type const d (name, s);
-
-  // Use insert() instead of operator[] to prevent users from
-  // overwriting function entries we added.
-  (void) this->table_.insert (d);
+    // Use emplace() (or insert()) instead of operator[] to prevent
+    // users from overwriting "built-in" function entries we added.
+    this->table_.emplace(std::make_pair(name, sym_entry(0.0)));
 }
 
 MaRC::sym_entry *
-MaRC::symrec::getsym (char const * sym_name)
+MaRC::symrec::getsym(char const * sym_name)
 {
-  Table::iterator const i (this->table_.find (sym_name));
+    auto const i(this->table_.find(sym_name));
 
-  if (i != this->table_.end ())
-    return &(*i).second;
-  else
-    return 0;
+    if (i != this->table_.end())
+        return &(*i).second;
+    else
+        return nullptr;
 }

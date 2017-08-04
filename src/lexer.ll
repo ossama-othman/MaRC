@@ -104,10 +104,9 @@ int yycolumn = 1;
             return NUM;
           }
         [[:alpha:]]+[[:digit:]]*          {
-            MaRC::sym_entry * const s = pp.sym_table ().getsym (yytext);
+            MaRC::sym_entry * const s = pp.sym_table().getsym(yytext);
 
-            if (s == 0)
-              {
+            if (s == nullptr) {
                 /*
                   This forces parsing of variables to be shut off.
                   Functions may still be used.  Until the inability of
@@ -119,13 +118,13 @@ int yycolumn = 1;
 
                 return UNMATCHED;
 
-                // s = pp.symrec ()->putsym (symbuf, VAR);
-              }
+                // s = pp.symrec()->putsym(symbuf, VAR);
+            }
 
             yylval->tptr = s;
 
             return s->type;  // This returns either FNCT or VAR.
-          }
+        }
         .               {
                                 BEGIN(INITIAL); return UNMATCHED;
                                 /* any character (byte) except newline */

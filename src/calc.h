@@ -1,4 +1,3 @@
-// -*- C++ -*-
 /**
  * @file calc.h
  *
@@ -31,45 +30,71 @@
 namespace MaRC
 {
 
-  struct sym_entry
-  {
-    sym_entry (void);
-
-    /**
-     * @todo This should be private ---- will be rewritten in the
-     *       future.
-     */
-    union
+    struct sym_entry
     {
-      double var;			/* value of a VAR	*/
-      double (*fnctptr)(double);	/* value of a FNCT	*/
-    } value;
+        sym_entry() = delete;
 
-    int type;		      /* type of symbol: either VAR or FNCT */
+        /// Construct a function @c sym_entry.
+        explicit sym_entry(double (*fnctptr)(double));
 
-  };
+        /// Construct a variable @c sym_entry.
+        explicit sym_entry(double var);
 
-  // ---------------------------------------------------------------
+        /**
+         * @todo This should be private
+         */
+        union
+        {
+            /// Value of a VAR.
+            double var;
 
-  class symrec
-  {
-  public:
+            /// Value of a FNCT.
+            double (*fnctptr)(double);
+        } value;
 
-    typedef std::map<std::string, sym_entry> Table;
+        /// Type of symbol: either VAR or FNCT.
+        int type;
+    };
 
-    symrec (void);
+    // ---------------------------------------------------------------
 
-    void putsym (const char *sym_name, int sym_type);
+    class symrec
+    {
+    public:
 
-    sym_entry *getsym (const char *sym_name);
+        typedef std::map<std::string, sym_entry> table_type;
 
-  private:
+        symrec();
 
-    Table table_;
+        void putsym(char const * sym_name, int sym_type);
 
-  };
+        sym_entry * getsym(char const * sym_name);
+
+    private:
+
+        table_type table_;
+
+    };
 
 }
 
 
 #endif
+
+
+/*
+  Local Variables:
+  mode: c++
+  c-basic-offset: 4
+  indent-tabs-mode: nil
+  End:
+*/
+
+
+/*
+  Local Variables:
+  mode: c++
+  c-basic-offset: 4
+  indent-tabs-mode: nil
+  End:
+*/

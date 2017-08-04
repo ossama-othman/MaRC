@@ -2054,22 +2054,21 @@ longitude:
 expr:     NUM                   { $$ = $1;                         }
         | VAR                   { $$ = $1->value.var;              }
         | VAR '=' expr          { $$ = $3; $1->value.var = $3;     }
-        | FNCT '(' expr ')'     { $$ = (* ($1->value.fnctptr)) ($3); }
+        | FNCT '(' expr ')'     { $$ = (*($1->value.fnctptr))($3); }
         | expr '+' expr         { $$ = $1 + $3;                    }
         | expr '-' expr         { $$ = $1 - $3;                    }
         | expr '*' expr         { $$ = $1 * $3;                    }
         | expr '/' expr         { if ($3 != 0)
-                                    $$ = $1 / $3;
-                                  else
-                                    {
+                                      $$ = $1 / $3;
+                                  else {
                                       $$ = $1;
-                                      fprintf (stderr,
-                                               "%d.%d-%d.%d: division by zero",
-                                               @3.first_line,
-                                               @3.first_column,
-                                               @3.last_line,
-                                               @3.last_column);
-                                    }
+                                      fprintf(stderr,
+                                              "%d.%d-%d.%d: division by zero",
+                                              @3.first_line,
+                                              @3.first_column,
+                                              @3.last_line,
+                                              @3.last_column);
+                                  }
                                 }
         | '-' expr  %prec NEG   { $$ = -$2;                        }
         | expr '^' expr         { $$ = ::pow($1, $3);              }
