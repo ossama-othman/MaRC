@@ -173,7 +173,7 @@ AS_IF([test "x$ax_enable_debug" != "xyes"],
       [AS_IF([test "x$GXX" = "xyes"], [XCXXFLAGS="$XCXXFLAGS -O2"])
        AX_GCC_ARCHFLAG([yes], [XCXXFLAGS="$XCXXFLAGS $ax_cv_gcc_archflag"])])
 
-AX_CFLAGS_WARN_ALL([CXXFLAGS])
+AX_CXXFLAGS_WARN_ALL([CXXFLAGS])
 AS_IF([test "x$GXX" = "xyes"],
       [XCXXFLAGS="$XCXXFLAGS -Wextra -Wformat=2 -pedantic"],
       [])
