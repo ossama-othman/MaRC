@@ -52,3 +52,7 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cfitsio bison flex texinfo; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+          for p in bison gettext flex texinfo; do
+              export PATH="/usr/local/opt/$p/bin:$PATH"
+      fi
