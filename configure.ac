@@ -29,7 +29,7 @@ AX_CHECK_ENABLE_DEBUG([yes])
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.15 foreign silent-rules -Wall -Werror -Wno-portability])
+AM_INIT_AUTOMAKE([1.14.1 foreign silent-rules -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
