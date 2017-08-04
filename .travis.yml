@@ -34,8 +34,8 @@ matrix:
             - texinfo
             - cfitsio-dev
 
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9 && CXXFLAGS='-stdlib=libc++'"
+      env:  # For whatever reason CXXFLAGS is not honored.  Use CXX.
+        - MATRIX_EVAL="CC=clang-3.9 && CXX='clang++-3.9 -stdlib=libc++'"
 
     - os: osx
       env:
