@@ -42,8 +42,8 @@ MaRC::MapCommand::MapCommand(std::string filename,
     : samples_(samples)
     , lines_(lines)
     , image_factories_()
-    , blank_set_ (false)
-    , blank_ (0)
+    , blank_set_(false)
+    , blank_(0)
     , filename_(std::move(filename))
     , author_()
     , origin_()
@@ -55,7 +55,7 @@ MaRC::MapCommand::MapCommand(std::string filename,
     , bscale_(1)
     , bzero_(0)
     , transform_data_(false)
-    , create_grid_ (false)
+    , create_grid_(false)
 {
     // Compile-time FITS data type sanity check.
     static_assert(
@@ -68,11 +68,11 @@ MaRC::MapCommand::MapCommand(std::string filename,
          */
         sizeof(FITS::byte_type) == 1
         && std::is_integral<FITS::byte_type>()
-        && std::is_unsigned<FITS::byte_type>()
+        && std::is_unsigned<FITS::byte_type>()  // unsigned
 
         && sizeof(FITS::short_type) == 2
         && std::is_integral<FITS::short_type>()
-        && std::is_signed<FITS::short_type>()
+        && std::is_signed<FITS::short_type>()   // signed
 
         && sizeof(FITS::long_type) == 4
         && std::is_integral<FITS::long_type>()
@@ -99,17 +99,17 @@ MaRC::MapCommand::~MapCommand()
 int
 MaRC::MapCommand::execute()
 {
-    std::cout << std::endl << "Creating map: " << this->filename_ << '\n';
+    std::cout << "\nCreating map: " << this->filename_ << '\n';
 
     (void) unlink(this->filename_.c_str());
 
     // Create the map file.
     fitsfile * fptr = 0;
     int status = 0;
-    fits_create_file (&fptr, this->filename_.c_str (), &status);
+    fits_create_file(&fptr, this->filename_.c_str(), &status);
 
     // Create primary image array HDU.
-    this->initialize_FITS_image (fptr, status);
+    this->initialize_FITS_image(fptr, status);
 
     /**
      * Establish that MaRC created this FITS files, e.g. "MaRC 1.0".
@@ -140,7 +140,7 @@ MaRC::MapCommand::execute()
     // Write the name of the organization or institution responsible
     // for creating the FITS file, if supplied.
     if (!this->origin_.empty()) {
-        char const * const origin = this->origin_.c_str ();
+        char const * const origin = this->origin_.c_str();
         fits_update_key(fptr,
                         TSTRING,
                         "ORIGIN",
@@ -210,19 +210,19 @@ MaRC::MapCommand::execute()
     this->make_map_planes(fptr, status);
 
 //   // Write DATAMIN and DATAMAX keywords.
-//   fits_update_key (fptr,
-//                    TFLOAT,
-//                    "DATAMIN",
-//                    &this->minimum_,
-//                    "Minimum valid physical value.",
-//                    &status);
+//   fits_update_key(fptr,
+//                   TFLOAT,
+//                   "DATAMIN",
+//                   &this->minimum_,
+//                   "Minimum valid physical value.",
+//                   &status);
 
-//   fits_update_key (fptr,
-//                    TFLOAT,
-//                    "DATAMAX",
-//                    &this->maximum_,
-//                    "Maximum valid physical value.",
-//                    &status);
+//   fits_update_key(fptr,
+//                   TFLOAT,
+//                   "DATAMAX",
+//                   &this->maximum_,
+//                   "Maximum valid physical value.",
+//                   &status);
 
     // Write a checksum for the map.
     fits_write_chksum(fptr, &status);
@@ -246,16 +246,16 @@ MaRC::MapCommand::execute()
 
         // Write the grid comments.
         for (auto const & xcomment : this->xcomments_) {
-          fits_write_comment(fptr, xcomment.c_str (), &status);
+            fits_write_comment(fptr, xcomment.c_str(), &status);
         }
 
         std::string const xhistory =
-            std::string (this->projection_name())
-            + " projection grid created using MaRC " PACKAGE_VERSION ".";
+            std::string(this->projection_name())
+            + " projection grid created using " PACKAGE_STRING ".";
 
         // Write some MaRC-specific HISTORY comments.
         fits_write_history(fptr,
-                           xhistory.c_str (),
+                           xhistory.c_str(),
                            &status);
 
         /**
@@ -263,12 +263,12 @@ MaRC::MapCommand::execute()
          *       FITS extension.
          */
 //       int grid_blank = 0;
-//       fits_update_key (fptr,
-//                        TINT,
-//                        "BLANK",
-//                        &grid_blank,
-//                        "Value of off-grid pixels.",
-//                        &status);
+//       fits_update_key(fptr,
+//                       TINT,
+//                       "BLANK",
+//                       &grid_blank,
+//                       "Value of off-grid pixels.",
+//                       &status);
 
         grid_type grid(this->make_grid(this->samples_,
                                        this->lines_,
