@@ -128,13 +128,13 @@ MaRC::MapCommand::execute()
 
     // Write the author name if supplied.
     if (!this->author_.empty()) {
-      char const * const author = this->author_.c_str();
-      fits_update_key(fptr,
-                       TSTRING,
-                       "AUTHOR",
-                       const_cast<char *>(author),
-                       "Who compiled original data that was mapped",
-                       &status);
+        char const * const author = this->author_.c_str();
+        fits_update_key(fptr,
+                        TSTRING,
+                        "AUTHOR",
+                        const_cast<char *>(author),
+                        "Who compiled original data that was mapped",
+                        &status);
     }
 
     // Write the name of the organization or institution responsible
@@ -244,6 +244,15 @@ MaRC::MapCommand::execute()
                         naxes,
                         &status);
 
+        static char const extname[] = "GRID";
+        fits_update_key(fptr,
+                        TSTRING,
+                        "EXTNAME",
+                        const_cast<char *>(extname),
+                        "MaRC grid extension name",
+                        &status);
+
+
         // Write the grid comments.
         for (auto const & xcomment : this->xcomments_) {
             fits_write_comment(fptr, xcomment.c_str(), &status);
@@ -258,17 +267,32 @@ MaRC::MapCommand::execute()
                            xhistory.c_str(),
                            &status);
 
-        /**
-         * @todo Look into enabling the BLANK keyword for the map grid
-         *       FITS extension.
-         */
-//       int grid_blank = 0;
-//       fits_update_key(fptr,
-//                       TINT,
-//                       "BLANK",
-//                       &grid_blank,
-//                       "Value of off-grid pixels.",
-//                       &status);
+        // Write map grid DATAMIN and DATAMAX keywords.  Both are the
+        // SAME, since only one valid value exists in the grid image.
+        float minimum = std::numeric_limits<grid_type::value_type>::max();
+        float maximum = minimum;
+
+        fits_update_key(fptr,
+                        TFLOAT,
+                        "DATAMIN",
+                        &minimum,
+                        "minimum valid grid value",
+                        &status);
+
+        fits_update_key(fptr,
+                        TFLOAT,
+                        "DATAMAX",
+                        &maximum,
+                        "maximum valid grid value",
+                        &status);
+
+        int grid_blank = 0;
+        fits_update_key(fptr,
+                        TINT,
+                        "BLANK",
+                        &grid_blank,
+                        "value of off-grid pixels",
+                        &status);
 
         grid_type grid(this->make_grid(this->samples_,
                                        this->lines_,
