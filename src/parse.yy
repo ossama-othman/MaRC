@@ -228,14 +228,14 @@
 
 
 %union
-{
-  char * sval;
-  double val;        // For returning numbers
-  bool bval;         // For returning boolean values
-  MaRC::sym_entry * tptr;  // For returning symbol-table pointers
-  MaRC::SubObserv sub_observ_data; // Sub-observation point.
-  MaRC::SubSolar sub_solar_data;   // Sub-solar point.
-  MaRC::Radii radii_data;          // Oblate spheroid radii.
+ {
+     char * sval;
+     double val;        // For returning numbers
+     bool bval;         // For returning boolean values
+     MaRC::sym_entry * tptr;  // For returning symbol-table pointers
+     MaRC::SubObserv sub_observ_data; // Sub-observation point.
+     MaRC::SubSolar sub_solar_data;   // Sub-solar point.
+     MaRC::Radii radii_data;          // Oblate spheroid radii.
 }
 
 %token <val> NUM
