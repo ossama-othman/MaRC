@@ -68,9 +68,6 @@ namespace MaRC
         /// Create a @c PhotoImage.
         virtual std::unique_ptr<SourceImage> make();
 
-        /// Set the filename.
-        void filename(char const * name);
-
         /// Set the flat field image filename.
         void flat_field(char const * name);
 
@@ -182,7 +179,7 @@ namespace MaRC
     private:
 
         /// Name of photo/image to be mapped.
-        std::string filename_;
+        std::string const filename_;
 
         /// Name of flat field image to be substracted from the
         /// photo/image containing the actual data.

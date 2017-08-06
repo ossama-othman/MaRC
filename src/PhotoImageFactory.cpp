@@ -296,12 +296,6 @@ MaRC::PhotoImageFactory::make()
 }
 
 void
-MaRC::PhotoImageFactory::filename(char const * name)
-{
-    this->filename_ = name;
-}
-
-void
 MaRC::PhotoImageFactory::flat_field(char const * name)
 {
     this->flat_field_ = name;
