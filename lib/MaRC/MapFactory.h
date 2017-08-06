@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <limits>
+#include <cstdint>
 
 
 namespace MaRC
@@ -38,7 +39,7 @@ namespace MaRC
     public:
 
         /// @typedef Type returned from @c make_grid() method.
-        using grid_type = std::vector<unsigned char>;
+        using grid_type = std::vector<uint8_t>;
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.
@@ -46,6 +47,10 @@ namespace MaRC
          * This method takes care of allocating and initializing the
          * underlying grid array, and delegates actual grid generation
          * to the subclass implementation of @c plot_grid().
+         *
+         * Blank grid elements will contain a value of zero, otherwise
+         * they will contain the maximum 8 bit unsigned integer value,
+         * i.e. 255.
          *
          * @param[in] samples      Number of samples in grid.
          * @param[in] lines        Number of lines   in grid.
