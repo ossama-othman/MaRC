@@ -60,6 +60,10 @@ MaRC::MapCommand::MapCommand(std::string filename,
     // Compile-time FITS data type sanity check.
     static_assert(
         /**
+         * Make sure the MaRC FITS types satisfy standard FITS data
+         * type requirements, as well ensuring they match CFITSIO
+         * expectations.
+         *
          * @todo Find a better place to put this static assertion.
          *
          * @note We could achieve a similar affect in a simpler manner
@@ -67,18 +71,24 @@ MaRC::MapCommand::MapCommand(std::string filename,
          *       doesn't make assumptions of the underlying types.
          */
         sizeof(FITS::byte_type) == 1
+        && sizeof(FITS::byte_type) == sizeof(unsigned char)
         && std::is_integral<FITS::byte_type>()
         && std::is_unsigned<FITS::byte_type>()  // unsigned
 
         && sizeof(FITS::short_type) == 2
+        && sizeof(FITS::short_type) == sizeof(short)
         && std::is_integral<FITS::short_type>()
         && std::is_signed<FITS::short_type>()   // signed
 
         && sizeof(FITS::long_type) == 4
+        && sizeof(FITS::long_type) == (sizeof(long) == 4
+                                       ? sizeof(long)
+                                       : sizeof(int))
         && std::is_integral<FITS::long_type>()
         && std::is_signed<FITS::long_type>()
 
         && sizeof(FITS::longlong_type) == 8
+        && sizeof(FITS::longlong_type) == sizeof(LONGLONG)
         && std::is_integral<FITS::longlong_type>()
         && std::is_signed<FITS::longlong_type>()
 

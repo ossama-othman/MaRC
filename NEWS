@@ -1,3 +1,6 @@
+- LONG map types are now correctly written to the map FITS file on 64
+  bit platforms where the fundamental C language 'long' integer type
+  is 8 bytes wide.
 - Improved memory management.
   - Better C++ exception safety.
   - Reduced run-time memory requirements.
@@ -6,7 +9,8 @@
 - Fixed inversion of source photo images from left to right and top to
   bottom.
 - Support for maps containing 64 bit signed integer data has been
-  added.  Set the data to LONGLONG to use this feature.
+  added.  Set DATA_TYPE in your MaRC input file to LONGLONG to use
+  this feature.
 - Initial support for Doxygen based MaRC source code documentation
   generation is now available.  Assuming Doxygen is installed, run
   `make doxygen-doc' from the top-level MaRC source directory to

@@ -63,12 +63,12 @@ namespace MaRC
             /// i.e. the type of data written to a FITS file.
             static constexpr int bitpix = 0;
 
-            /// CFITSIO value corresponding to the data array type in
-            /// memory being written.
+            /// CFITSIO type code corresponding to the data array type
+            /// in memory being written.
             /**
              * If this type differs from the type stored in the FITS
              * file as specified by the @c BITPIX keyword, CFITSIO
-             * will perform automatic data conversion from as the data
+             * will perform automatic data conversion as the data
              * array is written to the FITS file.
              */
             static constexpr int datatype = 0;
@@ -79,7 +79,7 @@ namespace MaRC
              * The FITS @c BLANK keyword is only supported for integer
              * types.
              */
-            static constexpr bool constsupports_blank_keyword = false;
+            static constexpr bool supports_blank_keyword = false;
         };
 
         template <>
@@ -102,7 +102,13 @@ namespace MaRC
         struct traits<long_type>
         {
             static constexpr int  bitpix                 = LONG_IMG;
-            static constexpr int  datatype               = TLONG;
+            /**
+             * @note @c long may be 8 bytes on some 64 bit platforms
+             *       so go with the CFITSIO @c TINT type code instead
+             *       of @c TLONG to make sure CFITSIO knows we are
+             *       using an array of 4 byte integers.
+             */
+            static constexpr int  datatype               = TINT;
             static constexpr bool supports_blank_keyword = true;
         };
 
