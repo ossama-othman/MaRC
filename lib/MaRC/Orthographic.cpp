@@ -25,6 +25,7 @@
 #include "MaRC/OblateSpheroid.h"
 #include "MaRC/Constants.h"
 #include "MaRC/Geometry.h"
+#include "MaRC/Math.h"
 
 #include <sstream>
 #include <cmath>
@@ -188,12 +189,10 @@ MaRC::Orthographic<T>::plot_map(SourceImage const & source,
                 a2 * zz * zz + c2 * x * x - a2 * c2 - diff *
                 zz * zz * ::pow(::sin(this->sub_observ_lat_), 2.0);
 
-            double const discriminant = CB * CB - 4 * CA * CC;
+            std::pair<double, double> roots;
 
-            if (discriminant >= 0) {
-                double const y1 = (-CB + ::sqrt(discriminant)) / 2 / CA;
-                double const y2 = (-CB - ::sqrt(discriminant)) / 2 / CA;
-                double y = std::min(y1, y2);
+            if (MaRC::quadratic_roots(CA, CB, CC, roots)) {
+                double y = std::min(roots.first, roots.second);
                 ImgCoord[0] = x;
                 ImgCoord[1] = y;
                 ImgCoord[2] = zz;

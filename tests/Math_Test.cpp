@@ -18,6 +18,9 @@
 
 #include <MaRC/Math.h>
 
+#include <iostream>
+
+
 bool test_signum()
 {
     return
@@ -58,22 +61,42 @@ bool test_quadratic_roots()
       Solve using MaRC::quadratic_roots() and confirm we get the
       expected roots.
     */
-    static constexpr int const a = 1;
-    static constexpr int const b = 1;
-    static constexpr int const c = 1;
+    static constexpr int const a =  1;
+    static constexpr int const b =  1;
+    static constexpr int const c = -6;
     static constexpr auto expected_roots = std::make_pair(-3.0, 2.0);
 
     std::pair<double, double> roots;
 
+    /**
+     * @todo Verify this ULP value isn't too small.
+     *
+     * @see The blog post "Comparing Floating Point Numbers, 2012
+     *      Edition" for an additional discussion on floating point
+     *      comparison:
+     *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+     */
+    static constexpr int ulp = 1;  // Units in the last place.
+
     return
         MaRC::quadratic_roots(a, b, c, roots) // found real roots
-        && ((roots.first  == expected_roots.first
-             && roots.second == expected_roots.second)
-            || (roots.first  == expected_roots.second
-                && roots.second == expected_roots.first));
+        && ((MaRC::almost_equal(roots.first,
+                                expected_roots.first,
+                                ulp)
+             && MaRC::almost_equal(roots.second,
+                                   expected_roots.second,
+                                   ulp))
+            || (MaRC::almost_equal(roots.first,
+                                   expected_roots.second,
+                                   ulp)
+                && MaRC::almost_equal(roots.second,
+                                      expected_roots.first,
+                                      ulp)));
 }
 
 int main()
 {
-    return test_signum() ? 0 : -1;
+    return
+        test_signum()
+        && test_quadratic_roots() ? 0 : -1;
 }
