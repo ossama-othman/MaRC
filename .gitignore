@@ -39,9 +39,9 @@ src/parse.h*
 src/marc
 test-driver
 tests/MaRC_Prog_Test.sh.*
-tests/NaN_Test
-tests/NaN_Test.log
-tests/NaN_Test.trs
+tests/Math_Test
+tests/Math_Test.log
+tests/Math_Test.trs
 tests/Vector_Test
 tests/Vector_Test.log
 tests/Vector_Test.trs

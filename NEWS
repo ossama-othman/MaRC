@@ -1,3 +1,7 @@
+- Improved accuracy of quadratic equation root calculations by using
+  an implementation that avoids loss of significant digits
+  (i.e. catastrophic cancellation).  This impacts the sky removal
+  feature and the Orthographic map projection.
 - LONG map types are now correctly written to the map FITS file on 64
   bit platforms where the fundamental C language 'long' integer type
   is 8 bytes wide.

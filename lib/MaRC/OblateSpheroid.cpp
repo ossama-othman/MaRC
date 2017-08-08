@@ -23,11 +23,13 @@
 
 #include "OblateSpheroid.h"
 #include "Vector.h"
+#include "Mathematics.h"
 
 #include <stdexcept>
 #include <cmath>
 #include <limits>
 #include <sstream>
+#include <cassert>
 
 
 MaRC::OblateSpheroid::OblateSpheroid(bool prograde,
@@ -274,7 +276,7 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
         is a vector that crosses the surface of the ellipsoid
         at least once.
       - ** returns lat and lon based on solution closest to vec> first
-          (i.e. k[1] < k[0])
+          (i.e. k.second < k.first)
 
       output:
 
@@ -283,7 +285,7 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
 
       output_ (intermediate):
 
-      - k[2]   scalar k in (vec> + k * dvec>) - up to 2 solutions possible
+      - std::pair<> k  scalar k in (vec> + k * dvec>) - up to 2 solutions possible
       - solutions returned: -1 (bad inputs), 1 (no solution) or 0 (successful)
     */
 
@@ -307,12 +309,12 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
     double b = 0;
     double c = -1;
 
-    for (unsigned int i = 0; i < 3; ++i) {
+    for (std::size_t i = 0; i < 3; ++i) {
         double const m1 = dvec[i] / semis[i];
-        double const m2 = vec[i] / semis[i];
-        a += m1 * m1;
+        double const m2 =  vec[i] / semis[i];
+        a +=     m1 * m1;
         b += 2 * m1 * m2;
-        c += m2 * m2;
+        c +=     m2 * m2;
     }
 
     // Check for bad inputs (a=0 => dvec> is null)
@@ -323,29 +325,26 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
     // Check for no solution; return closest solution in k0 if no
     // solution
 
-    double k[2];
+    std::pair<double, double> k;
 
-    double det = b * b - 4 * a * c;  // Determinant
-    if (det < 0) {
+    if (!MaRC::quadratic_roots(a, b, c, k)) {
         // Not on ellipsoid ... no solution
         return 1;  // Unsuccessful
-    } else{
-        det = ::sqrt(det);
-        k[0] = (-b - det) / (2 * a);
-        k[1] = (-b + det) / (2 * a);
     }
 
-    // output_ << "k0 = " << k[0] << "  \tk1 = " << k[1] << endl;
+    // std::cout << "k0 = " << k.first << "  \tk1 = " << k.second << '\n';
 
-    //   if (k[0] < k[1])  // This is unlikely to be true.
-    //   //  if (::fabs(k[0]) < ::fabs(k[1]))
-    //     k[1] = k[0];
+    //   if (k.first < k.second)  // This is unlikely to be true.
+    //   //  if (::fabs(k.first) < ::fabs(k.second))
+    //     k.second = k.first;
 
-    // Use k[1] as solution
+    // Use k.second as solution
 
-    double const x = vec[0] + k[0] * dvec[0];
-    double const y = vec[1] + k[0] * dvec[1];
-    double const z = vec[2] + k[0] * dvec[2];
+    assert(k.second < k.first);
+
+    double const x = vec[0] + k.second * dvec[0];
+    double const y = vec[1] + k.second * dvec[1];
+    double const z = vec[2] + k.second * dvec[2];
 
     lat = ::atan(z / ::sqrt (x * x + y * y));
     lon = ::atan2(x, -y);

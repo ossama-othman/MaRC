@@ -53,6 +53,7 @@ libMaRC_la_SOURCES = \
 pkginclude_HEADERS = \
   config.h \
   \
+  Mathematics.h   \
   Matrix.h \
   Vector.h \
   \

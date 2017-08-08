@@ -29,6 +29,7 @@
 #include "NullPhotometricCorrection.h"
 #include "NullInterpolationStrategy.h"
 #include "PhotoInterpolationStrategy.h"
+#include "Mathematics.h"
 
 #include <cmath>
 #include <limits>
@@ -82,7 +83,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , normal_range_  (0)
     , OA_s_          (0)
     , OA_l_          (0)
-    , sky_mask_      (samples, lines) // Enable sky removal.
+    , sky_mask_      (samples * lines, false) // Enable sky removal.
     , range_b_       ()
     , observ2body_   ()
     , body2observ_   ()
@@ -535,25 +536,21 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
         ::sin(this->sub_observ_lat_) * ::sin(this->sub_observ_lat_)
         - r_o[2] * r_o[2];
 
-    double det = b * b - 4 * a * c;
+    std::pair<double, double> SubLatModSin;
 
-    double SubLatModSin[2];
-
-    if (det >= 0) {
-        det = ::sqrt (det);
-        SubLatModSin[0] = (-b + det) / (2 * a);
-        SubLatModSin[1] = (-b - det) / (2 * a);
-    } else {
+    if (!MaRC::quadratic_roots(a, b, c, SubLatModSin)) {
+        // No real roots.
         std::cerr
-            << "Error occurred in rot_matrices() routine.\n"
-               "Attempt to take square root of a negative number.\n";
+            << "ERROR: Unable to find roots corresponding to\n"
+               "       sub-observation latitudes when calculating\n"
+               "       suitable rotation matrices to go between\n"
+               "       observer and body coordinates.\n";
 
         return 1;  // Failure
     }
 
-    // ------------- TRY MOST POSITIVE ROOT ------------
-    double SubLatMod =
-        ::asin(SubLatModSin[0]);  // compute from most positive root
+    // ------------- TRY THE FIRST ROOT ------------
+    double SubLatMod = ::asin(SubLatModSin.first);
 
     Geometry::RotX(SubLatMod, r_o, rotated);
     r_o = rotated;
@@ -570,10 +567,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     double diff_magnitude =
         Geometry::Magnitude(this->range_b_ - o2b * range_o);
 
-    // ----------- TRY MOST NEGATIVE ROOT -------------
+    // ----------- TRY THE SECOND ROOT -------------
     r_o = temp2; // Reset to value of vector after first rotation
 
-    SubLatMod = ::asin(SubLatModSin[1]); // compute from most negative root
+    SubLatMod = ::asin(SubLatModSin.second);
     Geometry::RotX(SubLatMod, r_o, rotated);
     r_o = rotated;
 
@@ -803,8 +800,8 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
 
 void MaRC::PhotoImage::remove_sky(bool r)
 {
-    if (r && this->sky_mask_.empty())
-        this->sky_mask_.resize(this->samples_ * this->lines_);
+    if (r)
+        this->sky_mask_.resize(this->samples_ * this->lines_, false);
     else
         this->sky_mask_.clear();
 }
