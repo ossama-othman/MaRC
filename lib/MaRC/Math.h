@@ -116,7 +116,7 @@ namespace MaRC
         if (discriminant < 0)
             return false;  // One or both roots are not real.
 
-        double const q = -(b + signum(b) * sqrt(discriminant)) / 2;
+        double const q = -(b + signum(b) * std::sqrt(discriminant)) / 2;
 
         roots.first  = q / a;
         roots.second = c / q;
