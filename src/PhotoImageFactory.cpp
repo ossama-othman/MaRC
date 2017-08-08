@@ -107,7 +107,8 @@ MaRC::PhotoImageFactory::make()
                               naxes,
                               &status);
 
-    const long nelements = naxes[0] * naxes[1];
+    LONGLONG const nelements =
+        static_cast<LONGLONG>(naxes[0]) * naxes[1];
 
     // Note that we're only reading a 2-dimensional image above.
     std::vector<double> img(nelements,
