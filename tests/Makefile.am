@@ -21,6 +21,7 @@ MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
 AM_CPPFLAGS = -I$(top_srcdir)/lib
 
 check_PROGRAMS = \
+  Math_Test   \
   Vector_Test \
   Matrix_Test
 
@@ -29,6 +30,8 @@ dist_check_SCRIPTS = MaRC_Prog_Test.sh
 dist_check_DATA = \
   test_map.inp \
   test.fits.gz
+
+Math_Test_SOURCES = Math_Test.cpp
 
 Vector_Test_SOURCES = Vector_Test.cpp
 
