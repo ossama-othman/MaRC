@@ -29,7 +29,7 @@
 #include "NullPhotometricCorrection.h"
 #include "NullInterpolationStrategy.h"
 #include "PhotoInterpolationStrategy.h"
-#include "Math.h"
+#include "Mathematics.h"
 
 #include <cmath>
 #include <limits>

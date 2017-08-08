@@ -23,7 +23,7 @@
 
 #include "OblateSpheroid.h"
 #include "Vector.h"
-#include "Math.h"
+#include "Mathematics.h"
 
 #include <stdexcept>
 #include <cmath>

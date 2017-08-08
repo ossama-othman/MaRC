@@ -1,8 +1,8 @@
 //  -*- C++ -*-
 /**
- * @file math.h
+ * @file Mathematics.h
  *
- * Copyright (C) 1996-1999, 2017  Ossama Othman
+ * Copyright (C) 2017  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,14 @@
  * 02110-1301  USA
  *
  * @author Ossama Othman
+ *
+ * @attention This file cannot be named @c Math.h or @c math.h since
+ *            some platforms with case insensitive filesystems could
+ *            end up including it instead of <math.h>.
  */
 
-#ifndef MARC_MATH_H
-#define MARC_MATH_H
+#ifndef MARC_MATHEMATICS_H
+#define MARC_MATHEMATICS_H
 
 #include <limits>
 #include <type_traits>
@@ -93,14 +97,22 @@ namespace MaRC
     /**
      * Solve the quadratic formula in a numerically stable manner.
      *
-     * Solve the quadratic formula for a quadratic equation with the
-     * the given coefficients, @a a, @a b and @a c in a way that
+     * Solve for the roots of a quadratic equation of the form
+     *       2
+     *     ax  + bx + c = 0
+     * using a numerically stable form of the Quadratic Formula that
      * avoids catastrophic cancellation (loss of significant digits
      * due to subtraction of two nearly equal numbers).
      *
      * @see Section 5.6: "Quadratic and Cubic Equations" in "Numerical
      *      Recipes in C", 1992, by Press, Teukolsky, Veterrling
      *      and Flannery for a discussion on how this approach works.
+     *
+     * @param[in]     a     Coefficient of the quadratic term.
+     * @param[in]     b     Coefficient of the linear term.
+     * @param[in]     c     Coefficient of the constant term.
+     * @param[in,out] roots The roots of the quadratic equation are
+     *                      returned through this variable.
      *
      * @returns @c true if real roots were found, @c false otherwise.
      */
@@ -114,7 +126,7 @@ namespace MaRC
         double const discriminant = b * b - 4 * a * c;
 
         if (discriminant < 0)
-            return false;  // One or both roots are not real.
+            return false;  // Roots are not real.
 
         double const q = -(b + signum(b) * std::sqrt(discriminant)) / 2;
 
@@ -127,4 +139,4 @@ namespace MaRC
 } // MaRC
 
 
-#endif  /* MARC_MATH_H */
+#endif  /* MARC_MATHEMATICS_H */

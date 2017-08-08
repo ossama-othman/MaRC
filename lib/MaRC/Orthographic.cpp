@@ -25,7 +25,7 @@
 #include "MaRC/OblateSpheroid.h"
 #include "MaRC/Constants.h"
 #include "MaRC/Geometry.h"
-#include "MaRC/Math.h"
+#include "MaRC/Mathematics.h"
 
 #include <sstream>
 #include <cmath>
