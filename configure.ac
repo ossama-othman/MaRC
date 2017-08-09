@@ -62,10 +62,6 @@ DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
 
 AC_LANG([C++])
 
-dnl Enable C99 extensions if not already enabled.  Needed for NaN
-dnl support on some platforms.
-XCPPFLAGS="-D_ISOC99_SOURCE"
-
 dnl
 dnl config.h template
 dnl
