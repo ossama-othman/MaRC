@@ -18,6 +18,8 @@
 
 #include <MaRC/Mathematics.h>
 
+#include <cstdint>
+
 
 bool test_almost_equal()
 {
