@@ -83,6 +83,9 @@ namespace MaRC
     /// Default source image maximum cutoff value.
     double maximum;
 
+    /// Default for supersampling verification
+    bool supersample_verify;
+
     /// Default source image left   side "nibble" value.
     unsigned int nibble_left;
 

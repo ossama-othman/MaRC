@@ -95,6 +95,9 @@ MaRC::MapCommand_T<T>::make_map_planes (fitsfile * fptr, int & status)
                                   (*i)->minimum (),
                                   (*i)->maximum ()));
 
+      // Supersamping verification.
+      image->check_image_unread_mask();
+
       FITS_traits<T>::write_img (fptr,
                                  fpixel,
                                  static_cast<long> (nelements),

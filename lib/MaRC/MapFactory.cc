@@ -21,7 +21,7 @@ MaRC::MapFactory<T>::~MapFactory (void)
 
 template <typename T>
 bool
-MaRC::MapFactory<T>::plot (const SourceImage & source,
+MaRC::MapFactory<T>::plot (SourceImage & source,
                            double lat,
                            double lon,
                            double minimum,

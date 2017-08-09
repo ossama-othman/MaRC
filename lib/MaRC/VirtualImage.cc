@@ -11,7 +11,7 @@ MaRC::VirtualImage::VirtualImage (double s, double o)
 bool
 MaRC::VirtualImage::read_data (const double & lat,
                                const double & lon,
-                               double & data) const
+                               double & data)
 {
   // FIXME: This is ugly.  The visibility check is specific to an oblate
   // spheroid.  It should really be moved to OblateSpheroid strategy.

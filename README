@@ -2,11 +2,9 @@ MaRC - Map Reprojections and Conversions
 
 Requirements
 -------------
-C compiler	- Preferrably EGCS gcc >= 1.1.2.
-			ftp://egcs.cygnus.com/pub/egcs/releases
+C compiler	- Preferrably GCC >= 3.3.
 
-C++ compiler	- EGCS gcc >= 1.1.2.
-			ftp://egcs.cygnus.com/pub/egcs/releases
+C++ compiler	- Preferably GCC >= 3.3.
 
 Scanner Generator Library
 		- Must have GNU Flex 2.5.4a or greater installed since the GNU
@@ -30,4 +28,8 @@ Type:  make install
 Contact the maintainer at the below address if problems arise.
 __________________________________________________
 Ossama Othman
-othman@astrosun.tn.cornell.edu
+othman@dre.vanderbilt.edu
+
+This version is hacked up by Nathanael Nerode, so contact him instead:
+Nathanael Nerode
+neroden@gcc.gnu.org

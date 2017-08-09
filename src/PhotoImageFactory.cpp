@@ -3,6 +3,7 @@
 #include "PhotoImageFactory.h"
 
 #include "MaRC/PhotoImage.h"
+#include "MaRC/PhotoImageParameters.h"
 #include "MaRC/GLLGeometricCorrection.h"
 #include "MaRC/NullGeometricCorrection.h"
 #include "MaRC/NaN.h"
@@ -33,6 +34,7 @@ MaRC::PhotoImageFactory::PhotoImageFactory (const char * filename,
     scale_ (-1),
     OA_s_ (MaRC::NaN),
     OA_l_ (MaRC::NaN),
+    supersample_verify_ (false),
     nibble_left_ (0),
     nibble_right_ (0),
     nibble_top_ (0),
@@ -230,63 +232,70 @@ MaRC::PhotoImageFactory::make (void)
       gc.reset (nullcor);
     }
 
-  std::auto_ptr<PhotoImage> photo (
-    new MaRC::PhotoImage (this->body_,
+  MaRC::PhotoImageParameters * params = new PhotoImageParameters
+                         (this->body_,
                           img,
                           static_cast<unsigned int> (naxes[0]), // samples
                           static_cast<unsigned int> (naxes[1]), // lines
-                          gc.get ()));
+                          gc.get () );
 
   (void) gc.release (); // Don't need to hold on to it any more.
 
-  photo->nibble_left   (this->nibble_left_);
-  photo->nibble_right  (this->nibble_right_);
-  photo->nibble_top    (this->nibble_top_);
-  photo->nibble_bottom (this->nibble_bottom_);
+  params->nibble_left   (this->nibble_left_);
+  params->nibble_right  (this->nibble_right_);
+  params->nibble_top    (this->nibble_top_);
+  params->nibble_bottom (this->nibble_bottom_);
 
   if (this->km_per_pixel_ > 0)
-    photo->km_per_pixel (this->km_per_pixel_);
+    params->km_per_pixel (this->km_per_pixel_);
 
   if (this->arcsec_per_pixel_ > 0)
-    photo->arcsec_per_pixel (this->arcsec_per_pixel_);
+    params->arcsec_per_pixel (this->arcsec_per_pixel_);
 
   if (this->focal_length_ > 0)
-    photo->focal_length (this->focal_length_);
+    params->focal_length (this->focal_length_);
 
   if (this->scale_ > 0)
-    photo->scale (this->scale_);
+    params->scale (this->scale_);
 
   if (!isnan (this->OA_s_))
-    photo->optical_axis_sample (this->OA_s_);
+    params->optical_axis_sample (this->OA_s_);
 
   if (!isnan (this->OA_l_))
-    photo->optical_axis_line (this->OA_l_);
+    params->optical_axis_line (this->OA_l_);
 
   if (!isnan (this->sample_center_))
-    photo->body_center_sample (this->sample_center_);
+    params->body_center_sample (this->sample_center_);
 
   if (!isnan (this->line_center_))
-    photo->body_center_line (this->line_center_);
+    params->body_center_line (this->line_center_);
 
   if (!isnan (this->lat_at_center_))
-    photo->lat_at_center (this->lat_at_center_);
+    params->lat_at_center (this->lat_at_center_);
 
   if (!isnan (this->lon_at_center_))
-    photo->lon_at_center (this->lon_at_center_);
+    params->lon_at_center (this->lon_at_center_);
 
   if (this->emi_ang_limit_ > 0)
-    photo->emi_ang_limit (this->emi_ang_limit_);
+    params->emi_ang_limit (this->emi_ang_limit_);
 
-  photo->sub_observ (this->sub_observ_lat_, this->sub_observ_lon_);
-  photo->position_angle (this->position_angle_);
-  photo->sub_solar (this->sub_solar_lat_, this->sub_solar_lon_);
-  photo->range (this->range_);
+  params->sub_observ (this->sub_observ_lat_, this->sub_observ_lon_);
+  params->position_angle (this->position_angle_);
+  params->sub_solar (this->sub_solar_lat_, this->sub_solar_lon_);
+  params->range (this->range_);
 
-  photo->remove_sky (this->remove_sky_);
-  photo->interpolate (this->interpolate_);
-  photo->use_terminator (this->use_terminator_);
+  params->remove_sky (this->remove_sky_);
+  params->supersample_verify (this->supersample_verify_);
+  // This overrides the remove_sky setting so there.
 
-  photo->finalize_setup ();
+  params->interpolate (this->interpolate_);
+  params->use_terminator (this->use_terminator_);
+
+  params->set_filename (this->filename_);
+
+  std::auto_ptr<PhotoImage> photo ( new MaRC::PhotoImage (*params) );
+
+  delete params;
 
   /**
    * @todo Improve exception safety.
@@ -311,6 +320,12 @@ void
 MaRC::PhotoImageFactory::flat_field (const char * name)
 {
   this->flat_field_ = name;
+}
+
+void
+MaRC::PhotoImageFactory::set_supersample_verify (bool supersample_verify)
+{
+  this->supersample_verify_ = supersample_verify;
 }
 
 void

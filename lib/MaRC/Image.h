@@ -192,6 +192,24 @@ namespace MaRC
       return this->image_[index];
     }
 
+    /**
+     * @param sample Sample value in underlying data array.
+     * @param line   Line   value in underlying data array.
+     *
+     * @return Const reference to desired data element in underlying
+     *         array.
+     */
+    T const & operator() (unsigned int sample, unsigned int line) const
+    {
+      const unsigned int index = line * this->samples_ + sample;
+
+#ifdef DEBUG
+      assert (index < this->samples_ * this->lines_);
+#endif
+
+      return this->image_[index];
+    }
+
     /// Return pointer to the underlying data array.
     /**
      * @note Image retains ownership of the memory.

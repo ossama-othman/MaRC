@@ -18,7 +18,7 @@ MaRC::MosaicImage::MosaicImage (const list_type & images,
 bool
 MaRC::MosaicImage::read_data (const double & lat,
                               const double & lon,
-                              double & data) const
+                              double & data)
 {
   bool found_data = false;
 
@@ -44,7 +44,7 @@ MaRC::MosaicImage::read_data (const double & lat,
 
             static bool const scan = true; // Scan for data weight.
 
-            if ((*i).read_data (lat,
+            if ((*i)->read_data (lat,
                                 lon,
                                 data,
                                 weight,
@@ -62,7 +62,7 @@ MaRC::MosaicImage::read_data (const double & lat,
 
         case AVG_UNWEIGHTED:  // Unweighted averaging.
           {
-            if ((*i).read_data (lat, lon, data)
+            if ((*i)->read_data (lat, lon, data)
                 && !this->is_zero (data))
               {
                 weighted_data_sum += data;
@@ -76,7 +76,7 @@ MaRC::MosaicImage::read_data (const double & lat,
 
         default:      // No averaging
           {
-            if ((*i).read_data (lat, lon, data)
+            if ((*i)->read_data (lat, lon, data)
                 && !this->is_zero (data))
               {
                 found_data = true;
@@ -109,4 +109,16 @@ MaRC::MosaicImage::is_zero (double data)
   static double const zero_threshold = 1e-10;
 
   return (fabs (data) < zero_threshold);
+}
+
+void
+MaRC::MosaicImage::check_image_unread_mask(void) const
+{
+  // Simply run this on all the sub-images.
+  const list_type::const_iterator begin = this->images_.begin ();
+  const list_type::const_iterator end   = this->images_.end ();
+
+  for (list_type::const_iterator i = begin; i < end; ++i) {
+    (*i)->check_image_unread_mask();
+  }
 }

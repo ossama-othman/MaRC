@@ -1,4 +1,4 @@
-// $Id: Orthographic.cc,v 1.8 2004/10/14 08:54:29 othman Exp $
+// $Id: Orthographic.cc,v 1.9 2005/11/14 08:53:44 othman Exp $
 
 #include "MaRC/Orthographic.h"
 #include "MaRC/OblateSpheroid.h"
@@ -133,7 +133,7 @@ MaRC::Orthographic<T>::clone (void) const
 
 template <typename T>
 typename MaRC::Orthographic<T>::map_type *
-MaRC::Orthographic<T>::make_map (const SourceImage & source,
+MaRC::Orthographic<T>::make_map (SourceImage & source,
                                  unsigned int samples,
                                  unsigned int lines,
                                  double minimum,
@@ -199,13 +199,11 @@ MaRC::Orthographic<T>::make_map (const SourceImage & source,
               if (this->polar_)
                 {
                   // Rotate about z-axis by (-this->PA_).
-                  x =  Rotated[0] * ::cos (-this->PA_) +
-                    Rotated[1] * ::sin (-this->PA_);
+                  MaRC::Geometry::RotZ (-this->PA_, Rotated, ImgCoord);
 
-                  y = -Rotated[0] * ::sin (-this->PA_) +
-                    Rotated[1] * ::cos (-this->PA_);
-
-                  zz=  Rotated[2];
+                  x  = ImgCoord[0];
+                  y  = ImgCoord[1];
+                  zz = ImgCoord[2];
                 }
               else
                 {

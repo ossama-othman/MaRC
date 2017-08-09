@@ -27,7 +27,8 @@ main (int argc, char *argv[])
     << "        MaRC Binary  Version " << ::marc_version_string  << std::endl
     << "        MaRC Library Version " << ::marc_lib_version_string
     << std::endl << std::endl
-    << "Copyright (C) 1996, 1997, 1998, 2003, 2004  Ossama Othman"
+    << "Copyright 1996, 1997, 1998, 2003, 2004  Ossama Othman"
+    << "Copyright 2005, 2006  Nathanael Nerode"
     << std::endl
     << "All Rights Reserved" << std::endl << std::endl
     << "MaRC comes with ABSOLUTELY NO WARRANTY." << std::endl

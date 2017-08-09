@@ -52,8 +52,8 @@ namespace MaRC
      * base class.
      */
     //@{
-    virtual void image_to_object (double & line, double & sample);
-    virtual void object_to_image (double & line, double & sample);
+    virtual void image_to_object (double & x, double & z);
+    virtual void object_to_image (double & x, double & z);
     virtual GeometricCorrection * clone (void) const;
     //@}
 

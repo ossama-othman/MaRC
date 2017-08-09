@@ -40,7 +40,7 @@ MaRC::Mercator<T>::projection_name (void) const
 
 template <typename T>
 typename MaRC::Mercator<T>::map_type *
-MaRC::Mercator<T>::make_map (SourceImage const & source,
+MaRC::Mercator<T>::make_map (SourceImage & source,
                              unsigned int samples,
                              unsigned int lines,
                              double minimum,

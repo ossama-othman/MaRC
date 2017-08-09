@@ -16,6 +16,7 @@ MaRC::ParseParameter::ParseParameter (void)
     lon_interval (10),
     minimum (-std::numeric_limits<double>::max ()),
     maximum (std::numeric_limits<double>::max ()),
+    supersample_verify (false),
     nibble_left   (0),
     nibble_right  (0),
     nibble_top    (0),

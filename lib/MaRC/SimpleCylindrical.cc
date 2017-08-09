@@ -72,7 +72,7 @@ MaRC::SimpleCylindrical<T>::projection_name (void) const
 
 template <typename T>
 typename MaRC::SimpleCylindrical<T>::map_type *
-MaRC::SimpleCylindrical<T>::make_map (const SourceImage & source,
+MaRC::SimpleCylindrical<T>::make_map (SourceImage & source,
                                       unsigned int samples,
                                       unsigned int lines,
                                       double minimum,

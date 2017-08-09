@@ -1,7 +1,7 @@
 Authors of MaRC -- Map Reprojections and Conversions
 
 Initially written during the Summer of 1995 and currently being maintained by:
-Ossama Othman <othman@astrosun.tn.cornell.edu>
+Ossama Othman <othman@dre.vanderbilt.edu>
 
 Special thanks to Dr. Peter Gierasch and Dr. Don Banfield at the Center for
 Radiophysics and Space Research at Cornell University in Ithacs, NY, USA for
@@ -10,3 +10,7 @@ helping with all of the nifty coordinate transformations found in MaRC.
 Brian Carcich, also at CRSR, helped me find the "in my face" bugs that I
 couldn't see since I stared at those code fragements for so long.  He also
 helped me better understand some of the geometry which MaRC relies heavily on.
+
+Supersampling verification code and miscellanous cleanups by Nathanael 
+Nerode <neroden@gcc.gnu.org>.
+

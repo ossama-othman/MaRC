@@ -32,27 +32,18 @@ MaRC::GLLGeometricCorrection::GLLGeometricCorrection (unsigned int samples)
 }
 
 void
-MaRC::GLLGeometricCorrection::image_to_object (double & line,
-                                               double & sample)
+MaRC::GLLGeometricCorrection::image_to_object (double & x,
+                                               double & z)
 {
   // -------------- Image Space to Object Space  --------------------
 
-  double x, y;  //  Optical axis corrected location
-
-    if (this->summation_mode_)
-      {
-        // Convert to full-frame coordinates.
-        x = sample * 2 - MaRC::GLL::OA_SAMPLE;
-        y = line   * 2 - MaRC::GLL::OA_LINE;
-      }
-    else
-      {
-        x = sample - MaRC::GLL::OA_SAMPLE;
-        y = line   - MaRC::GLL::OA_LINE;
-      }
-
   // Image-space radius from optical axis
-  const double is_rad = ::sqrt (x * x + y * y);
+  double is_rad = ::sqrt (x * x + z * z);
+  // must always be radius in pixels in *full-frame* mode
+  if (this->summation_mode_)
+    {
+      is_rad *= 2;
+    }
 
   // if (is_rad == 0) then no correction is necessary.
 
@@ -69,47 +60,27 @@ MaRC::GLLGeometricCorrection::image_to_object (double & line,
       //  Object-space radius from optical axis
       const double os_rad = this->cube_root (A_3) + this->cube_root (B_3);
 
-      line   = (os_rad * y) / is_rad + MaRC::GLL::OA_LINE;
-      sample = (os_rad * x) / is_rad + MaRC::GLL::OA_SAMPLE;
-
-      if (this->summation_mode_)
-        {
-          line   /= 2;
-          sample /= 2;
-        }
+      z = (os_rad * z) / is_rad;
+      x = (os_rad * x) / is_rad;
     }
 }
 
 void
-MaRC::GLLGeometricCorrection::object_to_image (double & line,
-                                               double & sample)
+MaRC::GLLGeometricCorrection::object_to_image (double & x,
+                                               double & z)
 {
   // -------------- Object Space to Image Space  --------------------
 
-  double x, y;  //  Optical axis corrected location
-
+  double distance_squared = x * x + z * z;
   if (this->summation_mode_)
     {
-      // Convert to full-frame coordinates.
-      x = sample * 2 - MaRC::GLL::OA_SAMPLE;
-      y = line   * 2 - MaRC::GLL::OA_LINE;
+      // Distance must be in *full-frame* coordinates
+      distance_squared *= 4;
     }
-  else
-    {
-      x = sample - MaRC::GLL::OA_SAMPLE;
-      y = line   - MaRC::GLL::OA_LINE;
-    }
+  const double common_term = 1.0 + (MaRC::GLL::DISTORTION * distance_squared);
 
-  const double common_term = 1.0 + (MaRC::GLL::DISTORTION * (x * x + y * y));
-
-  line   = y * common_term + MaRC::GLL::OA_LINE;
-  sample = x * common_term + MaRC::GLL::OA_SAMPLE;
-
-  if (this->summation_mode_)
-    {
-      line   /= 2;
-      sample /= 2;
-    }
+  z *= common_term;
+  x *= common_term;	
 }
 
 MaRC::GeometricCorrection *

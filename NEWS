@@ -1,8 +1,16 @@
+9 February 2006 - MaRC 0.9.7ncn
+
+- Temporary fork until Ossama has time to integrate my changes.
+- Introduced supersampling verification.
+- Fixed crucial off-by-one-half-pixel error in projections.
+- Substantial internal rearrangements and cleanups, including fixes for
+  some non-user-visible installation and build bugs.
+
 11 November 2005 - MaRC 0.9.7
 
 - Fixed latitude/longitude visibility calculation so that it correctly
-takes into account an optical axis that is not in line with the
-sub-observation point.
+  takes into account an optical axis that is not in line with the
+  sub-observation point.
 
 9 November 2005 - MaRC 0.9.6
 

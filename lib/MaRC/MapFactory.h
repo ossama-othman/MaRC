@@ -75,7 +75,7 @@ namespace MaRC
      * @param maximum Maximum allowed value map, i.e. all data \< maximum.
      */
     virtual map_type * make_map (
-        const SourceImage & source,
+        SourceImage & source,
         unsigned int samples,
         unsigned int lines,
         double minimum = -std::numeric_limits<double>::max (),
@@ -115,7 +115,7 @@ namespace MaRC
      *
      * @return true if data was found at given latitude and longitude.
      */
-    bool plot (const SourceImage & source,
+    bool plot (SourceImage & source,
                double lat,
                double lon,
                double minimum,

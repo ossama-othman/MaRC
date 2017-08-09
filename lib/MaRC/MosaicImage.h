@@ -15,6 +15,7 @@
 
 #include <MaRC/SourceImage.h>
 #include <MaRC/PhotoImage.h>
+#include <MaRC/ValuePtr.h>
 
 #include <vector>
 
@@ -33,7 +34,7 @@ namespace MaRC
   {
   public:
 
-    typedef std::vector<PhotoImage> list_type;
+    typedef std::vector< MaRC::ValuePtr<PhotoImage> > list_type;
 
     /**
      * @enum AverageType
@@ -67,7 +68,10 @@ namespace MaRC
      */
     virtual bool read_data (const double & lat,
                             const double & lon,
-                            double & data) const;
+                            double & data);
+
+    /// Supersampling verification.
+    virtual void check_image_unread_mask (void) const;
 
   private:
 

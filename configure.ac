@@ -1,6 +1,7 @@
-dnl $Id: configure.ac,v 1.24 2005/11/12 07:51:27 othman Exp $
+dnl $Id: configure.ac,v 1.25 2005/11/16 23:39:18 othman Exp $
 
 dnl  Copyright  1996-1999, 2003, 2004  Ossama Othman
+dnl  Copyright  2005, 2006 Nathanael Nerode
 dnl
 dnl  All Rights Reserved
 dnl
@@ -25,13 +26,14 @@ dnl
 
 dnl @todo PACKAGE and VERSION should be static, not computed by the
 dnl       shell.  Or M4 should be used to compute if necessary.
-AC_INIT([MaRC],[0.9.7],[othman@users.sourceforge.edu],[marc])
+AC_INIT([MaRC],[0.9.7ncn],[neroden@fastmail.fm],[MaRC])
 
 
-AC_REVISION([$Id: configure.ac,v 1.24 2005/11/12 07:51:27 othman Exp $])
+AC_REVISION([$Id: configure.ac,v 1.25 2005/11/16 23:39:18 othman Exp $])
 
-AC_COPYRIGHT([MaRC is copyrighted by Ossama Othman 1996-1999, 2003, 2004
-all rights reserved.  You are free to use, modify, and distribute the
+AC_COPYRIGHT(
+[MaRC is copyright Ossama Othman 1996-1999, 2003, 2004, Nathanael Nerode
+2005, 2006.   You are free to use, modify, and distribute the
 MaRC source code and object code produced from the source, as long as
 you include this copyright statement along with code built using
 MaRC.
@@ -49,7 +51,7 @@ dnl Check what platform we are running on.
 AC_CANONICAL_TARGET([])
 
 dnl Initialize GNU Automake, and require Automake 1.8.5 or better.
-AM_INIT_AUTOMAKE([1.9.4])
+AM_INIT_AUTOMAKE([1.9.2])
 
 MARC_BIN_VERSION=AC_PACKAGE_VERSION
 AC_SUBST([MARC_BIN_VERSION])

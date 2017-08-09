@@ -13,14 +13,13 @@
 #ifndef MARC_OBLATE_SPHEROID_H
 #define MARC_OBLATE_SPHEROID_H
 
+#include <MaRC/Geometry.h>
 #include <MaRC/BodyData.h>
+#include <cmath>
 
 
 namespace MaRC
 {
-  template <unsigned int M, typename T> class Vector;
-  typedef Vector<3, double> DVector;
-
   /**
    * @class OblateSpheroid
    *
@@ -181,6 +180,82 @@ namespace MaRC
 
   };
 
-}
 
+  /************************************
+   Inline functions (very heavily used)
+   ************************************/
+
+  // These can be inlined into PhotoImage
+  // because PhotoImage contains an OblateSpheroid directly
+  // not a reference or pointer
+
+  inline double
+  MaRC::OblateSpheroid::centric_radius (const double & lat) const
+  {
+    const double er2     = this->eq_rad_ * this->eq_rad_;
+    const double pr2     = this->pol_rad_ * this->pol_rad_;
+    const double sin_lat = ::sin (lat);
+  
+    return
+      this->eq_rad_ * this->pol_rad_ /
+      ::sqrt ((er2 - pr2) * sin_lat * sin_lat + pr2);
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::centric_latitude (const double & lat) const
+  {
+    return
+      ::atan (this->pol_rad_ * this->pol_rad_ / (this->eq_rad_ * this->eq_rad_)
+              * ::tan (lat));
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::graphic_latitude (const double & lat) const
+  {
+    return
+      ::atan (this->eq_rad_ * this->eq_rad_ / (this->pol_rad_ * this->pol_rad_)
+              * ::tan (lat));
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::mu (const double & sub_observ_lat,
+                            const double & sub_observ_lon,
+                            const double & lat,
+                            const double & lon,
+                            const double & range) const
+  {
+    // Compute the local normal-observer angle - Emission Angle (Mu)
+  
+    const double latg = this->graphic_latitude (lat);
+    const double ellipse_radius = this->centric_radius (lat);
+  
+    return ((range * ::sin (sub_observ_lat) * ::sin (latg) - ellipse_radius *
+  	   ::cos (lat - latg)) + range * ::cos (sub_observ_lat) *
+  	  ::cos (latg) * ::cos (sub_observ_lon - lon)) /
+      // dot product (above)
+      // divided by the magnitude of vector
+      // from observer to point on body
+      ::sqrt (range * range + ellipse_radius * ellipse_radius -
+              2 * range * ellipse_radius *
+              (::sin (sub_observ_lat) * ::sin (lat) +
+               ::cos (sub_observ_lat) *
+               ::cos (lat) * ::cos (sub_observ_lon - lon)));
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::mu0 (const double & sub_solar_lat,
+                             const double & sub_solar_lon,
+                             const double & lat,
+                             const double & lon) const
+  {
+    // Compute the sun-local normal angle - Incidence Angle (Mu0)
+  
+    const double latg = this->graphic_latitude (lat);
+  
+    return ::sin (sub_solar_lat) * ::sin (latg) +
+      ::cos (sub_solar_lat) * ::cos (latg) * ::cos (sub_solar_lon - lon);
+    // The above equation assumes the sun to be an infinite distance away.
+  }
+
+} /* namespace MaRC */
 #endif  /* MARC_OBLATE_SPHEROID_H */

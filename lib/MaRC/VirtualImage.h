@@ -57,7 +57,7 @@ namespace MaRC
      */
     virtual bool read_data (const double & lat,
                             const double & lon,
-                            double & data) const;
+                            double & data);
 
   private:
 

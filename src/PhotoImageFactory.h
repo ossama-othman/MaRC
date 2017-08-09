@@ -13,6 +13,8 @@
 #ifndef MARC_PHOTO_IMAGE_FACTORY_H
 #define MARC_PHOTO_IMAGE_FACTORY_H
 
+#include "MaRC/config.h" // Crucial to pick up COVARIANT_RETURN_TYPES
+
 #include "ImageFactory.h"
 
 #include "MaRC/OblateSpheroid.h"
@@ -70,6 +72,9 @@ namespace MaRC
 
     /// Set the flat field image filename.
     void flat_field (const char * name);
+
+    /// Set supersampling verification.
+    void set_supersample_verify (bool supersample_verify);
 
     /// Set the nibbling values.
     void nibbling (unsigned int left,
@@ -246,6 +251,9 @@ namespace MaRC
     /// Line component of optical axis.
     double OA_l_;
     //@}
+
+    /// Verify supersampling?
+    bool supersample_verify_;
 
     /// Amount of pixels to ignore from left side of input image
     /// (photo).

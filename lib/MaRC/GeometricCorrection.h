@@ -25,6 +25,11 @@ namespace MaRC
    *
    * Concrete geometric correction classes must implement the interface
    * required by this abstract base class.
+   *
+   * Please note: An 'x' coordinate is a sample coordinate relative to
+   * the image optical axis; a 'z' coordinate is a line coordinate
+   * relative to the image optical axis with value increasing from bottom
+   * to top.
    */
   class GeometricCorrection
   {
@@ -37,20 +42,20 @@ namespace MaRC
     /**
      * Apply lens aberration correction.
      *
-     * @param line   Image-space line coordinate converted to object space.
-     * @param sample Image-space sample coordinate converted to object space.
+     * @param x   Image-space x coordinate converted to object space.
+     * @param z   Image-space z coordinate converted to object space.
      */
-    virtual void image_to_object (double & line, double & sample) = 0;
+    virtual void image_to_object (double & x, double & z) = 0;
 
     /// Convert from object space to image space.
     /**
      * Introduce lens aberration to determine actual image space pixel
      * values.
      *
-     * @param line   Object-space line coordinate converted to image space.
-     * @param sample Object-space sample coordinate converted to image space.
+     * @param x   Object-space x coordinate converted to image space.
+     * @param z   Object-space z coordinate converted to image space.
      */
-    virtual void object_to_image (double & line, double & sample) = 0;
+    virtual void object_to_image (double & x, double & z) = 0;
 
 
     /// Clone operation that polymorphically copies the concrete

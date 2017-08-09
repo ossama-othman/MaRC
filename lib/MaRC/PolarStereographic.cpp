@@ -63,7 +63,7 @@ MaRC::PolarStereographic<T>::projection_name (void) const
 
 template <typename T>
 typename MaRC::PolarStereographic<T>::map_type *
-MaRC::PolarStereographic<T>::make_map (SourceImage const & source,
+MaRC::PolarStereographic<T>::make_map (SourceImage & source,
                                        unsigned int samples,
                                        unsigned int lines,
                                        double minimum,

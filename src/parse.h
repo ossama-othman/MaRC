@@ -1,7 +1,7 @@
-/* A Bison parser, made by GNU Bison 2.0.  */
+/* A Bison parser, made by GNU Bison 1.875c.  */
 
 /* Skeleton parser for Yacc-like parsing with Bison,
-   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -121,29 +121,30 @@
      GEOM_CORRECT = 347,
      _EMI_ANG_LIMIT = 348,
      TERMINATOR = 349,
-     SUB_OBSERV_LAT = 350,
-     SUB_OBSERV_LON = 351,
-     POSITION_ANGLE = 352,
-     SUB_SOLAR_LAT = 353,
-     SUB_SOLAR_LON = 354,
-     RANGE = 355,
-     _REMOVE_SKY = 356,
-     FOCAL_LENGTH = 357,
-     PIXEL_SCALE = 358,
-     ARCSEC_PER_PIX = 359,
-     KM_PER_PIXEL = 360,
-     BYTE_DATA = 361,
-     SHORT_DATA = 362,
-     LONG_DATA = 363,
-     FLOAT_DATA = 364,
-     DOUBLE_DATA = 365,
-     CW = 366,
-     CCW = 367,
-     YES = 368,
-     NO = 369,
-     UNMATCHED = 370,
-     AU = 371,
-     KM = 372
+     SUPERSAMPLE_VERIFY = 350,
+     SUB_OBSERV_LAT = 351,
+     SUB_OBSERV_LON = 352,
+     POSITION_ANGLE = 353,
+     SUB_SOLAR_LAT = 354,
+     SUB_SOLAR_LON = 355,
+     RANGE = 356,
+     _REMOVE_SKY = 357,
+     FOCAL_LENGTH = 358,
+     PIXEL_SCALE = 359,
+     ARCSEC_PER_PIX = 360,
+     KM_PER_PIXEL = 361,
+     BYTE_DATA = 362,
+     SHORT_DATA = 363,
+     LONG_DATA = 364,
+     FLOAT_DATA = 365,
+     DOUBLE_DATA = 366,
+     CW = 367,
+     CCW = 368,
+     YES = 369,
+     NO = 370,
+     UNMATCHED = 371,
+     AU = 372,
+     KM = 373
    };
 #endif
 #define NUM 258
@@ -238,35 +239,36 @@
 #define GEOM_CORRECT 347
 #define _EMI_ANG_LIMIT 348
 #define TERMINATOR 349
-#define SUB_OBSERV_LAT 350
-#define SUB_OBSERV_LON 351
-#define POSITION_ANGLE 352
-#define SUB_SOLAR_LAT 353
-#define SUB_SOLAR_LON 354
-#define RANGE 355
-#define _REMOVE_SKY 356
-#define FOCAL_LENGTH 357
-#define PIXEL_SCALE 358
-#define ARCSEC_PER_PIX 359
-#define KM_PER_PIXEL 360
-#define BYTE_DATA 361
-#define SHORT_DATA 362
-#define LONG_DATA 363
-#define FLOAT_DATA 364
-#define DOUBLE_DATA 365
-#define CW 366
-#define CCW 367
-#define YES 368
-#define NO 369
-#define UNMATCHED 370
-#define AU 371
-#define KM 372
+#define SUPERSAMPLE_VERIFY 350
+#define SUB_OBSERV_LAT 351
+#define SUB_OBSERV_LON 352
+#define POSITION_ANGLE 353
+#define SUB_SOLAR_LAT 354
+#define SUB_SOLAR_LON 355
+#define RANGE 356
+#define _REMOVE_SKY 357
+#define FOCAL_LENGTH 358
+#define PIXEL_SCALE 359
+#define ARCSEC_PER_PIX 360
+#define KM_PER_PIXEL 361
+#define BYTE_DATA 362
+#define SHORT_DATA 363
+#define LONG_DATA 364
+#define FLOAT_DATA 365
+#define DOUBLE_DATA 366
+#define CW 367
+#define CCW 368
+#define YES 369
+#define NO 370
+#define UNMATCHED 371
+#define AU 372
+#define KM 373
 
 
 
 
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
-#line 182 "parse.yy"
+#line 185 "parse.yy"
 typedef union YYSTYPE {
   char * sval;
   double val;        // For returning numbers
@@ -276,8 +278,8 @@ typedef union YYSTYPE {
   MaRC::SubSolar sub_solar_data;   // Sub-solar point.
   MaRC::Radii radii_data;          // Oblate spheroid radii.
 } YYSTYPE;
-/* Line 1318 of yacc.c.  */
-#line 281 "parse.h"
+/* Line 1275 of yacc.c.  */
+#line 283 "parse.h"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

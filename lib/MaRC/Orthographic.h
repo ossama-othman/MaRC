@@ -74,7 +74,7 @@ namespace MaRC
     //@{
     virtual MapFactory<T> * clone (void) const;
     virtual const char * projection_name (void) const;
-    virtual map_type * make_map (const SourceImage & source,
+    virtual map_type * make_map (SourceImage & source,
                                  unsigned int samples,
                                  unsigned int lines,
                                  double minimum,

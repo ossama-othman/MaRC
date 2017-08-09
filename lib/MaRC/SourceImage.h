@@ -43,7 +43,14 @@ namespace MaRC
      */
     virtual bool read_data (const double & lat,
                             const double & lon,
-                            double & data) const = 0;
+                            double & data) = 0;
+
+    /**
+     * Supersampling verification.  Most image types (for instance,
+     * virtual images) need to do nothing, so we provide that.
+     */
+    virtual void check_image_unread_mask(void) const {
+    }
 
   };
 

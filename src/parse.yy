@@ -107,6 +107,9 @@ Requires GNU Bison 1.35 or greater
 
   bool north_pole = true;
 
+  // Verify supersampling, or not?
+  bool supersample_verify = false;
+
   // Current line number in stream.
   //int lineno = 0;
 
@@ -228,6 +231,7 @@ Requires GNU Bison 1.35 or greater
 %token NIBBLE NIBBLE_LEFT NIBBLE_RIGHT NIBBLE_TOP NIBBLE_BOTTOM
 %token INVERT HORIZONTAL VERTICAL BOTH _INTERPOLATE SAMPLE_CENTER LINE_CENTER
 %token FLAT_FIELD MINNAERT AUTO TABLE GEOM_CORRECT _EMI_ANG_LIMIT TERMINATOR
+%token SUPERSAMPLE_VERIFY
 %token SUB_OBSERV_LAT SUB_OBSERV_LON POSITION_ANGLE
 %token SUB_SOLAR_LAT SUB_SOLAR_LON RANGE _REMOVE_SKY
 %token FOCAL_LENGTH PIXEL_SCALE ARCSEC_PER_PIX KM_PER_PIXEL
@@ -247,7 +251,7 @@ map:    map_parse
 ;
 
 user_file_parse:
-        grid_intervals plane_data_range nibbling {
+        grid_intervals plane_data_range supersample_verify nibbling {
           // Reset defaults to those chosen by the user.  If none were
           // chosen by the user, the values will remain unchanged.
 
@@ -259,6 +263,8 @@ user_file_parse:
 
           if (!isnan (maximum))
               pp.maximum = maximum;
+
+          pp.supersample_verify = supersample_verify;
 
           pp.nibble_left   = nibble_left_val;
           pp.nibble_right  = nibble_right_val;
@@ -821,6 +827,7 @@ image:
 
 image_setup:
         image_initialize
+        supersample_verify
         nibbling
         inversion
         image_interpolate
@@ -837,6 +844,9 @@ image_setup:
         sub_solar
         range
         image_geometry {
+          photo_factory->set_supersample_verify (supersample_verify);
+          supersample_verify = pp.supersample_verify;
+
           photo_factory->nibbling (nibble_left_val,
                                    nibble_right_val,
                                    nibble_top_val,
@@ -885,10 +895,10 @@ image_setup:
               lon_at_center = MaRC::NaN;  // Reset to "bad" value.
             }
 
-          photo_factory->sub_observ (($13).lat, ($13).lon);
-          photo_factory->position_angle ($14);
-          photo_factory->sub_solar (($15).lat, ($15).lon);
-          photo_factory->range ($16);
+          photo_factory->sub_observ (($14).lat, ($14).lon);
+          photo_factory->position_angle ($15);
+          photo_factory->sub_solar (($16).lat, ($16).lon);
+          photo_factory->range ($17);
 
           photo_factories.push_back (*photo_factory);
         }
@@ -903,6 +913,13 @@ image_initialize:
                                            *oblate_spheroid));
             free ($3);
         }
+;
+
+supersample_verify:
+        | SUPERSAMPLE_VERIFY ':' YES {
+              supersample_verify = true; }
+        | SUPERSAMPLE_VERIFY ':' NO {
+              supersample_verify = false; }
 ;
 
 nibbling:
