@@ -287,6 +287,10 @@ template <typename T, std::size_t M>
 bool operator==(MaRC::Vector<T, M> const & lhs,
                 MaRC::Vector<T, M> const & rhs)
 {
+    /**
+     * @bug This implementation only works reliably when the element
+     *      type @c T is an integer, not floating point.
+     */
     return std::equal(lhs.begin(), lhs.end(),
                       rhs.begin(), rhs.end());
 }
@@ -303,7 +307,7 @@ bool operator!=(MaRC::Vector<T, M> const & lhs,
 
 /// Stream insertion operator
 template <typename T, std::size_t M>
-std::ostream & operator<< (std::ostream & s, MaRC::Vector<T, M> const & v)
+std::ostream & operator<<(std::ostream & s, MaRC::Vector<T, M> const & v)
 {
     s << "(" << M << ")\n";
 

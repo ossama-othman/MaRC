@@ -40,8 +40,10 @@ namespace MaRC
     /**
      * @brief Compare two floating numbers for equality.
      *
-     * Determine if two floating types are almost equal using the ULP
-     * based comparison approach.
+     * Floating point values cannot be reliably compared for equaility
+     * using the typical @c operator==().  Determine if two floating
+     * point numbers are almost equal using the ULP based comparison
+     * approach.
      *
      * @note This function generally isn't suitable for comparison to
      *       zero.  For that it is probably better to compare against
@@ -49,7 +51,15 @@ namespace MaRC
      *
      * @param[in] x   First  of two floating operands being compared.
      * @param[in] y   Second of two floating operands being compared.
-     * @param[in] ulp Units in the last place.
+     * @param[in] ulp Units in the last place.  A measure of the
+     *                desired precision of "equality".  The @a ulp
+     *                should be chosen according to the context in
+     *                which this function is called.  One @a ulp value
+     *                may not be suitable for all cases.  This
+     *                argument should be greater than zero.
+     *
+     * @return @c true @a x and @a y are essentially equal.  @c false
+     *         otherwise.
      *
      * @see The @c std::numeric_limits<>::epsilon() discussion on
      *      cppreference.com for the original implementation of this
@@ -75,6 +85,46 @@ namespace MaRC
                             * std::abs(x+y) * ulp
             // Unless the result is subnormal
             || std::abs(x-y) < std::numeric_limits<T>::min();
+    }
+
+    /**
+     * @brief Check if floating number is almost zero.
+     *
+     * Determine if a floating point number is essentially zero by
+     * comparing it against a small multiple of @c epsilon
+     * (e.g. @c FLT_EPSILON for @c float and DBL_EPSILON for @c double).
+     *
+     * The relative epsilon approach in @c almost_equal() is not
+     * suitable for comparing numbers that are close to zero due
+     * catastophic cancellation.  This approach compares against
+     * an absolute epsilon instead.
+     *
+     * @param[in] x Number being compared against zero.
+     * @param[in] n Multiplication factor of the @c epsilon value to
+     *              be used when determining if @a x can be considered
+     *              to be zero.  For example, to treat a number @a x
+     *              as zero when it is within 2 epsilons, pass in
+     *              @c 2 for the argument @a n.  This argument
+     *              basically affects the precision of the zero
+     *              check.  It should be greater than zero.
+     *
+     * @return @c true @a x is essentially zero.  @c false otherwise.
+
+     * @see The blog post "Comparing Floating Point Numbers, 2012
+     *      Edition" for an additional discussion on floating point
+     *      comparison:
+     *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+     */
+    template<typename T>
+    typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+    almost_zero(T x, int n)
+    {
+        /**
+         * @todo Confirm that this is a suitable approach.  Should the
+         *       argument @a x also be used when calculating the
+         *       multiple of epsilon, for example?
+         */
+        return std::abs(x) < std::numeric_limits<T>::epsilon() * n;
     }
 
     /**

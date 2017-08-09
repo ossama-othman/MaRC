@@ -89,18 +89,6 @@ namespace MaRC
 
     private:
 
-        /// Should the given @a data value be considered zero?
-        /**
-         * Since a zero floating point value is not always represented
-         * as exactly zero (e.g. as the result of a computation),
-         * interpret values less than some threshold to be zero.
-         *
-         * @return @c true if @a data is considered to be zero.
-         */
-        static bool is_zero(double data);
-
-    private:
-
         /// Set of images
         list_type const images_;
 
