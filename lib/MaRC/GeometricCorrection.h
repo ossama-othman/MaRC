@@ -35,8 +35,13 @@ namespace MaRC
      * @brief Abstract base class for all geometric correction
      *        strategies.
      *
-     * Concrete geometric correction classes must implement the interface
-     * required by this abstract base class.
+     * Concrete geometric correction classes must implement the
+     * interface required by this abstract base class.
+     *
+     * Please note: An 'x' coordinate is a sample coordinate relative
+     * to the image optical axis; a 'z' coordinate is a line
+     * coordinate relative to the image optical axis with value
+     * increasing from bottom to top.
      */
     class GeometricCorrection
     {
@@ -56,24 +61,24 @@ namespace MaRC
         /**
          * Apply lens aberration correction.
          *
-         * @param[in,out] line   Image-space line coordinate converted
-         *                       to object space.
-         * @param[in,out] sample Image-space sample coordinate
-         *                       converted to object space.
+         * @param[in,out] z Image-space line coordinate converted to
+         *                  object space.
+         * @param[in,out] x Image-space sample coordinate converted to
+         *                  object space.
          */
-        virtual void image_to_object(double & line, double & sample) = 0;
+        virtual void image_to_object(double & z, double & x) = 0;
 
         /// Convert from object space to image space.
         /**
          * Introduce lens aberration to determine actual image space
          * pixel values.
          *
-         * @param[in,out] line   Object-space line coordinate
-         *                       converted to image space.
-         * @param[in,out] sample Object-space sample coordinate
-         *                       converted to image space.
+         * @param[in,out] z Object-space line coordinate converted to
+         *                  image space.
+         * @param[in,out] x Object-space sample coordinate converted
+         *                  to image space.
          */
-        virtual void object_to_image(double & line, double & sample) = 0;
+        virtual void object_to_image(double & z, double & x) = 0;
     };
 
 } // End MaRC namespace

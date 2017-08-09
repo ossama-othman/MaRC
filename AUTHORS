@@ -12,3 +12,6 @@ Brian Carcich, also at CRSR, helped me find the "in my face" bugs that
 I couldn't see since I stared at those code fragements for so long.
 He also helped me better understand some of the geometry which MaRC
 relies heavily on.
+
+Supersampling verification code and miscellanous cleanups by Nathanael 
+Nerode <neroden@gcc.gnu.org>.

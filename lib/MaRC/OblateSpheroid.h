@@ -25,8 +25,11 @@
 #ifndef MARC_OBLATE_SPHEROID_H
 #define MARC_OBLATE_SPHEROID_H
 
+#include <MaRC/Geometry.h>
 #include <MaRC/BodyData.h>
 #include <MaRC/Vector.h>
+
+#include <cmath>
 
 
 namespace MaRC
@@ -206,7 +209,132 @@ namespace MaRC
 
   };
 
-}
+
+  /************************************
+   Inline functions (very heavily used)
+   ************************************/
+
+  // These can be inlined into PhotoImage
+  // because PhotoImage contains an OblateSpheroid directly
+  // not a reference or pointer
+
+  inline double
+  MaRC::OblateSpheroid::centric_radius (const double & lat) const
+  {
+    /*
+      Given a bodycentric latitude and longitude for a point (x, y, z)
+      on the surface of a spheroid:
+
+          x = r * cos(lat) * cos(lon)
+          y = r * cos(lat) * sin(lon)
+          z = r * sin(lat)
+
+      Assume longitude zero is along the observer optical axis, we
+      have:
+
+          x = r * cos(lat)
+          y = 0
+          z = r * sin(lat)
+
+      The Cartesian equation for an oblate spheroid is:
+
+           2    2    2
+          x  + y    z
+          ------- + -- = 1
+             2       2
+            a       c
+
+      We end up with:
+
+                       2                  2
+         (r * cos(lat))  +  (r * sin(lat))
+         ---------------    --------------- = 1
+                 2                   2
+                a                   c
+
+      and:
+
+                            1
+        r = -----------------------------------
+                             2               2
+            sqrt((cos(lat)/a)  + (sin(lat)/c) )
+
+    */
+    return 1 / std::hypot(std::cos(lat) / this->eq_rad_,
+                          std::sin(lat) / this->pol_rad_);
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::centric_latitude (const double & lat) const
+  {
+    /*
+                                  2
+                    (polar radius)
+      tan(lat) = -------------------- * tan(latg)
+                                    2
+                 (equatorial radius)
+    */
+    return
+        std::atan(std::pow(this->pol_rad_ / this->eq_rad_, 2)
+                  * std::tan(latg));
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::graphic_latitude (const double & lat) const
+  {
+    /*
+                                     2
+                  (equatorial radius)
+      tan(latg) = -------------------- * tan(lat)
+                                   2
+                     (polar radius)
+    */
+    return
+        std::atan(std::pow(this->eq_rad_ / this->pol_rad_, 2)
+                  * std::tan(lat));
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::mu (const double & sub_observ_lat,
+                            const double & sub_observ_lon,
+                            const double & lat,
+                            const double & lon,
+                            const double & range) const
+  {
+    // Compute the local normal-observer angle - Emission Angle (Mu)
+  
+    const double latg = this->graphic_latitude (lat);
+    const double ellipse_radius = this->centric_radius (lat);
+  
+    return ((range * ::sin (sub_observ_lat) * ::sin (latg) - ellipse_radius *
+  	   ::cos (lat - latg)) + range * ::cos (sub_observ_lat) *
+  	  ::cos (latg) * ::cos (sub_observ_lon - lon)) /
+      // dot product (above)
+      // divided by the magnitude of vector
+      // from observer to point on body
+      ::sqrt (range * range + ellipse_radius * ellipse_radius -
+              2 * range * ellipse_radius *
+              (::sin (sub_observ_lat) * ::sin (lat) +
+               ::cos (sub_observ_lat) *
+               ::cos (lat) * ::cos (sub_observ_lon - lon)));
+  }
+  
+  inline double
+  MaRC::OblateSpheroid::mu0 (const double & sub_solar_lat,
+                             const double & sub_solar_lon,
+                             const double & lat,
+                             const double & lon) const
+  {
+    // Compute the sun-local normal angle - Incidence Angle (Mu0)
+  
+    const double latg = this->graphic_latitude (lat);
+  
+    return ::sin (sub_solar_lat) * ::sin (latg) +
+      ::cos (sub_solar_lat) * ::cos (latg) * ::cos (sub_solar_lon - lon);
+    // The above equation assumes the sun to be an infinite distance away.
+  }
+
+} /* namespace MaRC */
 
 
 #endif  /* MARC_OBLATE_SPHEROID_H */

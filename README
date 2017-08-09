@@ -2,20 +2,23 @@ MaRC - Map Reprojections and Conversions
 
 Requirements
 ------------
-C compiler   - The C compiler should support the C99 standard or
-               better.
-
 C++ compiler - The C++ compiler should support the C++14 standard or
                better.
-
-GNU Flex >= 2.54a
-
-GNU Bison >= 3.0.4
 
 CFITSIO Library - Often available as prepackaged binaries on various
                   platforms.  Additional details are available on the
                   CFITSIO homepage at:
                           https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html
+
+The following are only required if building MaRC in git a repository
+clone or if 'make maintainer-clean' was executed on the command line:
+
+GNU Autoconf
+GNU Automake
+GNU Libtool
+GNU Texinfo
+GNU Flex
+GNU Bison
 
 Quick Start
 -----------

@@ -2,6 +2,7 @@
  * @file marc.cpp
  *
  * Copyright (C) 1996-1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 2005, 2006  Nathanael Nerode
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,18 +44,17 @@ main(int argc, char *argv[])
         << "        MaRC Binary  Version " PACKAGE_VERSION  << std::endl
         << "        MaRC Library Version " << MaRC::library_version()
         << std::endl << std::endl
-        << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman"
-        << std::endl
-        << "All Rights Reserved" << std::endl << std::endl
-        << "MaRC comes with ABSOLUTELY NO WARRANTY." << std::endl
+        << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman\n"
+        << "Copyright (C) 2005, 2006  Nathanael Nerode\n"
+        << "All Rights Reserved\n\n"
+        << "MaRC comes with ABSOLUTELY NO WARRANTY.\n" << std::endl
         << "This is free software, and you are welcome to redistribute it"
-        << std::endl
-        << "under certain conditions." << std::endl << std::endl;
+        << "\n"
+        << "under certain conditions.\n\n";
 
     if (argc < 2) {
         std::cerr << std::endl
-                  << "USAGE:   marc inputfile1 [inputfile2 ...]"
-                  << std::endl << std::endl;
+                  << "USAGE:   marc inputfile1 [inputfile2 ...]\n\n";
 
         return 1;  // Failure
     }

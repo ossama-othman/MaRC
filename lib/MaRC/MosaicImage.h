@@ -87,6 +87,9 @@ namespace MaRC
                                double lon,
                                double & data) const;
 
+        /// Supersampling verification.
+        virtual void check_image_unread_mask() const;
+
     private:
 
         /// Set of images

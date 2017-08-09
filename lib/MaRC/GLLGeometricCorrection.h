@@ -68,8 +68,8 @@ namespace MaRC
          * base class.
          */
         //@{
-        virtual void image_to_object(double & line, double & sample);
-        virtual void object_to_image(double & line, double & sample);
+        virtual void image_to_object(double & z, double & x);
+        virtual void object_to_image(double & z, double & x);
         //@}
 
         /// Return current summation mode

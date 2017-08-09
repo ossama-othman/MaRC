@@ -26,9 +26,6 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/PhotoImage.h"  /* Need complete type for covariant
-                                 return type in make() method. */
-
 #include <vector>
 #include <string>
 #include <cstddef>
@@ -72,6 +69,9 @@ namespace MaRC
         /// Set the flat field image filename.
         void flat_field(char const * name);
 
+        /// Set supersampling verification.
+        void supersample_verify(bool verify);
+        
         /// Set the nibbling values.
         void nibbling(std::size_t left,
                       std::size_t right,
@@ -266,6 +266,9 @@ namespace MaRC
         /// Line component of optical axis.
         double OA_l_;
         //@}
+
+        /// Verify supersampling?
+        bool supersample_verify_;
 
         /// Amount of pixels to ignore from left side of input image
         /// (photo).

@@ -159,6 +159,9 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
 
         LONGLONG const nelements = map.size();
 
+        // Supersamping verification.
+        image->check_image_unread_mask();
+
         /**
          * @todo Check return value!
          */

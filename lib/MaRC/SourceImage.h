@@ -1,8 +1,9 @@
-// -*- C++ -*-
+0// -*- C++ -*-
 /**
  * @file SourceImage.h
  *
  * Copyright (C) 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2005, 2006  Nathanael Nerode
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +21,7 @@
  * 02110-1301  USA
  *
  * @author Ossama Othman
+ * @author Nathanael Nerode (super sampling code)
  */
 //==========================================================================
 
@@ -94,6 +96,14 @@ namespace MaRC
                                double & data,
                                std::size_t & weight,
                                bool scan) const;
+
+        /**
+	 * Supersampling verification.  Most image types (for
+	 * instance, virtual images) need to do nothing, so we provide
+	 * that.
+	 */
+        virtual void check_image_unread_mask() const {}
+
     };
 
 } // End MaRC namespace

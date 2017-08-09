@@ -223,7 +223,7 @@ int yycolumn = 1;
 "MINNAERT"      { return MINNAERT; }
 "AUTO"          { return AUTO; }
 "TABLE"         { return TABLE; }
-"GEOM_CORRECT"  { BEGIN(keyword_token); return GEOM_CORRECT; }
+"SUPERSAMPLE_VERIFY" { BEGIN(keyword_token); return SUPERSAMPLE_VERIFY; }
 "EMI_ANG_LIMIT" { return _EMI_ANG_LIMIT; }
 "TERMINATOR"    { BEGIN(keyword_token); return TERMINATOR; }
 "SUB_OBSERV_LAT"        { return SUB_OBSERV_LAT; }

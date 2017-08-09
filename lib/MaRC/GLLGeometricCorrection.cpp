@@ -2,6 +2,7 @@
  * @file GLLGeometricCorrection.cpp
  *
  * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2005-2006  Nathanael Nerode
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +20,7 @@
  * 02110-1301  USA
  *
  * @author Ossama Othman
+ * @author Nathanael Nerode
  */
 #include <MaRC/GLLGeometricCorrection.h>
 
@@ -56,24 +58,17 @@ MaRC::GLLGeometricCorrection::GLLGeometricCorrection(std::size_t samples)
 }
 
 void
-MaRC::GLLGeometricCorrection::image_to_object(double & line,
-                                              double & sample)
+MaRC::GLLGeometricCorrection::image_to_object(double & z, double & x)
 {
     // -------------- Image Space to Object Space  --------------------
 
-    double x, y;  //  Optical axis corrected location
-
-    if (this->summation_mode_) {
-        // Convert to full-frame coordinates.
-        x = sample * 2 - MaRC::GLL::OA_SAMPLE;
-        y = line   * 2 - MaRC::GLL::OA_LINE;
-    } else {
-        x = sample - MaRC::GLL::OA_SAMPLE;
-        y = line   - MaRC::GLL::OA_LINE;
-    }
-
     // Image-space radius from optical axis
     double const is_rad = std::hypot(x, y);
+
+    // must always be radius in pixels in *full-frame* mode
+    if (this->summation_mode_) {
+        is_rad *= 2;
+    }
 
     // if (is_rad == 0) then no correction is necessary.
 
@@ -89,41 +84,25 @@ MaRC::GLLGeometricCorrection::image_to_object(double & line,
         // Object-space radius from optical axis
         double const os_rad = std::cbrt(A_3) + std::cbrt(B_3);
 
-        line   = (os_rad * y) / is_rad + MaRC::GLL::OA_LINE;
-        sample = (os_rad * x) / is_rad + MaRC::GLL::OA_SAMPLE;
-
-        if (this->summation_mode_) {
-            line   /= 2;
-            sample /= 2;
-        }
+      z = (os_rad * z) / is_rad;
+      x = (os_rad * x) / is_rad;
     }
 }
 
 void
-MaRC::GLLGeometricCorrection::object_to_image(double & line,
-                                              double & sample)
+MaRC::GLLGeometricCorrection::object_to_image(double & z, double & x)
 {
     // -------------- Object Space to Image Space  --------------------
 
-    double x, y;  //  Optical axis corrected location
-
+    double distance_squared = x * x + z * z;
     if (this->summation_mode_) {
-        // Convert to full-frame coordinates.
-        x = sample * 2 - MaRC::GLL::OA_SAMPLE;
-        y = line   * 2 - MaRC::GLL::OA_LINE;
-    } else {
-        x = sample - MaRC::GLL::OA_SAMPLE;
-        y = line   - MaRC::GLL::OA_LINE;
+        // Distance must be in *full-frame* coordinates
+        distance_squared *= 4;
     }
 
     double const common_term =
-        1.0 + (MaRC::GLL::DISTORTION * (x * x + y * y));
+        1.0 + (MaRC::GLL::DISTORTION * distance_squared);
 
-    line   = y * common_term + MaRC::GLL::OA_LINE;
-    sample = x * common_term + MaRC::GLL::OA_SAMPLE;
-
-    if (this->summation_mode_) {
-        line   /= 2;
-        sample /= 2;
-    }
+    z *= common_term;
+    x *= common_term;
 }

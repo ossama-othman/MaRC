@@ -62,6 +62,10 @@
   `make doxygen-doc' from the top-level MaRC source directory to
   generate MaRC library and program source code documentation.
   Generated documentation will reside in the doc/doxygen directory.
+- From Nathanael Nerode - 9 February 2006
+  - Introduced supersampling verification.
+  - Fixed crucial off-by-one-half-pixel error in projections.
+  - Substantial internal rearrangements and cleanups.
 
 24 July 2017 - MaRC 0.9.8
 

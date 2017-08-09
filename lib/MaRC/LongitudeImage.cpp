@@ -2,6 +2,7 @@
  * @file LongitudeImage.cpp
  *
  * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2005, 2006, 2017  Nathanael Nerode
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,6 +20,7 @@
  * 02110-1301  USA
  *
  * @author Ossama Othman
+ * @author Nathanael Nerode
  */
 
 #include "LongitudeImage.h"

@@ -46,6 +46,7 @@ libMaRC_la_SOURCES = \
   LatitudeImage.cpp \
   LongitudeImage.cpp \
   PhotoImage.cpp \
+  PhotoImageParameters.cpp \
   MosaicImage.cpp \
   \
   Version.cpp
@@ -70,6 +71,7 @@ pkginclude_HEADERS = \
   LatitudeImage.h \
   LongitudeImage.h \
   PhotoImage.h \
+  PhotoImageParameters.h \
   MosaicImage.h \
   \
   GeometricCorrection.h \

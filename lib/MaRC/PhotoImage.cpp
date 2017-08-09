@@ -117,6 +117,36 @@ MaRC::PhotoImage::~PhotoImage (void)
 {
 }
 
+// Supersampling verification routine.
+// Currently just messages to stdout if there's a problem.
+void
+MaRC::PhotoImage::check_image_unread_mask() const
+{
+    if (!flags::check(this->flags_, SS_VERIFY)) {
+        // Under these circumstances, the data wasn't gathered;
+        // bail out or risk a segfault.
+        return;
+    }
+
+    // image_unread_mask was initialized to sky_mask;
+    // meaning that the sky was all at 0, and the body all at 1.
+    // Then, any body pixel which was read was turned to a 0.
+    // So if there are unread pixels left, there is a problem!
+
+    const bool* const mask = this->image_unread_mask_.get();
+    const bool* const end = mask + this->samples_ * this->lines_;
+
+    for (const bool* i = mask; i < end; i++) {
+        if (*i) {
+            std::cerr
+                << "ERROR: Failure to supersample in " << this->filename_
+                << std::endl
+                << "starting at pixel " << (i - mask) << std::endl;
+            return;
+        }
+    }
+}
+
 bool
 MaRC::PhotoImage::is_visible(double lat, double lon) const
 {
@@ -1191,6 +1221,16 @@ MaRC::PhotoImage::read_data(double lat,
     std::size_t const k = static_cast<std::size_t>(std::floor(z));
     std::size_t const index = k * this->samples_ + i;
 
+    // OK, we decided to get the pixel (i,k).  For verification that
+    // we're oversampling, we register in a bitmap that we read that
+    // pixel.  (For this sort of verification, we don't care if we
+    // decide to skip the pixel for some later reason.)
+    if (flags::check(this->flags_, SS_VERIFY)) {
+        if (i < this->samples_ && k < this->lines_) {
+            this->image_unread_mask_[index] = false;
+        }
+    }
+
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
     // CHECK ME!
@@ -1309,7 +1349,7 @@ MaRC::PhotoImage::read_data(double lat,
     return true;  // Success
 }
 
-bool
+void
 MaRC::PhotoImage::latlon2pix(double lat,
                              double lon,
                              double & x,
@@ -1358,24 +1398,15 @@ MaRC::PhotoImage::latlon2pix(double lat,
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
 
+    // Convert from object space to image space.
+    this->geometric_correction_->object_to_image (z, x);
+
     x += this->OA_s_;
     z = this->OA_l_ - z; // Assumes line numbers increase top to bottom.
 
     //std::cout << "* x = " << x << "\tz = " << z << '\n';
 
-    // Convert from object space to image space.
-    this->geometric_correction_->object_to_image(z, x);
-
     // x and z are both positive if the point at the given latitude
     // and longitude is in the image.
     return x >= 0 && z >= 0;
-}
-
-void
-MaRC::PhotoImage::use_terminator(bool u)
-{
-    if (u)
-        flags::set(this->flags_, USE_TERMINATOR);
-    else
-        flags::unset(this->flags_, USE_TERMINATOR);
 }

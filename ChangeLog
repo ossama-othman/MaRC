@@ -6,6 +6,112 @@ Mon Jul 24 22:07:36 2017  Ossama Othman  <othman@users.sourceforge.net>
 	  (https://github.com/ossama-othman/MaRC or
 	  https://sourceforge.net/projects/marc/) for specific change
 	  details.
+	* Note that Nathanael's changes below were not released in 0.9.8
+	  but will be in 0.9.9.
+
+Thu Feb  9 14:22:52 EST 2006  Nathanael Nerode  <neroden@fastmail.fm>
+
+	These changes span many files.
+
+	Miscellaneous changes:
+	* Make a const variant of the convenience operator in Image.h,
+	and use it.
+	* Change interface to GeometricCorrection to eliminate
+	dependencies on the location of the optical axis in the photo, and on
+	the direction in which line numbers increase.
+	* Fix the off-by-one-half error in PhotoImage.cc (pixel coordinates)
+	* Install headers in the correct place.
+	* Fix dreadful bug where covariant return types weren't being used.
+	* Make OblateSpheroid use Geometry.h rather than being stupid.
+	* Put the most heavily used routines from OblateSpheroid into
+	the header so that they can be properly inlined.
+
+	Interface changes preparatory to supersampling:
+	* Convert PhotoImage's constructor to the named parameter idiom,
+	introducing PhotoImageParameters.cc and PhotoImageParameters.h.
+	This allows most of the data members of PhotoImage to be made
+	'const'.
+	* Convert all the 'parameter setting' routines to throw rather than
+	returning values (since, after all, the values are ignored by the
+	caller).
+	* Patch up PhotoImage and PhotoImageParameters so that the later
+	auto-finalizes during the initialization of the former.
+	* Put all the trivial setter functions inline into the header of
+	PhotoImageParameters.h for speed.
+	* Eliminate OA_SET in favor of a clean default value.
+	* Remove arcsec_per_pixel from PhotoImage.
+	* Switch the type for the list of images in the MosaicImage from
+	std::vector<PhotoImage> to std::vector< ValuePtr<PhotoImage> >;
+	also, eliminate the use of 'const' PhotoImage and MosaicImage
+	objects.
+	* Redeclare read_data to be non-const.  This is really rather icky, but
+	is strictly necessary for the supersampling verification
+	implementation; and now that all the data *inside* a PhotoImage
+	is const, this should not be nearly so bad as it would be otherwise.
+	* Push filename through into PhotoImage.
+
+	Supersampling changes proper:
+	* Introduce
+	SUPERSAMPLE_VERIFY: YES
+	SUPERSAMPLE_VERIFY: NO
+	options, which can be used immediately before nibbling options
+	(in either location).  Push this information through all the way
+	to PhotoImage.
+	* Rearrange sky removal checks to check an actual flag.
+	* Rearrange sky_mask_ generation code to generate it whenever
+	doing supersample verification.
+	* Introduce image_unread_mask_; initialize it from sky_mask_;
+	and unset bits in it as read_data runs.  Introduce an
+	routine to check its value.
+	* Actually cause supersample verification to be used, by
+	adding check_image_unread_mask to SourceImage, implementing
+	it in MosaicImage, and calling it in MapCommand_T.
+	* Add supersample tests.
+
+	Projection algorithm changes:
+	* Implement the new algorithm.  Tested on many sets of data;
+	matches the old algorithm, but is faster, simpler, and
+	mathematically sound.
+
+Wed Nov 16 16:11:12 2005  Ossama Othman  <ossama@dre.vanderbilt.edu>
+
+	* lib/MaRC/LongitudeImage.cc (read_data_i):
+
+	  Force longitudes to be in 360 degree range.
+
+Wed Nov 16 15:37:44 2005  Ossama Othman  <ossama@dre.vanderbilt.edu>
+
+	* configure.ac (AC_INIT):
+
+	  Corrected maintainer e-mail address.  "sourceforge.net" not
+	  "sourceforge.edu".
+
+Mon Nov 14 00:46:36 2005  Ossama Othman  <ossama@dre.vanderbilt.edu>
+
+	* lib/MaRC/PhotoImage.cc (is_visible):
+
+	  Determine visibility by verifying the emission and incidence
+	  (only checked if configured to do so) angles are positive.
+	  Greatly simplifies this method, correctly takes into account
+	  necessary viewing geometry variables, and removes requirement
+	  that the body is modeled as an oblate spheroid.  Thanks to
+	  Nathanael Nerode for developing this implementation.
+
+	* lib/MaRC/PhotoImage.h (PhotoImage):
+
+	  Reverted change that reintroduced normal range member and added
+	  a return value to the latlon2pix() method.  Neither is needed
+	  with the new is_visible() method implementation in place.
+
+	* lib/MaRC/Orthographic.cc (make_map):
+
+	  Refactored z-axis rotation computation to MaRC::Geometry::RotZ
+	  function.  Thanks to Nathanael Nerode for suggesting this
+	  change.
+
+Sat Nov 12 00:08:45 2005  Ossama Othman  <ossama@dre.vanderbilt.edu>
+
+	* MaRC 0.9.7 released.
 
 Fri Nov 11 23:53:43 2005  Ossama Othman  <ossama@dre.vanderbilt.edu>
 

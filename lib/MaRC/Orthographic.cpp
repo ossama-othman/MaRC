@@ -196,17 +196,15 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
                 Rotated = rotX * ImgCoord;
                 if (this->polar_) {
                     // Rotate about z-axis by (-this->PA_).
-                    x =  Rotated[0] * std::cos(-this->PA_) +
-                        Rotated[1] * std::sin(-this->PA_);
+                    MaRC::Geometry::RotZ(-this->PA_, Rotated, ImgCoord);
 
-                    y = -Rotated[0] * std::sin(-this->PA_) +
-                        Rotated[1] * std::cos(-this->PA_);
-
-                    zz=  Rotated[2];
+                    x  = ImgCoord[0];
+                    y  = ImgCoord[1];
+                    zz = ImgCoord[2];
                 } else {
-                    x = Rotated[0];
-                    y = Rotated[1];
-                    zz= Rotated[2];
+                    x  = Rotated[0];
+                    y  = Rotated[1];
+                    zz = Rotated[2];
                 }
 
                 double const lat = std::atan2(zz, std::hypot(x, y));

@@ -113,3 +113,12 @@ MaRC::MosaicImage::read_data(double lat,
 
     return found_data;
 }
+
+void
+MaRC::MosaicImage::check_image_unread_mask() const
+{
+    // Simply run this on all the sub-images.
+    for (auto const & i : this->images_) {
+        i->check_image_unread_mask();
+    }
+}
