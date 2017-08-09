@@ -73,15 +73,15 @@ MaRC::GLLGeometricCorrection::image_to_object(double & line,
     }
 
     // Image-space radius from optical axis
-    double const is_rad = ::sqrt(x * x + y * y);
+    double const is_rad = std::sqrt(x * x + y * y);
 
     // if (is_rad == 0) then no correction is necessary.
 
     if (is_rad != 0) {
         double const common_term1 = is_rad / (2 * MaRC::GLL::DISTORTION);
         double const common_term2 =
-            ::sqrt(::pow (common_term1, 2) +
-                   ::pow(1.0 / (3.0 * MaRC::GLL::DISTORTION), 3));
+            std::sqrt(std::pow(common_term1, 2) +
+                      std::pow(1.0 / (3.0 * MaRC::GLL::DISTORTION), 3));
 
         double const A_3 = common_term1 + common_term2;
         double const B_3 = common_term1 - common_term2;
@@ -133,6 +133,6 @@ double
 MaRC::GLLGeometricCorrection::cube_root(double x)
 {
     if      (x == 0) return 0;
-    else if (x < 0)  return -::exp(::log(::fabs(x)) / 3.0);
-    else             return  ::exp(::log(x) / 3.0);
+    else if (x < 0)  return -std::exp(std::log(std::abs(x)) / 3.0);
+    else             return  std::exp(std::log(x) / 3.0);
 }

@@ -71,15 +71,15 @@ MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
     double const radius = body.centric_radius(lat);
 
     double const cosine =
-        (radius * ::cos(lat - latg)
-         - range * ::sin(sub_observ_lat) * ::sin (latg))
-        / range /::cos(sub_observ_lat) / ::cos(latg);
+        (radius * std::cos(lat - latg)
+         - range * std::sin(sub_observ_lat) * std::sin (latg))
+        / range / std::cos(sub_observ_lat) / std::cos(latg);
 
     if (cosine >= -1 && cosine <= 1) {
         // Partial range of longitudes are visible
 
-        double const lower = sub_observ_lon - ::fabs(::acos(cosine));
-        double const upper = sub_observ_lon + ::fabs(::acos(cosine));
+        double const lower = sub_observ_lon - std::abs(std::acos(cosine));
+        double const upper = sub_observ_lon + std::abs(std::acos(cosine));
 
         // Now check if longitude at given latitude is visible
         double l = lon;

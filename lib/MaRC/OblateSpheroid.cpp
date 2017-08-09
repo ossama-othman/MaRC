@@ -36,11 +36,11 @@ MaRC::OblateSpheroid::OblateSpheroid(bool prograde,
                                      double eq_rad,
                                      double pol_rad,
                                      double flattening)
-    : BodyData (prograde)
-    , eq_rad_ (-1)
-    , pol_rad_ (-1)
-    , flattening_ (-1)
-    , first_eccentricity_ (-1)
+    : BodyData(prograde)
+    , eq_rad_(-1)
+    , pol_rad_(-1)
+    , flattening_(-1)
+    , first_eccentricity_(-1)
 {
     this->initialize_radii(eq_rad, pol_rad, flattening);
 }
@@ -60,13 +60,13 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     // Set equatorial radius.
     // ----------------------------------------------
     if (eq_rad > 0
-        && eq_rad < ::sqrt (std::numeric_limits<double>::max ()) - 1) {
+        && eq_rad < std::sqrt(std::numeric_limits<double>::max()) - 1) {
         if (eq_rad < this->pol_rad_) {
             std::ostringstream s;
             s << "Equatorial radius (" << eq_rad
               << ") is less than polar radius (" << this->pol_rad_ << ")";
 
-            throw std::invalid_argument (s.str ());
+            throw std::invalid_argument(s.str());
         } else {
             this->eq_rad_ = eq_rad;
 
@@ -78,14 +78,14 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     // Set polar radius.
     // ----------------------------------------------
     if (pol_rad > 0
-        && pol_rad < ::sqrt (std::numeric_limits<double>::max ()) - 1) {
+        && pol_rad < std::sqrt(std::numeric_limits<double>::max()) - 1) {
         if (this->eq_rad_ > 0 && this->eq_rad_ < pol_rad) {
             std::ostringstream s;
             s << "Polar radius (" << pol_rad
               << ") is greater than equatorial radius ("
               << this->eq_rad_ << ")";
 
-            throw std::invalid_argument (s.str ());
+            throw std::invalid_argument(s.str());
         } else {
             this->pol_rad_ = pol_rad;
 
@@ -105,7 +105,7 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     if (flattening >= 0 && flattening < 1) {
         this->flattening_ = flattening;
         this->first_eccentricity_ =
-            ::sqrt (1 - ::pow (1 - flattening, 2));
+            std::sqrt(1 - std::pow(1 - flattening, 2));
 
         ++count;
     }
@@ -119,7 +119,7 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
           << "\n  Flattening:        " << flattening
           << "\nTwo are required.";
 
-        throw std::invalid_argument (s.str ());
+        throw std::invalid_argument(s.str());
     }
 
     // At least two components have been set.  Set the third.
@@ -131,7 +131,7 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     else if (this->flattening_ < 0) {
         this->flattening_ = 1 - this->pol_rad_ / this->eq_rad_;
         this->first_eccentricity_ =
-            ::sqrt (1 - ::pow (1 - this->flattening_, 2));
+            std::sqrt(1 - std::pow(1 - this->flattening_, 2));
     }
 }
 
@@ -140,29 +140,29 @@ MaRC::OblateSpheroid::centric_radius(double lat) const
 {
     double const er2     = this->eq_rad_ * this->eq_rad_;
     double const pr2     = this->pol_rad_ * this->pol_rad_;
-    double const sin_lat = ::sin(lat);
+    double const sin_lat = std::sin(lat);
 
     return
         this->eq_rad_ * this->pol_rad_ /
-        ::sqrt((er2 - pr2) * sin_lat * sin_lat + pr2);
+        std::sqrt((er2 - pr2) * sin_lat * sin_lat + pr2);
 }
 
 inline double
 MaRC::OblateSpheroid::centric_latitude(double lat) const
 {
     return
-        ::atan(this->pol_rad_ * this->pol_rad_
-               / (this->eq_rad_ * this->eq_rad_)
-               * ::tan(lat));
+        std::atan(this->pol_rad_ * this->pol_rad_
+                  / (this->eq_rad_ * this->eq_rad_)
+                  * std::tan(lat));
 }
 
 inline double
 MaRC::OblateSpheroid::graphic_latitude(double lat) const
 {
     return
-        ::atan(this->eq_rad_ * this->eq_rad_
-                / (this->pol_rad_ * this->pol_rad_)
-                * ::tan (lat));
+        std::atan(this->eq_rad_ * this->eq_rad_
+                  / (this->pol_rad_ * this->pol_rad_)
+                  * std::tan(lat));
 }
 
 double
@@ -178,17 +178,18 @@ MaRC::OblateSpheroid::mu(double sub_observ_lat,
   double const ellipse_radius = this->centric_radius(lat);
 
   return
-      ((range * ::sin(sub_observ_lat) * ::sin(latg) - ellipse_radius *
-        ::cos(lat - latg)) + range * ::cos(sub_observ_lat) *
-       ::cos(latg) * ::cos(sub_observ_lon - lon)) /
+      ((range * std::sin(sub_observ_lat) * std::sin(latg)
+        - ellipse_radius * std::cos(lat - latg))
+       + range * std::cos(sub_observ_lat) *
+       std::cos(latg) * std::cos(sub_observ_lon - lon)) /
       // dot product (above)
       // divided by the magnitude of vector
       // from observer to point on body
-      ::sqrt (range * range + ellipse_radius * ellipse_radius -
-              2 * range * ellipse_radius *
-              (::sin(sub_observ_lat) * ::sin(lat) +
-               ::cos(sub_observ_lat) *
-               ::cos(lat) * ::cos(sub_observ_lon - lon)));
+      std::sqrt(range * range + ellipse_radius * ellipse_radius -
+                2 * range * ellipse_radius *
+                (std::sin(sub_observ_lat) * std::sin(lat) +
+                 std::cos(sub_observ_lat) *
+                 std::cos(lat) * std::cos(sub_observ_lon - lon)));
 }
 
 double
@@ -199,11 +200,14 @@ MaRC::OblateSpheroid::mu0(double sub_solar_lat,
 {
     // Compute the sun-local normal angle - Incidence Angle (Mu0)
 
-    double const latg = this->graphic_latitude (lat);
+    double const latg = this->graphic_latitude(lat);
 
-    return ::sin(sub_solar_lat) * ::sin(latg) +
-        ::cos(sub_solar_lat) * ::cos(latg) * ::cos(sub_solar_lon - lon);
-    // The above equation assumes the sun to be an infinite distance away.
+    return
+        std::sin(sub_solar_lat) * std::sin(latg)
+        + std::cos(sub_solar_lat) * std::cos(latg)
+          * std::cos(sub_solar_lon - lon);
+    // The above equation assumes the sun to be an infinite distance
+    // away.
 }
 
 // Cosine of phase angle (observer range taken into account)
@@ -222,21 +226,21 @@ MaRC::OblateSpheroid::cos_phase(double sub_observ_lat,
   double const ellipse_radius = this->centric_radius(lat);
 
   return
-      (range * (::cos(sub_observ_lat) * ::cos(sub_solar_lat) *
-                ::cos(sub_observ_lon - sub_solar_lon) +
-                ::sin(sub_observ_lat) * ::sin(sub_solar_lat)) -
-       ellipse_radius * (::cos (lat) * ::cos (sub_solar_lat) *
-                         ::cos (lon - sub_solar_lon) +
-                         ::sin (lat) * ::sin (sub_solar_lat))) /
+      (range * (std::cos(sub_observ_lat) * std::cos(sub_solar_lat) *
+                std::cos(sub_observ_lon - sub_solar_lon) +
+                std::sin(sub_observ_lat) * std::sin(sub_solar_lat)) -
+       ellipse_radius * (std::cos(lat) * std::cos (sub_solar_lat) *
+                         std::cos(lon - sub_solar_lon) +
+                         std::sin(lat) * std::sin(sub_solar_lat))) /
       // dot product (above)
       // divided by the magnitude of vector
       // from observer to point on body
       // Defining unit vector for vector to sun (infinite distance away)
-      ::sqrt(range * range + ellipse_radius * ellipse_radius -
-             2 * range * ellipse_radius *
-             (::sin(sub_observ_lat) * ::sin(lat) +
-              ::cos(sub_observ_lat) *
-              ::cos(lat) * ::cos(sub_observ_lon - lon)));
+      std::sqrt(range * range + ellipse_radius * ellipse_radius
+                - 2 * range * ellipse_radius *
+                (std::sin(sub_observ_lat) * std::sin(lat)
+                 + std::cos(sub_observ_lat) *
+                 std::cos(lat) * std::cos(sub_observ_lon - lon)));
 }
 
 inline double
@@ -244,21 +248,23 @@ MaRC::OblateSpheroid::M(double lat)
 {
     double const fe2 =
         this->first_eccentricity_ * this->first_eccentricity_;
-    double const sin_latg = ::sin(this->graphic_latitude (lat));
+    double const sin_latg = std::sin(this->graphic_latitude(lat));
 
   return
-    this->eq_rad_ * (1 - fe2) / ::pow(1 - fe2 * sin_latg * sin_latg, 1.5);
+    this->eq_rad_ * (1 - fe2)
+      / std::pow(1 - fe2 * sin_latg * sin_latg, 1.5);
 }
 
 inline double
 MaRC::OblateSpheroid::N (double lat)
 {
-    double const sin_latg = ::sin(this->graphic_latitude(lat));
+    double const sin_latg = std::sin(this->graphic_latitude(lat));
 
     return
-        this->eq_rad_ /
-        ::sqrt(1 - this->first_eccentricity_ * this->first_eccentricity_ *
-                sin_latg * sin_latg);
+        this->eq_rad_
+        / std::sqrt(1 - this->first_eccentricity_
+                        * this->first_eccentricity_
+                        * sin_latg * sin_latg);
 }
 
 int
@@ -335,7 +341,7 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
     // std::cout << "k0 = " << k.first << "  \tk1 = " << k.second << '\n';
 
     //   if (k.first < k.second)  // This is unlikely to be true.
-    //   //  if (::fabs(k.first) < ::fabs(k.second))
+    //   //  if (std::abs(k.first) < std::abs(k.second))
     //     k.second = k.first;
 
     // Use k.second as solution
@@ -346,8 +352,8 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
     double const y = vec[1] + k.second * dvec[1];
     double const z = vec[2] + k.second * dvec[2];
 
-    lat = ::atan(z / ::sqrt (x * x + y * y));
-    lon = ::atan2(x, -y);
+    lat = std::atan(z / std::sqrt(x * x + y * y));
+    lon = std::atan2(x, -y);
 
     /*
       lon is in EAST LONGITUDE.  Zero longitude is on negative y-axis!

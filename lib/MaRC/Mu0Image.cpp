@@ -62,12 +62,12 @@ MaRC::Mu0Image::is_visible(double lat, double lon) const
     // When creating cosine of incidence angle map use terminator
     // instead of limb so that entire incidence angle map is created
     // as opposed to just the area visible to the observer.
-    double const cosine = ::tan(latg) * ::tan(this->sub_solar_lat_);
+    double const cosine = std::tan(latg) * std::tan(this->sub_solar_lat_);
 
     if (cosine >= -1 && cosine <= 1) {
         // Partial range of longitudes are visible
-      double const lower = this->sub_solar_lon_ - ::fabs(::acos(-cosine));
-      double const upper = this->sub_solar_lon_ + ::fabs(::acos(-cosine));
+      double const lower = this->sub_solar_lon_ - std::abs(std::acos(-cosine));
+      double const upper = this->sub_solar_lon_ + std::abs(std::acos(-cosine));
 
       double l = lon;
 

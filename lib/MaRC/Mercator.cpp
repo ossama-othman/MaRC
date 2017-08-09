@@ -71,7 +71,7 @@ MaRC::Mercator<T>::plot_map(SourceImage const & source,
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
 
-        double const old_lat = -C::pi_2 + 2 * ::atan(exp(x));
+        double const old_lat = -C::pi_2 + 2 * std::atan(std::exp(x));
         double const old_x = this->mercator_x(old_lat);
 
         double const latg =
@@ -174,9 +174,9 @@ double
 MaRC::Mercator<T>::mercator_x(double latg) const
 {
     double const x =
-        ::log(::tan(C::pi_4 + latg / 2) *
-              ::pow((1 - this->body_->first_eccentricity() * ::sin(latg))
-                    / (1 + this->body_->first_eccentricity() * ::sin(latg)),
+        std::log(std::tan(C::pi_4 + latg / 2) *
+              std::pow((1 - this->body_->first_eccentricity() * std::sin(latg))
+                    / (1 + this->body_->first_eccentricity() * std::sin(latg)),
                     this->body_->first_eccentricity() / 2));
 
     return x;
@@ -190,5 +190,5 @@ MaRC::Mercator<T>::distortion(double latg) const
     return
         this->body_->eq_rad()
         / this->body_->N(this->body_->centric_latitude(latg))
-        / ::cos(latg);
+        / std::cos(latg);
 }
