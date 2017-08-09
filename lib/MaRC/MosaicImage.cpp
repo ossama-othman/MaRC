@@ -23,6 +23,7 @@
 
 #include "MosaicImage.h"
 #include "PhotoImage.h"
+#include "Mathematics.h"
 
 #include <cmath>
 
@@ -71,7 +72,7 @@ MaRC::MosaicImage::read_data(double lat,
                                  data,
                                  weight,
                                  scan)
-                    && !this->is_zero(data)) {
+                    && !MaRC::almost_zero(data, 5)) {
                     weighted_data_sum += weight * data;
                     weight_sum += weight;
 
@@ -83,7 +84,7 @@ MaRC::MosaicImage::read_data(double lat,
 
         case AVG_UNWEIGHTED:  // Unweighted averaging.
             if (i->read_data(lat, lon, data)
-                && !this->is_zero(data)) {
+                && !MaRC::almost_zero(data, 5)) {
                 weighted_data_sum += data;
                 ++weight_sum;
 
@@ -94,7 +95,7 @@ MaRC::MosaicImage::read_data(double lat,
 
         default:      // No averaging
             if (i->read_data(lat, lon, data)
-                && !this->is_zero(data)) {
+                && !MaRC::almost_zero(data, 5)) {
                 found_data = true;
 
                 // No point in continuing.  Just return the first
@@ -111,17 +112,4 @@ MaRC::MosaicImage::read_data(double lat,
         data = static_cast<double>(weighted_data_sum / weight_sum);
 
     return found_data;
-}
-
-bool
-MaRC::MosaicImage::is_zero(double data)
-{
-    // Only non-zero data is considered valid data.  This is
-    // particularly necessary to avoid potential contribution of zero
-    // data to data averages when creating a mosaic.
-
-    // Anything less than this value is considered to be zero.
-    static constexpr double zero_threshold = 1e-10;
-
-    return fabs(data) < zero_threshold;
 }
