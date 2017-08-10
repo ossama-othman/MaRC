@@ -23,9 +23,65 @@
 
 #include "Geometry.h"
 #include "Matrix.h"
+#include "config.h"  // For MARC_HAS_3_PARAM_STD_HYPOT
 
 #include <cmath>
+#include <type_traits>  // For std::is_floating_point<>
 
+namespace MaRC
+{
+    namespace
+    {
+#ifndef MARC_HAS_3_PARAM_STD_HYPOT
+        /**
+         * @brief Distance of (x,y,z) from the origin.
+         *
+         * Compute the distance of the point in space
+         * (@a x, @a y, @a z) from the origin (0, 0, 0).  This
+         * function is implemented in terms of the two-parameter
+         * @c std::hypot() to leverage its ability to perform the
+         * operation without floating point underflow or overflow, as
+         * well as its excellent floating point error
+         * characteristics.
+         *
+         * @param[in] x First  coordinate in space.
+         * @param[in] y Second coordinate in space.
+         * @param[in] z Third  coordinate in space.
+         *
+         * @return Distance from the origin to the point in space
+         *         (@a x,@a y, @a z), i.e. the equivalent of the
+         *         square root of the sum of the squares of each
+         *         coordinate @c sqrt(x*x+y*y+z*z).
+         *
+         * @deprecated This implementation of the three-parameter
+         *             @c std::hypot() will be dropped once we start
+         *             using C++17 features in MaRC.
+         */
+        template <typename T>
+        typename std::enable_if<std::is_floating_point<T>::value, T>::type
+        hypot(T x, T y, T z)
+        {
+            /*
+              Implement the missing three parameter std::hypot()
+              function by nesting two std::hypot() calls.  This works
+              since:
+                  Given:
+                      std::hypot(x,y)   = sqrt(x*x + y*y)
+                  and:
+                      std::hypot(x,y,z) = sqrt(x*x + y*y + z*z)
+                  We have:
+                      std::hypot(std::hypot(x, y), z)
+                      = sqrt((sqrt(x*x + y*y) * sqrt(x*x + y*y)) + z*z)
+                      = sqrt(x*x + y*y + z*z) =
+                      = std::hypot(x, y, z)
+             */
+            return std::hypot(std::hypot(x, y), z);
+        }
+#endif  // !MARC_HAS_3_PARAM_STD_HYPOT
+
+        using std::hypot;
+    }
+}
 
 void
 MaRC::Geometry::RotX(double angle,
@@ -118,35 +174,33 @@ MaRC::Geometry::RotZMatrix(double angle)
 }
 
 double
-MaRC::Geometry::Magnitude(const DVector & vec)
+MaRC::Geometry::Magnitude(DVector const & vec)
 {
-  return std::sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
+    return MaRC::hypot(vec[0], vec[1], vec[2]);
 }
 
-double
-MaRC::Geometry::Magnitude(const FVector & vec)
+float
+MaRC::Geometry::Magnitude(FVector const & vec)
 {
-  return std::sqrt(static_cast<double>(vec[0]) * vec[0]
-                + vec[1] * vec[1]
-                + vec[2] * vec[2]);
+    return MaRC::hypot(vec[0], vec[1], vec[2]);
 }
 
 // The following really should be only for float or double vectors,
 // not integer vectors!
 void
-MaRC::Geometry::toUnitVector(DVector &vec)
+MaRC::Geometry::toUnitVector(DVector & vec)
 {
-  double const mag = Geometry::Magnitude(vec);
+    double const mag = Geometry::Magnitude(vec);
 
-  for(std::size_t i = 0; i < 3; ++i)
-    vec[i] /= mag;
+    for(std::size_t i = 0; i < 3; ++i)
+        vec[i] /= mag;
 }
 
 void
-MaRC::Geometry::toUnitVector(FVector &vec)
+MaRC::Geometry::toUnitVector(FVector & vec)
 {
-  double const mag = Geometry::Magnitude(vec);
+    float const mag = Geometry::Magnitude(vec);
 
-  for(std::size_t i = 0; i < 3; ++i)
-      vec[i] /= static_cast<float>(mag);
+    for(std::size_t i = 0; i < 3; ++i)
+        vec[i] /= mag;
 }

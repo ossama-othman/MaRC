@@ -212,7 +212,7 @@ MaRC::Orthographic<T>::plot_map(SourceImage const & source,
                     zz= Rotated[2];
                 }
 
-                double const lat = std::atan2(zz, std::sqrt(x * x + y * y));
+                double const lat = std::atan2(zz, std::hypot(x, y));
 
                 double lon;
 
@@ -318,8 +318,8 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                 x = T_Coord[0] / this->km_per_pixel_;
                 z = T_Coord[2] / this->km_per_pixel_;
 
-                i = static_cast<int>(::rint(this->sample_center_ - x));
-                k = static_cast<int>(::rint(this->line_center_ + z));
+                i = static_cast<int>(std::round(this->sample_center_ - x));
+                k = static_cast<int>(std::round(this->line_center_ + z));
 
                 if (i >= 0 && static_cast<std::size_t> (i) < samples
                     && k >= 0 && static_cast<std::size_t> (k) < lines) {
@@ -382,8 +382,8 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                 x = T_Coord[0] / this->km_per_pixel_;
                 z = T_Coord[2] / this->km_per_pixel_;
 
-                i = static_cast<int>(::rint(this->sample_center_ - x));
-                k = static_cast<int>(::rint(this->line_center_ + z));
+                i = static_cast<int>(std::round(this->sample_center_ - x));
+                k = static_cast<int>(std::round(this->line_center_ + z));
 
                 if (i >= 0 && static_cast<std::size_t>(i) < samples
                   && k >= 0 && static_cast<std::size_t>(k) < lines) {

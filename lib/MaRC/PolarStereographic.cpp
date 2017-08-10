@@ -103,7 +103,7 @@ MaRC::PolarStereographic<T>::plot_map(SourceImage const & source,
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double const Y   = i + 0.5 - samples / 2.0;
-            double const rho = pix_conv_val * std::sqrt(Y * Y + X * X);
+            double const rho = pix_conv_val * std::hypot(Y, X);
 
 //           if (rho > rho_max)
 //             continue;
@@ -176,8 +176,8 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
 //           if (z > rho_max || x > rho_max)
 //             continue;
 
-            double const k = ::rint(z / pix_conv_val + lines / 2.0);
-            double const i = ::rint(x / pix_conv_val + samples / 2.0);
+            double const k = std::round(z / pix_conv_val + lines / 2.0);
+            double const i = std::round(x / pix_conv_val + samples / 2.0);
 
             if (i >= 0 && i < static_cast<double>(samples)
                 && k >= 0 && k < static_cast<double>(lines)) {
@@ -203,8 +203,8 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
 //           if (z > rho_max || x > rho_max)
 //             continue;
 
-            double const k = ::rint(z / pix_conv_val + lines / 2.0);
-            double const i = ::rint(x / pix_conv_val + samples / 2.0);
+            double const k = std::round(z / pix_conv_val + lines / 2.0);
+            double const i = std::round(x / pix_conv_val + samples / 2.0);
 
             if (i >= 0 && i < static_cast<double>(samples)
                 && k >= 0 && k < static_cast<double>(lines)) {

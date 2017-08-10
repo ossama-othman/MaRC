@@ -70,11 +70,11 @@ namespace MaRC
         /// z-axis.
         DMatrix RotZMatrix(double angle);
 
-        /// Obtain magnitude of vector of type double.
+        /// Obtain magnitude of vector of type @c double.
         double Magnitude(DVector const &);
 
-        /// Obtain magnitude of vector of type float.
-        double Magnitude(const FVector &);
+        /// Obtain magnitude of vector of type @c float.
+        float Magnitude(FVector const &);
 
         /// Convert a vector of type double to a unit vector.
         void toUnitVector(DVector &);

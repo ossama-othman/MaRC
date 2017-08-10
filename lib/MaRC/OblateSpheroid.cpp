@@ -138,6 +138,11 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
 inline double
 MaRC::OblateSpheroid::centric_radius(double lat) const
 {
+    /**
+     * @todo Can we leverage std::hypot() here to reduce floating
+     *       point error?  If not, at least switch to an
+     *       implementation that avoid underflow and overflow.
+     */
     double const er2     = this->eq_rad_ * this->eq_rad_;
     double const pr2     = this->pol_rad_ * this->pol_rad_;
     double const sin_lat = std::sin(lat);
@@ -352,7 +357,7 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
     double const y = vec[1] + k.second * dvec[1];
     double const z = vec[2] + k.second * dvec[2];
 
-    lat = std::atan(z / std::sqrt(x * x + y * y));
+    lat = std::atan(z / std::hypot(x, y));
     lon = std::atan2(x, -y);
 
     /*

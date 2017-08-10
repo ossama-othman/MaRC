@@ -73,7 +73,7 @@ MaRC::GLLGeometricCorrection::image_to_object(double & line,
     }
 
     // Image-space radius from optical axis
-    double const is_rad = std::sqrt(x * x + y * y);
+    double const is_rad = std::hypot(x, y);
 
     // if (is_rad == 0) then no correction is necessary.
 
