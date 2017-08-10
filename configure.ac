@@ -62,10 +62,6 @@ DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
 
 AC_LANG([C++])
 
-dnl Enable C99 extensions if not already enabled.  Needed for NaN
-dnl support on some platforms.
-XCPPFLAGS="-D_ISOC99_SOURCE"
-
 dnl
 dnl config.h template
 dnl
@@ -90,14 +86,11 @@ AH_BOTTOM([
 // End:
 ])
 
-dnl AH_TEMPLATE([DEBUG],[Symbol used to turn off array bounds checking in TNT header files])
+
 AH_TEMPLATE([NDEBUG],[Disable all debugging code.])
-dnl AH_TEMPLATE([TNT_BOUNDS_CHECK],[Track TNT index bounds.])
 
-AH_TEMPLATE([MARC_HAS_STL_QUIET_NAN_SUPPORT],[STL supports quiet NaN.])
-AH_TEMPLATE([MARC_C_LIB_QUIET_NAN],[C library quiet NaN value.])
 
-AH_TEMPLATE([MARC_HAS_COVARIANT_RETURN_TYPES],[C++ compiler supports covariant return types.])
+AH_TEMPLATE([MARC_HAS_3_PARAM_STD_HYPOT],[C++ compiler supports C++17 three-parameter std::hypot().])
 
 dnl Checks for libraries.
 
@@ -118,55 +111,31 @@ AC_SEARCH_LIBS([ffinit],[cfitsio],
   [],
   [AC_MSG_ERROR([MaRC requires CFITSIO.  CFITSIO library not found.])])
 
-dnl Checks for library functions.
-AC_CHECK_FUNCS([rint])
-
-dnl Checks for header files.
-AC_HEADER_STDC
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_CACHE_CHECK([if $CXX supports covariant return types],
-  [ac_cv_cxx_covariant_return_types_supported],[
+dnl Check for C++17 three-parameter std::hypot() function.
+AC_CACHE_CHECK([if $CXX supports C++17 three-parameter std::hypot()],
+  [ac_cv_cxx_3_param_std_hypot_supported],[
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-class Base
-{
-public:
-  virtual void foo () = 0;
-};
-
-class Derived : public Base
-{
-public:
-  virtual void foo () {}
-};
-
-class Factory
-{
-public:
-  virtual Base * make () = 0;
-};
-
-class ConcreteFactory : public Factory
-{
-public:
-  virtual Derived * make () { return new Derived; }
-};
+#include <cmath>
       ]],
       [[
-ConcreteFactory factory;
-Derived * d = factory.make ();
+double h = std::hypot(3, 4, 5);
+
       ]])
     ],
     [
-     ac_cv_cxx_covariant_return_types_supported=yes
+     ac_cv_cxx_3_param_std_hypot_supported=yes
     ],
     [
-     ac_cv_cxx_covariant_return_types_supported=no
+     ac_cv_cxx_3_param_std_hypot_supported=no
     ])
   ])
 
-AS_IF([test "x$ac_cv_cxx_covariant_return_types_supported" = "xyes"],
-      [AC_DEFINE([MARC_HAS_COVARIANT_RETURN_TYPES])])
+AS_IF([test "x$ac_cv_cxx_3_param_std_hypot_supported" = "xyes"],
+      [AC_DEFINE([MARC_HAS_3_PARAM_STD_HYPOT])])
+
+
+dnl Checks for header files.
+AC_HEADER_STDC
 
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],
@@ -184,8 +153,6 @@ dnl package defaults.
 CXXFLAGS="$XCXXFLAGS $CXXFLAGS"
 CPPFLAGS="$XCPPFLAGS $CPPFLAGS"
 LDFLAGS="$XLDFLAGS $LDFLAGS"
-
-dnl AC_CONFIG_SUBDIRS(lib/popt)dnl
 
 AC_CONFIG_FILES([
   Makefile

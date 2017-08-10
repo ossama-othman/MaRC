@@ -36,7 +36,6 @@ namespace MaRC
 {
     template <typename T, std::size_t M, std::size_t N> class Matrix;
     typedef Vector<double, 3> DVector;
-    typedef Vector<float, 3>  FVector;
     typedef Matrix<double, 3, 3> DMatrix;
 
     /**
@@ -70,17 +69,11 @@ namespace MaRC
         /// z-axis.
         DMatrix RotZMatrix(double angle);
 
-        /// Obtain magnitude of vector of type double.
+        /// Obtain magnitude of vector of type @c double.
         double Magnitude(DVector const &);
-
-        /// Obtain magnitude of vector of type float.
-        double Magnitude(const FVector &);
 
         /// Convert a vector of type double to a unit vector.
         void toUnitVector(DVector &);
-
-        /// Convert a vector of type float to a unit vector.
-        void toUnitVector(FVector &);
     }
 }
 

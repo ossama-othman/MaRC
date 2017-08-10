@@ -28,12 +28,6 @@
 #include <MaRC/config.h>
 
 
-#ifndef HAVE_RINT
-# include <cmath>
-double rint (double x) { return ::floor (x + 0.5); }
-#endif
-
-
 namespace MaRC
 {
     /**

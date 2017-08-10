@@ -71,7 +71,7 @@ MaRC::Mercator<T>::plot_map(SourceImage const & source,
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
 
-        double const old_lat = -C::pi_2 + 2 * ::atan(exp(x));
+        double const old_lat = -C::pi_2 + 2 * std::atan(std::exp(x));
         double const old_x = this->mercator_x(old_lat);
 
         double const latg =
@@ -88,7 +88,7 @@ MaRC::Mercator<T>::plot_map(SourceImage const & source,
             double const lon = this->get_longitude(i, samples);
 
             unsigned char const percent_complete =
-                static_cast<unsigned char> ((offset + 1) * 100 / nelem);
+                static_cast<unsigned char>((offset + 1) * 100 / nelem);
 
             this->plot(source,
                        lat,
@@ -123,7 +123,7 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
         double const nn = this->body_->graphic_latitude(n * C::degree);
 
         double const k =
-            ::rint(this->mercator_x(nn) / pix_conv_val + lines / 2.0);
+            std::round(this->mercator_x(nn) / pix_conv_val + lines / 2.0);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
             auto const first =
@@ -140,10 +140,10 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
     for (float m = 360; m > 0; m -= lon_interval) {
         int i;
 
-        if (this->body_->prograde ())
-            i = samples - static_cast<int>(::rint(m * samples / 360.0));
+        if (this->body_->prograde())
+            i = samples - static_cast<int>(std::round(m * samples / 360.0));
         else
-            i = static_cast<int> (::rint (m * samples / 360.0));
+            i = static_cast<int>(std::round(m * samples / 360.0));
 
         if (i >= 0 && static_cast<std::size_t>(i) < samples) {
             for (std::size_t k = 0; k < lines; ++k)
@@ -163,7 +163,7 @@ MaRC::Mercator<T>::get_longitude(std::size_t i,
     // PROGRADE ----> longitudes increase to the left
     // RETROGRADE --> longitudes increase to the right
 
-    if (this->body_->prograde ())
+    if (this->body_->prograde())
         lon = C::_2pi - lon;
 
     return lon;
@@ -174,9 +174,9 @@ double
 MaRC::Mercator<T>::mercator_x(double latg) const
 {
     double const x =
-        ::log(::tan(C::pi_4 + latg / 2) *
-              ::pow((1 - this->body_->first_eccentricity() * ::sin(latg))
-                    / (1 + this->body_->first_eccentricity() * ::sin(latg)),
+        std::log(std::tan(C::pi_4 + latg / 2) *
+              std::pow((1 - this->body_->first_eccentricity() * std::sin(latg))
+                    / (1 + this->body_->first_eccentricity() * std::sin(latg)),
                     this->body_->first_eccentricity() / 2));
 
     return x;
@@ -190,5 +190,5 @@ MaRC::Mercator<T>::distortion(double latg) const
     return
         this->body_->eq_rad()
         / this->body_->N(this->body_->centric_latitude(latg))
-        / ::cos(latg);
+        / std::cos(latg);
 }

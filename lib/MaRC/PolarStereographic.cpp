@@ -41,18 +41,18 @@ MaRC::PolarStereographic<T>::PolarStereographic(
                ? 0
                : (north_pole ? max_lat : -max_lat) * C::degree)
     , rho_coeff_(2 * body->eq_rad() *
-                 ::pow(1 + body->first_eccentricity(),
-                       -0.5 * (1 - body->first_eccentricity())) *
-                ::pow(1 - body->first_eccentricity(),
-                       -0.5 * (1 + body->first_eccentricity())))
-    , distortion_coeff_(::pow((1 + body->first_eccentricity()),
-                              (1 - 2 * body->first_eccentricity())) *
-                        ::pow((1 - body->first_eccentricity()),
-                              (1 + 2 * body->first_eccentricity())) / 4 /
+                 std::pow(1 + body->first_eccentricity(),
+                          -0.5 * (1 - body->first_eccentricity())) *
+                std::pow(1 - body->first_eccentricity(),
+                         -0.5 * (1 + body->first_eccentricity())))
+    , distortion_coeff_(std::pow((1 + body->first_eccentricity()),
+                                 (1 - 2 * body->first_eccentricity())) *
+                        std::pow((1 - body->first_eccentricity()),
+                                 (1 + 2 * body->first_eccentricity())) / 4 /
                         body->eq_rad() / body->eq_rad())
     , north_pole_(north_pole)
 {
-    if (!std::isnan(max_lat) && ::fabs(max_lat) >= 90) {
+    if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
         std::ostringstream s;
         s << "Maximum polar stereographic latitude ("
           << max_lat << ") >= 90.";
@@ -103,13 +103,13 @@ MaRC::PolarStereographic<T>::plot_map(SourceImage const & source,
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double const Y   = i + 0.5 - samples / 2.0;
-            double const rho = pix_conv_val * ::sqrt(Y * Y + X * X);
+            double const rho = pix_conv_val * std::hypot(Y, X);
 
 //           if (rho > rho_max)
 //             continue;
 
             double const old_latg =
-                C::pi_2 - 2 * ::atan(rho / 2 / this->body_->eq_rad());
+                C::pi_2 - 2 * std::atan(rho / 2 / this->body_->eq_rad());
 
             double const old_rho = this->stereo_rho(old_latg);
 
@@ -127,7 +127,7 @@ MaRC::PolarStereographic<T>::plot_map(SourceImage const & source,
                                               ? latg : -latg);
 
             double const lon =
-                ::atan2((ccw ? Y : -Y), X);
+                std::atan2((ccw ? Y : -Y), X);
 
             unsigned char const percent_complete =
                 static_cast<unsigned char>((offset + 1) * 100 / nelem);
@@ -170,14 +170,14 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
             double const mm =
                 static_cast<double>(m) / imax * C::degree * 360;
 
-            double const z = this->stereo_rho(nn) * ::cos(mm);
-            double const x = this->stereo_rho(nn) * ::sin(mm);
+            double const z = this->stereo_rho(nn) * std::cos(mm);
+            double const x = this->stereo_rho(nn) * std::sin(mm);
 
 //           if (z > rho_max || x > rho_max)
 //             continue;
 
-            double const k = ::rint(z / pix_conv_val + lines / 2.0);
-            double const i = ::rint(x / pix_conv_val + samples / 2.0);
+            double const k = std::round(z / pix_conv_val + lines / 2.0);
+            double const i = std::round(x / pix_conv_val + samples / 2.0);
 
             if (i >= 0 && i < static_cast<double>(samples)
                 && k >= 0 && k < static_cast<double>(lines)) {
@@ -197,14 +197,14 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
             double const nn =
                 static_cast<double>(n) / imax * C::degree * 360;
 
-            double const z = this->stereo_rho(nn) * ::cos(mm);
-            double const x = this->stereo_rho(nn) * ::sin(mm);
+            double const z = this->stereo_rho(nn) * std::cos(mm);
+            double const x = this->stereo_rho(nn) * std::sin(mm);
 
 //           if (z > rho_max || x > rho_max)
 //             continue;
 
-            double const k = ::rint(z / pix_conv_val + lines / 2.0);
-            double const i = ::rint(x / pix_conv_val + samples / 2.0);
+            double const k = std::round(z / pix_conv_val + lines / 2.0);
+            double const i = std::round(x / pix_conv_val + samples / 2.0);
 
             if (i >= 0 && i < static_cast<double>(samples)
                 && k >= 0 && k < static_cast<double>(lines)) {
@@ -222,10 +222,11 @@ double
 MaRC::PolarStereographic<T>::stereo_rho(double latg) const
 {
     double const rho =
-        this->rho_coeff_ * ::tan(C::pi_4 - latg / 2)
-        * ::pow((1 + this->body_->first_eccentricity () * ::sin(latg))
-                / (1 - this->body_->first_eccentricity () * ::sin(latg)),
-                this->body_->first_eccentricity() / 2);
+        this->rho_coeff_ * std::tan(C::pi_4 - latg / 2)
+        * std::pow((1 + this->body_->first_eccentricity () * std::sin(latg))
+                   / (1 - this->body_->first_eccentricity ()
+                          * std::sin(latg)),
+                   this->body_->first_eccentricity() / 2);
 
     return rho;
 }
@@ -235,5 +236,5 @@ double
 MaRC::PolarStereographic<T>::distortion(double latg) const
 {
     // Note that latitude is bodyGRAPHIC.
-    return 1 + distortion_coeff_ * ::pow(this->stereo_rho(latg), 2.0);
+    return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2.0);
 }

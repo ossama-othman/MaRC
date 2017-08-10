@@ -73,7 +73,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , sub_observ_lon_(0)
     , sub_solar_lat_ (0)
     , sub_solar_lon_ (0)
-    , range_(::sqrt (std::numeric_limits<double>::max () - 1))
+    , range_(std::sqrt (std::numeric_limits<double>::max () - 1))
     , position_angle_(0)
     , arcsec_per_pixel_(-1)      // Force "bad" value until set by caller
     , km_per_pixel_  (-1)        // Force "bad" value until set by caller
@@ -95,7 +95,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , line_center_   (0)
     , lat_at_center_ (0)
     , lon_at_center_ (0)
-    , mu_limit_(::cos(90 * C::degree)) // cos() of 90 deg emission angle limit
+    , mu_limit_(std::cos(90 * C::degree)) // cos() of 90 deg emission angle limit
     // , min_lat_(C::pi_2)  // Initialize to maximum (yes, the maximum!) possible
     // , max_lat_(-C::pi_2) // Initialize to minimum possible
     // , min_lon_(C::_2pi)  // Initialize to maximum possible
@@ -152,16 +152,16 @@ MaRC::PhotoImage::is_visible(double lat, double lon) const
 
     /*
     double const cosine =
-        (radius * ::cos(lat - latg) -
-        this->range_ * ::sin(this->sub_observ_lat_) * ::sin(latg)) /
-        (this->range_ * ::cos(this->sub_observ_lat_) * ::cos(latg));
+        (radius * std::cos(lat - latg) -
+        this->range_ * std::sin(this->sub_observ_lat_) * std::sin(latg)) /
+        (this->range_ * std::cos(this->sub_observ_lat_) * std::cos(latg));
 
     double lower, upper;
 
     if (cosine >= -1 && cosine <= 1) {
         // Partial range of longitudes are visible.
 
-        double const edge = ::fabs(::acos(cosine));
+        double const edge = std::abs(std::acos(cosine));
 
         lower = this->sub_observ_lon_ - edge;
         upper = this->sub_observ_lon_ + edge;
@@ -179,13 +179,13 @@ MaRC::PhotoImage::is_visible(double lat, double lon) const
         // distance away from the observed body.
 
         // tcosine =
-        //   ::pow(this->body_->eq_rad()
+        //   std::pow(this->body_->eq_rad()
         //   / this->body_->pol_rad(), 2.0)
-        //   * ::tan(lat) * ::tan(this->sub_solar_lat_);
-        double const tcosine = ::tan(latg) * ::tan(this->sub_solar_lat_);
+        //   * std::tan(lat) * std::tan(this->sub_solar_lat_);
+        double const tcosine = std::tan(latg) * std::tan(this->sub_solar_lat_);
 
         if (tcosine >= -1 && tcosine <= 1) {
-            double const tedge = ::fabs(::acos (-tcosine));
+            double const tedge = std::abs(std::acos (-tcosine));
 
             double const lower_terminator = this->sub_solar_lon_ - tedge;
             double const upper_terminator = this->sub_solar_lon_ + tedge;
@@ -255,7 +255,7 @@ MaRC::PhotoImage::photometric_correction(
 int
 MaRC::PhotoImage::sub_observ(double lat, double lon)
 {
-    if (::fabs(lat) <= 90)
+    if (std::abs(lat) <= 90)
         this->sub_observ_lat_ = lat * C::degree;
     else {
         std::cerr
@@ -265,7 +265,7 @@ MaRC::PhotoImage::sub_observ(double lat, double lon)
         return 1;  // Failure
     }
 
-    if (::fabs(lon) <= 360) {
+    if (std::abs(lon) <= 360) {
         if (lon < 0)
             lon += 360;
         this->sub_observ_lon_ = lon * C::degree;
@@ -283,7 +283,7 @@ MaRC::PhotoImage::sub_observ(double lat, double lon)
 int
 MaRC::PhotoImage::sub_observ_lat(double lat)
 {
-    if (::fabs(lat) <= 90)
+    if (std::abs(lat) <= 90)
         this->sub_observ_lat_ = lat * C::degree;
     else {
         std::cerr
@@ -299,7 +299,7 @@ MaRC::PhotoImage::sub_observ_lat(double lat)
 int
 MaRC::PhotoImage::sub_observ_lon(double lon)
 {
-    if (::fabs(lon) <= 360) {
+    if (std::abs(lon) <= 360) {
         if (lon < 0)
             lon += 360;
         this->sub_observ_lon_ = lon * C::degree;
@@ -317,7 +317,7 @@ MaRC::PhotoImage::sub_observ_lon(double lon)
 int
 MaRC::PhotoImage::sub_solar(double lat, double lon)
 {
-    if (::fabs(lat) <= 90)
+    if (std::abs(lat) <= 90)
         this->sub_solar_lat_ = lat * C::degree;
     else {
         std::cerr << "ERROR: Incorrect value for Sub-Solar Latitude: "
@@ -326,7 +326,7 @@ MaRC::PhotoImage::sub_solar(double lat, double lon)
         return 1;  // Failure
     }
 
-    if (::fabs(lon) <= 360) {
+    if (std::abs(lon) <= 360) {
         if (lon < 0)
             lon += 360;
         this->sub_solar_lon_ = lon * C::degree;
@@ -344,7 +344,7 @@ MaRC::PhotoImage::sub_solar(double lat, double lon)
 int
 MaRC::PhotoImage::sub_solar_lat(double lat)
 {
-    if (::fabs(lat) <= 90)
+    if (std::abs(lat) <= 90)
         this->sub_solar_lat_ = lat * C::degree;
     else {
         std::cerr << "ERROR: Incorrect value for Sub-Solar Latitude: "
@@ -359,7 +359,7 @@ MaRC::PhotoImage::sub_solar_lat(double lat)
 int
 MaRC::PhotoImage::sub_solar_lon(double lon)
 {
-    if (::fabs(lon) <= 360) {
+    if (std::abs(lon) <= 360) {
       if (lon < 0)
         lon += 360;
       this->sub_solar_lon_ = lon * C::degree;
@@ -377,7 +377,7 @@ MaRC::PhotoImage::sub_solar_lon(double lon)
 int
 MaRC::PhotoImage::position_angle(double north)
 {
-    if (::fabs(north) <= 360)
+    if (std::abs(north) <= 360)
         this->position_angle_ = north * C::degree;
     else {
         std::cerr << "ERROR: Incorrect position angle: "
@@ -427,8 +427,8 @@ MaRC::PhotoImage::finalize_setup()
 
     // Set Body center to observer vectors
     this->range_b_[0] =  0;
-    this->range_b_[1] = -this->range_ * ::cos(this->sub_observ_lat_);
-    this->range_b_[2] =  this->range_ * ::sin(this->sub_observ_lat_);
+    this->range_b_[1] = -this->range_ * std::cos(this->sub_observ_lat_);
+    this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
 
     /// Perpendicular distance from observer to image plane.
     if (!flags::check (this->flags_, LATLON_AT_CENTER)) {
@@ -448,7 +448,7 @@ MaRC::PhotoImage::finalize_setup()
         double const magRo = Geometry::Magnitude(range_O);
 
         this->normal_range_ =
-            ::sqrt(this->range_ * this->range_ - magRo * magRo);
+            std::sqrt(this->range_ * this->range_ - magRo * magRo);
 
         // In case focal length and scale are not set or used.
         range_O[1] = -this->normal_range_;
@@ -468,9 +468,9 @@ MaRC::PhotoImage::finalize_setup()
             this->body_->centric_radius(this->lat_at_center_);
 
         DVector r0;
-        r0[0] =  radius * ::cos(this->lat_at_center_) * ::sin(Longitude);
-        r0[1] = -radius * ::cos(this->lat_at_center_) * ::cos(Longitude);
-        r0[2] =  radius * ::sin(this->lat_at_center_);
+        r0[0] =  radius * std::cos(this->lat_at_center_) * std::sin(Longitude);
+        r0[1] = -radius * std::cos(this->lat_at_center_) * std::cos(Longitude);
+        r0[2] =  radius * std::sin(this->lat_at_center_);
 
         DVector const OA_prime(r0 - this->range_b_);
 
@@ -531,9 +531,9 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     DVector const temp2(rotated);
 
     double const a = r_o[2] * r_o[2] + r_o[1] * r_o[1];
-    double const b = 2 * r_o[1] * ::sin(this->sub_observ_lat_);
+    double const b = 2 * r_o[1] * std::sin(this->sub_observ_lat_);
     double const c =
-        ::sin(this->sub_observ_lat_) * ::sin(this->sub_observ_lat_)
+        std::sin(this->sub_observ_lat_) * std::sin(this->sub_observ_lat_)
         - r_o[2] * r_o[2];
 
     std::pair<double, double> SubLatModSin;
@@ -550,12 +550,12 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     }
 
     // ------------- TRY THE FIRST ROOT ------------
-    double SubLatMod = ::asin(SubLatModSin.first);
+    double SubLatMod = std::asin(SubLatModSin.first);
 
     Geometry::RotX(SubLatMod, r_o, rotated);
     r_o = rotated;
 
-    double Ztwist = ::atan2(r_o[0], -r_o[1]);
+    double Ztwist = std::atan2(r_o[0], -r_o[1]);
 
     // Observer to body transformation
     DMatrix o2b(Geometry::RotZMatrix(Ztwist)
@@ -570,11 +570,11 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     // ----------- TRY THE SECOND ROOT -------------
     r_o = temp2; // Reset to value of vector after first rotation
 
-    SubLatMod = ::asin(SubLatModSin.second);
+    SubLatMod = std::asin(SubLatModSin.second);
     Geometry::RotX(SubLatMod, r_o, rotated);
     r_o = rotated;
 
-    Ztwist = ::atan2(r_o[0], -r_o[1]);
+    Ztwist = std::atan2(r_o[0], -r_o[1]);
 
     // Observer to body transformation
     o2b =
@@ -619,9 +619,9 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)
         std::cout
-            << ::fabs((this->range_b_[i] - (observ2body * range_o)[i])
-                      / (this->range_b_[i] + (observ2body * range_o)[i])
-                      * 2)
+            << std::abs((this->range_b_[i] - (observ2body * range_o)[i])
+                        / (this->range_b_[i] + (observ2body * range_o)[i])
+                        * 2)
             << '\n';
 
     std::cout
@@ -646,7 +646,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
 
         std::cout
             << "Computed NORAZ = "
-            << ::atan2 (-result[0], result[2]) / C::degree
+            << std::atan2 (-result[0], result[2]) / C::degree
             << " degrees (positive is CCW)\n"
             "Computed North pole vector in camera space = " << result
             << "\n"
@@ -689,19 +689,19 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
                            UnitOpticalAxis.begin(),
                            0.0);
 
-    SubLatMod[0] = ::asin(-dotProd);  // Angle between equatorial
-                                      // plane and OA.
+    SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
+                                         // plane and OA.
 
     DVector R_b(range_b);
     Geometry::toUnitVector(R_b);
 
     // Try first possibility
-    SubLatMod[0] = ::asin(-dotProd);  // Angle between equatorial
-                                      // plane and OA.
+    SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
+                                         // plane and OA.
     Geometry::RotX(-SubLatMod[0], range_b, rotated);
     R_b = rotated;
 
-    double const Ztwist1 = ::atan2(R_b[0], -R_b[1]);
+    double const Ztwist1 = std::atan2(R_b[0], -R_b[1]);
 
     // Observer to body transformation
     DMatrix o2b(Geometry::RotZMatrix(Ztwist1)
@@ -718,7 +718,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     Geometry::RotX (-SubLatMod[1], range_b, rotated);
     R_b = rotated;
 
-    double const Ztwist2 = ::atan2(R_b[0], -R_b[1]);
+    double const Ztwist2 = std::atan2(R_b[0], -R_b[1]);
 
     // Observer to body transformation
     o2b =
@@ -773,9 +773,9 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)
         std::cout
-            << ::fabs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
-                      / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
-                      * 2)
+            << std::abs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
+                        / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
+                        * 2)
             << '\n';
 
     std::cout
@@ -790,7 +790,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
 //       << "Ztwist = " << Ztwist / C::degree << '\n';
 //   test[2] = 1; // Unit vector along z-axis
 //   result = body2observ * test; // test vector in camera coordinates.
-//   output_ << "Computed NORAZ = " << ::atan2(-result[0], result[2]) / C::degree
+//   output_ << "Computed NORAZ = " << std::atan2(-result[0], result[2]) / C::degree
 //       << " degrees (positive is CCW)\n"
 //       << "Computed North pole vector in camera space = " << result << '\n';
 //   output_ << "observ2body = " << observ2body << '\n'
@@ -941,12 +941,12 @@ MaRC::PhotoImage::set_km_per_pixel()
 
         this->km_per_pixel_ =
             this->range_ /
-            ::sqrt(this->focal_length_pixels_
-                   * this->focal_length_pixels_
-                   + (this->OA_s_ - this->sample_center_)
-                   * (this->OA_s_ - this->sample_center_)
-                   + (this->OA_l_ - this->line_center_)
-                   * (this->OA_l_ - this->line_center_));
+            std::sqrt(this->focal_length_pixels_
+                      * this->focal_length_pixels_
+                      + (this->OA_s_ - this->sample_center_)
+                      * (this->OA_s_ - this->sample_center_)
+                      + (this->OA_l_ - this->line_center_)
+                      * (this->OA_l_ - this->line_center_));
 
 //       std::cout << "focal_length = " << this->focal_length_ << '\n'
 //                 << "scale        = " << this->scale_        << '\n'
@@ -1020,7 +1020,7 @@ MaRC::PhotoImage::body_center_line(double line)
 int
 MaRC::PhotoImage::lat_lon_center(double lat, double lon)
 {
-    if (::fabs(lat) <= 90) {
+    if (std::abs(lat) <= 90) {
         this->lat_at_center_ = lat * C::degree;
         flags::set(this->flags_, LATLON_AT_CENTER);
     } else {
@@ -1030,7 +1030,7 @@ MaRC::PhotoImage::lat_lon_center(double lat, double lon)
         return 1;  // Failure
     }
 
-    if (::fabs(lon) <= 360) {
+    if (std::abs(lon) <= 360) {
         this->lon_at_center_ = lon * C::degree;
         flags::set(this->flags_, LATLON_AT_CENTER);
     } else {
@@ -1046,7 +1046,7 @@ MaRC::PhotoImage::lat_lon_center(double lat, double lon)
 int
 MaRC::PhotoImage::lat_at_center(double lat)
 {
-    if (::fabs(lat) <= 90) {
+    if (std::abs(lat) <= 90) {
         this->lat_at_center_ = lat * C::degree;
         flags::set(this->flags_, LATLON_AT_CENTER);
     } else {
@@ -1062,7 +1062,7 @@ MaRC::PhotoImage::lat_at_center(double lat)
 int
 MaRC::PhotoImage::lon_at_center(double lon)
 {
-    if (::fabs(lon) <= 360) {
+    if (std::abs(lon) <= 360) {
         this->lon_at_center_ = lon * C::degree;
       flags::set (this->flags_, LATLON_AT_CENTER);
     } else {
@@ -1104,7 +1104,7 @@ MaRC::PhotoImage::range(double r)
     double const mr =
         std::min(this->body_->eq_rad(), this->body_->pol_rad());
 
-    if (r > mr && r < ::sqrt(std::numeric_limits<double>::max ()) - 1)
+    if (r > mr && r < std::sqrt(std::numeric_limits<double>::max ()) - 1)
         this->range_ =  r;
     else {
         std::cerr << "ERROR: Incorrect range entered.\n"
@@ -1112,7 +1112,7 @@ MaRC::PhotoImage::range(double r)
                   << mr
                   << '\n'
                   << "       and less than "
-                  << ::sqrt (std::numeric_limits<double>::max ()) - 1
+                  << std::sqrt (std::numeric_limits<double>::max ()) - 1
                   << '\n';
 
         return 1;  // Failure
@@ -1214,7 +1214,7 @@ int
 MaRC::PhotoImage::emi_ang_limit(double angle)
 {
     if (angle > 0 && angle < 90) {
-        this->mu_limit_ = ::cos(angle * C::degree);
+        this->mu_limit_ = std::cos(angle * C::degree);
         flags::set(this->flags_, EMI_ANG_LIMIT);
     }
     else if (angle == static_cast<double>(90)) {
@@ -1268,8 +1268,8 @@ MaRC::PhotoImage::read_data(double lat,
         || z < 0)   // to an unsigned integer below.
         return false;
 
-    std::size_t const i = static_cast<std::size_t>(::rint(x));
-    std::size_t const k = static_cast<std::size_t>(::rint(z));
+    std::size_t const i = static_cast<std::size_t>(std::round(x));
+    std::size_t const k = static_cast<std::size_t>(std::round(z));
 
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
@@ -1395,9 +1395,9 @@ MaRC::PhotoImage::latlon2pix(double lat,
         longitude = lon - this->sub_observ_lon_;
 
     DVector Coord;
-    Coord[0] =  radius * ::cos(lat) * ::sin(longitude);
-    Coord[1] = -radius * ::cos(lat) * ::cos(longitude);
-    Coord[2] =  radius * ::sin(lat);
+    Coord[0] =  radius * std::cos(lat) * std::sin(longitude);
+    Coord[1] = -radius * std::cos(lat) * std::cos(longitude);
+    Coord[2] =  radius * std::sin(lat);
 
 //   Rotated = this->body2observ_ * Coord; // Convert to observer coordinates
 

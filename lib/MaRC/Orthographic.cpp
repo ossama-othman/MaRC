@@ -67,17 +67,17 @@ MaRC::Orthographic<T>::Orthographic (
     if (PA >= -360 && PA <= 360)
         this->PA_ = PA;
 
-    if (::fabs(::fabs(this->sub_observ_lat_) - 90) < 1e-5) {
+    if (std::abs(std::abs(this->sub_observ_lat_) - 90) < 1e-5) {
         std::cout << "Assuming POLAR ORTHOGRAPHIC projection.\n";
 
-        if ((this->sub_observ_lat_ > 0 && this->body_->prograde ())
-            || (this->sub_observ_lat_ < 0 && !this->body_->prograde ())) {
-            if (this->body_->prograde ())
+        if ((this->sub_observ_lat_ > 0 && this->body_->prograde())
+            || (this->sub_observ_lat_ < 0 && !this->body_->prograde())) {
+            if (this->body_->prograde())
                 this->PA_ = 180;
             else
                 this->PA_ = 0;
         } else {
-            if (this->body_->prograde ())
+            if (this->body_->prograde())
                 this->PA_ = 0;
             else
                 this->PA_ = 180;
@@ -159,7 +159,7 @@ MaRC::Orthographic<T>::plot_map(SourceImage const & source,
 
     // "a" coefficient of the Quadratic Formula.
     double const CA =
-        diff * ::pow(::sin(this->sub_observ_lat_), 2.0) + c2;
+        diff * std::pow(std::sin(this->sub_observ_lat_), 2.0) + c2;
 
     std::size_t offset = 0;
 
@@ -184,10 +184,10 @@ MaRC::Orthographic<T>::plot_map(SourceImage const & source,
             }
 
             double const CB =
-                diff * zz * ::sin(2 * this->sub_observ_lat_);
+                diff * zz * std::sin(2 * this->sub_observ_lat_);
             double const CC =
                 a2 * zz * zz + c2 * x * x - a2 * c2 - diff *
-                zz * zz * ::pow(::sin(this->sub_observ_lat_), 2.0);
+                zz * zz * std::pow(std::sin(this->sub_observ_lat_), 2.0);
 
             std::pair<double, double> roots;
 
@@ -199,11 +199,11 @@ MaRC::Orthographic<T>::plot_map(SourceImage const & source,
                 Rotated = rotX * ImgCoord;
                 if (this->polar_) {
                     // Rotate about z-axis by (-this->PA_).
-                    x =  Rotated[0] * ::cos(-this->PA_) +
-                        Rotated[1] * ::sin(-this->PA_);
+                    x =  Rotated[0] * std::cos(-this->PA_) +
+                        Rotated[1] * std::sin(-this->PA_);
 
-                    y = -Rotated[0] * ::sin(-this->PA_) +
-                        Rotated[1] * ::cos(-this->PA_);
+                    y = -Rotated[0] * std::sin(-this->PA_) +
+                        Rotated[1] * std::cos(-this->PA_);
 
                     zz=  Rotated[2];
                 } else {
@@ -212,14 +212,14 @@ MaRC::Orthographic<T>::plot_map(SourceImage const & source,
                     zz= Rotated[2];
                 }
 
-                double const lat = ::atan2(zz, ::sqrt(x * x + y * y));
+                double const lat = std::atan2(zz, std::hypot(x, y));
 
                 double lon;
 
                 if (this->body_->prograde())
-                    lon = this->sub_observ_lon_ - ::atan2(-x, y) + C::pi;
+                    lon = this->sub_observ_lon_ - std::atan2(-x, y) + C::pi;
                 else
-                    lon = this->sub_observ_lon_ + ::atan2(-x, y) - C::pi;
+                    lon = this->sub_observ_lon_ + std::atan2(-x, y) - C::pi;
 
                 unsigned char const percent_complete =
                     static_cast<unsigned char>((offset + 1) * 100 / nelem);
@@ -255,8 +255,8 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
     float m, mm, mm2, n, nn;
 
     // Tranformation matrix to rotate about x than new y
-    DMatrix const body2obs(Geometry::RotYMatrix (-this->PA_) *
-                           Geometry::RotXMatrix (this->sub_observ_lat_));
+    DMatrix const body2obs(Geometry::RotYMatrix(-this->PA_) *
+                           Geometry::RotXMatrix(this->sub_observ_lat_));
 
     static constexpr auto white =
         std::numeric_limits<typename grid_type::value_type>::max();
@@ -266,25 +266,25 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
         nn =  n * C::degree; // Convert to radians
 
         if (n == 0
-            && ::fabs(::fabs(this->sub_observ_lat_) - C::pi_2) < 1e-6) {
+            && std::abs(std::abs(this->sub_observ_lat_) - C::pi_2) < 1e-6) {
             // Polar case
             low_bound = -C::pi;
             high_bound= C::pi;
         } else {
             // General case
 
-            // tan (graphic lat) * tan (sub observ lat)
+            // tan(graphic lat) * tan(sub observ lat)
             double const cosine =
                 this->body_->eq_rad() * this->body_->eq_rad() /
             this->body_->pol_rad() / this->body_->pol_rad() *
-            ::tan(nn) * ::tan(this->sub_observ_lat_);
+            std::tan(nn) * std::tan(this->sub_observ_lat_);
 
             if (cosine >= -1 && cosine <= 1) {
                 low_bound  =
-                    this->sub_observ_lon_ - ::fabs(::acos(-cosine));
+                    this->sub_observ_lon_ - std::abs(std::acos(-cosine));
 
                 high_bound =
-                    this->sub_observ_lon_ + ::fabs(::acos(-cosine));
+                    this->sub_observ_lon_ + std::abs(std::acos(-cosine));
             } else if (cosine > 1) {
                 low_bound  = -C::pi;
                 high_bound =  C::pi;
@@ -304,22 +304,22 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                 mm -= C::_2pi;
 
             if (mm >= low_bound && mm <= high_bound) {
-                if (this->body_->prograde ())
+                if (this->body_->prograde())
                     mm = this->sub_observ_lon_ + C::pi - mm;
                 else
                     mm -= C::pi - this->sub_observ_lon_;
 
-                Coord[0] = radius * ::cos (nn) * ::sin (mm);
-                Coord[1] =-radius * ::cos (nn) * ::cos (mm);
-                Coord[2] = radius * ::sin (nn);
+                Coord[0] = radius * std::cos(nn) * std::sin(mm);
+                Coord[1] =-radius * std::cos(nn) * std::cos(mm);
+                Coord[2] = radius * std::sin(nn);
 
                 T_Coord = body2obs * Coord;
 
                 x = T_Coord[0] / this->km_per_pixel_;
                 z = T_Coord[2] / this->km_per_pixel_;
 
-                i = static_cast<int>(::rint (this->sample_center_ - x));
-                k = static_cast<int>(::rint (this->line_center_ + z));
+                i = static_cast<int>(std::round(this->sample_center_ - x));
+                k = static_cast<int>(std::round(this->line_center_ + z));
 
                 if (i >= 0 && static_cast<std::size_t> (i) < samples
                     && k >= 0 && static_cast<std::size_t> (k) < lines) {
@@ -345,13 +345,13 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
             double const cosine =
                 this->body_->eq_rad() * this->body_->eq_rad()
                 / this->body_->pol_rad() / this->body_->pol_rad()
-                * ::tan(nn) * ::tan(this->sub_observ_lat_);
+                * std::tan(nn) * std::tan(this->sub_observ_lat_);
 
             if (cosine >= -1 && cosine <= 1) {
                 low_bound =
-                    this->sub_observ_lon_ - ::fabs(::acos(-cosine));
+                    this->sub_observ_lon_ - std::abs(std::acos(-cosine));
                 high_bound =
-                    this->sub_observ_lon_ + ::fabs(::acos(-cosine));
+                    this->sub_observ_lon_ + std::abs(std::acos(-cosine));
             } else if (cosine > 1) {
                 low_bound  = -C::pi;
                 high_bound =  C::pi;
@@ -366,24 +366,24 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                 mm2 -= C::_2pi;
 
             if (mm2 >= low_bound && mm2 <= high_bound) {
-                if (this->body_->prograde ())
+                if (this->body_->prograde())
                     mm2 = this->sub_observ_lon_ + C::pi - mm2;
                 else
                     mm2 -= C::pi + this->sub_observ_lon_;
 
                 double const radius = this->body_->centric_radius(nn);
 
-                Coord[0] = radius * ::cos(nn) * ::sin(mm2);
-                Coord[1] =-radius * ::cos(nn) * ::cos(mm2);
-                Coord[2] = radius * ::sin(nn);
+                Coord[0] = radius * std::cos(nn) * std::sin(mm2);
+                Coord[1] =-radius * std::cos(nn) * std::cos(mm2);
+                Coord[2] = radius * std::sin(nn);
 
                 T_Coord = body2obs * Coord;
 
                 x = T_Coord[0] / this->km_per_pixel_;
                 z = T_Coord[2] / this->km_per_pixel_;
 
-                i = static_cast<int>(::rint(this->sample_center_ - x));
-                k = static_cast<int>(::rint(this->line_center_ + z));
+                i = static_cast<int>(std::round(this->sample_center_ - x));
+                k = static_cast<int>(std::round(this->line_center_ + z));
 
                 if (i >= 0 && static_cast<std::size_t>(i) < samples
                   && k >= 0 && static_cast<std::size_t>(k) < lines) {
@@ -414,17 +414,17 @@ MaRC::Orthographic<T>::init(std::size_t samples, std::size_t lines)
 
 
     if (!std::isnan(this->lat_at_center_)
-        && !std::isnan (this->lon_at_center_)) {
+        && !std::isnan(this->lon_at_center_)) {
         // Check if longitude at center (if supplied) is visible.
 
         //cosine =
-        //  ::tan (this->body_->graphic_latitude (Lat)) *
-        //  ::tan (this->sub_observ_lat_);
+        //  std::tan(this->body_->graphic_latitude(Lat)) *
+        //  std::tan(this->sub_observ_lat_);
 
         double const cosine =
             this->body_->eq_rad() * this->body_->eq_rad()
             / this->body_->pol_rad() / this->body_->pol_rad() *
-        ::tan(this->lat_at_center_) * ::tan(this->sub_observ_lat_);
+        std::tan(this->lat_at_center_) * std::tan(this->sub_observ_lat_);
 
         if (cosine < -1) {
             std::ostringstream s;
@@ -437,12 +437,12 @@ MaRC::Orthographic<T>::init(std::size_t samples, std::size_t lines)
         double lower = this->sub_observ_lon_ - C::pi;
         double upper = this->sub_observ_lon_ + C::pi;  // 360
 
-        if (!this->polar_ && ::fabs(cosine) <= 1) {
+        if (!this->polar_ && std::abs(cosine) <= 1) {
             // Lower boundary
-            lower = this->sub_observ_lon_ - ::fabs(::acos(-cosine));
+            lower = this->sub_observ_lon_ - std::abs(std::acos(-cosine));
 
             // Upper boundary
-            upper = this->sub_observ_lon_ + ::fabs(::acos(-cosine));
+            upper = this->sub_observ_lon_ + std::abs(std::acos(-cosine));
         }
 
         if (this->lon_at_center_ < lower)
@@ -463,36 +463,36 @@ MaRC::Orthographic<T>::init(std::size_t samples, std::size_t lines)
 
         double pos[3];
 
-        if (this->body_->prograde ())
+        if (this->body_->prograde())
             pos[0] =
                 this->body_->centric_radius(this->lat_at_center_) *
-                ::cos(this->lat_at_center_) * ::sin(shift); // X
+                std::cos(this->lat_at_center_) * std::sin(shift); // X
         else
             pos[0] =
                 -this->body_->centric_radius(this->lat_at_center_) *
-                ::cos(this->lat_at_center_) * ::sin(shift); // X
+                std::cos(this->lat_at_center_) * std::sin(shift); // X
 
         pos[1] =
             -this->body_->centric_radius(this->lat_at_center_)
-            * ::cos(this->lat_at_center_) * ::cos(shift);   // Y
+            * std::cos(this->lat_at_center_) * std::cos(shift);   // Y
 
         pos[2] =
             this->body_->centric_radius(this->lat_at_center_)
-            * ::sin(this->lat_at_center_);                  // Z
+            * std::sin(this->lat_at_center_);                  // Z
 
         this->sample_center_ =
-            pos[0] * ::cos(this->PA_) + pos[1] * ::sin(this->PA_)
-            * ::sin(-this->sub_observ_lat_) - pos[2] * ::sin(this->PA_)
-            * ::cos(-this->sub_observ_lat_);
+            pos[0] * std::cos(this->PA_) + pos[1] * std::sin(this->PA_)
+            * std::sin(-this->sub_observ_lat_) - pos[2] * std::sin(this->PA_)
+            * std::cos(-this->sub_observ_lat_);
 
-        //   YCenter = pos[1] * ::cos (-this->sub_observ_lat_) + pos[2] *
-        //      ::sin (-this->sub_observ_lat_);
+        //   YCenter = pos[1] * std::cos(-this->sub_observ_lat_) + pos[2] *
+        //      std::sin(-this->sub_observ_lat_);
         // Drop the Y Center (not needed).
 
         this->line_center_ =
-            pos[0] * ::sin(this->PA_)
-            - pos[1] * ::sin(-this->sub_observ_lat_) * ::cos(this->PA_)
-            + pos[2] * ::cos(-this->sub_observ_lat_) * ::cos(this->PA_);
+            pos[0] * std::sin(this->PA_)
+            - pos[1] * std::sin(-this->sub_observ_lat_) * std::cos(this->PA_)
+            + pos[2] * std::cos(-this->sub_observ_lat_) * std::cos(this->PA_);
 
         this->sample_center_ /= this->km_per_pixel_; // Convert to pixels
         this->line_center_   /= this->km_per_pixel_;
