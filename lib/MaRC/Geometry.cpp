@@ -179,27 +179,10 @@ MaRC::Geometry::Magnitude(DVector const & vec)
     return MaRC::hypot(vec[0], vec[1], vec[2]);
 }
 
-float
-MaRC::Geometry::Magnitude(FVector const & vec)
-{
-    return MaRC::hypot(vec[0], vec[1], vec[2]);
-}
-
-// The following really should be only for float or double vectors,
-// not integer vectors!
 void
 MaRC::Geometry::toUnitVector(DVector & vec)
 {
     double const mag = Geometry::Magnitude(vec);
-
-    for(std::size_t i = 0; i < 3; ++i)
-        vec[i] /= mag;
-}
-
-void
-MaRC::Geometry::toUnitVector(FVector & vec)
-{
-    float const mag = Geometry::Magnitude(vec);
 
     for(std::size_t i = 0; i < 3; ++i)
         vec[i] /= mag;
