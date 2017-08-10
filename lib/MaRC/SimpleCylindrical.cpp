@@ -147,7 +147,7 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
 
     // Draw latitude lines
     for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
-        double const k = ::rint((n - lo_lat) * lr);
+        double const k = std::round((n - lo_lat) * lr);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
             std::size_t const offset =
@@ -174,9 +174,9 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
         int i;
 
         if (this->body_->prograde())
-            i = samples - static_cast<int>(::rint((m - lo_lon_2) * sr));
+            i = samples - static_cast<int>(std::round((m - lo_lon_2) * sr));
         else
-            i = static_cast<int>(::rint((m - lo_lon_2) * sr));
+            i = static_cast<int>(std::round((m - lo_lon_2) * sr));
 
         if (i >= 0 && static_cast<std::size_t>(i) < samples) {
             for (std::size_t k = 0; k < lines; ++k)

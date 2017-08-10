@@ -1268,8 +1268,8 @@ MaRC::PhotoImage::read_data(double lat,
         || z < 0)   // to an unsigned integer below.
         return false;
 
-    std::size_t const i = static_cast<std::size_t>(::rint(x));
-    std::size_t const k = static_cast<std::size_t>(::rint(z));
+    std::size_t const i = static_cast<std::size_t>(std::round(x));
+    std::size_t const k = static_cast<std::size_t>(std::round(z));
 
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
