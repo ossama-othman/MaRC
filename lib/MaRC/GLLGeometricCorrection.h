@@ -77,11 +77,6 @@ namespace MaRC
 
     private:
 
-        /// Compute the cubic root of a given value
-        static double cube_root(double x);
-
-    private:
-
         /// true = summation mode, false = full frame
         bool const summation_mode_;
 

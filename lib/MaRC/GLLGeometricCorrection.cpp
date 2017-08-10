@@ -87,8 +87,7 @@ MaRC::GLLGeometricCorrection::image_to_object(double & line,
         double const B_3 = common_term1 - common_term2;
 
         // Object-space radius from optical axis
-        double const os_rad =
-            this->cube_root(A_3) + this->cube_root(B_3);
+        double const os_rad = std::cbrt(A_3) + std::cbrt(B_3);
 
         line   = (os_rad * y) / is_rad + MaRC::GLL::OA_LINE;
         sample = (os_rad * x) / is_rad + MaRC::GLL::OA_SAMPLE;
@@ -127,12 +126,4 @@ MaRC::GLLGeometricCorrection::object_to_image(double & line,
         line   /= 2;
         sample /= 2;
     }
-}
-
-double
-MaRC::GLLGeometricCorrection::cube_root(double x)
-{
-    if      (x == 0) return 0;
-    else if (x < 0)  return -std::exp(std::log(std::abs(x)) / 3.0);
-    else             return  std::exp(std::log(x) / 3.0);
 }
