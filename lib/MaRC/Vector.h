@@ -43,7 +43,7 @@ namespace MaRC
      * @brief Zero-based index mathematical vector implementation.
      *
      * This is a simple zero-based index mathematical vector
-     * implementation.
+     * implementation with @a M rows.
      */
     template <typename T, std::size_t M>
     class Vector
@@ -81,23 +81,19 @@ namespace MaRC
          */
         Vector(std::initializer_list<T> rhs)
         {
-            if (rhs.size() != M)
-                throw
-                    std::out_of_range("Number of vector / "
-                                      "initializer list "
-                                      "elements do not match.");
+            if (rhs.size() != M) {
+                throw std::out_of_range("Number of vector / "
+                                        "initializer list "
+                                        "elements do not match.");
+            }
 
-            std::copy(std::cbegin(rhs),
-                      std::cend(rhs),
-                      this->begin());
+            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 
         /// Copy constructor.
         Vector(Vector<T, M> const & rhs)
         {
-            std::copy(std::cbegin(rhs),
-                      std::cend(rhs),
-                      this->begin());
+            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 
         /**
@@ -109,23 +105,19 @@ namespace MaRC
          */
         Vector<T, M> & operator=(std::initializer_list<T> rhs)
         {
-            if (rhs.size() != M)
-                throw
-                    std::out_of_range("Number of vector / "
-                                      "initializer list "
-                                      "elements do not match.");
+            if (rhs.size() != M) {
+                throw std::out_of_range("Number of vector / "
+                                        "initializer list "
+                                        "elements do not match.");
+            }
 
-            std::copy(std::cbegin(rhs),
-                      std::cend(rhs),
-                      this->begin());
+            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 
-        /// Assignment operator.
+        /// Copy assignment operator.
         Vector<T, M> & operator=(Vector<T, M> const & rhs)
         {
-            std::copy(std::cbegin(rhs),
-                      std::cend(rhs),
-                      this->begin());
+            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
 
             return *this;
         }
@@ -136,6 +128,8 @@ namespace MaRC
          * @note No bounds checking.
          *
          * @param[in] row Zero-based vector row.
+         *
+         * @return Reference to element at given @c Vector @a row.
          */
         inline reference operator[](std::size_t row)
         {
@@ -148,6 +142,9 @@ namespace MaRC
          * @note No bounds checking.
          *
          * @param[in] row Zero-based vector row.
+         *
+         * @return Reference to @c const element at given @c Vector
+         *         @a row.
          */
         inline const_reference operator[] (std::size_t row) const
         {
@@ -160,6 +157,8 @@ namespace MaRC
          * @note With bounds checking.
          *
          * @param[in] row Zero-based vector row.
+         *
+         * @return Reference to element at given @c Vector @a row.
          */
         inline reference at(std::size_t row)
         {
@@ -175,6 +174,9 @@ namespace MaRC
          * @note With bounds checking.
          *
          * @param[in] row Zero-based vector row.
+         *
+         * @return Reference to @c const element at given @c Vector
+         *         @a row.
          */
         inline const_reference at(std::size_t row) const
         {
@@ -186,6 +188,12 @@ namespace MaRC
 
         /**
          * Get iterator to the beginning of the @c Vector.
+         *
+         * @return Iterator to the beginning of this @c Vector.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the vector.  It is not intended for
+         *       general use.
          */
         inline iterator begin()
         {
@@ -193,7 +201,14 @@ namespace MaRC
         }
 
         /**
-         * Get a const iterator to the beginning of the @c Vector.
+         * Get a @c const iterator to the beginning of the @c Vector.
+         *
+         * @return @c const iterator to the beginning of of this
+         *         @c Vector.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the vector.  It is not intended for
+         *       general use.
          */
         inline const_iterator begin() const
         {
@@ -202,6 +217,12 @@ namespace MaRC
 
         /**
          * Get iterator to the end of the @c Vector.
+         *
+         * @return Iterator to the end of of this @c Vector.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the vector.  It is not intended for
+         *       general use.
          */
         inline iterator end()
         {
@@ -209,7 +230,13 @@ namespace MaRC
         }
 
         /**
-         * Get const iterator to the end of the @c Vector.
+         * Get @c const iterator to the end of the @c Vector.
+         *
+         * @return @c const iterator to the end of of this @c Vector.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the vector.  It is not intended for
+         *       general use.
          */
         inline const_iterator end() const
         {
@@ -218,32 +245,36 @@ namespace MaRC
 
         /**
          * Addition operator.
+         *
+         * @param[in] rhs @c Vector to be added to this one.
+         *
+         * @return This @c Vector after adding the @a rhs @c Vector to
+         *         this one.
          */
         Vector<T, M> & operator+=(Vector<T, M> const & rhs)
         {
             auto dest = this->begin();
-            auto const src_end = rhs.end();
 
-            for (auto src = rhs.begin();
-                 src != src_end;
-                 ++src, ++dest)
-                *dest += *src;
+            for (auto const & src : rhs)
+                *(dest++) += src;
 
             return *this;
         }
 
         /**
          * Subtraction operator.
+         *
+         * @param[in] rhs @c Vector to be subtracted from this one.
+         *
+         * @return This @c Vector after substracting the @a rhs
+         *         @c Vector from this one.
          */
         Vector<T, M> & operator-=(Vector<T, M> const & rhs)
         {
             auto dest = this->begin();
-            auto const src_end = rhs.end();
 
-            for (auto src = rhs.begin();
-                 src != src_end;
-                 ++src, ++dest)
-                *dest -= *src;
+            for (auto const & src : rhs)
+                *(dest++) -= src;
 
             return *this;
         }

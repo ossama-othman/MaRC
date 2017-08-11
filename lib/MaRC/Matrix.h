@@ -44,6 +44,9 @@ namespace MaRC
      *
      * @brief Simple zero-based index matrix implementation.
      *
+     * An @a M x @a N matrix implementation, where @a M is the number
+     * of rows and @a N is the number of columns.
+     *
      * This matrix implementation is designed to be fast (e.g. no
      * dynamic memory allocations when initializing or copying).  It
      * is not super-optimized like some existing implementations but
@@ -85,28 +88,28 @@ namespace MaRC
          *
          * This constructor allows a @c Matrix to be initialized like
          * so:
-         *     Matrix<int, 3, 3> m{{0, 1, 2},
-         *                         {1, 2, 3},
-         *                         {2, 3, 4}};
+         *     Matrix<int, 3, 2> m{{0, 1},
+         *                         {1, 2},
+         *                         {2, 3}};
          */
         Matrix(std::initializer_list<std::initializer_list<T>> rhs)
         {
-            if (rhs.size() != M || rhs.begin()->size() != N)
-                throw
-                    std::out_of_range("Number of matrix / "
-                                          "initializer list "
-                                          "rows do not match.");
+            if (rhs.size() != M || rhs.begin()->size() != N) {
+                throw std::out_of_range("Number of matrix / "
+                                        "initializer list "
+                                        "rows do not match.");
+            }
 
-            T* dest = this->begin();
+            auto dest = this->begin();
 
             for (auto const & row : rhs) {
-                if (row.size() != N)
-                    throw
-                    std::out_of_range("Number of matrix / "
-                                          "initializer list "
-                                          "columns do not match.");
+                if (row.size() != N) {
+                    throw std::out_of_range("Number of matrix / "
+                                            "initializer list "
+                                            "columns do not match.");
+                }
 
-                std::copy(row.begin(), row.end(), dest);
+                std::copy(std::cbegin(row), std::cend(row), dest);
                 dest += N;  // Next matrix row.
             }
         }
@@ -116,10 +119,7 @@ namespace MaRC
         {
             // Efficiently copy the matrix by treating it as a
             // one-dimensional array.
-
-            std::copy(rhs.begin(),
-                      rhs.end(),
-                      this->begin());
+            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 
         /**
@@ -127,45 +127,43 @@ namespace MaRC
          *
          * This constructor allows an initializer_list to be assigned
          * to a @c Matrix list so:
-         *     Matrix<int, 3, 3> m{{0, 1, 2},
-         *                         {1, 2, 3},
-         *                         {2, 3, 4}};
+         *     Matrix<int, 3, 2> m{{0, 1},
+         *                         {1, 2},
+         *                         {2, 3}};
          */
         Matrix<T, M, N> & operator=(
             std::initializer_list<std::initializer_list<T>> rhs)
         {
-            if (rhs.size() != M || rhs.begin()->size() != N)
-                throw
-                    std::out_of_range("Number of matrix / "
-                                      "initializer list "
-                                      "rows do not match.");
+            if (rhs.size() != M || rhs.begin()->size() != N) {
+                throw std::out_of_range("Number of matrix / "
+                                        "initializer list "
+                                        "rows do not match.");
+            }
 
-            T* dest = this->begin();
+            auto dest = this->begin();
 
             for (auto const & row : rhs) {
-                if (row.size() != N)
-                    throw
-                    std::out_of_range("Number of matrix / "
-                                      "initializer list "
-                                      "columns do not match.");
+                if (row.size() != N) {
+                    throw std::out_of_range("Number of matrix / "
+                                            "initializer list "
+                                            "columns do not match.");
+                }
 
-                std::copy(row.begin(), row.end(), dest);
+                std::copy(std::cbegin(row), std::cend(row), dest);
                 dest += N;  // Next matrix row.
             }
 
             return *this;
         }
 
-        /// Assignment from another matrix operator.
+        /// Copy assignment operator.
         Matrix<T, M, N> & operator=(Matrix<T, M, N> const & rhs)
         {
             // Efficiently copy the matrix by treating it as a
             // one-dimensional array.
             //
             // Non-throwing for arithmetic types.
-            std::copy(std::cbegin(rhs),
-                      std::cend(rhs),
-                      this->begin());
+            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
 
             return *this;
         }
@@ -173,70 +171,124 @@ namespace MaRC
         /**
          * Element accessor.
          *
-         * @param[in] row Zero-based matrix row.
-         * @param[in] col Zero-based matrix column.
+         * @note No bounds checking.
+         *
+         * @param[in] row    Zero-based matrix row.
+         * @param[in] column Zero-based matrix column.
+         *
+         * @return Reference to element at given @c Matrix @a row and
+         *         @a column.
          */
-        inline reference operator()(std::size_t row, std::size_t col)
+        inline reference operator()(std::size_t row, std::size_t column)
         {
-            if (row >= M || col >= N)
-                throw std::out_of_range("Out of range matrix index "
-                                        "or indices");
-
-            return this->matrix_[row][col];
+            return this->matrix_[row][column];
         }
 
         /**
          * Const element accessor.
-         * @param[[n] row Zero-based matrix row.
-         * @param[in] col Zero-based matrix column.
+         *
+         * @note No bounds checking.
+         *
+         * @param[[n] row    Zero-based matrix row.
+         * @param[in] column Zero-based matrix column.
+         *
+         * @return Reference to @c const element at given @c Matrix
+         *         @a row and @a column.
          */
         inline const_reference operator()(std::size_t row,
-                                          std::size_t col) const
+                                          std::size_t column) const
         {
-            if (row >= M || col >= N)
+            return this->matrix_[row][column];
+        }
+
+        /**
+         * Element accessor.
+         *
+         * @note With bounds checking.
+         *
+         * @param[in] row    Zero-based matrix row.
+         * @param[in] column Zero-based matrix column.
+         *
+         * @return Reference to element at given @c Matrix @a row and
+         *         @a column.
+         */
+        inline reference at(std::size_t row, std::size_t column)
+        {
+            if (row >= M || column >= N) {
                 throw std::out_of_range("Out of range matrix index "
                                         "or indices");
+            }
 
-            return this->matrix_[row][col];
+            return this->matrix_[row][column];
+        }
+
+        /**
+         * Const element accessor.
+         *
+         * @note With bounds checking.
+         *
+         * @param[[n] row    Zero-based matrix row.
+         * @param[in] column Zero-based matrix column.
+         *
+         * @return Reference to @c const element at given @c Matrix
+         *         @a row and @a column.
+         */
+        inline const_reference at(std::size_t row,
+                                  std::size_t column) const
+        {
+            if (row >= M || column >= N) {
+                throw std::out_of_range("Out of range matrix index "
+                                        "or indices");
+            }
+
+            return this->matrix_[row][column];
         }
 
         /**
          * Addition operator.
+         *
+         * @param[in] rhs @c Matrix to be added to this one.
+         *
+         * @return This @c Matrix after adding the @a rhs @c Matrix to
+         *         this one.
          */
         Matrix<T, M, N> & operator+=(Matrix<T, M, N> const & rhs)
         {
-            T * dest = this->begin();
-            T const * const src_end = rhs.end();
+            auto dest = this->begin();
 
-            for (T const * src = rhs.begin();
-                 src != src_end;
-                 ++src, ++dest)
-                *dest += *src;
+            for (auto const & src : rhs)
+                *(dest++) += src;
 
             return *this;
         }
 
         /**
          * Subtraction operator.
+         *
+         * @param[in] rhs @c Matrix to be substracted from this one.
+         *
+         * @return This @c Matrix after substracting the @a rhs
+         *         @c Matrix from this one.
          */
         Matrix<T, M, N> & operator-=(Matrix<T, M, N> const & rhs)
         {
-            T * dest = this->begin();
-            T const * const src_end = rhs.end();
+            auto dest = this->begin();
 
-            for (T const * src = rhs.begin();
-                 src != src_end;
-                 ++src, ++dest)
-                *dest -= *src;
+            for (auto const & src : rhs)
+                *(dest++) -= src;
 
             return *this;
         }
 
         /**
-         * Get the begin iterator of the matrix.
+         * Get iterator to the beginning of the @c Matrix.
          *
-         * Return an iterator to the beginning of the flattened form
-         * of this matrix.
+         * @return Iterator to the beginning of the flattened form of
+         *         this @c Matrix.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the matrix.  It is not intended for
+         *       general use.
          */
         constexpr inline iterator begin()
         {
@@ -244,11 +296,14 @@ namespace MaRC
         }
 
         /**
-         * Get the begin const iterator of the matrix.
+         * Get a @c const iterator to the beginning of the @c Matrix.
          *
-         * Return a const iterator to the beginning of the flattened
-         * form of this matrix.  This method exists solely to
-         * facilitate efficient copying of the matrix.
+         * @return @c const iterator to the beginning of the flattened
+         *         form of this @c Matrix.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the matrix.  It is not intended for
+         *       general use.
          */
         constexpr inline const_iterator begin() const
         {
@@ -256,10 +311,14 @@ namespace MaRC
         }
 
         /**
-         * Get the end iterator of the matrix.
+         * Get iterator to the end of the @c Matrix.
          *
-         * Return an iterator to the end of the flattened form of this
-         * matrix.
+         * @return Iterator to the end of the flattened form of this
+         *         @c Matrix.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the matrix.  It is not intended for
+         *       general use.
          */
         constexpr inline iterator end()
         {
@@ -267,10 +326,14 @@ namespace MaRC
         }
 
         /**
-         * Get the end const iterator of the matrix.
+         * Get a @c const iterator to the endof the @c Matrix.
          *
-         * Return a const iterator to the end of the flattened form of
-         * this matrix.
+         * @return @c const iterator to the end of the flattened
+         *         form of this @c Matrix.
+         *
+         * @note This method exists solely to facilitate efficient
+         *       iteration of the matrix.  It is not intended for
+         *       general use.
          */
         constexpr inline const_iterator end() const
         {
@@ -331,13 +394,14 @@ MaRC::Matrix<T, M, R> operator*(MaRC::Matrix<T, M, N> const & lhs,
 {
     MaRC::Matrix<T, M, R> matrix;
 
-    for (std::size_t m = 0; m < M; ++m)
+    for (std::size_t m = 0; m < M; ++m) {
         for (std::size_t r = 0; r < R; ++r) {
             T & element = matrix(m, r); // Already default initialized.
 
             for (std::size_t n = 0; n < N; ++n)
                 element += lhs(m, n) * rhs(n, r);
         }
+    }
 
     return matrix;
 }
