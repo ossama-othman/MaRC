@@ -281,6 +281,23 @@ namespace MaRC
         }
 
         /**
+         * Scalar multiplication operator.
+         *
+         * @param[in] rhs Scalar by which this @c Matrix will be
+         *                multiplied.
+         *
+         * @return This @c Matrix after multiplying it by the scalar
+         *         the @a rhs.
+         */
+        Matrix<T, M, N> & operator*=(T rhs)
+        {
+            for (auto & elem : *this)
+                elem *= rhs;
+
+            return *this;
+        }
+
+        /**
          * Get iterator to the beginning of the @c Matrix.
          *
          * @return Iterator to the beginning of the flattened form of
@@ -419,6 +436,24 @@ MaRC::Vector<T, M> operator*(MaRC::Matrix<T, M, N> const & A,
 
     return v;
 }
+
+/// Matrix/scalar multiplication operator.
+template <typename T, std::size_t M, std::size_t N>
+MaRC::Matrix<T, M, N> operator*(MaRC::Matrix<T, M, N> const & A, T x)
+{
+    MaRC::Matrix<T, M, N> matrix(A);
+    matrix *= x;
+
+    return matrix;
+}
+
+/// Matrix/scalar multiplication operator.
+template <typename T, std::size_t M, std::size_t N>
+MaRC::Matrix<T, M, N> operator*(T x, MaRC::Matrix<T, M, N> const & A)
+{
+    return A * x;
+}
+
 
 // ---------------------------------------------------------
 

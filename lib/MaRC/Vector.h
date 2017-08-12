@@ -279,6 +279,23 @@ namespace MaRC
             return *this;
         }
 
+        /**
+         * Scalar multiplication operator.
+         *
+         * @param[in] rhs Scalar by which this @c Vector will be
+         *                multiplied.
+         *
+         * @return This @c Vector after multiplying it by the scalar
+         *         the @a rhs.
+         */
+        Vector<T, M> & operator*=(T rhs)
+        {
+            for (auto & elem : *this)
+                elem *= rhs;
+
+            return *this;
+        }
+
   private:
 
         /// Underlying vector array.
@@ -309,6 +326,25 @@ MaRC::Vector<T, M> const operator-(MaRC::Vector<T, M> const & lhs,
     vector -= rhs;
 
     return vector;
+}
+
+/// Vector/scalar multiplication operator
+template <typename T, std::size_t M>
+MaRC::Vector<T, M> const operator*(MaRC::Vector<T, M> const & V,
+                                   T x)
+{
+    MaRC::Vector<T, M> vector(V);
+    vector *= x;
+
+    return vector;
+}
+
+/// Vector/scalar multiplication operator
+template <typename T, std::size_t M>
+MaRC::Vector<T, M> const operator*(T x,
+                                   MaRC::Vector<T, M> const & V)
+{
+    return V * x;
 }
 
 // ---------------------------------------------------------

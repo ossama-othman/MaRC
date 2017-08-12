@@ -151,7 +151,17 @@ bool test_matrix_multiplication()
 
     vector_type const vprod{{ 112, 562,  1012 }}; // prod * v
 
-    return left * right == prod && prod * v == vprod;
+    prod_matrix_type::value_type s = 2;
+
+    prod_matrix_type const sprod{{{  14,  22,  26 },
+                                  {  68, 106, 134 },
+                                  { 122, 190, 242 }}}; //  prod * s
+
+    return
+        left * right == prod
+        && prod * v == vprod
+        && prod * s == sprod
+        && s * prod == sprod;
 }
 
 bool test_matrix_transpose()

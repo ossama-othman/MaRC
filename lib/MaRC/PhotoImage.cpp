@@ -479,23 +479,20 @@ MaRC::PhotoImage::finalize_setup()
 
         // Dot product.
         double const dp =
-            std::inner_product(r0.begin (),
-                               r0.end (),
-                               OA_hat.begin (),
+            std::inner_product(std::cbegin(r0),
+                               std::cend(r0),
+                               std::cbegin(OA_hat),
                                0.0);
 
-        DVector r_OA;
-
-        for (std::size_t i = 0; i < 3; ++i)
-            r_OA[i] = dp * OA_hat[i];
+        DVector r_OA(dp * OA_hat);
 
         // Optical axis in body coordinates
-        DVector const OpticalAxis (OA_prime - r_OA);
+        DVector const OpticalAxis(OA_prime - r_OA);
 
-        this->rot_matrices (this->range_b_,
-                            OpticalAxis,
-                            this->observ2body_,
-                            this->body2observ_);
+        this->rot_matrices(this->range_b_,
+                           OpticalAxis,
+                           this->observ2body_,
+                           this->body2observ_);
 
         // In case focal length and scale are not set or used.
         this->normal_range_ = -(this->body2observ_ * this->range_b_)[1];
@@ -684,9 +681,9 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
 
     // Dot product.
     double const dotProd =
-        std::inner_product(NPole.begin(),
-                           NPole.end(),
-                           UnitOpticalAxis.begin(),
+        std::inner_product(std::cbegin(NPole),
+                           std::cend(NPole),
+                           std::cbegin(UnitOpticalAxis),
                            0.0);
 
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
@@ -844,9 +841,7 @@ MaRC::PhotoImage::remove_sky()
 
             // Do the transformation
             DVector rotated(this->observ2body_ * coord);
-
-            for (std::size_t n = 0; n < 3; ++n)
-                rotated[n] *= this->km_per_pixel_;
+            rotated *= this->km_per_pixel_;
 
             // ---------------------------------------------
 
