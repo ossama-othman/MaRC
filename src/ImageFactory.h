@@ -54,7 +54,8 @@ namespace MaRC
         /// Destructor.
         virtual ~ImageFactory();
 
-        /// Create an Image.
+        /// Create an Image for a map of given type.
+        template <typename T>
         virtual std::unique_ptr<SourceImage> make() = 0;
 
         /// Set minimum allowed data value in map plane.

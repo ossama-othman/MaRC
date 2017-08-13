@@ -111,6 +111,7 @@ namespace MaRC
         {
             static constexpr T const absolute_max =
                 std::numeric_limits<T>::max();
+
             return (max > absolute_max
                     ? absolute_max : static_cast<T>(max));
         }
