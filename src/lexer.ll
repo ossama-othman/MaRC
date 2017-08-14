@@ -58,20 +58,18 @@ int yycolumn = 1;
                              colons may be placed in side of comments */
                         }
 <comment>[^\n]*         {
-  BEGIN(INITIAL); yylval->sval = strdup (yytext); return _STRING;
+  BEGIN(INITIAL); yylval->sval = strdup(yytext); return _STRING;
   /* Comments must end with a carriage return */
                         }
 <keyword_token>[:]      { BEGIN(INITIAL); return ':'; }
 <string>{
         [:]             return ':';
-        [[:graph:]]+    BEGIN(INITIAL); yylval->sval = strdup (yytext) ;return _STRING;
+        [[:graph:]]+    BEGIN(INITIAL); yylval->sval = strdup(yytext) ;return _STRING;
 }
 <pole>{
         [:]             return ':';
-        N               BEGIN(INITIAL); return 'N';
-        "NORTH"         BEGIN(INITIAL); return 'N';
-        S               BEGIN(INITIAL); return 'S';
-        "SOUTH"         BEGIN(INITIAL); return 'S';
+        N | "NORTH"     BEGIN(INITIAL); return 'N';
+        S | "SOUTH"     BEGIN(INITIAL); return 'S';
 }
 
 [:]                     { BEGIN(expression); return ':'; }
@@ -100,7 +98,7 @@ int yycolumn = 1;
         "CCW"                           { return CCW; }
         [[:digit:]]*("."[[:digit:]]*)?(E[-+]?[[:digit:]]{1,3})?          {
             // Numbers will be handled in double precision
-          yylval->val = strtod (yytext, 0);
+          yylval->val = strtod(yytext, 0);
             return NUM;
           }
         [[:alpha:]]+[[:digit:]]*          {
