@@ -375,14 +375,14 @@ MaRC::MapCommand::grid_intervals(float lat_interval, float lon_interval)
 }
 
 void
-MaRC::MapCommand::data_zero(float zero)
+MaRC::MapCommand::data_zero(double zero)
 {
     this->bzero_ = zero;
     this->transform_data_ = true;
 }
 
 void
-MaRC::MapCommand::data_scale(float scale)
+MaRC::MapCommand::data_scale(double scale)
 {
     this->bscale_ = scale;
     this->transform_data_ = true;
