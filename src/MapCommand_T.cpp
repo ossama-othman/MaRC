@@ -118,8 +118,8 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
 
         // Create the map plane.
         /**
-         * @todo Pass the FITS BLANK value (@see this->blank_) if one
-         *       was supplied (@see @c this->blank_set_) to
+         * @todo Pass the FITS @c BLANK value (@see @c this->blank_)
+         *       if one was supplied (@see @c this->blank_set_) to
          *       @c make_map() so that the map may be initialized with
          *       that value in the integer data typed map case.
          */
