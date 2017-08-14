@@ -76,8 +76,8 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
 
     bool const found_data =
         (source.read_data(lat, lon, datum)
-         && datum > Map_traits<T>::minimum(minimum)
-         && datum < Map_traits<T>::maximum(maximum));
+         && datum >= Map_traits<T>::minimum(minimum)
+         && datum <= Map_traits<T>::maximum(maximum));
 
     if (found_data)
         data = static_cast<T>(datum);
@@ -97,7 +97,7 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
                 << static_cast<unsigned int>(percent_complete)
                 << std::flush;
         else if (percent_complete % 2 == 0)
-            std::cout << "." << std::flush;
+            std::cout << '.' << std::flush;
 
         this->percent_complete_old_ = percent_complete;
     }
