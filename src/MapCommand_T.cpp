@@ -49,7 +49,7 @@ template <typename T>
 char const *
 MaRC::MapCommand_T<T>::projection_name() const
 {
-  return this->factory_->projection_name();
+    return this->factory_->projection_name();
 }
 
 template <typename T>
@@ -61,8 +61,8 @@ MaRC::MapCommand_T<T>::initialize_FITS_image(fitsfile * fptr,
 
     int const naxis =
         (planes > 1
-         ? 3 /* 3 dimensions -- map "cube" */
-         : 2 /* 2 dimensions -- map "plane" */);
+         ? 3  /* 3 dimensions -- map "cube"  */
+         : 2  /* 2 dimensions -- map "plane" */);
 
     // Specify map cube dimensions.  Note that in the two-dimensional
     // map case, the third "planes" dimension will be ignored since
@@ -114,7 +114,7 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                   <<" : " << std::flush;
 
         // Create the SourceImage.
-        std::unique_ptr<SourceImage> image(i->make());
+        std::unique_ptr<SourceImage> image(i->make(scale_and_offset<T>));
 
         // Create the map plane.
         /**

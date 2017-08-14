@@ -30,8 +30,10 @@
 
 MaRC::Mu0Image::Mu0Image(std::shared_ptr<OblateSpheroid> body,
                          double sub_solar_lat,
-                         double sub_solar_lon)
-    : VirtualImage(10000, 0)
+                         double sub_solar_lon,
+                         double scale,
+                         double offset)
+    : VirtualImage(scale, offset)
     , body_(body)
     , sub_solar_lat_(sub_solar_lat * C::degree)  // Radians
     , sub_solar_lon_(sub_solar_lon * C::degree)  // Radians

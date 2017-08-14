@@ -26,7 +26,17 @@
 
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::LongitudeImageFactory::make()
+MaRC::LongitudeImageFactory::make(scale_offset_functor calc_so)
 {
-    return std::make_unique<MaRC::LongitudeImage>();
+    constexpr double lon_min = 0;
+    constexpr double lon_max = 360;
+    double scale;
+    double offset;
+
+    if (!calc_so(lon_min, lon_max, scale, offset)) {
+        throw std::range_error("Cannot store longitudes in map of "
+                               "chosen type.");
+    }
+
+    return std::make_unique<MaRC::LongitudeImage>(scale, offset);
 }

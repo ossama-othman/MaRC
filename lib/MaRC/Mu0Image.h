@@ -58,10 +58,17 @@ namespace MaRC
          * @param[in] sub_solar_lat Bodycentric sub-solar latitude in
          *                          degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
+         * @param[in] scale         Linear scaling value by which
+         *                          cosines will be multiplied.
+         * @param[in] offset        Offset value to be added to
+         *                          cosines after the scaling factor
+         *                          has been applied.
          */
         Mu0Image(std::shared_ptr<OblateSpheroid> body,
                  double sub_solar_lat,
-                 double sub_solar_lon);
+                 double sub_solar_lon,
+                 double scale,
+                 double offset);
 
     private:
 

@@ -34,9 +34,21 @@ MaRC::LatitudeImageFactory::LatitudeImageFactory(
 }
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::LatitudeImageFactory::make()
+MaRC::LatitudeImageFactory::make(scale_offset_functor calc_so)
 {
+    constexpr double lat_min = -90;
+    constexpr double lat_max =  90;
+    double scale;
+    double offset;
+
+    if (!calc_so(lat_min, lat_max, scale, offset)) {
+        throw std::range_error("Cannot store latitudes in map of "
+                               "chosen type.");
+    }
+
     return
         std::make_unique<MaRC::LatitudeImage>(this->body_,
-                                              this->graphic_latitudes_);
+                                              this->graphic_latitudes_,
+                                              scale,
+                                              offset);
 }

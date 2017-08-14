@@ -32,8 +32,10 @@ MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
                                    double sub_observ_lon,
                                    double sub_solar_lat,
                                    double sub_solar_lon,
-                                   double range)
-    : VirtualImage(10000, 0)
+                                   double range,
+                                   double scale,
+                                   double offset)
+    : VirtualImage(scale, offset)
     , body_(body)
     , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
     , sub_observ_lon_(sub_observ_lon * C::degree) // Radians

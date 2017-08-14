@@ -55,7 +55,8 @@ namespace MaRC
                         double sub_solar_lon);
 
         /// Create a @c Mu0Image.
-        virtual std::unique_ptr<SourceImage> make();
+        virtual std::unique_ptr<SourceImage> make(
+            scale_offset_functor calc_so);
 
     private:
 

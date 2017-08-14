@@ -59,12 +59,22 @@ namespace MaRC
                      long lines);
 
         /**
-         * @name @c MapCommand Methods.
+         * @name Public @c MapCommand Methods.
          *
-         * Methods required by the @c MapCommand interface.
+         * Public methods required by the @c MapCommand interface.
          */
         //@{
         virtual char const * projection_name() const;
+        //@}
+
+    private:
+
+        /**
+         * @name Private  @c MapCommand Methods.
+         *
+         * Private methods required by the @c MapCommand interface.
+         */
+        //@{
         virtual void initialize_FITS_image(fitsfile * fptr, int & status);
         virtual void make_map_planes(fitsfile * fptr, int & status);
         virtual grid_type make_grid(long samples,

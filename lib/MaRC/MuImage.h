@@ -58,11 +58,18 @@ namespace MaRC
          *                           degrees.
          * @param[in] range          Observer to target center
          *                           distance.
+         * @param[in] scale          Linear scaling value by which
+         *                           cosines will be multiplied.
+         * @param[in] offset         Offset value to be added to
+         *                           cosines after the scaling factor
+         *                           has been applied.
          */
         MuImage(std::shared_ptr<OblateSpheroid> body,
                 double sub_observ_lat,
                 double sub_observ_lon,
-                double range);
+                double range,
+                double scale,
+                double offset);
 
         /**
          * Underlying implementation for

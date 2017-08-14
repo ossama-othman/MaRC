@@ -73,7 +73,7 @@ MaRC::PhotoImageFactory::PhotoImageFactory(
 }
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::PhotoImageFactory::make()
+MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 {
     fitsfile * fptr = 0;
     static const int mode = READONLY;

@@ -27,9 +27,12 @@
 
 
 MaRC::LatitudeImage::LatitudeImage(std::shared_ptr<BodyData> body,
-                                   bool graphic_latitudes)
-  : body_(body)
-  , graphic_latitudes_(graphic_latitudes)
+                                   bool graphic_latitudes,
+                                   double scale,
+                                   double offset)
+    : VirtualImage(scale, offset)
+    , body_(body)
+    , graphic_latitudes_(graphic_latitudes)
 {
 }
 

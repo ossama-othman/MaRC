@@ -34,6 +34,112 @@
 namespace MaRC
 {
     /**
+     * @brief Integer data scale and offset calculation functor.
+     *
+     * Determine the best scale and offset parameters applied to
+     * floating point data read from source images to retain as many
+     * significant digits as possible when storing that data in
+     * integer typed maps.
+     *
+     * @see MaRC::scale_and_offset()
+     *
+     * @internal This functor is not part of public MaRC library API.
+     */
+    template <typename T>
+    struct scale_and_offset_impl
+    {
+        bool operator()(double min,
+                        double max,
+                        double & scale,
+                        double & offset) const
+        {
+            constexpr double T_lowest = std::numeric_limits<T>::lowest();
+            constexpr double T_max    = std::numeric_limits<T>::max();
+            constexpr double type_range = T_max - T_lowest;
+
+            double const data_range = max - min;
+
+            if (data_range < 0 || data_range > type_range) {
+                // min > max or can't fit all data into desired type T.
+                return false;
+            }
+
+            int const exponent =
+                static_cast<int>(std::numeric_limits<T>::digits10)
+                - static_cast<int>(std::log10(data_range));
+
+            scale = std::pow(10, exponent);
+
+            if (min < T_lowest)
+                offset = (T_lowest - min) * scale;
+            else if (max > T_max)
+                offset = (max - T_max) * scale;
+            else
+                offset = 0;
+
+            return true;
+        }
+    };
+
+    /**
+     * @brief @c float typed data scale and offset calculation
+     *        functor.
+     *
+     * Automatic source data scaling is not performed when mapping to
+     * floating point typed maps.  This implementation is basically a
+     * no-op, and returns @a scale and @a offset values that result in
+     * the source data remaining unchanged.
+     *
+     * @see MaRC::scale_and_offset()
+     *
+     * @internal This functor is not part of public MaRC library API.
+     */
+    template <>
+    struct scale_and_offset_impl<float>
+    {
+        bool operator()(double /* min */,
+                        double /* max */,
+                        double & scale,
+                        double & offset) const
+        {
+            // No auto-scaling for floating point map data.
+            scale  = 1;
+            offset = 0;
+
+            return true;
+        }
+    };
+
+    /**
+     * @brief @c double typed data scale and offset calculation
+     *        functor.
+     *
+     * Automatic source data scaling is not performed when mapping to
+     * floating point typed maps.  This implementation is basically a
+     * no-op, and returns @a scale and @a offset values that result in
+     * the source data remaining unchanged.
+     *
+     * @see MaRC::scale_and_offset()
+     *
+     * @internal This functor is not part of public MaRC library API.
+     */
+    template <>
+    struct scale_and_offset_impl<double>
+    {
+        bool operator()(double /* min */,
+                        double /* max */,
+                        double & scale,
+                        double & offset) const
+        {
+            // No auto-scaling for floating point map data.
+            scale  = 1;
+            offset = 0;
+
+            return true;
+        }
+    };
+
+    /**
      * @brief Determine suitable data scale and offset values.
      *
      * Determine the best scale and offset parameters applied to
@@ -82,6 +188,10 @@ namespace MaRC
      * physical_data = (map_data - offset) / scale
      * @endcode
      *
+     * @note The @a scale and @a offset will always be 1 and 0,
+     *       respectively, if the map data type is a floating point
+     *       type, i.e. @c float or @c double.
+     *
      * @attention This function only generates @a scale and @a offset
      *            values that allow data to fit within the map data
      *            range without decreasing the order of magnitude of
@@ -100,10 +210,13 @@ namespace MaRC
      *                       data should be multiplied to maximize the
      *                       number of significant digits prior to
      *                       storing data in an integer typed map.
-     * @param[in,out] offset Offset value to be added data after the
-     *                       scaling factor has been applied to force
-     *                       that data to fit within the integer typed
-     *                       map data range.
+     *                       This will be 1 for floating point typed
+     *                       maps.
+     * @param[in,out] offset Offset value to be added to data after
+     *                       the scaling factor has been applied to
+     *                       force that data to fit within the integer
+     *                       typed map data range.  This will be 0 for
+     *                       floating point typed maps.
      *
      * @retval true  Suitable @a scale and @a offset values were
      *               found.
@@ -119,31 +232,7 @@ namespace MaRC
                           double & scale,
                           double & offset)
     {
-        constexpr double T_lowest = std::numeric_limits<T>::lowest();
-        constexpr double T_max    = std::numeric_limits<T>::max();
-        constexpr double type_range = T_max - T_lowest;
-
-        double const data_range = max - min;
-
-        if (data_range < 0 || data_range > type_range) {
-            // min > max or can't fit all data into desired type T.
-            return false;
-        }
-
-        int const exponent =
-            static_cast<int>(std::numeric_limits<T>::digits10)
-            - static_cast<int>(std::log10(data_range));
-
-        scale = std::pow(10, exponent);
-
-        if (min < T_lowest)
-            offset = (T_lowest - min) * scale;
-        else if (max > T_max)
-            offset = (max - T_max) * scale;
-        else
-            offset = 0;
-
-        return true;
+        return scale_and_offset_impl<T>()(min, max, scale, offset);
     }
 
     /**
@@ -161,10 +250,10 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param s Linear scaling coefficient applied to computed
-         *          data.
-         * @param o Linear offset value applied to all (scaled)
-         *          computed data.
+         * @param[in] s Linear scaling coefficient applied to computed
+         *            data.
+         * @param[in] o Linear offset value applied to all (scaled)
+         *            computed data.
          */
         VirtualImage(double s = 1, double o = 0);
 
@@ -258,7 +347,7 @@ namespace MaRC
          *
          * @return Data offset
          */
-        double offset() const { return scale() * (-this->offset_); }
+        double offset() const { return this->scale() * -this->offset_; }
         //@}
 
     private:

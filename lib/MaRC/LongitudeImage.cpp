@@ -25,6 +25,11 @@
 #include "Constants.h"
 
 
+MaRC::LongitudeImage::LongitudeImage(double scale, double offset)
+    : VirtualImage(scale, offset)
+{
+}
+
 bool
 MaRC::LongitudeImage::read_data_i(double /* lat */,
                                   double lon,

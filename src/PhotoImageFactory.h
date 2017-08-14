@@ -66,7 +66,8 @@ namespace MaRC
                           std::shared_ptr<OblateSpheroid> body);
 
         /// Create a @c PhotoImage.
-        virtual std::unique_ptr<SourceImage> make();
+        virtual std::unique_ptr<SourceImage> make(
+            scale_offset_functor calc_so);
 
         /// Set the flat field image filename.
         void flat_field(char const * name);

@@ -41,6 +41,19 @@ namespace MaRC
      */
     class LongitudeImage : public VirtualImage
     {
+    public:
+
+        /// Constructor
+        /**
+         * @param[in] scale             Linear scaling value by which
+         *                              longitudes should be
+         *                              multiplied.
+         * @param[in] offset            Offset value to be added to
+         *                              longitudes after the scaling
+         *                              factor has been applied.
+         */
+        LongitudeImage(double scale, double offset);
+
     private:
 
         /// Simply return the given longitude in degrees.

@@ -42,7 +42,8 @@ namespace MaRC
     public:
 
         /// Create a @c LongitudeImage.
-        virtual std::unique_ptr<SourceImage> make();
+        virtual std::unique_ptr<SourceImage> make(
+            scale_offset_functor calc_so);
 
     };
 
