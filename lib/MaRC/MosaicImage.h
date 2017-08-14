@@ -78,8 +78,8 @@ namespace MaRC
          * @param[in]  lon  Longitude in radians.
          * @param[out] data Data retrieved from image.
          *
-         * @retval @c true  Data retrieved,
-         * @retval @c false No data retrieved.
+         * @retval true  Data retrieved,
+         * @retval false No data retrieved.
          *
          * @see @c MaRC::SourceImage::read_data();
          */

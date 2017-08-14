@@ -33,12 +33,91 @@
 
 namespace MaRC
 {
-    // Only increase significant digits, not reduce!
+    /**
+     * @brief Determine suitable data scale and offset values.
+     *
+     * Determine the best scale and offset parameters applied to
+     * floating point data read from source images to retain as many
+     * significant digits as possible when storing that data in
+     * integer typed maps.
+     *
+     * Some source images, e.g. @c MaRC::VirtualImage subclasses, only
+     * provide floating point numbers.  That is a problem when storing
+     * those numbers in integer typed maps since significant digits
+     * after the decimal point could be truncated when casting from
+     * floating point to integer.  To prevent loss of significant
+     * digits in such cases, the data should be scaled upward and
+     * potentially offset from their original values so that more
+     * significant digits end up to the left decimal point prior to
+     * assignment to elements in integer typed maps.
+     *
+     * For example, cosine values to be stored in a 16 bit signed
+     * integer map could be scaled by 10000 with a zero offset to
+     * increase the number of significant digits in the map data from
+     * one to four, e.g. 0.1234567 becomes 1234.567, which ends being
+     * stored as 1234 in a 16 bit signed integer map.  A scale factor
+     * of 10000 in this case is suitable since the scaled data range,
+     * -10000 to 10000, never exceeds the 16 bit signed integer data
+     * range, i.e -32768 to 32767.  The chosen scale order of
+     * magnitude is the largest it can be without causing transformed
+     * data to exceed the map data range.
+     *
+     * To reduce potential confusion about what the data actually is,
+     * only power of 10 scale factors (i.e. 1, 10, 100, etc) are
+     * chosen.  Unless the data minimum (@a min) and maximum (@a max)
+     * are not symmetrical and/or the map data type is unsigned, the
+     * offset value will generally be zero.
+     *
+     * The physical data should be transformed according to the
+     * following equation prior to mapping:
+     *
+     * @code
+     * map_data = scale * physical_data + offset
+     * @endcode
+     *
+     * Retrieving the original physical data from the map would then
+     * require the following equation:
+     *
+     * @code
+     * physical_data = (map_data - offset) / scale
+     * @endcode
+     *
+     * @attention This function only generates @a scale and @a offset
+     *            values that allow data to fit within the map data
+     *            range without decreasing the order of magnitude of
+     *            the data, resulting in loss of significant digits.
+     *            In particular, the scale value will always be
+     *            greater than or equal to one if this function
+     *            completes successfully.
+     *
+     * @param[in]     min    The lowest physical value to be plotted
+     *                       on a map.  For example, this would be -1
+     *                       for source images that generate cosines.
+     * @param[in]     max    The highest physical value to be plotted
+     *                       on a map.  For example, this would be 1
+     *                       for source images that generate cosines.
+     * @param[in,out] scale  Linear scaling value by which physical
+     *                       data should be multiplied to maximize the
+     *                       number of significant digits prior to
+     *                       storing data in an integer typed map.
+     * @param[in,out] offset Offset value to be added data after the
+     *                       scaling factor has been applied to force
+     *                       that data to fit within the integer typed
+     *                       map data range.
+     *
+     * @retval true  Suitable @a scale and @a offset values were
+     *               found.
+     * @retval false Suitable @a scale and @a offset values were not
+     *               found.  This can occur if it isn't possible to
+     *               scale data without loss of significant digits,
+     *               such as when a scale factor less than 1 would be
+     *               required.
+     */
     template <typename T>
-    static bool scale_and_offset(double min,
-                                 double max,
-                                 double & scale,
-                                 double & offset)
+    bool scale_and_offset(double min,
+                          double max,
+                          double & scale,
+                          double & offset)
     {
         constexpr double T_lowest = std::numeric_limits<T>::lowest();
         constexpr double T_max    = std::numeric_limits<T>::max();
@@ -66,7 +145,6 @@ namespace MaRC
 
         return true;
     }
-
 
     /**
      * @class VirtualImage
@@ -122,8 +200,8 @@ namespace MaRC
          * @param lon  Longitude in radians.
          * @param data Data retrieved from image.
          *
-         * @retval @c true   Data retrieved
-         * @retval  @c false No data retrieved.
+         * @retval true  Data retrieved
+         * @retval false No data retrieved.
          *
          * @see read_data().
          */
@@ -138,8 +216,8 @@ namespace MaRC
          *            radian.
          * @param lon Longitude in radians.
          *
-         * @retval @c true  Point is visible.
-         * @retval @c false Point is not visible.
+         * @retval true  Point is visible.
+         * @retval false Point is not visible.
          *
          * @note The default implementation always returns @c true.
          */

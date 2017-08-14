@@ -128,7 +128,7 @@ namespace MaRC
     }
 
     /**
-     * Return signum of a real number.
+     * @brief Return signum of a real number.
      *
      * @retval -1 if @a x < 0
      * @retval  0 if @a x = 0
@@ -138,18 +138,19 @@ namespace MaRC
     int
     signum(T x)
     {
-        /**
-         * Iverson bracket notation of the signum function.
-         */
+        // Iverson bracket notation of the signum function.
         return (x > T(0)) - (x < T(0));
     }
 
     /**
-     * Solve the quadratic formula in a numerically stable manner.
+     * @brief Solve the quadratic formula in a numerically stable
+     *        manner.
      *
      * Solve for the roots of a quadratic equation of the form
+     * @code
      *       2
      *     ax  + bx + c = 0
+     * @endcode
      * using a numerically stable form of the Quadratic Formula that
      * avoids catastrophic cancellation (loss of significant digits
      * due to subtraction of two nearly equal numbers).
