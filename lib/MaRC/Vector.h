@@ -28,6 +28,8 @@
 #define MARC_VECTOR_H
 
 
+#include "MaRC/Mathematics.h"
+
 #include <type_traits>
 #include <algorithm>
 #include <iterator>
@@ -77,7 +79,7 @@ namespace MaRC
          *
          * This constructor allows a @c Vector to be initialized like
          * so:
-         *     Vector<int, 3> m{{0, 1, 2}};
+         *     Vector<int, 3> m{0, 1, 2};
          */
         Vector(std::initializer_list<T> rhs)
         {
@@ -101,7 +103,7 @@ namespace MaRC
          *
          * This constructor allows a @c Vector to be initialized like
          * so:
-         *     Vector<int, 3> m{{0, 1, 2}};
+         *     Vector<int, 3> m{0, 1, 2};
          */
         Vector<T, M> & operator=(std::initializer_list<T> rhs)
         {
@@ -354,12 +356,9 @@ template <typename T, std::size_t M>
 bool operator==(MaRC::Vector<T, M> const & lhs,
                 MaRC::Vector<T, M> const & rhs)
 {
-    /**
-     * @bug This implementation only works reliably when the element
-     *      type @c T is an integer, not floating point.
-     */
     return std::equal(lhs.begin(), lhs.end(),
-                      rhs.begin(), rhs.end());
+                      rhs.begin(), rhs.end(),
+                      MaRC::equal_to<T>);
 }
 
 /// Vector inequality operator.

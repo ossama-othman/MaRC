@@ -72,7 +72,7 @@ namespace MaRC
      *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
      */
     template<typename T>
-    typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+    typename std::enable_if<std::is_floating_point<T>::value, bool>::type
     almost_equal(T x, T y, int ulp)
     {
         /*
@@ -185,6 +185,108 @@ namespace MaRC
 
         return true;
     }
+
+    /**
+     * @name Equality Functors and Functions
+     *
+     * @brief Check for equality using type appropriate methods.
+     *
+     * @internal This is not part of the public MaRC library API.
+     */
+    //@{
+    /**
+     * @brief Integer equality functor.
+     *
+     * This equality functor is meant for use when comparing integer
+     * typed values.  It behaves the same way as @c std::equal_to(),
+     * and exists merely to avoid specializing @c std::equal_to() for
+     * floating point types.
+     *
+     * @internal This is not part of the public MaRC library API.
+     *
+     * @todo This header probably isn't the best place to put these
+     *       equality functors and function.  Consider moving them to
+     *       a separate header.
+     */
+    template <typename T>
+    struct equal_to_impl
+    {
+        constexpr bool operator()(T lhs, T rhs) const
+        {
+            return lhs == rhs;
+        }
+    };
+
+    /**
+     * @brief @c float equality functor.
+     *
+     * This equality functor is meant for use when comparing @c float
+     * typed values.  It differs from @c std::equal_to() in that it
+     * checks if floating point values are almost equal rather than
+     * strictly equal since strict comparison of equality of floating
+     * point values is not reliable.
+     *
+     * @internal This is not part of the public MaRC library API.
+     */
+    template <>
+    struct equal_to_impl<float>
+    {
+        bool operator()(float lhs, float rhs) const
+        {
+            constexpr int ulp = 20;
+
+            return MaRC::almost_equal(lhs, rhs, ulp);
+        }
+    };
+
+    /**
+     * @brief @c double equality functor.
+     *
+     * This equality functor is meant for use when comparing @c double
+     * typed values.  It differs from @c std::equal_to() in that it
+     * checks if floating point values are almost equal rather than
+     * strictly equal since strict comparison of equality of floating
+     * point values is not reliable.
+     *
+     * @internal This is not part of the public MaRC library API.
+     */
+    template <>
+    struct equal_to_impl<double>
+    {
+        bool operator()(double lhs, double rhs) const
+        {
+            constexpr int ulp = 20;
+
+            return MaRC::almost_equal(lhs, rhs, ulp);
+        }
+    };
+
+    /**
+     * @brief @c Check for equality of two values.
+     *
+     * This equality comparison function check for equality of two
+     * values, but takes into account if the two values are floating
+     * point.  Integer values end up being compared using the basic
+     * operator==(), but floating point values are compared using
+     * @c MaRC::almost_equal() since strict equality comparisons of
+     * floating point values are not reliable.
+     *
+     * This function may be used as a binary predicate argument to the
+     * standard C++ algorithms, such as @c std::equal().
+     *
+     * @retval true  @a lhs and @a rhs are considered equal to each
+     *               other.
+     * @retval false @a lhs and @a rhs are considered not equal to
+     *               each other.
+     *
+     * @internal This is not part of the public MaRC library API.
+     */
+    template <typename T>
+    bool equal_to(T lhs, T rhs)
+    {
+        return MaRC::equal_to_impl<T>()(lhs, rhs);
+    }
+    //@}
 
 } // MaRC
 

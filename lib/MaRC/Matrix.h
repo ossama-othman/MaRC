@@ -28,6 +28,7 @@
 #define MARC_MATRIX_H
 
 #include "MaRC/Vector.h"
+#include "MaRC/Mathematics.h"
 
 #include <type_traits>
 #include <algorithm>
@@ -38,7 +39,6 @@
 
 namespace MaRC
 {
-
     /**
      * @class Matrix
      *
@@ -462,12 +462,10 @@ template <typename T, std::size_t M, std::size_t N>
 bool operator==(MaRC::Matrix<T, M, N> const & lhs,
                 MaRC::Matrix<T, M, N> const & rhs)
 {
-    /**
-     * @bug This implementation only works reliably when the element
-     *      type @c T is an integer, not floating point.
-     */
     return std::equal(lhs.begin(), lhs.end(),
-                      rhs.begin(), rhs.end());
+                      rhs.begin(), rhs.end(),
+                      MaRC::equal_to<T>);
+
 }
 
 /// Matrix inequality operator.
