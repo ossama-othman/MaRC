@@ -324,8 +324,10 @@ MAP: map01.fits
 
 @noindent
 This states that the name of the file where the map described in the
-rest of the map entry is called ``map01.fits.''  Currently all maps are
-stored in the Flexible Image Transport System (FITS) format.
+rest of the map entry is called @file{map01.fits}.  Currently all maps
+are stored in the Flexible Image Transport System (FITS) format
+(@cite{Astronomy and Astrophysics, Volume 524, Article A42, December
+2010}).
 
 @node    Map File Comments,  Body Data, Map Entries,  Input Files
 @comment node-name,     next,           previous, up
@@ -428,19 +430,19 @@ The @code{DATA_OFFSET} and @code{DATA_SCALE} keywords are analogous to
 the @code{BZERO} and @code{BSCALE} keywords defined by the FITS
 standard.  Using either one of the @code{DATA_OFFSET} or
 @code{DATA_SCALE} keywords, or both, causes MaRC to place @code{BZERO}
-and @code{BSCALE} entries in the output file primary array header (text
-that precedes the map data).  Both, the @code{DATA_OFFSET} and
-@code{@w{DATA_SCALE}} keywords, are optional.  Either one of the two or
-both may be used.  By default, @code{DATA_OFFSET} is set to zero and
-@code{DATA_SCALE} is set to one.  Specifying these two keywords does
-@strong{NOT} modify the data being stored in the output file in anyway.
-It may, however, cause other applications that read the output file to
-transform the data to their proper values.  The @code{DATA_OFFSET} entry
-must be entered immediately before the @code{DATA_SCALE} entry.
-Immediately following these two keywords is the @code{DATA_TYPE}
-keyword.  The @code{DATA_TYPE} keyword is required.  It specifies the
-number format that the mapped data will be stored as.  Available data
-types are:
+and @code{BSCALE} entries in the output file primary array header
+(text that precedes the map data).  Both, the @code{DATA_OFFSET} and
+@code{@w{DATA_SCALE}} keywords, are optional.  Either one of the two
+or both may be used.  By default, @code{DATA_OFFSET} is set to zero
+and @code{DATA_SCALE} is set to one.  Specifying these two keywords
+does @strong{NOT} modify the data being stored in the output file in
+anyway.  It may, however, cause other applications that read the
+output file to transform the data to their true/physical values.  The
+@code{DATA_OFFSET} entry must be entered immediately before the
+@code{DATA_SCALE} entry.  Immediately following these two keywords is
+the @code{DATA_TYPE} keyword.  The @code{DATA_TYPE} keyword is
+required.  It specifies the number format that the mapped data will be
+stored as.  Available data types are:
 @cindex @code{DATA_TYPE}
 @cindex @code{BYTE}
 @cindex @code{SHORT}
@@ -888,7 +890,7 @@ example.
 @cindex Lambert Cylindrical
 Lambert's Cylindrical Normal Equivalent projection is selected using the
 @code{LAMCYLEQ} keyword token.  Currently there are no options available
-for this projecton.  The input file entry would look something like:
+for this projection.  The input file entry would look something like:
 
 @example
 TYPE:   LAMCYLEQ
@@ -1354,10 +1356,10 @@ a map must have at least one plane.
 @cindex map planes
 
 Multiple planes, each containing a different set of data for the map
-projection, may exist.  This section describes how different types map
-planes may be configured.  A map plane may either contain data retrieved
-from a static source (e.g. an image file) or data dynamically computed
-at run-time.
+projection, may exist.  This section describes how different type map
+planes may be configured.  A map plane may either contain data
+retrieved from a static source (e.g. an image file) or data
+computed dynamically at run-time.
 
 @menu
 * Beginning a Plane::     How to begin a plane entry.
@@ -1372,18 +1374,20 @@ at run-time.
 @cindex @code{PLANE}
 @cindex @code{DATA_MIN}
 @cindex @code{DATA_MAX}
-If there is more than one plane in a map, simply place another map plane
-entry immediately following the previous entry.  Map plane entries will
-now be described.  Each map plane entry contains the range of valid
-values that can be mapped and a description of what is being mapped.  A
-plane entry begins with the @code{PLANE} keyword.  Following this is
-an optional entry for the valid data range.  The data range is specified
-by the @code{DATA_MIN} and @code{DATA_MAX} keywords.  All data greater
-than @code{DATA_MIN} and less than @code{DATA_MAX} will be mapped.  If
-one or both of these keywords are not specified then they are assigned
-the smallest and largest possible values, a given platform may have for
-double precision floating point numbers (usually on the order of 1E+300
-or more), respectively.  Here is an example of the beginning of a plane
+If there is more than one plane in a map, simply place another map
+plane entry immediately following the previous entry.  Each map plane
+entry contains an optional range of valid values that can be mapped
+and a description of what is being mapped.  A plane entry begins with
+the @code{PLANE} keyword.  Following this is the optional entry for
+the valid data range.  The data range is specified by the
+@code{DATA_MIN} and @code{DATA_MAX} keywords.  All data greater than
+or equal to @code{DATA_MIN} and less than or equal to @code{DATA_MAX}
+will be mapped.  If one or both of these keywords are not specified
+then they are assigned the lowest and highest possible values a given
+platform may have for double precision floating point numbers (usually
+on the order of 1E+300 or more), respectively.  ``Data'' in this case
+refers to values being mapped @emph{after} any scaling and offsets
+have been applied.  Here is an example of the beginning of a plane
 entry:
 
 @example
@@ -1452,7 +1456,8 @@ semantic value is the filename of the input image, as follows:
 IMAGE: orbit1/frame002.fits    # absolute or relative paths
 @end example
 
-@emph{NOTE: MaRC expects images to be read in upside down.}
+@noindent
+@strong{Caution:} MaRC expects images to be read in upside down.
 
 @node    Nibbling, Image Inversion, Image Overview, Input Images
 @comment node-name,     next,           previous, up
@@ -1484,7 +1489,7 @@ NIBBLE: 10      # Ignore all pixels within 10 pixels of each edge.
 @end example
 
 @noindent
-where as the individual nibbling keywords are used as follows:
+whereas the individual nibbling keywords are used as follows:
 
 @example
 NIBBLE_LEFT:    10
@@ -1494,9 +1499,9 @@ NIBBLE_BOTTOM:  20
 @end example
 
 @noindent
-@emph{Note: @code{NIBBLE_BOTTOM} refers to the number of pixels to be
-ignored on the top of a properly oriented (i.e. not upside-down) image,
-and similarly for @code{NIBBLE_TOP}}
+@strong{Caution:} @code{NIBBLE_BOTTOM} refers to the number of pixels
+to be ignored on the top of a properly oriented (i.e. not upside-down)
+image, and similarly for @code{NIBBLE_TOP}.
 
 @noindent
 Any combination of the individual nibbling entries may be used.  For
