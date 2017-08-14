@@ -648,8 +648,8 @@ planes: | PLANES ':' size         {
            */
           if ($3 > 0) {
               num_planes = static_cast<std::size_t>($3);
-              std::cout << "NOTE: Specifying the number of map "
-                           "planes is no longer necessary.\n";
+              // std::cout << "NOTE: Specifying the number of map "
+              //              "planes is no longer necessary.\n";
           } else {
               std::cerr << "Incorrect number of planes entered: "
                         << $3 << std::endl;
@@ -764,8 +764,8 @@ plane_setup:
         plane_size
         plane_data_range
         plane_type      {
-          image_factory->minimum (minimum);
-          image_factory->maximum (maximum);
+          image_factory->minimum(minimum);
+          image_factory->maximum(maximum);
 
           image_factories.push_back(std::move(image_factory));
 
@@ -786,9 +786,9 @@ plane_size:
                 std::cerr << "Number of planes not entered prior to plane "
                           << "definition." << std::endl;
             } else {
-                std::cout <<
-                    "NOTE: Specifying the map plane number is no "
-                    "longer necessary.\n";
+                // std::cout <<
+                //     "NOTE: Specifying the map plane number is no "
+                //     "longer necessary.\n";
             }
 
             std::size_t const map_plane = static_cast<std::size_t>($3);
