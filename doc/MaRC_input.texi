@@ -1993,10 +1993,10 @@ Create a map of the cosines of the phase angles.
 
 @subsubsection Latitude and Longitude Plane Entries
 In cases where course-grained map grids (@pxref{Lat/Lon Grid}) are not
-suitable, MaRC can create maps of the latitudes and longitudes for each
-valid pixel on the chosen map projection.  Unlike map grids that are
-considered image extensions, latitude and longitude planes will placed
-in the primary map itself.
+suitable, MaRC can create maps of the latitudes and longitudes in
+degrees for each valid pixel on the chosen map projection.  Unlike map
+grids that are considered image extensions, latitude and longitude
+planes will placed in the primary map itself.
 
 To create a map of latitudes a map plane entry such as the following can
 be used:

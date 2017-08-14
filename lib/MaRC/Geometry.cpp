@@ -58,7 +58,7 @@ namespace MaRC
          *             using C++17 features in MaRC.
          */
         template <typename T>
-        typename std::enable_if<std::is_floating_point<T>::value, T>::type
+        typename std::enable_if_t<std::is_floating_point<T>::value, T>
         hypot(T x, T y, T z)
         {
             /*

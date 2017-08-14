@@ -72,7 +72,7 @@ namespace MaRC
      *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
      */
     template<typename T>
-    typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+    typename std::enable_if_t<!std::numeric_limits<T>::is_integer, bool>
     almost_equal(T x, T y, int ulp)
     {
         /*
@@ -116,7 +116,7 @@ namespace MaRC
      *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
      */
     template<typename T>
-    typename std::enable_if<!std::numeric_limits<T>::is_integer, bool>::type
+    typename std::enable_if_t<!std::numeric_limits<T>::is_integer, bool>
     almost_zero(T x, int n)
     {
         /**
