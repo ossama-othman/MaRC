@@ -30,13 +30,13 @@
 
 
 template <typename T>
-MaRC::MapFactory<T>::MapFactory (void)
-  : percent_complete_old_ (0)
+MaRC::MapFactory<T>::MapFactory()
+    : percent_complete_old_(0)
 {
 }
 
 template <typename T>
-MaRC::MapFactory<T>::~MapFactory (void)
+MaRC::MapFactory<T>::~MapFactory()
 {
 }
 
@@ -50,26 +50,47 @@ MaRC::MapFactory<T>::make_map(SourceImage const & source,
 {
     map_type map(samples * lines, Map_traits<T>::empty_value());
 
-    this->plot_map(source,
-                   samples,
-                   lines,
-                   minimum,
-                   maximum,
-                   map);
+    using namespace std::placeholders;
+
+    /**
+     * @todo This is an absurd amount of parameters.  Move most, if
+     *       not all, of the parameters to a structure that will be
+     *       passed in as a single parameter instead.
+     */
+    auto plot = std::bind(&MapFactory<T>::plot,
+                          this,
+                          map,
+                          source,
+                          minimum,
+                          maximum,
+                          _1,   // lat
+                          _2,   // lon
+                          _3,   // percent_complete
+                          _4);  // map array offset
+
+    this->plot_map(samples, lines, plot);
 
     return std::move(map);
 }
 
 template <typename T>
 void
-MaRC::MapFactory<T>::plot(SourceImage const & source,
-                          double lat,
-                          double lon,
+MaRC::MapFactory<T>::plot(map_type & map,
+                          SourceImage const & source,
                           double minimum,
                           double maximum,
+                          double lat,
+                          double lon,
                           unsigned char percent_complete,
-                          T & data)
+                          std::size_t offset)
 {
+    T & data =
+#ifndef NDEBUG
+        map.at(offset);  // Perform bounds check.
+#else
+        map[offset];
+#endif
+
     // Clip minimum, maximum and datum to fit within map data type
     // range, if necessary.
     double datum = 0;
@@ -89,7 +110,7 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
 
     // Provide some output on the mapping progress.
     if (percent_complete == 100 && this->percent_complete_old_ != 0) {
-        std::cout << "100%" << std::endl;
+        std::cout << "100%\n";
         this->percent_complete_old_ = 0;
     } else if (percent_complete > this->percent_complete_old_) {
         if (percent_complete % 20 == 0)
@@ -97,7 +118,7 @@ MaRC::MapFactory<T>::plot(SourceImage const & source,
                 << static_cast<unsigned int>(percent_complete)
                 << std::flush;
         else if (percent_complete % 2 == 0)
-            std::cout << '.' << std::flush;
+            std::cout << '.';
 
         this->percent_complete_old_ = percent_complete;
     }

@@ -27,6 +27,7 @@
 
 #include <vector>
 #include <limits>
+#include <functional>
 #include <cstdint>
 
 
@@ -128,6 +129,21 @@ namespace MaRC
         using MapFactoryBase::grid_type;
         using MapFactoryBase::make_grid;
 
+        /**
+         * Map plot functor type.
+         *
+         * Concrete map factories will call a function of this type in
+         * their @c plot_map() implementation.
+         *
+         * @see @c plot() for parameter details.
+         *
+         */
+        using plot_type =
+            std::function<void(double lat,
+                               double lon,
+                               unsigned char percent_complete,
+                               std::size_t offset)>;
+
         /// Constructor.
         MapFactory();
 
@@ -151,12 +167,13 @@ namespace MaRC
          *                    to be mapped.
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed value map, i.e. all data
-         *                    greater than @ a minimum.
-         * @param[in] maximum Maximum allowed value map, i.e. all data
-         *                    less than @a maximum.
+         * @param[in] minimum Minimum allowed value on map, i.e. all
+         *                    data greater than or equal to
+         *                    @a minimum.
+         * @param[in] maximum Maximum allowed value on map, i.e. all
+         *                    data less than or equal to @a maximum.
          *
-         * @return The generated map image via C++11 move semantics.
+         * @return The generated map image.
          *
          * @note We rely on C++11 move semantics to avoid deep copying
          *       the returned map.
@@ -172,28 +189,14 @@ namespace MaRC
         /**
          * Create the desired map projection.
          *
-         * @param[in]     source  SourceImage object containing the
-         *                        data to be mapped.
-         * @param[in]     samples Number of samples in map.
-         * @param[in]     lines   Number of lines   in map.
-         * @param[in]     minimum Minimum allowed value map, i.e. all
-         *                        data greater than @ a minimum.
-         * @param[in]     maximum Maximum allowed value map, i.e. all
-         *                        data less than @a maximum.
-         * @param[in,out] map     Map container to be populated with
-         *                        map data.  The caller owns the
-         *                        storage.  Subclass implementations
-         *                        should only populate the map with
-         *                        data.
+         * @param[in] samples Number of samples in map.
+         * @param[in] lines   Number of lines   in map.
+         * @param[in] plot    Functor to be called when plotting data
+         *                    on the map.
          */
-        virtual void plot_map(SourceImage const & source,
-                              std::size_t samples,
+        virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              double minimum,
-                              double maximum,
-                              map_type & map) = 0;
-
-    protected:
+                              plot_type plot) = 0;
 
         /// Plot the data on the map.
         /**
@@ -209,7 +212,7 @@ namespace MaRC
          * @param[in] maximum          Maximum allowed value map,
          *                             i.e. all data less than
          *                             @a maximum.
-         * @param[in] percent_complete Percent of map completed
+         * @param[in] percent_complete Percent of map completed.
          * @param[out] data            Data retrieved from source
          *                             image.
          *
