@@ -25,6 +25,7 @@
 #define MARC_IMAGE_FACTORY_H
 
 #include <memory>
+#include <functional>
 
 
 namespace MaRC
