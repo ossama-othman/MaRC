@@ -68,8 +68,10 @@ int yycolumn = 1;
 }
 <pole>{
         [:]             return ':';
-        N | "NORTH"     BEGIN(INITIAL); return 'N';
-        S | "SOUTH"     BEGIN(INITIAL); return 'S';
+        N               BEGIN(INITIAL); return 'N';
+        "NORTH"         BEGIN(INITIAL); return 'N';
+        S               BEGIN(INITIAL); return 'S';
+        "SOUTH"         BEGIN(INITIAL); return 'S';
 }
 
 [:]                     { BEGIN(expression); return ':'; }
