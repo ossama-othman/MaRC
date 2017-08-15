@@ -24,6 +24,9 @@
 
 #include "MaRC/Mu0Image.h"
 
+#include <stdexcept>
+
+
 MaRC::Mu0ImageFactory::Mu0ImageFactory(
     std::shared_ptr<OblateSpheroid> body,
     double sub_solar_lat,
@@ -44,7 +47,7 @@ MaRC::Mu0ImageFactory::make(scale_offset_functor calc_so)
 
     if (!calc_so(mu0_min, mu0_max, scale, offset)) {
         throw std::range_error("Cannot store mu0 (cosines) in map of "
-                               "chosen type.");
+                               "chosen data type.");
     }
 
     return std::make_unique<MaRC::Mu0Image>(this->body_,

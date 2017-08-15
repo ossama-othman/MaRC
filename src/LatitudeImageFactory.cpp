@@ -24,6 +24,8 @@
 
 #include "MaRC/LatitudeImage.h"
 
+#include <stdexcept>
+
 
 MaRC::LatitudeImageFactory::LatitudeImageFactory(
     std::shared_ptr<BodyData> body,
@@ -43,7 +45,7 @@ MaRC::LatitudeImageFactory::make(scale_offset_functor calc_so)
 
     if (!calc_so(lat_min, lat_max, scale, offset)) {
         throw std::range_error("Cannot store latitudes in map of "
-                               "chosen type.");
+                               "chosen data type.");
     }
 
     return
