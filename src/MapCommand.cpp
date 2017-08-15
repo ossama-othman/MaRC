@@ -22,6 +22,7 @@
 
 #include "MapCommand.h"
 #include "FITS_traits.h"
+#include "FITS_memory.h"
 
 #include <MaRC/config.h>
 
@@ -116,7 +117,10 @@ MaRC::MapCommand::execute()
     // Create the map file.
     fitsfile * fptr = 0;
     int status = 0;
-    fits_create_file(&fptr, this->filename_.c_str(), &status);
+    if (fits_create_file(&fptr, this->filename_.c_str(), &status) != 0)
+        return status;
+
+    FITS::file_unique_ptr safe_fptr(fptr);
 
     // Create primary image array HDU.
     this->initialize_FITS_image(fptr, status);
@@ -210,8 +214,6 @@ MaRC::MapCommand::execute()
         // Report any errors before creating the map since map
         // creation can be time consuming.
         fits_report_error(stderr, status);
-
-        fits_close_file(fptr, &status);
 
         return status;
     }
@@ -330,8 +332,6 @@ MaRC::MapCommand::execute()
         // Write a checksum for the grid.
         fits_write_chksum(fptr, &status);
     }
-
-    fits_close_file(fptr, &status);
 
     fits_report_error(stderr, status);
 
