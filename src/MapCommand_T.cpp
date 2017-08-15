@@ -115,6 +115,8 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
 
         // Create the SourceImage.
         std::unique_ptr<SourceImage> image(i->make(scale_and_offset<T>));
+        if (!image)
+            continue;  // Problem creating SourceImage.  Move on.
 
         // Create the map plane.
         /**
