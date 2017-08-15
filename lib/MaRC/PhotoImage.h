@@ -182,7 +182,7 @@ namespace MaRC
         int position_angle(double north);
 
         /// Arcseconds per pixel in image.
-        int arcsec_per_pixel(double a);
+        int arcsec_per_pixel(double arcseconds);
 
         /// Kilometers per pixel in image.
         int km_per_pixel(double k);
@@ -425,9 +425,6 @@ namespace MaRC
 
         /// Position angle in the image NOT in the sky.
         double position_angle_;
-
-        /// Arcseconds per pixel.
-        double arcsec_per_pixel_;
 
         /// Kilometers per pixel at plane that passes through body
         /// center.
