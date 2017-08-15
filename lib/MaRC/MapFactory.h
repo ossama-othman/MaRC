@@ -201,20 +201,33 @@ namespace MaRC
         /// Plot the data on the map.
         /**
          * Plot the data at given latitude and longitude on the map.
+         * Map implementation end up calling this function indirectly
+         * through a function object that shields the caller from most
+         * of these parameters.
          *
-         * @param[in] source           SourceImage object containing
-         *                             the datato be mapped.
-         * @param[in] lat              Bodycentric latitude
-         * @param[in] lon              Bodycentric longitude
-         * @param[in] minimum          Minimum allowed value map,
-         *                             i.e. all data greater than
-         *                             @a minimum.
-         * @param[in] maximum          Maximum allowed value map,
-         *                             i.e. all data less than
-         *                             @a maximum.
-         * @param[in] percent_complete Percent of map completed.
-         * @param[out] data            Data retrieved from source
-         *                             image.
+         * @see @c plot_type type alias
+         * @see @c plot_map()
+         *
+         * @param[in]     source           SourceImage object
+         *                                 containing the data to be
+         *                                 mapped.
+         * @param[in]     minimum          Minimum allowed value on
+         *                                 map, i.e. all data greater
+         *                                 than or equal to
+         *                                 @a minimum.
+         * @param[in]     maximum          Maximum allowed value on
+         *                                 map, i.e. all data less
+         *                                 than or equal to
+         *                                 @a maximum.
+         * @param[in]     lat              Bodycentric latitude
+         * @param[in]     lon              Bodycentric longitude
+         * @param[in]     percent_complete Percent of map completed.
+         * @param[in]     offset           Map offset corresponding to
+         *                                 the location in the
+         *                                 underlying map array where
+         *                                 the data will be plotted.
+         * @param[in,out] map              Map container where data
+         *                                 will be plotted.
          *
          * @todo Currently subclasses must call this method in their
          *       @c plot_map() implementation.  That seems like a
@@ -223,12 +236,13 @@ namespace MaRC
          *       as well as calling this @c plot() method.
          */
         void plot(SourceImage const & source,
-                  double lat,
-                  double lon,
                   double minimum,
                   double maximum,
+                  double lat,
+                  double lon,
                   unsigned char percent_complete,
-                  T & data);
+                  std::size_t offset,
+                  map_type & map);
 
     private:
 

@@ -59,14 +59,14 @@ MaRC::MapFactory<T>::make_map(SourceImage const & source,
      */
     auto plot = std::bind(&MapFactory<T>::plot,
                           this,
-                          map,
-                          source,
+                          std::cref(source),
                           minimum,
                           maximum,
                           _1,   // lat
                           _2,   // lon
                           _3,   // percent_complete
-                          _4);  // map array offset
+                          _4,   // map array offset
+                          std::ref(map));
 
     this->plot_map(samples, lines, plot);
 
@@ -75,14 +75,14 @@ MaRC::MapFactory<T>::make_map(SourceImage const & source,
 
 template <typename T>
 void
-MaRC::MapFactory<T>::plot(map_type & map,
-                          SourceImage const & source,
+MaRC::MapFactory<T>::plot(SourceImage const & source,
                           double minimum,
                           double maximum,
                           double lat,
                           double lon,
                           unsigned char percent_complete,
-                          std::size_t offset)
+                          std::size_t offset,
+                          map_type & map)
 {
     T & data =
 #ifndef NDEBUG
@@ -118,7 +118,7 @@ MaRC::MapFactory<T>::plot(map_type & map,
                 << static_cast<unsigned int>(percent_complete)
                 << std::flush;
         else if (percent_complete % 2 == 0)
-            std::cout << '.';
+            std::cout << '.' << std::flush;
 
         this->percent_complete_old_ = percent_complete;
     }

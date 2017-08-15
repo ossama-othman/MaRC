@@ -49,11 +49,11 @@ namespace MaRC
     {
     public:
 
-        /// @typedef Type returned from @c make_map() method.
-        typedef typename MapFactory<T>::map_type  map_type;
-
         /// @typedef Type returned from @c make_grid() method.
         typedef typename MapFactory<T>::grid_type grid_type;
+
+        /// @typedef Type of functor passed to @c plot_map() method.
+        using typename MapFactory<T>::plot_type;
 
         /// Constructor.
         /**
@@ -90,12 +90,9 @@ namespace MaRC
          *
          * @see @c MaRC::MapFactory<T>::plot_map().
          */
-        virtual void plot_map(SourceImage const & source,
-                              std::size_t samples,
+        virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              double minimum,
-                              double maximum,
-                              map_type & map);
+                              plot_type plot);
 
         /**
          * Create the Polar Stereographic map latitude/longitude
