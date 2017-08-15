@@ -150,6 +150,7 @@ XCOMMENT: Test FITS extension comment.
                         REMOVE_SKY:             NO
                         SAMPLE_CENTER:          2617.95
                         LINE_CENTER:            843.217
+                        # FLAT_FIELD:             test.fits.gz
                         GEOM_CORRECT:           YES
                         SUB_OBSERV_LAT:         -0.06
                         SUB_OBSERV_LON:         213.45 E

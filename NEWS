@@ -24,6 +24,8 @@
         SHORT map types, but not the other types.  As described above,
         a better scaling factor and offset will be chosen.
 
+- Corrected problem where flat-field correction would fail.
+
 - Improved accuracy of vector magnitude calculations by leveraging an
   implementation that avoids floating point underflow and overflow, as
   well as having extremely low floating point error.
