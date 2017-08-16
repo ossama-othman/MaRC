@@ -1179,7 +1179,7 @@ MaRC::PhotoImage::emi_ang_limit(double angle)
     else if (angle == static_cast<double>(90)) {
         // Value equal to 90 means no cut-off, so we don't
         // switch on the emission angle cut-off code.
-        flags::unset (this->flags_, EMI_ANG_LIMIT);
+        flags::unset(this->flags_, EMI_ANG_LIMIT);
     } else {
         std::cerr << "Incorrect value value passed to EmiAngLimit routine: "
                   << angle << '\n';
@@ -1362,6 +1362,15 @@ MaRC::PhotoImage::latlon2pix(double lat,
 
     // Convert to observer coordinates.
     DVector const Rotated(this->body2observ_ * Obs);
+
+    // This assertion should never be triggered since we verified that
+    // the point at the given latitude and longitude is visible before
+    // calling this method.
+    //
+    // If this assertion does trigger that would mean the point is on
+    // other side of image plane / body, which indicates a problem
+    // with the math!
+    assert(Rotated[1] <= this->normal_range_);
 
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
