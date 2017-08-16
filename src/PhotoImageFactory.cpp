@@ -153,29 +153,27 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 
     // Perform flat fielding if a flat field file was provided.
     int const result = flat_field_correct(naxes, img);
-    
+
     if (result != 0) {
         // Report any errors before creating the map since map
         // creation can be time consuming.
         return std::unique_ptr<SourceImage>();
     }
 
+    std::size_t const samples = static_cast<std::size_t>(naxes[0]);
+    std::size_t const lines   = static_cast<std::size_t>(naxes[1]);
+
     // Invert image if desired.
     if (this->invert_h_)
-        this->invert_h(img,
-                       static_cast<std::size_t>(naxes[0]),
-                       static_cast<std::size_t>(naxes[1]));
+        this->invert_h(img, samples, lines);
 
     if (this->invert_v_)
-        this->invert_v(img,
-                       static_cast<std::size_t>(naxes[0]),
-                       static_cast<std::size_t>(naxes[1]));
+        this->invert_v(img, samples, lines);
 
     std::unique_ptr<MaRC::GeometricCorrection> gc;
     if (this->geometric_correction_) {
         gc =
-            std::make_unique<MaRC::GLLGeometricCorrection>(
-                static_cast<std::size_t>(naxes[0]) /* samples */);
+            std::make_unique<MaRC::GLLGeometricCorrection>(samples);
     } else {
         gc = std::make_unique<MaRC::NullGeometricCorrection>();
     }
@@ -184,8 +182,8 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
         std::make_unique<MaRC::PhotoImage>(
             this->body_,
             std::move(img),
-            static_cast<std::size_t>(naxes[0]), // samples
-            static_cast<std::size_t>(naxes[1]), // lines
+            samples,
+            lines,
             std::move(gc)));
 
     photo->nibble_left  (this->nibble_left_);
