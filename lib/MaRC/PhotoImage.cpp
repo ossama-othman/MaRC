@@ -148,76 +148,36 @@ MaRC::PhotoImage::operator==(PhotoImage const & img)
 bool
 MaRC::PhotoImage::is_visible(double lat, double lon) const
 {
-    //   const double radius = this->body_->centric_radius(lat);
-    double const latg   = this->body_->graphic_latitude(lat);
+    /* mu is the cosine of the angle between
+     * -- the vector from the given point to the observer
+     * -- the normal vector to the surface at the given point
+     * For a convex body, if this is positive, the point is
+     * on the visible side of the planet, and if it's negative,
+     * the point is on the far side of the planet.
+     */
+    if (this->body_->mu(this->sub_observ_lat_,
+                        this->sub_observ_lon_,
+                        lat,
+                        lon,
+                        this->range_) < 0
 
-    /*
-    double const cosine =
-        (radius * std::cos(lat - latg) -
-        this->range_ * std::sin(this->sub_observ_lat_) * std::sin(latg)) /
-        (this->range_ * std::cos(this->sub_observ_lat_) * std::cos(latg));
-
-    double lower, upper;
-
-    if (cosine >= -1 && cosine <= 1) {
-        // Partial range of longitudes are visible.
-
-        double const edge = std::abs(std::acos(cosine));
-
-        lower = this->sub_observ_lon_ - edge;
-        upper = this->sub_observ_lon_ + edge;
-    }  else if (cosine < -1) {
-        // Full 360 degree visible longitude range.
-        lower = this->sub_observ_lon_ - C::pi;
-        upper = this->sub_observ_lon_ + C::pi;
-    } else {
-        return false;  // Not visible
-    }
-    */
-
-    if (flags::check(this->flags_, USE_TERMINATOR)) {
-        // The following equation assumes the sun to be an infinite
-        // distance away from the observed body.
-
-        // tcosine =
-        //   std::pow(this->body_->eq_rad()
-        //   / this->body_->pol_rad(), 2.0)
-        //   * std::tan(lat) * std::tan(this->sub_solar_lat_);
-        double const tcosine = std::tan(latg) * std::tan(this->sub_solar_lat_);
-
-        if (tcosine >= -1 && tcosine <= 1) {
-            double const tedge = std::abs(std::acos (-tcosine));
-
-            double const lower_terminator = this->sub_solar_lon_ - tedge;
-            double const upper_terminator = this->sub_solar_lon_ + tedge;
-
-            /*
-              if (lower_terminator > lower)
-                  lower = lower_terminator;
-
-              if (upper_terminator < upper)
-                  upper = upper_terminator;
-            */
-
-            return (lon >= lower_terminator && lon <= upper_terminator);
-        } else {
-            return false;
-        }
+        /* mu0 is the angle between
+         * -- the vector from the given point to the sun
+         * -- the normal vector to the surface at the given point
+         * The sun is assumed to be an infinite distance away.
+         * For a convex body, if this is positive, the point is
+         * on the lit side of the planet, and if it's negative,
+         * the point is on the dark side of the planet.
+         */
+        || (flags::check (this->flags_, USE_TERMINATOR)
+            && this->body_->mu0(this->sub_solar_lat_,
+                                this->sub_solar_lon_,
+                                lat,
+                                lon) < 0)) {
+        return false;
     }
 
-    /*
-    // Wrap around if necessary.
-    if (lower > lon)
-        lower -= C::_2pi;
-    else if (upper < lon)
-        upper += C::_2pi;
-
-    // Now check if longitude at given latitude is visible.
-    if (lon < lower || lon > upper)
-        return false;  // Not visible
-    */
-
-    // Assume it is visible regardless of location of terminator.
+    // Passed both the far-side and (if requested) the dark-side check.
     return true;
 }
 
