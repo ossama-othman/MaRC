@@ -27,7 +27,7 @@
 #include <stdexcept>
 
 
-MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<OblateSpheroid> body,
+MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<BodyData> body,
                                      double sub_observ_lat,
                                      double sub_observ_lon,
                                      double range)

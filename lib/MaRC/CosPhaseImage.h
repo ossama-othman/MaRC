@@ -32,7 +32,7 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
+    class BodyData;
 
     /**
      * @class CosPhaseImage
@@ -50,9 +50,8 @@ namespace MaRC
 
         /// Constructor
         /**
-         * @param[in] body           @c OblateSpheroid object
-         *                           representing the body being
-         *                           mapped.
+         * @param[in] body           Object representing the body
+         *                           being mapped.
          * @param[in] sub_observ_lat Bodycentric sub-observer latitude
          *                           in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
@@ -67,7 +66,7 @@ namespace MaRC
          *                           cosines after the scaling factor
          *                           has been applied.
          */
-        CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
+        CosPhaseImage(std::shared_ptr<BodyData> body,
                       double sub_observ_lat,
                       double sub_observ_lon,
                       double sub_solar_lat,
@@ -88,20 +87,12 @@ namespace MaRC
 
         /// Is point at given latitude and longitude visible to the
         /// observer?
-        /**
-         * @see MaRC::VirtualImage::is_visible().
-         */
         virtual bool is_visible(double lat, double lon) const;
 
     private:
 
         /// Object representing the body being mapped.
-        /**
-         * @note OblateSpheroid is used instead of BodyData since some
-         *       code in this implementation assumes that the body is
-         *       modeled as an oblate spheroid.
-         */
-        std::shared_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Bodycentric sub-observer latitude in radians.
         double const sub_observ_lat_;

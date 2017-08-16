@@ -29,7 +29,7 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
+    class BodyData;
 
     /**
      * @class MuImageFactory
@@ -44,9 +44,7 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in] body           Body being mapped (currently must
-         *                           be represented as an oblate
-         *                           spheroid).
+         * @param[in] body           Body being mapped.
          * @param[in] sub_observ_lat Bodycentric sub-observer latitude
          *                           in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
@@ -54,7 +52,7 @@ namespace MaRC
          * @param[in] range          Observer to target center
          *                           distance.
          */
-        MuImageFactory(std::shared_ptr<OblateSpheroid> body,
+        MuImageFactory(std::shared_ptr<BodyData> body,
                        double sub_observ_lat,
                        double sub_observ_lon,
                        double range);
@@ -66,12 +64,7 @@ namespace MaRC
     private:
 
         /// Object representing the body being mapped.
-        /**
-         * @note OblateSpheroid is used instead of BodyData since some
-         *       code in this implementation assumes that the body is
-         *       modeled as an oblate spheroid.
-         */
-        std::shared_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Sub-Observer Latitude -- BodyCENTRIC (degrees).
         double sub_observ_lat_;
