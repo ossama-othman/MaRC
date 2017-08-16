@@ -37,11 +37,12 @@ namespace MaRC
     /**
      * @class CosPhaseImage
      *
-     * @brief Cosine of phase angle virtual image.
+     * @brief Cosine of phase angle (i.e. cos(&phi;)) virtual
+     *        image.
      *
      * This concrete VirtualImage returns the cosine of the Sun-point
-     * on surface of body-Observer (phase) angle on the body being
-     * mapped.  The observer range is taken into account.
+     * on surface of body-Observer (phase) angle, &phi;, on the body
+     * being mapped.  The observer range is taken into account.
      */
     class CosPhaseImage : public VirtualImage
     {
@@ -77,7 +78,7 @@ namespace MaRC
 
     private:
 
-        /// Compute cosine of phase angle.
+        /// Compute cosine of phase angle, @c cos(&phi;).
         /**
          * @see MaRC::VirtualImage::read_data_i().
          */

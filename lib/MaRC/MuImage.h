@@ -37,7 +37,7 @@ namespace MaRC
     /**
      * @class MuImage
      *
-     * @brief Cosine of emission angle virtual image.
+     * @brief Cosine of emission angle (i.e. &mu;) virtual image.
      *
      * This concrete @c VirtualImage returns the cosine of the
      * emission angle on the body being mapped.  The observer range is
@@ -87,7 +87,7 @@ namespace MaRC
 
     private:
 
-        /// Compute cosine of emission angle.
+        /// Compute cosine of emission angle, &mu;.
         /**
          * @see MaRC::VirtualImage::read_data_i().
          */

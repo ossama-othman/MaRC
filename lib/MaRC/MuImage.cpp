@@ -65,7 +65,11 @@ MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
     /**
      * @todo This is ugly.  The visibility check is specific to an
      *       oblate spheroid.  It should really be moved to the
-     *       @c OblateSpheroid strategy.
+     *       @c OblateSpheroid strategy.  Alternatively, is there any
+     *       reason why we can't check if this->body_->mu() < 0 to
+     *       determine if the given latitude and longitude isn't
+     *       visible?  That would allow us to drop the OblateSpheroid
+     *       dependency entirely.
      */
 
     double const latg   = body.graphic_latitude(lat);

@@ -668,14 +668,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     DVector OA_O;
 
     // Unit vector representing North pole in body coordinates
-    NPole[0] = 0;
-    NPole[1] = 0;
     NPole[2] = 1;
 
     // OA_O is the optical axis vector in observer coordinates
-    OA_O[0] = 0;
     OA_O[1] = Geometry::Magnitude(OA); // Magnitude of optical axis.
-    OA_O[2] = 0;
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
     Geometry::toUnitVector(UnitOpticalAxis);
@@ -709,11 +705,11 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     observ2body = o2b;
 
     double diff_magnitude =
-        Geometry::Magnitude (OA_O - o2b * UnitOpticalAxis);
+        Geometry::Magnitude(OA_O - o2b * UnitOpticalAxis);
 
     // Try second possibility
     SubLatMod[1] = C::pi - SubLatMod[0];
-    Geometry::RotX (-SubLatMod[1], range_b, rotated);
+    Geometry::RotX(-SubLatMod[1], range_b, rotated);
     R_b = rotated;
 
     double const Ztwist2 = std::atan2(R_b[0], -R_b[1]);
@@ -728,10 +724,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     double Ztwist, SubLatModified;
 #endif  /* DEBUG */
 
-    if (diff_magnitude > Geometry::Magnitude (OA_O -
-                                              o2b * UnitOpticalAxis)) {
+    if (diff_magnitude > Geometry::Magnitude(OA_O -
+                                             o2b * UnitOpticalAxis)) {
         diff_magnitude =
-            Geometry::Magnitude (OA_O - o2b * UnitOpticalAxis);
+            Geometry::Magnitude(OA_O - o2b * UnitOpticalAxis);
         observ2body = o2b;
 
 #ifdef DEBUG
