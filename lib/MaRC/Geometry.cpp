@@ -63,17 +63,16 @@ namespace MaRC
         {
             /*
               Implement the missing three parameter std::hypot()
-              function by nesting two std::hypot() calls.  This works
-              since:
-                  Given:
-                      std::hypot(x,y)   = sqrt(x*x + y*y)
-                  and:
-                      std::hypot(x,y,z) = sqrt(x*x + y*y + z*z)
-                  We have:
-                      std::hypot(std::hypot(x, y), z)
-                      = sqrt((sqrt(x*x + y*y) * sqrt(x*x + y*y)) + z*z)
-                      = sqrt(x*x + y*y + z*z) =
-                      = std::hypot(x, y, z)
+              function by nesting two std::hypot() calls.  Given a
+              hypotenuse in the x-y plane orthogonal to the z-axis:
+                  std::hypot(x,y)   = sqrt(x*x + y*y)
+              and:
+                  std::hypot(x,y,z) = sqrt(x*x + y*y + z*z)
+              We have:
+                  std::hypot(std::hypot(x, y), z)
+                  = sqrt((sqrt(x*x + y*y) * sqrt(x*x + y*y)) + z*z)
+                  = sqrt(x*x + y*y + z*z)
+                  = std::hypot(x, y, z)
              */
             return std::hypot(std::hypot(x, y), z);
         }
@@ -88,12 +87,16 @@ MaRC::Geometry::RotX(double angle,
                      DVector const & vec,
                      DVector & rotated)
 {
-  double const cosine = std::cos(angle);
-  double const sine   = std::sin(angle);
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
 
-  rotated[0] =  vec[0];
-  rotated[1] =  vec[1] * cosine + vec[2] * sine;
-  rotated[2] = -vec[1] * sine   + vec[2] * cosine;
+    // { 1,           0,          0 }   { vec[0] }
+    // { 0,  cos(angle), sin(angle) } * { vec[1] }
+    // { 0, -sin(angle), cos(angle} }   { vec[2] }
+
+    rotated[0] =  vec[0];
+    rotated[1] =  vec[1] * cosine + vec[2] * sine;
+    rotated[2] = -vec[1] * sine   + vec[2] * cosine;
 }
 
 void
@@ -101,12 +104,16 @@ MaRC::Geometry::RotY(double angle,
                      DVector const & vec,
                      DVector & rotated)
 {
-  double const cosine = std::cos(angle);
-  double const sine   = std::sin(angle);
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
 
-  rotated[0] = vec[0] * cosine - vec[2] * sine;
-  rotated[1] = vec[1];
-  rotated[2] = vec[0] * sine   + vec[2] * cosine;
+    // { cos(angle), 0, -sin(angle) }   { vec[0] }
+    // { 0,          1,           0 } * { vec[1] }
+    // { sin(angle), 0,  cos(angle} }   { vec[2] }
+
+    rotated[0] = vec[0] * cosine - vec[2] * sine;
+    rotated[1] = vec[1];
+    rotated[2] = vec[0] * sine   + vec[2] * cosine;
 }
 
 void
@@ -114,63 +121,79 @@ MaRC::Geometry::RotZ(double angle,
                      DVector const & vec,
                      DVector &rotated)
 {
-  double const cosine = std::cos(angle);
-  double const sine   = std::sin(angle);
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
 
-  rotated[0] =  vec[0] * cosine + vec[1] * sine;
-  rotated[1] = -vec[0] * sine   + vec[1] * cosine;
-  rotated[2] =  vec[2];
+    // {  cos(angle), sin(angle), 0 }   { vec[0] }
+    // { -sin(angle), cos(angle}, 0 } * { vec[1] }
+    // {  0,          0,          1 }   { vec[2] }
+
+    rotated[0] =  vec[0] * cosine + vec[1] * sine;
+    rotated[1] = -vec[0] * sine   + vec[1] * cosine;
+    rotated[2] =  vec[2];
 }
 
 MaRC::DMatrix
 MaRC::Geometry::RotXMatrix(double angle)
 {
-  MaRC::DMatrix matrix;
+    MaRC::DMatrix matrix;
 
-  double const cosine = std::cos(angle);
-  double const sine   = std::sin(angle);
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
 
-  matrix(0, 0) =  1;
-  matrix(1, 1) =  cosine;
-  matrix(1, 2) =  sine;
-  matrix(2, 1) = -sine;
-  matrix(2, 2) =  cosine;
+    // { 1,           0,          0 }
+    // { 0,  cos(angle), sin(angle) }
+    // { 0, -sin(angle), cos(angle} }
 
-  return matrix;
+    matrix(0, 0) =  1;
+    matrix(1, 1) =  cosine;
+    matrix(1, 2) =  sine;
+    matrix(2, 1) = -sine;
+    matrix(2, 2) =  cosine;
+
+    return matrix;
 }
 
 MaRC::DMatrix
 MaRC::Geometry::RotYMatrix(double angle)
 {
-  MaRC::DMatrix matrix;
+    MaRC::DMatrix matrix;
 
-  double const cosine = std::cos(angle);
-  double const sine   = std::sin(angle);
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
 
-  matrix(0, 0) =  cosine;
-  matrix(0, 2) = -sine;
-  matrix(1, 1) =  1;
-  matrix(2, 0) =  sine;
-  matrix(2, 2) =  cosine;
+    // { cos(angle), 0, -sin(angle) }
+    // {          0, 1,           0 }
+    // { sin(angle), 0,  cos(angle} }
 
-  return matrix;
+    matrix(0, 0) =  cosine;
+    matrix(0, 2) = -sine;
+    matrix(1, 1) =  1;
+    matrix(2, 0) =  sine;
+    matrix(2, 2) =  cosine;
+
+    return matrix;
 }
 
 MaRC::DMatrix
 MaRC::Geometry::RotZMatrix(double angle)
 {
-  MaRC::DMatrix matrix;
+    MaRC::DMatrix matrix;
 
-  double const cosine = std::cos(angle);
-  double const sine   = std::sin(angle);
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
 
-  matrix(0, 0) =  cosine;
-  matrix(0, 1) =  sine;
-  matrix(1, 0) = -sine;
-  matrix(1, 1) =  cosine;
-  matrix(2, 2) =  1;
+    // {  cos(angle), sin(angle), 0 }
+    // { -sin(angle), cos(angle}, 0 }
+    // {  0,          0,          1 }
 
-  return matrix;
+    matrix(0, 0) =  cosine;
+    matrix(0, 1) =  sine;
+    matrix(1, 0) = -sine;
+    matrix(1, 1) =  cosine;
+    matrix(2, 2) =  1;
+
+    return matrix;
 }
 
 double
