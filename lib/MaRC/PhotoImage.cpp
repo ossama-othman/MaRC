@@ -1225,8 +1225,10 @@ MaRC::PhotoImage::read_data(double lat,
     if (!this->latlon2pix(lat, lon, x, z))
         return false;
 
-    std::size_t const i = static_cast<std::size_t>(std::round(x));
-    std::size_t const k = static_cast<std::size_t>(std::round(z));
+    // x and z are 'pixel coordinates'.  In 'pixel coordinates', 0..1
+    // is inside pixel 0, 1..2 is inside pixel 1, etc.
+    std::size_t const i = static_cast<std::size_t>(std::floor(x));
+    std::size_t const k = static_cast<std::size_t>(std::floor(z));
 
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
@@ -1356,29 +1358,15 @@ MaRC::PhotoImage::latlon2pix(double lat,
     Coord[1] = -radius * std::cos(lat) * std::cos(longitude);
     Coord[2] =  radius * std::sin(lat);
 
-//   Rotated = this->body2observ_ * Coord; // Convert to observer coordinates
-
-//   x = (Rotated[0] / this->km_per_pixel_ - (OA_s_ - this->sample_center_)) * this->normal_range_ /
-//     (this->normal_range_ + Rotated[1]);
-//   z = (Rotated[2] / this->km_per_pixel_ + (OA_l_ - this->line_center_)) * this->normal_range_ /
-//     (this->normal_range_ + Rotated[1]);
-                     // Why should we add instead of subtract?
-                     // For some reason incorrect results occur if
-                     // the supposedly correct subtraction is used.
-
     DVector const Obs(Coord - this->range_b_);
 
     // Convert to observer coordinates.
     DVector const Rotated(this->body2observ_ * Obs);
 
-    if (Rotated[1] > this->normal_range_)
-        return false;  // On other side of image plane / body.
-
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
 
     x += this->OA_s_;
-    //  z += this->OA_l_;
     z = this->OA_l_ - z; // Assumes line numbers increase top to bottom.
 
     //std::cout << "* x = " << x << "\tz = " << z << '\n';
