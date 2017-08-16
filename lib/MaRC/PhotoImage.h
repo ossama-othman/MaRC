@@ -321,11 +321,11 @@ namespace MaRC
 
         /// Convert (latitude, longitude) to (sample, sine)
         /**
-         * @param[in] lat  Bodycentric (e.g. planetocentric) latitude
+         * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
          *                 in radians.
-         * @param[in] lon  Longitude in radians.
-         * @param[out] x   Floating point value corresponding to @c i.
-         * @param[out] z   Floating point value corresponding to @c k.
+         * @param[in]  lon Longitude in radians.
+         * @param[out] x   Sample at given latitude and longitude.
+         * @param[out] z   Line at given latitude and longitude.
          *
          * @retval true  Conversion succeeded.
          * @retval false Conversion failed.
