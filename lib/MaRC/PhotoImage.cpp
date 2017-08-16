@@ -1222,9 +1222,7 @@ MaRC::PhotoImage::read_data(double lat,
 
     double x = 0, z = 0;
 
-    if (!this->latlon2pix(lat, lon, x, z)
-        || x < 0    // Prevent integer underflow since we're casting
-        || z < 0)   // to an unsigned integer below.
+    if (!this->latlon2pix(lat, lon, x, z))
         return false;
 
     std::size_t const i = static_cast<std::size_t>(std::round(x));
@@ -1388,7 +1386,9 @@ MaRC::PhotoImage::latlon2pix(double lat,
     // Convert from object space to image space.
     this->geometric_correction_->object_to_image(z, x);
 
-    return true;
+    // x and z are both positive if the point at the given latitude
+    // and longitude is in the image.
+    return x >= 0 && z >= 0;
 }
 
 void
