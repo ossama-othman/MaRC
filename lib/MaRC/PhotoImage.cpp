@@ -148,37 +148,42 @@ MaRC::PhotoImage::operator==(PhotoImage const & img)
 bool
 MaRC::PhotoImage::is_visible(double lat, double lon) const
 {
-    /* mu is the cosine of the angle between
-     * -- the vector from the given point to the observer
-     * -- the normal vector to the surface at the given point
-     * For a convex body, if this is positive, the point is
-     * on the visible side of the planet, and if it's negative,
-     * the point is on the far side of the planet.
-     */
-    if (this->body_->mu(this->sub_observ_lat_,
+    /*
+      mu is the cosine of the angle between:
+
+      -- the vector from the given point to the observer
+      -- the normal vector to the surface at the given point
+
+      For a convex body, if this is positive, the point is on the
+      visible side of the planet, and if it's negative, the point is
+      on the far side of the planet.
+    */
+    return
+        this->body_->mu(this->sub_observ_lat_,
                         this->sub_observ_lon_,
                         lat,
                         lon,
-                        this->range_) < 0
+                        this->range_) >= 0
 
-        /* mu0 is the angle between
-         * -- the vector from the given point to the sun
-         * -- the normal vector to the surface at the given point
-         * The sun is assumed to be an infinite distance away.
-         * For a convex body, if this is positive, the point is
-         * on the lit side of the planet, and if it's negative,
-         * the point is on the dark side of the planet.
-         */
+        /*
+          mu0 is the angle between:
+
+          -- the vector from the given point to the sun
+          -- the normal vector to the surface at the given point
+
+          The sun is assumed to be an infinite distance away.  For a
+          convex body, if this is positive, the point is on the lit
+          side of the planet, and if it's negative, the point is on
+          the dark side of the planet.
+        */
         || (flags::check (this->flags_, USE_TERMINATOR)
             && this->body_->mu0(this->sub_solar_lat_,
                                 this->sub_solar_lon_,
                                 lat,
-                                lon) < 0)) {
-        return false;
-    }
+                                lon) >= 0);
 
-    // Passed both the far-side and (if requested) the dark-side check.
-    return true;
+     // Visible if both the far-side and (if requested) the dark-side
+     // checks passed.
 }
 
 int
