@@ -194,19 +194,17 @@ MaRC::MapCommand::execute()
     // file.
     if (this->transform_data_) {
         fits_update_key(fptr,
-                        TFLOAT,
+                        TDOUBLE,
                         "BSCALE",
                         &this->bscale_,
-                        "Coefficient of linear term in the "
-                        "scaling equation.",
+                        "linear data scaling coefficient",
                         &status);
 
         fits_update_key(fptr,
-                        TFLOAT,
+                        TDOUBLE,
                         "BZERO",
                         &this->bzero_,
-                        "Physical value corresponding to an array "
-                        "value of zero.",
+                        "physical value corresponding to zero in the map",
                         &status);
     }
 
@@ -399,4 +397,64 @@ void
 MaRC::MapCommand::image_factories(image_factories_type factories)
 {
     this->image_factories_ = std::move(factories);
+}
+
+void
+MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
+                                            std::size_t num_planes,
+                                            int bitpix
+                                            SourceImage const * image,
+                                            int & status)
+{
+    VirtualImage const * const v =
+        dynamic_cast<VirtualImage const *>(image);
+
+    if (!v)
+        return;  // Not a VirtualImage subclass instance.
+
+    double scale  = v->scale();
+    double offset = v->offset();
+
+    /**
+     * @todo Write the BSCALE, BZERO and BUNIT value if a multi-plane
+     *       map is comprised entirely of the unit of data
+     *       (e.g. cosines, degrees, etc).  No need to limit that to
+     *       single plane maps in that case.
+     */
+    if (num_planes == 1) {
+        // We're the sole plane in the map meaning we can update
+        // actual FITS cards instead of writing freeform text in a
+        // FITS COMMENT or HISTORY card.
+
+        // bitpix > 0: integer data
+        // bitpix < 0: floating point data
+        if (bitpix > 0) {
+            // The map contains integer type data meaning data was
+            // scaled to maximize significant digits.
+            fits_update_key(fptr,
+                            TDOUBLE,
+                            "BSCALE",
+                            &scale,
+                            "linear data scaling coefficient",
+                            &status);
+
+            fits_update_key(fptr,
+                            TDOUBLE,
+                            "BZERO",
+                            &offset,
+                            "physical value corresponding to zero in the map",
+                            &status);
+        }
+    } else {
+
+        std::string const history =
+            std::string(this->projection_name())
+            + " projection created using MaRC " PACKAGE_VERSION ".";
+
+        // Write some MaRC-specific HISTORY comments.
+        fits_write_history(fptr,
+                           history.c_str(),
+                           &status)
+
+    }
 }

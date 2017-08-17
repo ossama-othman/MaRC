@@ -235,6 +235,8 @@ namespace MaRC
         return scale_and_offset_impl<T>()(min, max, scale, offset);
     }
 
+    // --------------------------------------------------------------
+
     /**
      * @class VirtualImage
      *
@@ -302,7 +304,7 @@ namespace MaRC
         /// observer?
         /**
          * @param lat Bodycentric (e.g. planetocentric) latitude in
-         *            radian.
+         *            radians.
          * @param lon Longitude in radians.
          *
          * @retval true  Point is visible.
@@ -321,8 +323,8 @@ namespace MaRC
          * These methods return the scale and offset values that
          * should be used when linearly transforming data read from a
          * @ c VirtualImage and plotted on a map to the true physical
-         * values.  In particular, data will be transformed according
-         * to the following equation:
+         * values.  In particular, data should be transformed
+         * according to the following equation:
          *
          * @code
          *     physical_value = map_value * scale() + offset();

@@ -147,6 +147,14 @@ namespace MaRC
         /// each of the planes in the map.
         void image_factories(image_factories_type factories);
 
+    protected:
+
+        void write_virtual_image_facts(fitsfile * fptr,
+                                       std::size_t num_planes,
+                                       int bitpix,
+                                       SourceImage const * image,
+                                       int & status);
+
     private:
 
         /// Create FITS image array HDU.

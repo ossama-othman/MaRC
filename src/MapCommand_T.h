@@ -69,6 +69,8 @@ namespace MaRC
 
     private:
 
+        using MapCommand::comment_list_type;
+
         /**
          * @name Private  @c MapCommand Methods.
          *

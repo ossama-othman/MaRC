@@ -114,9 +114,28 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                   <<" : " << std::flush;
 
         // Create the SourceImage.
-        std::unique_ptr<SourceImage> image(i->make(scale_and_offset<T>));
+        std::unique_ptr<SourceImage> const image(
+            i->make(scale_and_offset<T>));
+
         if (!image)
             continue;  // Problem creating SourceImage.  Move on.
+
+        // Add description of the source image.
+        comment_list_type descriptions;
+
+        std::string image_title =
+            std::string("Plane ") + plane_count + ": " + image->name();
+
+        descriptions.push_back();
+
+
+        // Add description specific to the VirtualImage, if we have
+        // one, in the map FITS file.
+        this->write_virtual_image_facts(fptr,
+                                        num_planes,
+                                        FITS::traits<T>::bitpix,
+                                        image.get(),
+                                        status);
 
         // Create the map plane.
         /**
