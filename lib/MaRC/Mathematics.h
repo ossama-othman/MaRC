@@ -29,6 +29,8 @@
 #ifndef MARC_MATHEMATICS_H
 #define MARC_MATHEMATICS_H
 
+#include "MaRC/config.h"  // For MARC_HAS_3_PARAM_STD_HYPOT
+
 #include <limits>
 #include <type_traits>
 #include <utility>
@@ -37,6 +39,53 @@
 
 namespace MaRC
 {
+#ifndef MARC_HAS_3_PARAM_STD_HYPOT
+    /**
+     * @brief Distance of (x,y,z) from the origin.
+     *
+     * Compute the distance of the point in space (@a x, @a y, @a z)
+     * from the origin (0, 0, 0).  This function is implemented in
+     * terms of the two-parameter @c std::hypot() to leverage its
+     * ability to perform the operation without floating point
+     * underflow or overflow, as well as its excellent floating point
+     * error characteristics.
+     *
+     * @param[in] x First  coordinate in space.
+     * @param[in] y Second coordinate in space.
+     * @param[in] z Third  coordinate in space.
+     *
+     * @return Distance from the origin to the point in space (@a x,
+     *         @a y, @a z), i.e. the equivalent of the square root of
+     *         the sum of the squares of each coordinate @c
+     *         sqrt(x*x+y*y+z*z).
+     *
+     * @deprecated This implementation of the three-parameter
+     *             @c std::hypot() will be dropped once we start
+     *             using C++17 features in MaRC.
+     */
+    template <typename T>
+    typename std::enable_if<std::is_floating_point<T>::value, T>::type
+    hypot(T x, T y, T z)
+    {
+        /*
+          Implement the missing three parameter std::hypot() function
+          by nesting two std::hypot() calls.  This works since:
+          Given:
+              std::hypot(x,y)   = sqrt(x*x + y*y)
+          and:
+              std::hypot(x,y,z) = sqrt(x*x + y*y + z*z)
+          We have:
+              std::hypot(std::hypot(x, y), z)
+                  = sqrt((sqrt(x*x + y*y) * sqrt(x*x + y*y)) + z*z)
+                  = sqrt(x*x + y*y + z*z) =
+                  = std::hypot(x, y, z)
+        */
+        return std::hypot(std::hypot(x, y), z);
+    }
+#endif  // !MARC_HAS_3_PARAM_STD_HYPOT
+
+    using std::hypot;
+
     /**
      * @brief Compare two floating numbers for equality.
      *

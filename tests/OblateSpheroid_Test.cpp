@@ -94,20 +94,24 @@ bool test_centric_radius()
     constexpr double equator    =  0;               // radians
     constexpr double north_pole =  90 * C::degree;  //  pi/2
     constexpr double south_pole = -90 * C::degree;  // -pi/2
-    constexpr double latitude   =  73 * C::degree;  // arbitrary
+    constexpr double latitude   = -23 * C::degree;  // arbitrary
+    constexpr double longitude  =  0;               // no 'y' component
 
     double const r = o->centric_radius(latitude);
 
-    // Parametric equation for an oblate spheroid disregarding the
-    // 'y' component.
-    double const x = r * std::cos(latitude);
-    double const y = 0;
+    // Parametric equation for a spheroid at longitude zero.
+    double const x = r * std::cos(latitude) * std::cos(longitude);
+    double const y = r * std::cos(latitude) * std::sin(longitude);;
     double const z = r * std::sin(latitude);
 
     return
+        // Oblate spheroid sanity checks.
+           r <= a
+        && r >= c
+
         // Centric radius, e.g. planetocentric, is the same as the
         // equatorial radius at the equator (latitude 0).
-            MaRC::almost_equal(a, o->centric_radius(equator),    ulps)
+        &&  MaRC::almost_equal(a, o->centric_radius(equator),    ulps)
         && !MaRC::almost_equal(a, o->centric_radius(north_pole), ulps)
         && !MaRC::almost_equal(a, o->centric_radius(south_pole), ulps)
 
@@ -117,21 +121,7 @@ bool test_centric_radius()
         &&  MaRC::almost_equal(c, o->centric_radius(south_pole), ulps)
         && !MaRC::almost_equal(c, o->centric_radius(equator),    ulps)
 
-        && r < a
-        && r > c
-
-        /*
-          Cartesian equation for an oblate spheroid.
-
-           2    2    2
-          x  + y    z
-          ------- + -- = 1
-             2       2
-            a       c
-        */
-
-        && MaRC::almost_equal((x * x + y * y) / (a * a)
-                              + (z * z) / (c * c), 1.0, ulps);
+        && MaRC::almost_equal(r, MaRC::hypot(x, y, z), ulps);
 }
 
 bool test_latitudes()
@@ -143,11 +133,41 @@ bool test_latitudes()
     return true;
 }
 
+bool test_mu()
+{
+    /**
+     * @todo Test mu() member.
+     */
+
+    return true;
+}
+
+bool test_mu0()
+{
+    /**
+     * @todo Test mu0() member.
+     */
+
+    return true;
+}
+
+bool test_cos_phase()
+{
+    /**
+     * @todo Test cos_phase() member.
+     */
+
+    return true;
+}
+
 int main()
 {
     return
         test_initialization()
         && test_centric_radius()
         && test_latitudes()
+        && test_mu()
+        && test_mu0()
+        && test_cos_phase()
         ? 0 : -1;
 }
