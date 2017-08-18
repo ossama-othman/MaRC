@@ -20,44 +20,104 @@
 
 #include <MaRC/Geometry.h>
 #include <MaRC/Mathematics.h>
+#include <MaRC/Constants.h>
 
+#include<algorithm>
 #include <iostream>
+
 
 namespace
 {
     // "Units in the last place" for floating point equality
     // comparison.
     constexpr int ulps = 2;
+
+    // Arbitrary angle through which coordinate system rotations will
+    // be performed.
+    constexpr double angle = 30 * C::degree;  // radians
+
+    double const cosine = std::cos(angle);
+    double const sine   = std::sin(angle);
+
+    // Basic coordinate system rotations for a right-handed coordinate
+    // system, as opposed to rotations in a fixed coordinate system
+    // which would be the transpose of these matrices.
+    MaRC::DMatrix const Rx{ { 1, 0,      0      },
+                            { 0, cosine, sine   },
+                            { 0, -sine,  cosine } };
+
+    MaRC::DMatrix const Ry{ { cosine, 0, -sine  },
+                            { 0,      1, 0      },
+                            { sine,   0, cosine } };
+
+    MaRC::DMatrix const Rz{ { cosine, sine,   0 },
+                            { -sine,  cosine, 0 },
+                            { 0,      0,      1 } };
 }
 
 bool test_vector_rotation()
 {
-    MaRC::DVector const v{ 3, 4, 5 };
-    MaRC::DVector vr;
+    MaRC::DVector const V{ 3, 4, 5 };
+    MaRC::DVector const Vx{ Rx * V };
+    MaRC::DVector const Vy{ Ry * V };
+    MaRC::DVector const Vz{ Rz * V };
 
-    constexpr double angle = 30;
+    MaRC::DVector Wx, Wy, Wz;
 
-    MaRC::Geometry::RotX(angle, v, vr);
+    MaRC::Geometry::RotX(angle, V, Wx);
+    MaRC::Geometry::RotY(angle, V, Wy);
+    MaRC::Geometry::RotZ(angle, V, Wz);
 
+    /**
+     * @todo Switch to the MaRC Vector equality operator once it
+     *       correctly supports comparison of floating point types.
+     */
+    auto cmp =
+        [](auto lhs, auto rhs)
+        { return MaRC::almost_equal(lhs, rhs, ulps); };
 
-    MaRC::Geometry::RotY(angle, v, vr);
-
-
-    MaRC::Geometry::RotZ(angle, v, vr);
-
-
-    return true;
+    return
+        std::equal(std::cbegin(Vx),
+                   std::cend(Vx),
+                   std::cbegin(Wx),
+                   cmp)
+        && std::equal(std::cbegin(Vy),
+                      std::cend(Vy),
+                      std::cbegin(Wy),
+                      cmp)
+        && std::equal(std::cbegin(Vz),
+                      std::cend(Vz),
+                      std::cbegin(Wz),
+                      cmp);
 }
 
-bool test_transformation_matrices()
+bool test_rotation_matrices()
 {
-    constexpr double angle = 30;
+    MaRC::DMatrix Mx = MaRC::Geometry::RotXMatrix(angle);
+    MaRC::DMatrix My = MaRC::Geometry::RotYMatrix(angle);
+    MaRC::DMatrix Mz = MaRC::Geometry::RotZMatrix(angle);
 
-    DMatrix xr = MaRC::Geometry::RotXMatrix(angle);
-    DMatrix yr = MaRC::Geometry::RotYMatrix(angle);
-    DMatrix zr = MaRC::Geometry::RotZMatrix(angle);
+    /**
+     * @todo Switch to the MaRC Vector equality operator once it
+     *       correctly supports comparison of floating point types.
+     */
+    auto cmp =
+        [](auto lhs, auto rhs)
+        { return MaRC::almost_equal(lhs, rhs, ulps); };
 
-    return true;
+    return
+        std::equal(std::cbegin(Rx),
+                   std::cend(Rx),
+                   std::cbegin(Mx),
+                   cmp)
+        && std::equal(std::cbegin(Ry),
+                      std::cend(Ry),
+                      std::cbegin(My),
+                      cmp)
+        && std::equal(std::cbegin(Rz),
+                      std::cend(Rz),
+                      std::cbegin(Mz),
+                      cmp);
 }
 
 bool test_vector_magnitude()
@@ -77,14 +137,15 @@ bool test_unit_vector()
     MaRC::DVector v{ 3, 4, 5 };
     MaRC::Geometry::toUnitVector(v);
 
-    constexpr double mag = 1;  // Unit vector magnitude is always 1.
+    // Unit vector magnitude is always 1.
+    constexpr double unit_mag = 1;
 
     return
-           std::abs(v[0]) <= 1
-        && std::abs(v[1]) <= 1
-        && std::abs(v[2]) <= 1
+           std::abs(v[0]) <= unit_mag
+        && std::abs(v[1]) <= unit_mag
+        && std::abs(v[2]) <= unit_mag
         && MaRC::almost_equal(MaRC::Geometry::Magnitude(v),
-                              mag,
+                              unit_mag,
                               ulps);
 }
 
@@ -92,7 +153,7 @@ int main()
 {
     return
         test_vector_rotation()
-        && test_transformation_matrices()
+        && test_rotation_matrices()
         && test_vector_magnitude()
         && test_unit_vector()
         ? 0 : -1;

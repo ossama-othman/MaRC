@@ -1377,6 +1377,8 @@ MaRC::PhotoImage::latlon2pix(double lat,
     // If this assertion does trigger that would mean the point is on
     // other side of image plane / body, which indicates a problem
     // with the math!
+    std::cout << "Rotated[1] =\t" << Rotated[1] << '\n'
+              << "normal_range =\t" << this->normal_range_ << '\n';
     assert(Rotated[1] <= this->normal_range_);
 
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
