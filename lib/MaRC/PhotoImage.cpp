@@ -176,8 +176,8 @@ MaRC::PhotoImage::is_visible(double lat, double lon) const
           side of the planet, and if it's negative, the point is on
           the dark side of the planet.
         */
-        || (flags::check (this->flags_, USE_TERMINATOR)
-            && this->body_->mu0(this->sub_solar_lat_,
+        && (!flags::check(this->flags_, USE_TERMINATOR)
+            || this->body_->mu0(this->sub_solar_lat_,
                                 this->sub_solar_lon_,
                                 lat,
                                 lon) >= 0);
@@ -1346,16 +1346,14 @@ MaRC::PhotoImage::latlon2pix(double lat,
 {
     double const radius = this->body_->centric_radius(lat);
 
-    double longitude;
-
-    if (this->body_->prograde ())
-        longitude = this->sub_observ_lon_ - lon;
+    if (this->body_->prograde())
+        lon  = this->sub_observ_lon_ - lon;
     else
-        longitude = lon - this->sub_observ_lon_;
+        lon -= this->sub_observ_lon_;
 
     DVector Coord;
-    Coord[0] =  radius * std::cos(lat) * std::sin(longitude);
-    Coord[1] = -radius * std::cos(lat) * std::cos(longitude);
+    Coord[0] =  radius * std::cos(lat) * std::sin(lon);
+    Coord[1] = -radius * std::cos(lat) * std::cos(lon);
     Coord[2] =  radius * std::sin(lat);
 
     DVector const Obs(Coord - this->range_b_);
