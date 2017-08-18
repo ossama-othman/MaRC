@@ -48,6 +48,9 @@ tests/Vector_Test.trs
 tests/Matrix_Test
 tests/Matrix_Test.log
 tests/Matrix_Test.trs
+tests/Geometry_Test
+tests/Geometry_Test.log
+tests/Geometry_Test.trs
 tests/OblateSpheroid_Test
 tests/OblateSpheroid_Test.log
 tests/OblateSpheroid_Test.trs

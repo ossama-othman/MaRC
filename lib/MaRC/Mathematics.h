@@ -208,11 +208,11 @@ namespace MaRC
      *      Recipes in C", 1992, by Press, Teukolsky, Veterrling
      *      and Flannery for a discussion on how this approach works.
      *
-     * @param[in]     a     Coefficient of the quadratic term.
-     * @param[in]     b     Coefficient of the linear term.
-     * @param[in]     c     Coefficient of the constant term.
-     * @param[in,out] roots The roots of the quadratic equation are
-     *                      returned through this variable.
+     * @param[in]  a     Coefficient of the quadratic term.
+     * @param[in]  b     Coefficient of the linear term.
+     * @param[in]  c     Coefficient of the constant term.
+     * @param[out] roots The roots of the quadratic equation are
+     *                   returned through this variable.
      *
      * @returns @c true if real roots were found, @c false otherwise.
      */
