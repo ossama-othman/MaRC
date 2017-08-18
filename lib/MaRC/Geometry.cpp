@@ -30,8 +30,8 @@
 
 void
 MaRC::Geometry::RotX(double angle,
-                     DVector const & vec,
-                     DVector & rotated)
+                     DVector const & v,
+                     DVector & r)
 {
     double const cosine = std::cos(angle);
     double const sine   = std::sin(angle);
@@ -40,15 +40,15 @@ MaRC::Geometry::RotX(double angle,
     // { 0,  cos(angle), sin(angle) } * { vec[1] }
     // { 0, -sin(angle), cos(angle} }   { vec[2] }
 
-    rotated[0] =  vec[0];
-    rotated[1] =  vec[1] * cosine + vec[2] * sine;
-    rotated[2] = -vec[1] * sine   + vec[2] * cosine;
+    r[0] =  v[0];
+    r[1] =  v[1] * cosine + v[2] * sine;
+    r[2] = -v[1] * sine   + v[2] * cosine;
 }
 
 void
 MaRC::Geometry::RotY(double angle,
-                     DVector const & vec,
-                     DVector & rotated)
+                     DVector const & v,
+                     DVector & r)
 {
     double const cosine = std::cos(angle);
     double const sine   = std::sin(angle);
@@ -57,15 +57,15 @@ MaRC::Geometry::RotY(double angle,
     // { 0,          1,           0 } * { vec[1] }
     // { sin(angle), 0,  cos(angle} }   { vec[2] }
 
-    rotated[0] = vec[0] * cosine - vec[2] * sine;
-    rotated[1] = vec[1];
-    rotated[2] = vec[0] * sine   + vec[2] * cosine;
+    r[0] = v[0] * cosine - v[2] * sine;
+    r[1] = v[1];
+    r[2] = v[0] * sine   + v[2] * cosine;
 }
 
 void
 MaRC::Geometry::RotZ(double angle,
-                     DVector const & vec,
-                     DVector &rotated)
+                     DVector const & v,
+                     DVector &r)
 {
     double const cosine = std::cos(angle);
     double const sine   = std::sin(angle);
@@ -74,9 +74,9 @@ MaRC::Geometry::RotZ(double angle,
     // { -sin(angle), cos(angle}, 0 } * { vec[1] }
     // {  0,          0,          1 }   { vec[2] }
 
-    rotated[0] =  vec[0] * cosine + vec[1] * sine;
-    rotated[1] = -vec[0] * sine   + vec[1] * cosine;
-    rotated[2] =  vec[2];
+    r[0] =  v[0] * cosine + v[1] * sine;
+    r[1] = -v[0] * sine   + v[1] * cosine;
+    r[2] =  v[2];
 }
 
 MaRC::DMatrix
@@ -143,16 +143,16 @@ MaRC::Geometry::RotZMatrix(double angle)
 }
 
 double
-MaRC::Geometry::Magnitude(DVector const & vec)
+MaRC::Geometry::Magnitude(DVector const & v)
 {
-    return MaRC::hypot(vec[0], vec[1], vec[2]);
+    return MaRC::hypot(v[0], v[1], v[2]);
 }
 
 void
-MaRC::Geometry::toUnitVector(DVector & vec)
+MaRC::Geometry::toUnitVector(DVector & v)
 {
-    double const mag = Geometry::Magnitude(vec);
+    double const mag = Geometry::Magnitude(v);
 
     for(std::size_t i = 0; i < 3; ++i)
-        vec[i] /= mag;
+        v[i] /= mag;
 }
