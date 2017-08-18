@@ -23,7 +23,6 @@
 #include <MaRC/Constants.h>
 
 #include<algorithm>
-#include <iostream>
 
 
 namespace

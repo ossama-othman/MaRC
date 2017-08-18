@@ -24,7 +24,6 @@
 #include "PhotoInterpolationStrategy.h"
 
 #include <cmath>
-#include <iostream>
 
 
 MaRC::PhotoInterpolationStrategy::PhotoInterpolationStrategy(
