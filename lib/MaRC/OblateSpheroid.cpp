@@ -97,7 +97,7 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     // Set flattening.
     // ----------------------------------------------
 
-    // flattening <  0 ----> eq_rad < pol_rad <----- Not valid
+    // flattening <  0 ----> Prolate Spheroid <----- Not valid
     // flattening > 0 < 1 -> Oblate Spheroid
     // flattening == 0 ----> Sphere
     // flattening == 1 ----> Disc!!  <--- Not valid
