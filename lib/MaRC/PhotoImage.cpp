@@ -1351,6 +1351,15 @@ MaRC::PhotoImage::latlon2pix(double lat,
     else
         lon -= this->sub_observ_lon_;
 
+    /**
+     * @todo Confirm that Coord[0] and Coord[1] are not swapped,
+     *       i.e. 90 degrees off in the x-y plane!
+     *       @par
+     *       Swapping the two prevents the below @c assert() from
+     *       being triggered, but it's not yet clear if the
+     *       @c normal_range_ value is incorrect or if the @c Coord
+     *       vector is incorrect.
+     */
     DVector Coord;
     Coord[0] =  radius * std::cos(lat) * std::sin(lon);
     Coord[1] = -radius * std::cos(lat) * std::cos(lon);
