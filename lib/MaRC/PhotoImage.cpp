@@ -78,7 +78,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , km_per_pixel_  (-1)        // Force "bad" value until set by caller
     , focal_length_  (-1)        // Force "bad" value until set by caller
     , focal_length_pixels_(-1)   // Force "bad" value until fully initialized
-    , scale_ (-1)                // Force "bad" value until set by caller
+    , scale_         (-1)        // Force "bad" value until set by caller
     , normal_range_  (0)
     , OA_s_          (0)
     , OA_l_          (0)
@@ -94,7 +94,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , line_center_   (0)
     , lat_at_center_ (0)
     , lon_at_center_ (0)
-    , mu_limit_      (0)  // cos(90 deg emission angle) == 0
+    , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
     // , min_lat_(C::pi_2)  // Initialize to maximum (yes, the maximum!) possible
     // , max_lat_(-C::pi_2) // Initialize to minimum possible
     // , min_lon_(C::_2pi)  // Initialize to maximum possible
@@ -157,13 +157,16 @@ MaRC::PhotoImage::is_visible(double lat, double lon) const
       For a convex body, if this is positive, the point is on the
       visible side of the planet, and if it's negative, the point is
       on the far side of the planet.
+
+      Take into account an emission angle limit potentially set by the
+      user as well.
     */
     return
         this->body_->mu(this->sub_observ_lat_,
                         this->sub_observ_lon_,
                         lat,
                         lon,
-                        this->range_) >= 0
+                        this->range_) > this->mu_limit_
 
         /*
           mu0 is the angle between:
@@ -180,7 +183,7 @@ MaRC::PhotoImage::is_visible(double lat, double lon) const
             || this->body_->mu0(this->sub_solar_lat_,
                                 this->sub_solar_lon_,
                                 lat,
-                                lon) >= 0);
+                                lon) > 0);
 
      // Visible if both the far-side and (if requested) the dark-side
      // checks passed.
@@ -391,22 +394,27 @@ MaRC::PhotoImage::finalize_setup()
         flags::set (this->flags_, OA_SET);
     }
 
-    // Set Body center to observer vectors
+    // Set Body center to observer vectors.
+    // Right-handed coordinate system, optical axis in the y-z plane,
+    // positive y-axis away from the observer.
     this->range_b_[0] =  0;
     this->range_b_[1] = -this->range_ * std::cos(this->sub_observ_lat_);
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
 
     /// Perpendicular distance from observer to image plane.
     if (!flags::check (this->flags_, LATLON_AT_CENTER)) {
+        /**
+         * @todo Verify that these values are consistent with the
+         *       coordinate system, including directions of all all
+         *       axes.
+         */
         DVector range_O;  // range_ vector in observer coordinates
 
         range_O[0] =
             (this->OA_s_ - this->sample_center_) * this->km_per_pixel_;
 
-        range_O[1] =  0;
-        // range_O[1] = (-this->focal_length_ * this->scale_ ) * km_per_pixel_; <---- set later
+        // range_O[1] is default initialized to zero.  Set below.
 
-        // range_O[2] =  (OA_l_ - line_center_) * km_per_pixel_;
         range_O[2] =
             (this->line_center_ - this->OA_l_) * this->km_per_pixel_;
         // Since line numbers increase top to bottom (e.g. VICAR images)
@@ -1172,20 +1180,15 @@ MaRC::PhotoImage::interpolate(bool enable)
 int
 MaRC::PhotoImage::emi_ang_limit(double angle)
 {
-    if (angle > 0 && angle < 90) {
-        this->mu_limit_ = std::cos(angle * C::degree);
-        flags::set(this->flags_, EMI_ANG_LIMIT);
-    }
-    else if (angle == static_cast<double>(90)) {
-        // Value equal to 90 means no cut-off, so we don't
-        // switch on the emission angle cut-off code.
-        flags::unset(this->flags_, EMI_ANG_LIMIT);
-    } else {
-        std::cerr << "Incorrect value value passed to EmiAngLimit routine: "
-                  << angle << '\n';
+    if (angle < 0 || angle > 90) {
+        std::cerr
+            << "Incorrect value value passed to emi_ang_limit() routine: "
+            << angle << '\n';
 
         return 1;  // Failure
     }
+
+    this->mu_limit_ = std::cos(angle * C::degree);
 
     return 0;  // Success
 }
@@ -1209,16 +1212,6 @@ MaRC::PhotoImage::read_data(double lat,
 {
     if (!this->is_visible(lat, lon))
         return false;  // Failure
-
-    // Do not plot data close to limb
-    if (flags::check(this->flags_, EMI_ANG_LIMIT)
-        && this->body_->mu(this->sub_observ_lat_,
-                          this->sub_observ_lon_,
-                          lat,
-                          lon,
-                          this->range_) < this->mu_limit_) {
-        return false;  // Outside the configured emission angle limit.
-    }
 
     double x = 0, z = 0;
 

@@ -60,11 +60,10 @@ namespace MaRC
          */
         enum sflags
         {
-            EMI_ANG_LIMIT    = 1 << 0,
-            LATLON_AT_CENTER = 1 << 1,
-            OA_SET           = 1 << 2,
-            EXTREMA_SET      = 1 << 3,
-            USE_TERMINATOR   = 1 << 4
+            LATLON_AT_CENTER = 1 << 0,
+            OA_SET           = 1 << 1,
+            EXTREMA_SET      = 1 << 2,
+            USE_TERMINATOR   = 1 << 3
         };
 
         /// Constructor
@@ -524,8 +523,12 @@ namespace MaRC
         /// Longitude at picture center
         double lon_at_center_;
 
-        /// Cosine of emission angle outside of which no data will be
-        /// plotted / retrieved.
+        /**
+         * The cosine, &mu; of the emission angle outside of which no
+         * data will be plotted / retrieved.
+         *
+         * This is used to avoid mapping data close to the limb.
+         */
         double mu_limit_;
 
         /// Minimum latitude visible on body.
