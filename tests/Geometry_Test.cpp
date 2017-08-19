@@ -29,7 +29,7 @@ namespace
 {
     // "Units in the last place" for floating point equality
     // comparison.
-    constexpr int ulps = 2;
+    constexpr int ulps = 4;
 
     // Arbitrary angle through which coordinate system rotations will
     // be performed.
