@@ -45,27 +45,25 @@ bool test_initialization()
                    "Test equatorial radius less than polar radius");
 
     // Equatorial and polar radii given.
-    auto o1 =
+    auto const o1 =
         std::make_unique<MaRC::OblateSpheroid>(prograde,
                                                a,
                                                c,
                                                -1 /* flattening*/);
 
     // Equatorial radius and flattening given.
-    auto o2 =
+    auto const o2 =
         std::make_unique<MaRC::OblateSpheroid>(prograde,
                                                a,
                                                -1,  // polar radius
                                                f);
 
     // Polar radius and flattening given.
-    auto o3 =
+    auto const o3 =
         std::make_unique<MaRC::OblateSpheroid>(prograde,
                                                -1,  // equatorial radius
                                                c,
                                                f);
-
-    constexpr int ulps = 2;
 
     return
         prograde == o1->prograde()
@@ -85,7 +83,7 @@ bool test_initialization()
 
 bool test_centric_radius()
 {
-    auto o =
+    auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde,
                                                a,
                                                c,
@@ -126,17 +124,33 @@ bool test_centric_radius()
 
 bool test_latitudes()
 {
+    auto const o =
+        std::make_unique<MaRC::OblateSpheroid>(prograde,
+                                               a,
+                                               c,
+                                               -1 /* flattening*/);
+
+    constexpr double latc = 27 * C::degree;
+
     /**
-     * @todo Test centric_latitude() and graphic_latitude() members.
+     * @todo Prior to running the below latitude tests, test
+     *       centric_latitude() and graphic_latitude() methods
+     *       independently of each other.
      */
 
-    return true;
+    double const latg = o->graphic_latitude(latc);
+
+    return
+        !MaRC::almost_equal(latc, latg, ulps)
+        && MaRC::almost_equal(latc,
+                              o->centric_latitude(latg),
+                              ulps);
 }
 
 bool test_mu()
 {
     /**
-     * @todo Test mu() member.
+     * @todo Test @c OblateSpheroid::mu() method.
      */
 
     return true;
@@ -145,7 +159,7 @@ bool test_mu()
 bool test_mu0()
 {
     /**
-     * @todo Test mu0() member.
+     * @todo Test @c OblateSpheroid::mu0() method.
      */
 
     return true;
@@ -154,7 +168,7 @@ bool test_mu0()
 bool test_cos_phase()
 {
     /**
-     * @todo Test cos_phase() member.
+     * @todo Test @c OblateSpheroid::cos_phase() method.
      */
 
     return true;
