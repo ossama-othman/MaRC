@@ -149,7 +149,26 @@ namespace MaRC
 
     protected:
 
+        /// Write @c VirtualImage information to FITS file.
+        /**
+         * Write information specific to @c VirtualImage (e.g.
+         * @c MuImage) based map planes to the map FITS file.
+         *
+         * @param[in]  fptr       CFITSIO pointer to the map FITS
+         *                        file.
+         * @param[in]  plane      Map plane number of
+         *                        @c VirtualImage.
+         * @param[in]  num_planes Number of map planes being written
+         *                        to the FITS file.
+         * @param[in]  bitpix     Bits-per-pixel in the FITS file, as
+         *                        defined by the FITS standard.
+         * @param[in]  image      @c SourceImage object that may be a
+         *                        @c VirtualImage about which facts
+         *                        are being written to the FITS file.
+         * @param[out] status     CFITSIO file operation status.
+         */
         void write_virtual_image_facts(fitsfile * fptr,
+                                       std::size_t plane,
                                        std::size_t num_planes,
                                        int bitpix,
                                        SourceImage const * image,

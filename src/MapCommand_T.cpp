@@ -107,31 +107,33 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
     int plane_count = 1;
     std::size_t const num_planes = this->image_factories_.size();
 
+    ImageFactory::scale_offset_functor const sof =
+        scale_and_offset<T>;
+
     // Create and write the map planes.
     for (auto const & i : this->image_factories_) {
         std::cout << "Plane "
                   << plane_count << " / " << num_planes
                   <<" : " << std::flush;
-
         // Create the SourceImage.
-        std::unique_ptr<SourceImage> const image(
-            i->make(scale_and_offset<T>));
+        std::unique_ptr<SourceImage> const image(i->make(sof));
 
         if (!image)
             continue;  // Problem creating SourceImage.  Move on.
 
         // Add description of the source image.
-        comment_list_type descriptions;
+        // comment_list_type descriptions;
 
-        std::string image_title =
-            std::string("Plane ") + plane_count + ": " + image->name();
+        // std::string image_title =
+        //     "Plane " + std::to_string(plane_count) ": " + image->name();
 
-        descriptions.push_back();
+        // descriptions.push_back();
 
 
         // Add description specific to the VirtualImage, if we have
         // one, in the map FITS file.
         this->write_virtual_image_facts(fptr,
+                                        plane_count,
                                         num_planes,
                                         FITS::traits<T>::bitpix,
                                         image.get(),

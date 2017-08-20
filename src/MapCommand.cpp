@@ -24,16 +24,35 @@
 #include "FITS_traits.h"
 #include "FITS_memory.h"
 
+#include <MaRC/VirtualImage.h>
+#include <MaRC/Mathematics.h>
 #include <MaRC/config.h>
 
 #include <fitsio.h>
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <memory>
 #include <type_traits>  // For sanity check below.
 #include <cassert>
 
 #include <unistd.h>
+
+
+namespace
+{
+    std::string double_to_string(double value)
+    {
+        // Work around inability to change precision in
+        // std::to_string().  Yes, this is ugly.
+        std::ostringstream os;
+
+        os << std::setprecision(8) << value;
+
+        return os.str();
+    }
+}
 
 
 MaRC::MapCommand::MapCommand(std::string filename,
@@ -401,60 +420,87 @@ MaRC::MapCommand::image_factories(image_factories_type factories)
 
 void
 MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
-                                            std::size_t num_planes,
-                                            int bitpix
+                                            std::size_t plane,
+                                            std::size_t /* num_planes */,
+                                            int bitpix,
                                             SourceImage const * image,
                                             int & status)
 {
+    /**
+     * @todo This entire method seems is a bit of hack.  Come up with
+     *       a better design for writing map plane-specific
+     *       information to the FITS file.
+     */
+
     VirtualImage const * const v =
         dynamic_cast<VirtualImage const *>(image);
 
     if (!v)
         return;  // Not a VirtualImage subclass instance.
 
+    // bitpix > 0: integer data
+    // bitpix < 0: floating point data
+    if (bitpix < 0)
+        return;
+
+    // The map contains integer type data meaning data was scaled to
+    // maximize significant digits.  Write map plane-specific scaling
+    // factors to the FITS file.
+
     double scale  = v->scale();
     double offset = v->offset();
+
+    // Avoid writing "-0".  It's harmless but rather unsightly.
+    constexpr double ulps = 1;
+    if (MaRC::almost_zero(offset, ulps))
+        offset = 0;
 
     /**
      * @todo Write the BSCALE, BZERO and BUNIT value if a multi-plane
      *       map is comprised entirely of the unit of data
      *       (e.g. cosines, degrees, etc).  No need to limit that to
      *       single plane maps in that case.
+     *
+     * @bug CFITSIO will handle scaling if we set BSCALE and/or
+     *      BZERO.  Do not set scaling factors.  Otherwise CFITSIO
+     *      issue a numerical overflow error.
      */
-    if (num_planes == 1) {
-        // We're the sole plane in the map meaning we can update
-        // actual FITS cards instead of writing freeform text in a
-        // FITS COMMENT or HISTORY card.
+    // if (num_planes == 1) {
+    //     // We're the sole plane in the map meaning we can update
+    //     // actual FITS cards instead of writing freeform text in a
+    //     // FITS COMMENT or HISTORY card.
 
-        // bitpix > 0: integer data
-        // bitpix < 0: floating point data
-        if (bitpix > 0) {
-            // The map contains integer type data meaning data was
-            // scaled to maximize significant digits.
-            fits_update_key(fptr,
-                            TDOUBLE,
-                            "BSCALE",
-                            &scale,
-                            "linear data scaling coefficient",
-                            &status);
+    //     fits_update_key(fptr,
+    //                     TDOUBLE,
+    //                     "BSCALE",
+    //                     &scale,
+    //                     "linear data scaling coefficient",
+    //                     &status);
 
-            fits_update_key(fptr,
-                            TDOUBLE,
-                            "BZERO",
-                            &offset,
-                            "physical value corresponding to zero in the map",
-                            &status);
+    //     fits_update_key(fptr,
+    //                     TDOUBLE,
+    //                     "BZERO",
+    //                     &offset,
+    //                     "physical value corresponding to zero in the map",
+    //                     &status);
+    // } else
+    {
+        comment_list_type facts;
+
+        /**
+         * @todo Improve appearance of map plane facts in FITS file.
+         */
+        facts.emplace_back("Plane "
+                           + std::to_string(plane)
+                           + " characteristics:");
+        facts.emplace_back("    Scale:  " + double_to_string(scale));
+        facts.emplace_back("    Offset: " + double_to_string(offset));
+
+        for (auto & f : facts) {
+            // Write some MaRC-specific HISTORY comments.
+            fits_write_history(fptr,
+                               f.c_str(),
+                               &status);
         }
-    } else {
-
-        std::string const history =
-            std::string(this->projection_name())
-            + " projection created using MaRC " PACKAGE_VERSION ".";
-
-        // Write some MaRC-specific HISTORY comments.
-        fits_write_history(fptr,
-                           history.c_str(),
-                           &status)
-
     }
 }

@@ -279,44 +279,6 @@ namespace MaRC
                                double lon,
                                double & data) const;
 
-    private:
-
-        /// Compute data specific to a given virtual image.
-        /**
-         * This template method is the core implementation of the
-         * read_data() method.
-         *
-         * @param lat  Bodycentric (e.g. planetocentric) latitude in
-         *             radians.
-         * @param lon  Longitude in radians.
-         * @param data Data retrieved from image.
-         *
-         * @retval true  Data retrieved
-         * @retval false No data retrieved.
-         *
-         * @see read_data().
-         */
-        virtual bool read_data_i(double lat,
-                                 double lon,
-                                 double & data) const = 0;
-
-        /// Is point at given latitude and longitude visible to the
-        /// observer?
-        /**
-         * @param lat Bodycentric (e.g. planetocentric) latitude in
-         *            radians.
-         * @param lon Longitude in radians.
-         *
-         * @retval true  Point is visible.
-         * @retval false Point is not visible.
-         *
-         * @note The default implementation always returns @c true.
-         */
-        virtual bool is_visible(double lat, double lon) const;
-
-        // virtual double minimum() const = 0;
-        // virtual double maximum() const = 0;
-
         /**
          * @name Linear Data Transformation
          *
@@ -351,6 +313,41 @@ namespace MaRC
          */
         double offset() const { return this->scale() * -this->offset_; }
         //@}
+
+    private:
+
+        /// Compute data specific to a given virtual image.
+        /**
+         * This template method is the core implementation of the
+         * read_data() method.
+         *
+         * @param lat  Bodycentric (e.g. planetocentric) latitude in
+         *             radians.
+         * @param lon  Longitude in radians.
+         * @param data Data retrieved from image.
+         *
+         * @retval true  Data retrieved
+         * @retval false No data retrieved.
+         *
+         * @see read_data().
+         */
+        virtual bool read_data_i(double lat,
+                                 double lon,
+                                 double & data) const = 0;
+
+        /// Is point at given latitude and longitude visible to the
+        /// observer?
+        /**
+         * @param lat Bodycentric (e.g. planetocentric) latitude in
+         *            radians.
+         * @param lon Longitude in radians.
+         *
+         * @retval true  Point is visible.
+         * @retval false Point is not visible.
+         *
+         * @note The default implementation always returns @c true.
+         */
+        virtual bool is_visible(double lat, double lon) const;
 
     private:
 
