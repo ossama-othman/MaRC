@@ -206,7 +206,8 @@ MaRC::OblateSpheroid::mu(double sub_observ_lat,
                          double lon,
                          double range) const
 {
-    // Compute the local normal-observer angle - Emission Angle (Mu)
+    // Compute Mu, the cosine of local normal-observer (emission)
+    // angle.
 
   double const latg = this->graphic_latitude(lat);
   double const ellipse_radius = this->centric_radius(lat);
@@ -232,7 +233,7 @@ MaRC::OblateSpheroid::mu0(double sub_solar_lat,
                           double lat,
                           double lon) const
 {
-    // Compute the sun-local normal angle - Incidence Angle (Mu0)
+    // Compute Mu0, the cosine of sun-local normal (incidence) angle.
 
     double const latg = this->graphic_latitude(lat);
 
@@ -254,8 +255,8 @@ MaRC::OblateSpheroid::cos_phase(double sub_observ_lat,
                                 double lon,
                                 double range) const
 {
-    // Compute the Sun-point on surface of body-Observer angle
-    // (phase angle)
+    // Compute the cosine of the Sun-point on surface of body-Observer
+    // angle, i.e cosine of the phase angle Phi.
 
   double const ellipse_radius = this->centric_radius(lat);
 
