@@ -908,21 +908,9 @@ MaRC::PhotoImage::set_km_per_pixel()
 
         this->km_per_pixel_ =
             this->range_ /
-            std::sqrt(this->focal_length_pixels_
-                      * this->focal_length_pixels_
-                      + (this->OA_s_ - this->sample_center_)
-                      * (this->OA_s_ - this->sample_center_)
-                      + (this->OA_l_ - this->line_center_)
-                      * (this->OA_l_ - this->line_center_));
-
-//       std::cout << "focal_length = " << this->focal_length_ << '\n'
-//                 << "scale        = " << this->scale_        << '\n'
-//                 << "OA_s         = " << this->OA_s_         << '\n'
-//                 << "OA_l         = " << this->OA_l_         << '\n'
-//                 << "sample_center= " << this->sample_center_<< '\n'
-//                 << "line_center  = " << this->line_center_  << '\n'
-//                 << "km_per_pixel = " << this->km_per_pixel_ << '\n'
-//                 << "range        = " << this->range_        << '\n';
+            MaRC::hypot(this->OA_s_ - this->sample_center_,
+                        this->focal_length_pixels_,
+                        this->OA_l_ - this->line_center_);
     } else if (this->km_per_pixel_ <= 0) {
         std::cerr
             << "ERROR: Attempt to compute number of kilometers per pixel\n"
@@ -1370,8 +1358,6 @@ MaRC::PhotoImage::latlon2pix(double lat,
     // If this assertion does trigger that would mean the point is on
     // other side of image plane / body, which indicates a problem
     // with the math!
-    std::cout << "Rotated[1] =\t" << Rotated[1] << '\n'
-              << "normal_range =\t" << this->normal_range_ << '\n';
     assert(Rotated[1] <= this->normal_range_);
 
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
