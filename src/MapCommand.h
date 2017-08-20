@@ -76,21 +76,10 @@ namespace MaRC
         virtual ~MapCommand();
 
         /// Execute the command.
-        virtual int execute();
+        int execute();
 
         /// Get name of projection.
         virtual char const * projection_name() const = 0;
-
-        /// Create FITS image array HDU.
-        virtual void initialize_FITS_image(fitsfile * fptr,
-                                           int & status) = 0;
-
-        /// Create and write map planes.
-        /**
-         * This is a "template method" (the design pattern, not a C++
-         * method) that performs type-specific map plane creation.
-         */
-        virtual void make_map_planes(fitsfile * fptr, int & status) = 0;
 
         /// Set map author.
         void author(std::string author);
@@ -124,7 +113,7 @@ namespace MaRC
          *            (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void data_zero(float zero);
+        void data_zero(double zero);
 
         /// Set the value for the map FITS @c BSCALE keyword.
         /**
@@ -138,33 +127,72 @@ namespace MaRC
          *            (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void data_scale(float scale);
+        void data_scale(double scale);
 
         /// Set the value for the map FITS @c BLANK keyword.
         /**
          * The FITS @c BLANK keyword only applies to FITS images
-         * containing integer types.  The corresponding "blank" value for
-         * floating point FITS images is the IEEE "not-a-number"
+         * containing integer types.  The corresponding "blank" value
+         * for floating point FITS images is the IEEE "not-a-number"
          * constant.
-         * @par
-         * The @c BLANK keyword merely documents which physical (not FITS)
-         * values in the image array are undefined.
          *
-         * @param blank @c BLANK keyword value.
+         * The @c BLANK keyword merely documents which physical (not
+         * FITS) values in the image array are undefined.
+         *
+         * @param[in] blank FITS @c BLANK keyword value.
          */
         void data_blank(int blank);
 
-        /// Set the list of @c ImageFactorys responsible for creating
+        /// Set the @c ImageFactory list responsible for creating
         /// each of the planes in the map.
         void image_factories(image_factories_type factories);
 
+    protected:
+
+        /// Write @c VirtualImage information to FITS file.
+        /**
+         * Write information specific to @c VirtualImage (e.g.
+         * @c MuImage) based map planes to the map FITS file.
+         *
+         * @param[in]  fptr       CFITSIO pointer to the map FITS
+         *                        file.
+         * @param[in]  plane      Map plane number of
+         *                        @c VirtualImage.
+         * @param[in]  num_planes Number of map planes being written
+         *                        to the FITS file.
+         * @param[in]  bitpix     Bits-per-pixel in the FITS file, as
+         *                        defined by the FITS standard.
+         * @param[in]  image      @c SourceImage object that may be a
+         *                        @c VirtualImage about which facts
+         *                        are being written to the FITS file.
+         * @param[out] status     CFITSIO file operation status.
+         */
+        void write_virtual_image_facts(fitsfile * fptr,
+                                       std::size_t plane,
+                                       std::size_t num_planes,
+                                       int bitpix,
+                                       SourceImage const * image,
+                                       int & status);
+
     private:
+
+        /// Create FITS image array HDU.
+        virtual void initialize_FITS_image(fitsfile * fptr,
+                                           int & status) = 0;
+
+        /// Create and write map planes.
+        /**
+         * This is a "template method" (the design pattern, not a C++
+         * class member template) that performs type-specific map
+         * plane creation.
+         */
+        virtual void make_map_planes(fitsfile * fptr, int & status) = 0;
 
         /// Create and write grid image.
         /**
          * This is a "template method" (the design pattern, not a C++
-         * method) that calls back on the type-specific MapFactory to
-         * create the grid.
+         * class member template) that calls back on the type-specific
+         * @c MapFactory to create the grid.
          *
          * @return @c Grid object containing grid image.
          */
@@ -220,10 +248,10 @@ namespace MaRC
         float lon_interval_;
 
         /// Coefficient of linear term in the scaling equation.
-        float bscale_;
+        double bscale_;
 
         /// Physical value corresponding to an array value of zero.
-        float bzero_;
+        double bzero_;
 
         /// Flag that determines if data written to the FITS map file
         /// is transformed using a linear equation.

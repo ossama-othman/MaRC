@@ -85,7 +85,7 @@ namespace MaRC
          */
         virtual double graphic_latitude(double lat) const = 0;
 
-        /// Return cosine of emission angle
+        /// Return cosine of emission angle, i.e. &mu;
         /**
          * @param[in] sub_observ_lat Bodycentric subobservation
          *                           latitude
@@ -95,7 +95,7 @@ namespace MaRC
          * @param[in] range          Observer range to subobservation
          *                           point
          *
-         * @return Cosine of emission angle.
+         * @return Cosine of emission angle, i.e. &mu;.
          */
         virtual double mu(double sub_observ_lat,
                           double sub_observ_lon,
@@ -103,14 +103,14 @@ namespace MaRC
                           double lon,
                           double range) const = 0;
 
-        /// Return cosine of incidence angle
+        /// Return cosine of incidence angle, i.e. &mu;<SUB>0</SUB>
         /**
          * @param[in] sub_solar_lat Bodycentric subsolar latitude
          * @param[in] sub_solar_lon Subsolar longitude
          * @param[in] lat           Bodycentric latitude
          * @param[in] lon           Longitude
          *
-         * @return Cosine of incidence angle
+         * @return Cosine of incidence angle, i.e. &mu;<SUB>0</SUB>.
          *
          * @note Sun is assumed to be an infinite distance away.
          */
@@ -119,7 +119,7 @@ namespace MaRC
                            double lat,
                            double lon) const = 0;
 
-        /// Return cosine of phase angle
+        /// Return cosine of phase angle, i.e. @c cos(&phi;)
         /**
          * @param[in] sub_observ_lat Bodycentric subobservation
          *                           latitude
@@ -131,7 +131,7 @@ namespace MaRC
          * @param[in] range          Observer range to subobservation
          *                           point
          *
-         * @return Cosine of phase angle.
+         * @return Cosine of phase angle, i.e. @c cos(&phi;).
          */
         virtual double cos_phase(double sub_observ_lat,
                                  double sub_observ_lon,

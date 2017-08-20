@@ -60,8 +60,8 @@ MaRC::ParseParameter::push_command(std::unique_ptr<MapCommand> c)
 
 //   const int token = lexer.yylex ();
 
-//   const char * symbuf = 0;
-//   MaRC::sym_entry *s = 0;
+//   const char * symbuf = nullptr;
+//   MaRC::sym_entry *s = nullptr;
 
 //   switch (token)
 //     {
@@ -74,7 +74,7 @@ MaRC::ParseParameter::push_command(std::unique_ptr<MapCommand> c)
 //       symbuf = lexer.YYText ();
 //       s = pp.sym_table ().getsym (symbuf);
 
-//       if (s == 0)
+//       if (s == nullptr)
 //         {
 //           /*
 //             This forces parsing of variables to be shut off.

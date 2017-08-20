@@ -37,11 +37,13 @@ namespace MaRC
     /**
      * @class Mu0Image
      *
-     * @brief Cosine of the incidence angle virtual image.
+     * @brief Cosine of the incidence angle (i.e. &mu;<SUB>0</SUB>)
+     *        virtual image.
      *
      * This concrete @c VirtualImage returns the cosine of the
-     * sun-local-normal (incidence) angle on the body being mapped.
-     * The sun is assumed to be an infinite distance away.
+     * sun-local-normal (incidence) angle, &mu;<SUB>0</SUB>, on the
+     * body being mapped.  The sun is assumed to be an infinite
+     * distance away.
      *
      * @note This implementation requires that the body under
      *       observation is modeled as an oblate spheroid.
@@ -58,14 +60,21 @@ namespace MaRC
          * @param[in] sub_solar_lat Bodycentric sub-solar latitude in
          *                          degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
+         * @param[in] scale         Linear scaling value by which
+         *                          cosines will be multiplied.
+         * @param[in] offset        Offset value to be added to
+         *                          cosines after the scaling factor
+         *                          has been applied.
          */
         Mu0Image(std::shared_ptr<OblateSpheroid> body,
                  double sub_solar_lat,
-                 double sub_solar_lon);
+                 double sub_solar_lon,
+                 double scale,
+                 double offset);
 
     private:
 
-        /// Compute cosine of the incidence angle.
+        /// Compute cosine of the incidence angle, &mu;<SUB>0</SUB>.
         /**
          * @see MaRC::VirtualImage::read_data_i().
          */

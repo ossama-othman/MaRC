@@ -24,6 +24,8 @@
 
 #include "MaRC/MuImage.h"
 
+#include <stdexcept>
+
 
 MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<OblateSpheroid> body,
                                      double sub_observ_lat,
@@ -37,10 +39,22 @@ MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<OblateSpheroid> body,
 }
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::MuImageFactory::make()
+MaRC::MuImageFactory::make(scale_offset_functor calc_so)
 {
+    constexpr double mu_min = -1;
+    constexpr double mu_max =  1;
+    double scale;
+    double offset;
+
+    if (!calc_so(mu_min, mu_max, scale, offset)) {
+        throw std::range_error("Cannot store mu (cosines) in map of "
+                               "chosen data type.");
+    }
+
     return std::make_unique<MaRC::MuImage>(this->body_,
                                            this->sub_observ_lat_,
                                            this->sub_observ_lon_,
-                                           this->range_);
+                                           this->range_,
+                                           scale,
+                                           offset);
 }

@@ -27,120 +27,354 @@
 
 #include "MaRC/SourceImage.h"
 
+#include <limits>
+#include <cmath>
+
 
 namespace MaRC
 {
-
-  /**
-   * @class VirtualImage
-   *
-   * @brief Base class for virtual source images.
-   *
-   * Data from virtual images are computed at run-time rather than
-   * retrieved from static sources such as images stored on a
-   * filesystem.
-   */
-  class VirtualImage : public SourceImage
-  {
-  public:
-
-    /// Constructor.
     /**
-     * @param s Linear scaling coefficient applied to computed data.
-     * @param o Linear offset value applied to all (scaled) computed
-     *          data.
+     * @brief Integer data scale and offset calculation functor.
+     *
+     * Determine the best scale and offset parameters applied to
+     * floating point data read from source images to retain as many
+     * significant digits as possible when storing that data in
+     * integer typed maps.
+     *
+     * @see MaRC::scale_and_offset()
+     *
+     * @internal This functor is not part of public MaRC library API.
      */
-    VirtualImage(double s = 1, double o = 0);
+    template <typename T>
+    struct scale_and_offset_impl
+    {
+        bool operator()(double min,
+                        double max,
+                        double & scale,
+                        double & offset) const
+        {
+            constexpr double T_lowest = std::numeric_limits<T>::lowest();
+            constexpr double T_max    = std::numeric_limits<T>::max();
+            constexpr double type_range = T_max - T_lowest;
 
-    /// Retrieve data from virtual image.
+            double const data_range = max - min;
+
+            if (data_range < 0 || data_range > type_range) {
+                // min > max or can't fit all data into desired type T.
+                return false;
+            }
+
+            int const exponent =
+                static_cast<int>(std::numeric_limits<T>::digits10)
+                - static_cast<int>(std::log10(data_range));
+
+            scale = std::pow(10, exponent);
+
+            if (min < T_lowest)
+                offset = (T_lowest - min) * scale;
+            else if (max > T_max)
+                offset = (max - T_max) * scale;
+            else
+                offset = 0;
+
+            return true;
+        }
+    };
+
     /**
-     * Retrieve data from virtual image and apply configured data
-     * transformations, if any.  Raw data is computed/retrieved from
-     * the read_data_i() template method.
+     * @brief @c float typed data scale and offset calculation
+     *        functor.
      *
-     * @param lat  Bodycentric (e.g. planetocentric) latitude in radians.
-     * @param lon  Longitude in radians.
+     * Automatic source data scaling is not performed when mapping to
+     * floating point typed maps.  This implementation is basically a
+     * no-op, and returns @a scale and @a offset values that result in
+     * the source data remaining unchanged.
      *
-     * @param[out] data Data retrieved from image.
+     * @see MaRC::scale_and_offset()
      *
-     * @return @c true - Data retrieved, @c false - No data retrieved.
-     *
-     * @see read_data_i()
+     * @internal This functor is not part of public MaRC library API.
      */
-    virtual bool read_data(double lat, double lon, double & data) const;
+    template <>
+    struct scale_and_offset_impl<float>
+    {
+        bool operator()(double /* min */,
+                        double /* max */,
+                        double & scale,
+                        double & offset) const
+        {
+            // No auto-scaling for floating point map data.
+            scale  = 1;
+            offset = 0;
 
-  private:
+            return true;
+        }
+    };
 
-    /// Compute data specific to a given virtual image.
     /**
-     * This template method is the core implementation of the
-     * read_data() method.
+     * @brief @c double typed data scale and offset calculation
+     *        functor.
      *
-     * @param lat  Bodycentric (e.g. planetocentric) latitude  in radians.
-     * @param lon  Longitude in radians.
-     * @param data Data retrieved from image.
+     * Automatic source data scaling is not performed when mapping to
+     * floating point typed maps.  This implementation is basically a
+     * no-op, and returns @a scale and @a offset values that result in
+     * the source data remaining unchanged.
      *
-     * @return @c true - Data retrieved, @c false - No data retrieved.
+     * @see MaRC::scale_and_offset()
      *
-     * @see read_data().
+     * @internal This functor is not part of public MaRC library API.
      */
-    virtual bool read_data_i(double lat,
-			     double lon,
-			     double & data) const = 0;
+    template <>
+    struct scale_and_offset_impl<double>
+    {
+        bool operator()(double /* min */,
+                        double /* max */,
+                        double & scale,
+                        double & offset) const
+        {
+            // No auto-scaling for floating point map data.
+            scale  = 1;
+            offset = 0;
 
-    /// Is point at given latitude and longitude visible to the
-    /// observer?
-    /**
-     * @param lat Bodycentric (e.g. planetocentric) latitude in radians
-     * @param lon Longitude in radians
-     *
-     * @return @c true - Point is visible, @c false - Point is not visible
-     *
-     * @note The default implementation always returns @c true.
-     */
-    virtual bool is_visible (double lat, double lon) const;
+            return true;
+        }
+    };
 
     /**
-     * @name Linear Data Transformation
+     * @brief Determine suitable data scale and offset values.
      *
-     * These methods return the values used when linearly transforming
-     * the data read from an image.  In particular, data will be
-     * transformed according to the following equation:
+     * Determine the best scale and offset parameters applied to
+     * floating point data read from source images to retain as many
+     * significant digits as possible when storing that data in
+     * integer typed maps.
+     *
+     * Some source images, e.g. @c MaRC::VirtualImage subclasses, only
+     * provide floating point numbers.  That is a problem when storing
+     * those numbers in integer typed maps since significant digits
+     * after the decimal point could be truncated when casting from
+     * floating point to integer.  To prevent loss of significant
+     * digits in such cases, the data should be scaled upward and
+     * potentially offset from their original values so that more
+     * significant digits end up to the left decimal point prior to
+     * assignment to elements in integer typed maps.
+     *
+     * For example, cosine values to be stored in a 16 bit signed
+     * integer map could be scaled by 10000 with a zero offset to
+     * increase the number of significant digits in the map data from
+     * one to four, e.g. 0.1234567 becomes 1234.567, which ends being
+     * stored as 1234 in a 16 bit signed integer map.  A scale factor
+     * of 10000 in this case is suitable since the scaled data range,
+     * -10000 to 10000, never exceeds the 16 bit signed integer data
+     * range, i.e -32768 to 32767.  The chosen scale order of
+     * magnitude is the largest it can be without causing transformed
+     * data to exceed the map data range.
+     *
+     * To reduce potential confusion about what the data actually is,
+     * only power of 10 scale factors (i.e. 1, 10, 100, etc) are
+     * chosen.  Unless the data minimum (@a min) and maximum (@a max)
+     * are not symmetrical and/or the map data type is unsigned, the
+     * offset value will generally be zero.
+     *
+     * The physical data should be transformed according to the
+     * following equation prior to mapping:
      *
      * @code
-     *    data = data * scale() + offset()
+     * map_data = scale * physical_data + offset
      * @endcode
      *
-     * The default implementation returns values that causes no
-     * transformation to occur.
-     */
-    //@{
-    /// Data scale.
-    /**
-     * Linear scaling coefficient applied to computed data.
+     * Retrieving the original physical data from the map would then
+     * require the following equation:
      *
-     * @return Data scale
-     */
-    double scale(void) const { return this->scale_; }
-
-    /// Data offset
-    /**
-     * Linear offset value applied to all (scaled) computed data.
+     * @code
+     * physical_data = (map_data - offset) / scale
+     * @endcode
      *
-     * @return Data offset
+     * @note The @a scale and @a offset will always be 1 and 0,
+     *       respectively, if the map data type is a floating point
+     *       type, i.e. @c float or @c double.
+     *
+     * @attention This function only generates @a scale and @a offset
+     *            values that allow data to fit within the map data
+     *            range without decreasing the order of magnitude of
+     *            the data, resulting in loss of significant digits.
+     *            In particular, the scale value will always be
+     *            greater than or equal to one if this function
+     *            completes successfully.
+     *
+     * @param[in]     min    The lowest physical value to be plotted
+     *                       on a map.  For example, this would be -1
+     *                       for source images that generate cosines.
+     * @param[in]     max    The highest physical value to be plotted
+     *                       on a map.  For example, this would be 1
+     *                       for source images that generate cosines.
+     * @param[in,out] scale  Linear scaling value by which physical
+     *                       data should be multiplied to maximize the
+     *                       number of significant digits prior to
+     *                       storing data in an integer typed map.
+     *                       This will be 1 for floating point typed
+     *                       maps.
+     * @param[in,out] offset Offset value to be added to data after
+     *                       the scaling factor has been applied to
+     *                       force that data to fit within the integer
+     *                       typed map data range.  This will be 0 for
+     *                       floating point typed maps.
+     *
+     * @retval true  Suitable @a scale and @a offset values were
+     *               found.
+     * @retval false Suitable @a scale and @a offset values were not
+     *               found.  This can occur if it isn't possible to
+     *               scale data without loss of significant digits,
+     *               such as when a scale factor less than 1 would be
+     *               required.
      */
-    double offset(void) const { return this->offset_; }
-    //@}
+    template <typename T>
+    bool scale_and_offset(double min,
+                          double max,
+                          double & scale,
+                          double & offset)
+    {
+        return scale_and_offset_impl<T>()(min, max, scale, offset);
+    }
 
-  private:
+    // --------------------------------------------------------------
 
-    /// Linear scaling coefficient applied to computed data.
-    double const scale_;
+    /**
+     * @class VirtualImage
+     *
+     * @brief Base class for virtual source images.
+     *
+     * Data from virtual images are computed at run-time rather than
+     * retrieved from static sources such as images stored on a
+     * filesystem.
+     */
+    class VirtualImage : public SourceImage
+    {
+    public:
 
-    /// Linear offset value applied to all (scaled) computed data.
-    double const offset_;
+        /// Constructor.
+        /**
+         * @param[in] s Linear scaling coefficient applied to computed
+         *            data.
+         * @param[in] o Linear offset value applied to all (scaled)
+         *            computed data.
+         */
+        VirtualImage(double s = 1, double o = 0);
 
-  };
+        /// Retrieve data from virtual image.
+        /**
+         * Retrieve data from virtual image and apply configured data
+         * transformations, if any.  Raw data is computed/retrieved
+         * from the @c read_data_i() template method.
+         *
+         * @param lat  Bodycentric (e.g. planetocentric) latitude in
+         *             radians.
+         * @param lon  Longitude in radians.
+         *
+         * @param[out] data Data retrieved from image.
+         *
+         * @return @c true - Data retrieved, @c false - No data retrieved.
+         *
+         * @see read_data_i()
+         */
+        virtual bool read_data(double lat,
+                               double lon,
+                               double & data) const;
+
+        /**
+         * @name Linear Data Transformation
+         *
+         * These methods return the scale and offset values that
+         * should be used when linearly transforming data read from a
+         * @ c VirtualImage and plotted on a map to the true physical
+         * values.  In particular, data should be transformed
+         * according to the following equation:
+         *
+         * @code
+         *     physical_value = map_value * scale() + offset();
+         * @endcode
+         *
+         * The default implementation returns values that causes no
+         * transformation to occur.
+         */
+        //@{
+        /// Data scale.
+        /**
+         * Linear scaling coefficient that should be applied to map
+         * data to transform that data to true physical data.
+         *
+         * @return Data scale.
+         */
+        double scale() const { return 1 / this->scale_; }
+
+        /// Data offset
+        /**
+         * Offset value applied to all (scaled) computed data.
+         *
+         * @return Data offset
+         */
+        double offset() const { return this->scale() * -this->offset_; }
+        //@}
+
+    private:
+
+        /// Compute data specific to a given virtual image.
+        /**
+         * This template method is the core implementation of the
+         * read_data() method.
+         *
+         * @param lat  Bodycentric (e.g. planetocentric) latitude in
+         *             radians.
+         * @param lon  Longitude in radians.
+         * @param data Data retrieved from image.
+         *
+         * @retval true  Data retrieved
+         * @retval false No data retrieved.
+         *
+         * @see read_data().
+         */
+        virtual bool read_data_i(double lat,
+                                 double lon,
+                                 double & data) const = 0;
+
+        /// Is point at given latitude and longitude visible to the
+        /// observer?
+        /**
+         * @param lat Bodycentric (e.g. planetocentric) latitude in
+         *            radians.
+         * @param lon Longitude in radians.
+         *
+         * @retval true  Point is visible.
+         * @retval false Point is not visible.
+         *
+         * @note The default implementation always returns @c true.
+         */
+        virtual bool is_visible(double lat, double lon) const;
+
+    private:
+
+        /// Linear scaling coefficient applied to physical data.
+        /**
+         * Linear scaling coefficient applied to physical data to
+         * allow it to fit in map array element of specific type with
+         * the most amount of significant digits.
+         *
+         * @note This is inverse of the of scaling coefficient needed
+         *       to retrieve the true physical value.
+         */
+        double const scale_;
+
+        /// Offset value applied to scaled physical data.
+        /**
+         * This offset is applied to scaled physical data to allow it
+         * to fit in map array element of specific type with the most
+         * amount of significant digits.
+         *
+         * @note This is the offset multiplied by the inverse of the
+         *       of scaling value needed to retrieve the true physical
+         *       value.
+         */
+        double const offset_;
+
+    };
 
 } // End MaRC namespace
 

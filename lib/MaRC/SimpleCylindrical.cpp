@@ -86,12 +86,9 @@ MaRC::SimpleCylindrical<T>::projection_name() const
 
 template <typename T>
 void
-MaRC::SimpleCylindrical<T>::plot_map(SourceImage const & source,
-                                     std::size_t samples,
+MaRC::SimpleCylindrical<T>::plot_map(std::size_t samples,
                                      std::size_t lines,
-                                     double minimum,
-                                     double maximum,
-                                     map_type & map)
+                                     plot_type plot)
 {
     // Conversion factor -- latitudes per line
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
@@ -114,13 +111,7 @@ MaRC::SimpleCylindrical<T>::plot_map(SourceImage const & source,
             unsigned char const percent_complete =
                 static_cast<unsigned char>((offset + 1) * 100 / nelem);
 
-            this->plot(source,
-                       lat,
-                       lon,
-                       minimum,
-                       maximum,
-                       percent_complete,
-                       map[offset]);
+            plot(lat, lon, percent_complete, offset);
         }
     }
 }

@@ -32,8 +32,10 @@ MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
                                    double sub_observ_lon,
                                    double sub_solar_lat,
                                    double sub_solar_lon,
-                                   double range)
-    : VirtualImage(10000, 0)
+                                   double range,
+                                   double scale,
+                                   double offset)
+    : VirtualImage(scale, offset)
     , body_(body)
     , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
     , sub_observ_lon_(sub_observ_lon * C::degree) // Radians
@@ -62,6 +64,14 @@ MaRC::CosPhaseImage::read_data_i(double lat,
 bool
 MaRC::CosPhaseImage::is_visible(double lat, double lon) const
 {
+    /**
+     * @todo Check if &mu; is greater than or equal to zero to
+     *       determine if the given latitude and longitude are
+     *       visible.  That would allow us to avoid drop the below
+     *       static method call, and drop the dependency on the body
+     *       being an OblatedSpheroid.
+     */
+
     // This implementation is as the same as the one used by the
     // MuImage class.
 

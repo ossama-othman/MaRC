@@ -296,7 +296,8 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
 
       output_ (intermediate):
 
-      - std::pair<> k  scalar k in (vec> + k * dvec>) - up to 2 solutions possible
+      - std::pair<> k  scalar k in (vec> + k * dvec>)
+                                - up to 2 solutions possible
       - solutions returned: -1 (bad inputs), 1 (no solution) or 0 (successful)
     */
 

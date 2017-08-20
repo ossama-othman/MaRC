@@ -37,12 +37,12 @@ MaRC::MosaicImageFactory::MosaicImageFactory (
 }
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::MosaicImageFactory::make()
+MaRC::MosaicImageFactory::make(scale_offset_functor calc_so)
 {
     MosaicImage::list_type photos;
 
     for (auto & factory : this->factories_)
-        photos.push_back(factory->make());
+        photos.push_back(factory->make(calc_so));
 
     return
         std::make_unique<MosaicImage>(std::move(photos),

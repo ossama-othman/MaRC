@@ -66,7 +66,8 @@ namespace MaRC
                           std::shared_ptr<OblateSpheroid> body);
 
         /// Create a @c PhotoImage.
-        virtual std::unique_ptr<SourceImage> make();
+        virtual std::unique_ptr<SourceImage> make(
+            scale_offset_functor calc_so);
 
         /// Set the flat field image filename.
         void flat_field(char const * name);
@@ -133,7 +134,7 @@ namespace MaRC
         /**
          * @param[in] len Focal length in millimeters.
          */
-        void focal_length (double len);
+        void focal_length(double len);
 
         /// Set input image scale (pixels / mm).
         /**
@@ -141,7 +142,7 @@ namespace MaRC
          */
         void scale(double s);
 
-        /// Set position angle (a.k.a. North Angle in degrees) found
+        /// Set position angle (North Angle in degrees) found
         /// in image.
         void position_angle(double north);
 
@@ -151,10 +152,12 @@ namespace MaRC
         /// Kilometers per pixel in image.
         void km_per_pixel(double k);
 
-        /// Set flag that determines whether or not terminator is
-        /// taken into account when determining if data point on body
-        /// is visible.
-        void use_terminator (bool u);
+        /**
+         * Set flag that determines whether or not terminator is taken
+         * into account when determining if data point on body is
+         * visible.
+         */
+        void use_terminator(bool u);
 
         /// Invert image from left to right.
         /**
@@ -175,6 +178,23 @@ namespace MaRC
         static void invert_v(std::vector<double> & image,
                              std::size_t samples,
                              std::size_t lines);
+
+    private:
+
+        /// Perform flat-field correction on the photo image.
+        /**
+         * If a flat-field file was provided perform flat-field
+         * correction on the photo image by substracting the
+         * corresponding flat-field image elements from the photo
+         * image.
+         *
+         * @param[in] naxes Photo image dimensions retrieved from its
+         *                  FITS file.
+         *
+         * @return 0 on success.
+         */
+        int flat_field_correct(long const naxes[2],
+                               std::vector<double> & img) const;
 
     private:
 

@@ -31,8 +31,10 @@
 MaRC::MuImage::MuImage(std::shared_ptr<OblateSpheroid> body,
                        double sub_observ_lat,
                        double sub_observ_lon,
-                       double range)
-    : VirtualImage(10000, 0)
+                       double range,
+                       double scale,
+                       double offset)
+    : VirtualImage(scale, offset)
     , body_(body)
     , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
     , sub_observ_lon_(sub_observ_lon * C::degree) // Radians
@@ -63,7 +65,11 @@ MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
     /**
      * @todo This is ugly.  The visibility check is specific to an
      *       oblate spheroid.  It should really be moved to the
-     *       @c OblateSpheroid strategy.
+     *       @c OblateSpheroid strategy.  Alternatively, is there any
+     *       reason why we can't check if this->body_->mu() < 0 to
+     *       determine if the given latitude and longitude isn't
+     *       visible?  That would allow us to drop the OblateSpheroid
+     *       dependency entirely.
      */
 
     double const latg   = body.graphic_latitude(lat);

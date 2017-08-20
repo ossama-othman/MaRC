@@ -24,6 +24,8 @@
 
 #include "MaRC/CosPhaseImage.h"
 
+#include <stdexcept>
+
 
 MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
     std::shared_ptr<OblateSpheroid> body,
@@ -42,12 +44,24 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
 }
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::CosPhaseImageFactory::make()
+MaRC::CosPhaseImageFactory::make(scale_offset_functor calc_so)
 {
+    constexpr double cos_phase_min = -1;
+    constexpr double cos_phase_max =  1;
+    double scale;
+    double offset;
+
+    if (!calc_so(cos_phase_min, cos_phase_max, scale, offset)) {
+        throw std::range_error("Cannot store cosine of phase angles in "
+                               "map of chosen datatype.");
+    }
+
     return std::make_unique<MaRC::CosPhaseImage>(this->body_,
                                                  this->sub_observ_lat_,
                                                  this->sub_observ_lon_,
                                                  this->sub_solar_lat_,
                                                  this->sub_solar_lon_,
-                                                 this->range_);
+                                                 this->range_,
+                                                 scale,
+                                                 offset);
 }

@@ -75,7 +75,6 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , sub_solar_lon_ (0)
     , range_(std::sqrt (std::numeric_limits<double>::max () - 1))
     , position_angle_(0)
-    , arcsec_per_pixel_(-1)      // Force "bad" value until set by caller
     , km_per_pixel_  (-1)        // Force "bad" value until set by caller
     , focal_length_  (-1)        // Force "bad" value until set by caller
     , focal_length_pixels_(-1)   // Force "bad" value until fully initialized
@@ -95,7 +94,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , line_center_   (0)
     , lat_at_center_ (0)
     , lon_at_center_ (0)
-    , mu_limit_(std::cos(90 * C::degree)) // cos() of 90 deg emission angle limit
+    , mu_limit_      (0)  // cos(90 deg emission angle) == 0
     // , min_lat_(C::pi_2)  // Initialize to maximum (yes, the maximum!) possible
     // , max_lat_(-C::pi_2) // Initialize to minimum possible
     // , min_lon_(C::_2pi)  // Initialize to maximum possible
@@ -125,10 +124,12 @@ MaRC::PhotoImage::~PhotoImage (void)
 bool
 MaRC::PhotoImage::operator==(PhotoImage const & img)
 {
+    /**
+     * @bug Floating point equality comparison is not reliable.
+     */
     return (this->samples_ == img.samples_
             && this->lines_ == img.lines_
             && this->flags_ == img.flags_
-            && this->arcsec_per_pixel_ == img.arcsec_per_pixel_
             && this->km_per_pixel_ == img.km_per_pixel_
             && this->nibble_left_   == img.nibble_left_
             && this->nibble_right_  == img.nibble_right_
@@ -667,14 +668,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     DVector OA_O;
 
     // Unit vector representing North pole in body coordinates
-    NPole[0] = 0;
-    NPole[1] = 0;
     NPole[2] = 1;
 
     // OA_O is the optical axis vector in observer coordinates
-    OA_O[0] = 0;
     OA_O[1] = Geometry::Magnitude(OA); // Magnitude of optical axis.
-    OA_O[2] = 0;
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
     Geometry::toUnitVector(UnitOpticalAxis);
@@ -708,11 +705,11 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     observ2body = o2b;
 
     double diff_magnitude =
-        Geometry::Magnitude (OA_O - o2b * UnitOpticalAxis);
+        Geometry::Magnitude(OA_O - o2b * UnitOpticalAxis);
 
     // Try second possibility
     SubLatMod[1] = C::pi - SubLatMod[0];
-    Geometry::RotX (-SubLatMod[1], range_b, rotated);
+    Geometry::RotX(-SubLatMod[1], range_b, rotated);
     R_b = rotated;
 
     double const Ztwist2 = std::atan2(R_b[0], -R_b[1]);
@@ -727,10 +724,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     double Ztwist, SubLatModified;
 #endif  /* DEBUG */
 
-    if (diff_magnitude > Geometry::Magnitude (OA_O -
-                                              o2b * UnitOpticalAxis)) {
+    if (diff_magnitude > Geometry::Magnitude(OA_O -
+                                             o2b * UnitOpticalAxis)) {
         diff_magnitude =
-            Geometry::Magnitude (OA_O - o2b * UnitOpticalAxis);
+            Geometry::Magnitude(OA_O - o2b * UnitOpticalAxis);
         observ2body = o2b;
 
 #ifdef DEBUG
@@ -881,17 +878,19 @@ MaRC::PhotoImage::remove_sky()
 }
 
 int
-MaRC::PhotoImage::arcsec_per_pixel(double a)
+MaRC::PhotoImage::arcsec_per_pixel(double arcseconds)
 {
     // NOTE: range_ should be in units of kilometers at this point.
-    if (a > 0) {
-        this->arcsec_per_pixel_ = a;
-        this->km_per_pixel_ =
-            C::pi / 648e3 * this->range_ * this->arcsec_per_pixel_;
+    if (arcseconds > 0) {
+        // This conversion assumes that the observer-to-body range is
+        // much larger than than the distance viewed in the image.
+
+        // pi radians per 648000 arcseconds.
+        this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
     } else {
         std::cerr
             << "ERROR: Incorrect number of arcseconds "
-               "per pixel entered: " << a << '\n';
+               "per pixel entered: " << arcseconds << '\n';
 
         return 1;  // Failure
     }
@@ -985,7 +984,7 @@ MaRC::PhotoImage::scale(double s)
     if (s > 0)
         this->scale_ = s;
     else {
-      std::cerr << "Incorrect scale entered: " << s << '\n';
+      std::cerr << "Incorrect image scale entered: " << s << '\n';
 
       return 1;  // Failure
     }
@@ -1431,7 +1430,7 @@ void
 MaRC::PhotoImage::use_terminator(bool u)
 {
     if (u)
-        flags::set (this->flags_, USE_TERMINATOR);
+        flags::set(this->flags_, USE_TERMINATOR);
     else
-        flags::unset (this->flags_, USE_TERMINATOR);
+        flags::unset(this->flags_, USE_TERMINATOR);
 }

@@ -136,7 +136,9 @@ namespace MaRC
          * @param[out] lon  Bodycentric (e.g. planetocentric) east
          *                  longitude
          *
-         * @return Zero if ellipse intersection found, non-zero otherwise.
+         * @retval  0 ellipse intersection was found
+         * @retval  1 no ellipse intersection was found
+         * @retval -1 bad inputs
          *
          * @note Longitude is east longitude.
          * @note Zero longitude is at x = 0, y < 0, y is increasing

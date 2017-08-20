@@ -60,7 +60,8 @@ namespace MaRC
                        double range);
 
         /// Create a @c MuImage.
-        virtual std::unique_ptr<SourceImage> make();
+        virtual std::unique_ptr<SourceImage> make(
+            scale_offset_functor calc_so);
 
     private:
 

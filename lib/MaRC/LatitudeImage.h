@@ -55,9 +55,17 @@ namespace MaRC
          * @param[in] graphic_latitudes Return bodygraphic latitudes
          *                              instead of bodycentric
          *                              latitudes.
+         * @param[in] scale             Linear scaling value by which
+         *                              latitudes should be
+         *                              multiplied.
+         * @param[in] offset            Offset value to be added to
+         *                              latitudes after the scaling
+         *                              factor has been applied.
          */
         LatitudeImage(std::shared_ptr<BodyData> body,
-                      bool graphic_latitudes);
+                      bool graphic_latitudes,
+                      double scale,
+                      double offset);
 
     private:
 

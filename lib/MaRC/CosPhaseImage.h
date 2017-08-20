@@ -37,11 +37,12 @@ namespace MaRC
     /**
      * @class CosPhaseImage
      *
-     * @brief Cosine of phase angle virtual image.
+     * @brief Cosine of phase angle (i.e. cos(&phi;)) virtual
+     *        image.
      *
      * This concrete VirtualImage returns the cosine of the Sun-point
-     * on surface of body-Observer (phase) angle on the body being
-     * mapped.  The observer range is taken into account.
+     * on surface of body-Observer (phase) angle, &phi;, on the body
+     * being mapped.  The observer range is taken into account.
      */
     class CosPhaseImage : public VirtualImage
     {
@@ -60,17 +61,24 @@ namespace MaRC
          * @param[in] sub_solar_lon  Sub-solar longitude in degrees.
          * @param[in] range          Observer to target center
          *                           distance.
+         * @param[in] scale          Linear scaling value by which
+         *                           cosines will be multiplied.
+         * @param[in] offset         Offset value to be added to
+         *                           cosines after the scaling factor
+         *                           has been applied.
          */
         CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
                       double sub_observ_lat,
                       double sub_observ_lon,
                       double sub_solar_lat,
                       double sub_solar_lon,
-                      double range);
+                      double range,
+                      double scale,
+                      double offset);
 
     private:
 
-        /// Compute cosine of phase angle.
+        /// Compute cosine of phase angle, @c cos(&phi;).
         /**
          * @see MaRC::VirtualImage::read_data_i().
          */

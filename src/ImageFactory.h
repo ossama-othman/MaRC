@@ -25,6 +25,7 @@
 #define MARC_IMAGE_FACTORY_H
 
 #include <memory>
+#include <functional>
 
 
 namespace MaRC
@@ -44,6 +45,15 @@ namespace MaRC
     {
     public:
 
+        /**
+         * Type of functor used for determining scale and offset
+         * appropriate for a map of given data type.
+         *
+         * @see MaRC::scale_and_offset()
+         */
+        using scale_offset_functor =
+            std::function<bool(double, double, double &, double &)>;
+
         /// Constructor.
         ImageFactory();
 
@@ -54,31 +64,51 @@ namespace MaRC
         /// Destructor.
         virtual ~ImageFactory();
 
-        /// Create an Image.
-        virtual std::unique_ptr<SourceImage> make() = 0;
+        /// Create a @c SourceImage for a map of given data type.
+        /**
+         * Create a @c SourceImage for a map of given data type.
+         *
+         * @param[in] calc_so Functor used for determining scale and
+         *                    offset appropriate for a map of given
+         *                    type.  This is implemented by
+         *                    @c MaRC::scale_and_offset() but is
+         *                    passed in as a @c std::function to
+         *                    prevent @c ImageFactory from having a
+         *                    compile-time dependency on the map data
+         *                    type.
+         *
+         * @return @c SourceImage from which map data will be
+         *         sourced.
+         */
+        virtual std::unique_ptr<SourceImage> make(
+            scale_offset_functor calc_so) = 0;
 
         /// Set minimum allowed data value in map plane.
-        /// (data > minimum)
+        /**
+         * Set the minimum allowed data value, i.e. data >= minimum,
+         * in the map plane to which an image will be mapped.
+         */
         void minimum(double m) { this->minimum_ = m; }
 
         /// Set maximum allowed data value in map plane.
-        /// (data < maximum)
+        /**
+         * Set the maximum allowed data value, i.e. data =< maximum,
+         * in the map plane to which an image will be mapped.
+         */
         void maximum(double m) { this->maximum_ = m; }
 
         /// Return minimum allowed data value in map plane.
-        /// (data > minimum)
         double minimum() const { return this->minimum_; }
 
         /// Return maximum allowed data value in map plane.
-        /// (data < maximum)
         double maximum() const { return this->maximum_; }
 
     private:
 
-        /// Minimum allowed data value in map plane.  (data > minimum)
+        /// Minimum allowed data value in map plane.  (data >= minimum)
         double minimum_;
 
-        /// Maximum allowed data value in map plane.  (data < maximum)
+        /// Maximum allowed data value in map plane.  (data =< maximum)
         double maximum_;
 
     };

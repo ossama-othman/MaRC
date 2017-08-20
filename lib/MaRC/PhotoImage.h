@@ -182,7 +182,7 @@ namespace MaRC
         int position_angle(double north);
 
         /// Arcseconds per pixel in image.
-        int arcsec_per_pixel(double a);
+        int arcsec_per_pixel(double arcseconds);
 
         /// Kilometers per pixel in image.
         int km_per_pixel(double k);
@@ -307,8 +307,8 @@ namespace MaRC
          *                       @c read_data() that does not return a
          *                       weight.
          *
-         * @retval @c true  Data retrieved,
-         * @retval @c false No data retrieved.
+         * @retval true  Data retrieved,
+         * @retval false No data retrieved.
          */
         virtual bool read_data(double lat,
                                double lon,
@@ -327,8 +327,8 @@ namespace MaRC
          * @param[out] x   Floating point value corresponding to @c i.
          * @param[out] z   Floating point value corresponding to @c k.
          *
-         * @retval @c true  Conversion succeeded.
-         * @retval @c false Conversion failed.
+         * @retval true  Conversion succeeded.
+         * @retval false Conversion failed.
          *
          * @note Since @a x and @a z potentially include fractional
          *       pixel components, they are more accurate than their
@@ -425,9 +425,6 @@ namespace MaRC
 
         /// Position angle in the image NOT in the sky.
         double position_angle_;
-
-        /// Arcseconds per pixel.
-        double arcsec_per_pixel_;
 
         /// Kilometers per pixel at plane that passes through body
         /// center.

@@ -22,17 +22,37 @@
 
 #include "MapCommand.h"
 #include "FITS_traits.h"
+#include "FITS_memory.h"
 
+#include <MaRC/VirtualImage.h>
+#include <MaRC/Mathematics.h>
 #include <MaRC/config.h>
 
 #include <fitsio.h>
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <memory>
 #include <type_traits>  // For sanity check below.
 #include <cassert>
 
 #include <unistd.h>
+
+
+namespace
+{
+    std::string double_to_string(double value)
+    {
+        // Work around inability to change precision in
+        // std::to_string().  Yes, this is ugly.
+        std::ostringstream os;
+
+        os << std::setprecision(8) << value;
+
+        return os.str();
+    }
+}
 
 
 MaRC::MapCommand::MapCommand(std::string filename,
@@ -116,7 +136,10 @@ MaRC::MapCommand::execute()
     // Create the map file.
     fitsfile * fptr = 0;
     int status = 0;
-    fits_create_file(&fptr, this->filename_.c_str(), &status);
+    if (fits_create_file(&fptr, this->filename_.c_str(), &status) != 0)
+        return status;
+
+    FITS::file_unique_ptr safe_fptr(fptr);
 
     // Create primary image array HDU.
     this->initialize_FITS_image(fptr, status);
@@ -190,19 +213,17 @@ MaRC::MapCommand::execute()
     // file.
     if (this->transform_data_) {
         fits_update_key(fptr,
-                        TFLOAT,
+                        TDOUBLE,
                         "BSCALE",
                         &this->bscale_,
-                        "Coefficient of linear term in the "
-                        "scaling equation.",
+                        "linear data scaling coefficient",
                         &status);
 
         fits_update_key(fptr,
-                        TFLOAT,
+                        TDOUBLE,
                         "BZERO",
                         &this->bzero_,
-                        "Physical value corresponding to an array "
-                        "value of zero.",
+                        "physical value corresponding to zero in the map",
                         &status);
     }
 
@@ -210,8 +231,6 @@ MaRC::MapCommand::execute()
         // Report any errors before creating the map since map
         // creation can be time consuming.
         fits_report_error(stderr, status);
-
-        fits_close_file(fptr, &status);
 
         return status;
     }
@@ -331,8 +350,6 @@ MaRC::MapCommand::execute()
         fits_write_chksum(fptr, &status);
     }
 
-    fits_close_file(fptr, &status);
-
     fits_report_error(stderr, status);
 
     return status;
@@ -375,14 +392,14 @@ MaRC::MapCommand::grid_intervals(float lat_interval, float lon_interval)
 }
 
 void
-MaRC::MapCommand::data_zero(float zero)
+MaRC::MapCommand::data_zero(double zero)
 {
     this->bzero_ = zero;
     this->transform_data_ = true;
 }
 
 void
-MaRC::MapCommand::data_scale(float scale)
+MaRC::MapCommand::data_scale(double scale)
 {
     this->bscale_ = scale;
     this->transform_data_ = true;
@@ -399,4 +416,91 @@ void
 MaRC::MapCommand::image_factories(image_factories_type factories)
 {
     this->image_factories_ = std::move(factories);
+}
+
+void
+MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
+                                            std::size_t plane,
+                                            std::size_t /* num_planes */,
+                                            int bitpix,
+                                            SourceImage const * image,
+                                            int & status)
+{
+    /**
+     * @todo This entire method seems is a bit of hack.  Come up with
+     *       a better design for writing map plane-specific
+     *       information to the FITS file.
+     */
+
+    VirtualImage const * const v =
+        dynamic_cast<VirtualImage const *>(image);
+
+    if (!v)
+        return;  // Not a VirtualImage subclass instance.
+
+    // bitpix > 0: integer data
+    // bitpix < 0: floating point data
+    if (bitpix < 0)
+        return;
+
+    // The map contains integer type data meaning data was scaled to
+    // maximize significant digits.  Write map plane-specific scaling
+    // factors to the FITS file.
+
+    double scale  = v->scale();
+    double offset = v->offset();
+
+    // Avoid writing "-0".  It's harmless but rather unsightly.
+    constexpr double ulps = 1;
+    if (MaRC::almost_zero(offset, ulps))
+        offset = 0;
+
+    /**
+     * @todo Write the BSCALE, BZERO and BUNIT value if a multi-plane
+     *       map is comprised entirely of the unit of data
+     *       (e.g. cosines, degrees, etc).  No need to limit that to
+     *       single plane maps in that case.
+     *
+     * @bug CFITSIO will handle scaling if we set BSCALE and/or
+     *      BZERO.  Do not set scaling factors.  Otherwise CFITSIO
+     *      issues a numerical overflow error.
+     */
+    // if (num_planes == 1) {
+    //     // We're the sole plane in the map meaning we can update
+    //     // actual FITS cards instead of writing freeform text in a
+    //     // FITS COMMENT or HISTORY card.
+
+    //     fits_update_key(fptr,
+    //                     TDOUBLE,
+    //                     "BSCALE",
+    //                     &scale,
+    //                     "linear data scaling coefficient",
+    //                     &status);
+
+    //     fits_update_key(fptr,
+    //                     TDOUBLE,
+    //                     "BZERO",
+    //                     &offset,
+    //                     "physical value corresponding to zero in the map",
+    //                     &status);
+    // } else
+    {
+        comment_list_type facts;
+
+        /**
+         * @todo Improve appearance of map plane facts in FITS file.
+         */
+        facts.emplace_back("Plane "
+                           + std::to_string(plane)
+                           + " characteristics:");
+        facts.emplace_back("    Scale:  " + double_to_string(scale));
+        facts.emplace_back("    Offset: " + double_to_string(offset));
+
+        for (auto & f : facts) {
+            // Write some MaRC-specific HISTORY comments.
+            fits_write_history(fptr,
+                               f.c_str(),
+                               &status);
+        }
+    }
 }

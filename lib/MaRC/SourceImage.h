@@ -61,8 +61,8 @@ namespace MaRC
          * @param[in]  lon  Longitude in radians.
          * @param[out] data Data retrieved from image.
          *
-         * @retval @c true  Data retrieved,
-         * @retval @c false No data retrieved.
+         * @retval true  Data retrieved,
+         * @retval false No data retrieved.
          */
         virtual bool read_data(double lat,
                                double lon,
@@ -86,8 +86,8 @@ namespace MaRC
          * @param[in]     scan   Flag that determines if a data weight
          *                       scan is performed..
          *
-         * @retval @c true  Data retrieved,
-         * @retval @c false No data retrieved.
+         * @retval true  Data retrieved,
+         * @retval false No data retrieved.
          */
         virtual bool read_data(double lat,
                                double lon,

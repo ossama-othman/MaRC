@@ -102,11 +102,11 @@
     long map_samples = 0;
     long map_lines = 0;
 
-    bool  transform_data = false;
-    float fits_bzero  = 0;
-    float fits_bscale = 1;
+    bool   transform_data = false;
+    double fits_bzero     = 0;
+    double fits_bscale    = 1;
 
-    bool blank_set = false;
+    bool blank_set   = false;
     int  fits_blank  = 0;
 
     // To create a grid or not to create a grid?  That is the question.
@@ -515,14 +515,14 @@ data_info:
 
 data_offset:
         | DATA_OFFSET ':' size  {
-            fits_bzero = static_cast<FITS::float_type>($3);
+            fits_bzero = $3;
             transform_data = true;
         }
 ;
 
 data_scale:
         | DATA_SCALE ':' size   {
-            fits_bscale = static_cast<FITS::float_type>($3);
+            fits_bscale = $3;
             transform_data = true;
         }
 ;
@@ -648,8 +648,8 @@ planes: | PLANES ':' size         {
            */
           if ($3 > 0) {
               num_planes = static_cast<std::size_t>($3);
-              std::cout << "NOTE: Specifying the number of map "
-                           "planes is no longer necessary.\n";
+              // std::cout << "NOTE: Specifying the number of map "
+              //              "planes is no longer necessary.\n";
           } else {
               std::cerr << "Incorrect number of planes entered: "
                         << $3 << std::endl;
@@ -764,8 +764,8 @@ plane_setup:
         plane_size
         plane_data_range
         plane_type      {
-          image_factory->minimum (minimum);
-          image_factory->maximum (maximum);
+          image_factory->minimum(minimum);
+          image_factory->maximum(maximum);
 
           image_factories.push_back(std::move(image_factory));
 
@@ -786,9 +786,9 @@ plane_size:
                 std::cerr << "Number of planes not entered prior to plane "
                           << "definition." << std::endl;
             } else {
-                std::cout <<
-                    "NOTE: Specifying the map plane number is no "
-                    "longer necessary.\n";
+                // std::cout <<
+                //     "NOTE: Specifying the map plane number is no "
+                //     "longer necessary.\n";
             }
 
             std::size_t const map_plane = static_cast<std::size_t>($3);
@@ -1085,7 +1085,7 @@ mu:     _MU ':'
         sub_observ
         range
         sub_solar       {
-            // Mu * 10000
+            // Mu (potentially scaled to increase significant digits)
             image_factory =
                 std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
                                                        ($3).lat,
@@ -1098,7 +1098,7 @@ mu0:    _MU0 ':'
         sub_observ      /* Unused */
         range           /* Unused */
         sub_solar       {
-          // Mu0 * 10000
+          // Mu0 (potentially scaled to increase significant digits)
           image_factory =
               std::make_unique<MaRC::Mu0ImageFactory>(oblate_spheroid,
                                                       ($5).lat,
@@ -1110,7 +1110,8 @@ phase:  _PHASE ':'
         sub_observ
         range
         sub_solar       {
-          // cos (phase angle) * 10000
+          // cos(phase angle) (potentially scaled to increase
+          //                   significant digits)
           image_factory =
               std::make_unique<MaRC::CosPhaseImageFactory>(
                   oblate_spheroid,
@@ -1123,8 +1124,8 @@ phase:  _PHASE ':'
 ;
 
 lat_plane: LATITUDE ':' lat_type {
-            // Latitudes in radians
-
+            // Latitudes in degrees (potentially scaled to increase
+            //                       significant digits)
             image_factory =
                 std::make_unique<MaRC::LatitudeImageFactory>(
                     oblate_spheroid, graphic_lat);
@@ -1133,7 +1134,8 @@ lat_plane: LATITUDE ':' lat_type {
 
 
 lon_plane: LONGITUDE {
-            // Longitudes in radians
+            // Longitudes in degrees (potentially scaled to increase
+            //                        significant digits)
             image_factory =
                 std::make_unique<MaRC::LongitudeImageFactory>();
            }
