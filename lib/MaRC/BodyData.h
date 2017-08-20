@@ -36,6 +36,12 @@ namespace MaRC
      *
      * Concrete @c BodyData implementations must subclass this
      * abstract base class.
+     *
+     * @todo @c BodyData class methods that only have a latitude
+     *       should really have a longitude parameter as well.
+     *       Without a longitude parameter only bodies that are
+     *       symmetrical about their polar axis can be implemented as
+     *       subclasses.
      */
     class BodyData
     {
