@@ -463,7 +463,7 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
      *
      * @bug CFITSIO will handle scaling if we set BSCALE and/or
      *      BZERO.  Do not set scaling factors.  Otherwise CFITSIO
-     *      issue a numerical overflow error.
+     *      issues a numerical overflow error.
      */
     // if (num_planes == 1) {
     //     // We're the sole plane in the map meaning we can update
