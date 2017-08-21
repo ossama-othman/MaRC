@@ -385,18 +385,18 @@ MaRC::PhotoImage::finalize_setup()
     // All necessary image values and attributes should be set by now!
 
     if (this->km_per_pixel_ <= 0)
-        this->set_km_per_pixel ();
+        this->set_km_per_pixel();
 
     // Set optical axis
-    if (!flags::check (this->flags_, OA_SET)) {
+    if (!flags::check(this->flags_, OA_SET)) {
         this->OA_s_ = this->samples_ / 2.;
         this->OA_l_ = this->lines_ / 2.;
-        flags::set (this->flags_, OA_SET);
+        flags::set(this->flags_, OA_SET);
     }
 
     // Set Body center to observer vectors.
-    // Right-handed coordinate system, optical axis in the y-z plane,
-    // positive y-axis away from the observer.
+
+    // Range vector in body coordinates.
     this->range_b_[0] =  0;
     this->range_b_[1] = -this->range_ * std::cos(this->sub_observ_lat_);
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
@@ -405,8 +405,7 @@ MaRC::PhotoImage::finalize_setup()
     if (!flags::check (this->flags_, LATLON_AT_CENTER)) {
         /**
          * @todo Verify that these values are consistent with the
-         *       coordinate system, including directions of all all
-         *       axes.
+         *       coordinate system, including directions of all axes.
          */
         DVector range_O;  // range_ vector in observer coordinates
 
@@ -617,7 +616,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
 
         std::cout
             << "Computed NORAZ = "
-            << std::atan2 (-result[0], result[2]) / C::degree
+            << std::atan2(-result[0], result[2]) / C::degree
             << " degrees (positive is CCW)\n"
             "Computed North pole vector in camera space = " << result
             << "\n"
@@ -822,17 +821,25 @@ MaRC::PhotoImage::remove_sky()
 
             std::size_t const index =  offset + i;
 
-            // Any value below this threshold is considered zero.
-            static double const zero_threshold = 1e-11;
+            // "Units in the last place" used when determining if an
+            // image value is considered zero.
+            static constexpr int ulps = 2;
 
             // Consider zero/NaN data points invalid, i.e. "off the
             // body".
-            if (this->body_->ellipse_intersection (this->range_b_,
+            if (this->body_->ellipse_intersection(this->range_b_,
                                                   dVec,
                                                   lat,
                                                   lon) == 0
                 && !std::isnan(this->image_[index])
-                && fabs (this->image_[index]) >= zero_threshold) {
+                && !MaRC::almost_zero(this->image_[index], ulps)) {
+                /**
+                 * @todo We consider an image value of zero to be in
+                 *       the sky but what if zero is a legitimate
+                 *       value on the body?  It would be better to
+                 *       support a user-specified "blank" value
+                 *       instead.
+                 */
                 // On body
                 this->sky_mask_[index] = true;
 
@@ -856,7 +863,7 @@ MaRC::PhotoImage::arcsec_per_pixel(double arcseconds)
     // NOTE: range_ should be in units of kilometers at this point.
     if (arcseconds > 0) {
         // This conversion assumes that the observer-to-body range is
-        // much larger than than the distance viewed in the image.
+        // much larger than the distance viewed in the image.
 
         // pi radians per 648000 arcseconds.
         this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
@@ -1080,7 +1087,7 @@ void
 MaRC::PhotoImage::nibble(std::size_t n)
 {
     std::size_t const minimum_dimension =
-        (this->samples_ < this->lines_ ? this->samples_ : this->lines_);
+        std::min(this->samples_, this->lines_);
 
     if (n < (minimum_dimension / 2)) {
       this->nibble_left_   = n;
@@ -1258,10 +1265,10 @@ MaRC::PhotoImage::read_data(double lat,
         // through the below sky mask scanning code below may be a
         // better choice in terms of quality.
         shortest_distance =
-            std::min (i,
-                      std::min (this->samples_ - i,
-                                std::min (k,
-                                          this->lines_ - k)));
+            std::min(i,
+                     std::min(this->samples_ - i,
+                              std::min(k,
+                                       this->lines_ - k)));
 
         // Scan across image for "off-body/image" pixels.
         if (!this->sky_mask_.empty()) {
@@ -1332,6 +1339,9 @@ MaRC::PhotoImage::latlon2pix(double lat,
     else
         lon -= this->sub_observ_lon_;
 
+    // Vector from center of the body to a point at the given latitude
+    // and longitude on the surface of the body in the body coordinate
+    // system.
     /**
      * @todo Confirm that Coord[0] and Coord[1] are not swapped,
      *       i.e. 90 degrees off in the x-y plane!
@@ -1351,14 +1361,16 @@ MaRC::PhotoImage::latlon2pix(double lat,
     // Convert to observer coordinates.
     DVector const Rotated(this->body2observ_ * Obs);
 
-    // This assertion should never be triggered since we verified that
-    // the point at the given latitude and longitude is visible before
-    // calling this method.
-    //
-    // If this assertion does trigger that would mean the point is on
-    // other side of image plane / body, which indicates a problem
-    // with the math!
-    assert(Rotated[1] <= this->normal_range_);
+    /**
+     * @todo Rotated[1] should never be larger than
+     *       @c normal_range_ since we verified that the point at the
+     *       given latitude and longitude is visible before getting
+     *       here.  If that is a correct assumption figure out what is
+     *       triggering the vector in observer coordinates to have a
+     *       y-component that is larger than the @c normal_range_.
+     */
+    if (Rotated[1] > this->normal_range_)
+        return false;  // On other side of image plane / body.
 
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;

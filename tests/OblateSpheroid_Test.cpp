@@ -153,6 +153,15 @@ bool test_mu()
      * @todo Test @c OblateSpheroid::mu() method.
      */
 
+    auto const o =
+        std::make_unique<MaRC::OblateSpheroid>(prograde,
+                                               a,
+                                               c,
+                                               -1 /* flattening*/);
+
+    constexpr double sub_observ_lat = 42  * C::degree;
+    constexpr double sub_observ_lon = 247 * C::degree;
+
     return true;
 }
 
