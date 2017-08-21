@@ -57,6 +57,7 @@ noinst_HEADERS = \
   MapCommand.h \
   MapCommand_T.h \
   MapCommand_T.cpp \
+  FITS_memory.h \
   FITS_traits.h \
   calc.h \
   parse_scan.h
