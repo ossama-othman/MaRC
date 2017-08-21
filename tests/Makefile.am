@@ -20,10 +20,12 @@ MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib
 
-check_PROGRAMS = \
-  Math_Test   \
-  Vector_Test \
-  Matrix_Test
+check_PROGRAMS =      \
+  Math_Test           \
+  Vector_Test         \
+  Matrix_Test         \
+  Geometry_Test       \
+  OblateSpheroid_Test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
@@ -36,6 +38,12 @@ Math_Test_SOURCES = Math_Test.cpp
 Vector_Test_SOURCES = Vector_Test.cpp
 
 Matrix_Test_SOURCES = Matrix_Test.cpp
+
+Geometry_Test_SOURCES = Geometry_Test.cpp
+Geometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
+OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
+OblateSpheroid_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 TESTS = \
   $(check_PROGRAMS) \

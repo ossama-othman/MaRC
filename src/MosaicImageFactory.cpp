@@ -23,7 +23,6 @@
 #include "MosaicImageFactory.h"
 
 #include <stdexcept>
-#include <iostream>
 
 
 MaRC::MosaicImageFactory::MosaicImageFactory (

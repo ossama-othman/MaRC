@@ -27,53 +27,132 @@
 #ifndef MARC_GEOMETRY_H
 #define MARC_GEOMETRY_H
 
-#include <cstddef>
-
 #include <MaRC/Matrix.h>
+
+#include <cstddef>
 
 
 namespace MaRC
 {
     template <typename T, std::size_t M, std::size_t N> class Matrix;
+
+    /**
+     * @name Convenience Vector and Matrix Types
+     *
+     * @c Vector and @c Matrix types used heavily through out the MaRC
+     * library.
+     */
+    //@{
     typedef Vector<double, 3> DVector;
     typedef Matrix<double, 3, 3> DMatrix;
+    //@}
 
     /**
      * @namespace Geometry
      *
-     * @brief MaRC geometry related functions.
+     * @brief Geometry related functions.
      */
     namespace Geometry
     {
-        // All coordinate transformations assume a right-handed
-        // coordinate system.
-
-        /// Rotate about x-axis.
-        void RotX(double, DVector const &, DVector &);
+        /**
+         * @name Coordinate System Rotations
+         *
+         * @brief Set functions that perform or generate coordinate
+         *        system rotations.
+         *
+         * These functions either perform or generate @em coordinate
+         * @em system @em rotations, as opposed to rotations in a
+         * fixed coordinate system where the rotation matrix would be
+         * the transpose of the coordinate system rotation matrix.
+         *
+         * All coordinate transformations assume a right-handed
+         * coordinate system, meaning a positive angle causes
+         * counterclockwise rotation to occur about a given axis.
+         *
+         * All angles are in radians.
+         */
+        //@{
+        /// Rotate vector about x-axis.
+        /**
+         * @param[in]  angle Angle about the x-axis through which the
+         *                   coordinate system will be rotated.
+         * @param[in]  v     Vector in the original coordinate
+         *                   system.
+         * @param[out] r     Vector in the rotated coordinate system.
+         */
+        void RotX(double angle, DVector const & v, DVector & r);
 
         /// Rotate about y-axis.
-        void RotY(double, DVector const &, DVector &);
+        /**
+         * @param[in]  angle Angle about the y-axis through which the
+         *                   coordinate system will be rotated.
+         * @param[in]  v     Vector in the original coordinate
+         *                   system.
+         * @param[out] r     Vector in the rotated coordinate system.
+         */
+        void RotY(double angle, DVector const & v, DVector & r);
 
         /// Rotate about z-axis.
-        void RotZ(double, DVector const &, DVector &);
+        /**
+         * @param[in]  angle Angle about the z-axis through which the
+         *                   coordinate system will be rotated.
+         * @param[in]  v     Vector in the original coordinate
+         *                   system.
+         * @param[out] r     Vector in the rotated coordinate system.
+         */
+        void RotZ(double angle, DVector const & v, DVector & r);
 
-        /// Return a transformation matrix that rotates about the
-        /// x-axis.
+        /// Return a transformation matrix that rotates a coordinate
+        /// system about the x-axis.
+        /**
+         * @param[in] angle Angle about the x-axis through which the
+         *                  returned rotation matrix will rotate a
+         *                  coordinate system.
+         *
+         * @return Matrix that will rotate a coordinate system
+         *         @a angle radians about the x-axis.
+         */
         DMatrix RotXMatrix(double angle);
 
-        /// Return a transformation matrix that rotates about the
-        /// y-axis.
+        /// Return a transformation matrix that rotates a coordinate
+        /// system about the y-axis.
+        /**
+         * @param[in] angle Angle about the y-axis through which the
+         *                  returned rotation matrix will rotate a
+         *                  coordinate system.
+         *
+         * @return Matrix that will rotate a coordinate system
+         *         @a angle radians about the y-axis.
+         */
         DMatrix RotYMatrix(double angle);
 
-        /// Return a transformation matrix that rotates about the
-        /// z-axis.
+        /// Return a transformation matrix that rotates a coordinate
+        /// system about the z-axis.
+        /**
+         * @param[in] angle Angle about the z-axis through which the
+         *                  returned rotation matrix will rotate a
+         *                  coordinate system.
+         *
+         * @return Matrix that will rotate a coordinate system
+         *         @a angle radians about the z-axis.
+         */
         DMatrix RotZMatrix(double angle);
+        //@}
 
-        /// Obtain magnitude of vector of type @c double.
-        double Magnitude(DVector const &);
+        /// Obtain magnitude of vector.
+        /**
+         * @param[in] v Vector for which the magnitude will be
+         *            calculated.
+         *
+         * @return Magnitude of vector @a v.
+         */
+        double Magnitude(DVector const & v);
 
         /// Convert a vector of type double to a unit vector.
-        void toUnitVector(DVector &);
+        /**
+         * @param[in,out] v Vector to convert to a unit vector.
+         */
+        void toUnitVector(DVector & v);
     }
 }
 

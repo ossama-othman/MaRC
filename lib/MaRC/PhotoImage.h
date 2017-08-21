@@ -60,11 +60,10 @@ namespace MaRC
          */
         enum sflags
         {
-            EMI_ANG_LIMIT    = 1 << 0,
-            LATLON_AT_CENTER = 1 << 1,
-            OA_SET           = 1 << 2,
-            EXTREMA_SET      = 1 << 3,
-            USE_TERMINATOR   = 1 << 4
+            LATLON_AT_CENTER = 1 << 0,
+            OA_SET           = 1 << 1,
+            EXTREMA_SET      = 1 << 2,
+            USE_TERMINATOR   = 1 << 3
         };
 
         /// Constructor
@@ -233,6 +232,11 @@ namespace MaRC
         void interpolate(bool enable);
 
         /// Set emission angle beyond which no data will be read.
+        /**
+         * @param[in] angle Emission angle in degrees.
+         *
+         * @return 0 on success.
+         */
         int emi_ang_limit(double angle);
 
         /// Set sample and line of body center.
@@ -245,12 +249,28 @@ namespace MaRC
         void body_center_line(double);
 
         /// Set latitude and longitude at center of image.
+        /**
+         * @param[in] lat Latitude in degrees at center of image.
+         * @param[in] lon Longitude in degrees at center of image.
+         *
+         * @return 0 on success.
+         */
         int lat_lon_center(double lat, double lon);
 
         /// Set latitude at center of image.
+        /**
+         * @param[in] lat Latitude in degrees at center of image.
+         *
+         * @return 0 on success.
+         */
         int lat_at_center(double lat);
 
         /// Set longitude at center of image.
+        /**
+         * @param[in] lon Longitude in degrees at center of image.
+         *
+         * @return 0 on success.
+         */
         int lon_at_center(double lon);
 
         /// Set the optical axis.
@@ -321,11 +341,11 @@ namespace MaRC
 
         /// Convert (latitude, longitude) to (sample, sine)
         /**
-         * @param[in] lat  Bodycentric (e.g. planetocentric) latitude
+         * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
          *                 in radians.
-         * @param[in] lon  Longitude in radians.
-         * @param[out] x   Floating point value corresponding to @c i.
-         * @param[out] z   Floating point value corresponding to @c k.
+         * @param[in]  lon Longitude in radians.
+         * @param[out] x   Sample at given latitude and longitude.
+         * @param[out] z   Line at given latitude and longitude.
          *
          * @retval true  Conversion succeeded.
          * @retval false Conversion failed.
@@ -347,7 +367,13 @@ namespace MaRC
 
     private:
 
-        /// Use range, focal length and scale to compute
+        /// Finalize kilometers per pixel value.
+        /**
+         * Use range, focal length and scale to compute the kilometers
+         * per pixel in the image.
+         *
+         * @return 0 on success.
+         */
         int set_km_per_pixel();
 
         /// Get rotation matrices for case when body centers are given.
@@ -357,6 +383,8 @@ namespace MaRC
          *                         transformation matrix.
          * @param[out] body2observ Body to observer coordinates
          *                         transformation matrix.
+         *
+         * @return 0 on success.
          */
         int rot_matrices(DVector const & range_o,
                          DMatrix & observ2body,
@@ -524,8 +552,12 @@ namespace MaRC
         /// Longitude at picture center
         double lon_at_center_;
 
-        /// Cosine of emission angle outside of which no data will be
-        /// plotted / retrieved.
+        /**
+         * The cosine, &mu; of the emission angle outside of which no
+         * data will be plotted / retrieved.
+         *
+         * This is used to avoid mapping data close to the limb.
+         */
         double mu_limit_;
 
         /// Minimum latitude visible on body.

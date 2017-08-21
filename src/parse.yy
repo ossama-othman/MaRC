@@ -36,15 +36,6 @@
 #include "LatitudeImageFactory.h"
 #include "LongitudeImageFactory.h"
 
-  // SourceImage strategies
-#include <MaRC/PhotoImage.h>
-#include <MaRC/MosaicImage.h>
-#include <MaRC/MuImage.h>
-#include <MaRC/Mu0Image.h>
-#include <MaRC/CosPhaseImage.h>
-#include <MaRC/LatitudeImage.h>
-#include <MaRC/LongitudeImage.h>
-
   // Geometric correction strategies
 #include <MaRC/NullGeometricCorrection.h>
 #include <MaRC/GLLGeometricCorrection.h>
@@ -59,7 +50,6 @@
 #include <MaRC/PolarStereographic.h>
 #include <MaRC/SimpleCylindrical.h>
 
-
 #include <MaRC/Constants.h>
 
 #include "parse_scan.h"
@@ -72,7 +62,7 @@
 #include <memory>
 #include <cstring>
 #include <cmath>
-#include <cassert>
+
 
     std::string map_filename;
 

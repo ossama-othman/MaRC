@@ -29,7 +29,7 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
+    class BodyData;
 
     /**
      * @class Mu0ImageFactory
@@ -44,13 +44,11 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in] body          Body being mapped (currently must
-         *                          be represented as an oblate
-         *                          spheroid).
+         * @param[in] body          Body being mapped.
          * @param[in] sub_solar_lat Sub-solar latitude in degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
          */
-        Mu0ImageFactory(std::shared_ptr<OblateSpheroid> body,
+        Mu0ImageFactory(std::shared_ptr<BodyData> body,
                         double sub_solar_lat,
                         double sub_solar_lon);
 
@@ -61,12 +59,7 @@ namespace MaRC
     private:
 
         /// Object representing the body being mapped.
-        /**
-         * @note OblateSpheroid is used instead of BodyData since some
-         *       code in this implementation assumes that the body is
-         *       modeled as an oblate spheroid.
-         */
-        std::shared_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Sub-solar latitude (degrees).
         double sub_solar_lat_;

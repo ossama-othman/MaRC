@@ -36,6 +36,12 @@ namespace MaRC
      *
      * Concrete @c BodyData implementations must subclass this
      * abstract base class.
+     *
+     * @todo @c BodyData class methods that only have a latitude
+     *       should really have a longitude parameter as well.
+     *       Without a longitude parameter only bodies that are
+     *       symmetrical about their polar axis can be implemented as
+     *       subclasses.
      */
     class BodyData
     {
@@ -61,27 +67,46 @@ namespace MaRC
          */
         bool prograde() const { return this->prograde_; }
 
-        /// Find radius as a function of centric latitude.
+        /// Find radius as a function of bodycentric latitude.
         /**
-         * @param[in] lat Bodycentric (e.g. planetocentric) latitude.
+         * Calculate and return the radius, i.e. distance from the
+         * center of the body to the point on the surface at given
+         * latitude.
          *
-         * @return Radius at given latitude.
+         * @param[in] lat Bodycentric (e.g. planetocentric) latitude
+         *                in radians.
+         *
+         * @return Radius, i.e. distance from the center of the body
+         *         to point on the surface at given latitude.
+         *
+         * @todo We really should add a longitude parameter since not
+         *       all bodies are symmetrical about their polar axis.
+         *
          */
         virtual double centric_radius(double lat) const = 0;
 
         /// Convert from GRAPHIC to CENTRIC latitude
         /**
-         * @param[in] lat graphic (e.g. planetographic) latitude
+         * @param[in] lat Graphic (e.g. planetographic) latitude in
+         *                radians.
          *
-         * @return Bodycentric latitude.
+         * @return Bodycentric latitude in radians.
+         *
+         * @todo We really should add a longitude parameter since not
+         *       all bodies are symmetrical about their polar axis.
+         *
          */
         virtual double centric_latitude(double lat) const = 0;
 
         /// Convert from CENTRIC to GRAPHIC latitude
         /**
-         * @param[in] lat centric (e.g. planetocentric) latitude
+         * @param[in] lat Centric (e.g. planetocentric) latitude in
+         *                radians.
          *
-         * @return Bodygraphic latitude.
+         * @return Bodygraphic latitude in radians.
+         *
+         * @todo We really should add a longitude parameter since not
+         *       all bodies are symmetrical about their polar axis.
          */
         virtual double graphic_latitude(double lat) const = 0;
 

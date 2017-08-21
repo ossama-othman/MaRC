@@ -78,7 +78,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , km_per_pixel_  (-1)        // Force "bad" value until set by caller
     , focal_length_  (-1)        // Force "bad" value until set by caller
     , focal_length_pixels_(-1)   // Force "bad" value until fully initialized
-    , scale_ (-1)                // Force "bad" value until set by caller
+    , scale_         (-1)        // Force "bad" value until set by caller
     , normal_range_  (0)
     , OA_s_          (0)
     , OA_l_          (0)
@@ -94,7 +94,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , line_center_   (0)
     , lat_at_center_ (0)
     , lon_at_center_ (0)
-    , mu_limit_      (0)  // cos(90 deg emission angle) == 0
+    , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
     // , min_lat_(C::pi_2)  // Initialize to maximum (yes, the maximum!) possible
     // , max_lat_(-C::pi_2) // Initialize to minimum possible
     // , min_lon_(C::_2pi)  // Initialize to maximum possible
@@ -148,77 +148,45 @@ MaRC::PhotoImage::operator==(PhotoImage const & img)
 bool
 MaRC::PhotoImage::is_visible(double lat, double lon) const
 {
-    //   const double radius = this->body_->centric_radius(lat);
-    double const latg   = this->body_->graphic_latitude(lat);
-
     /*
-    double const cosine =
-        (radius * std::cos(lat - latg) -
-        this->range_ * std::sin(this->sub_observ_lat_) * std::sin(latg)) /
-        (this->range_ * std::cos(this->sub_observ_lat_) * std::cos(latg));
+      mu is the cosine of the angle between:
 
-    double lower, upper;
+      -- the vector from the given point to the observer
+      -- the normal vector to the surface at the given point
 
-    if (cosine >= -1 && cosine <= 1) {
-        // Partial range of longitudes are visible.
+      For a convex body, if this is positive, the point is on the
+      visible side of the planet, and if it's negative, the point is
+      on the far side of the planet.
 
-        double const edge = std::abs(std::acos(cosine));
-
-        lower = this->sub_observ_lon_ - edge;
-        upper = this->sub_observ_lon_ + edge;
-    }  else if (cosine < -1) {
-        // Full 360 degree visible longitude range.
-        lower = this->sub_observ_lon_ - C::pi;
-        upper = this->sub_observ_lon_ + C::pi;
-    } else {
-        return false;  // Not visible
-    }
+      Take into account an emission angle limit potentially set by the
+      user as well.
     */
+    return
+        this->body_->mu(this->sub_observ_lat_,
+                        this->sub_observ_lon_,
+                        lat,
+                        lon,
+                        this->range_) > this->mu_limit_
 
-    if (flags::check(this->flags_, USE_TERMINATOR)) {
-        // The following equation assumes the sun to be an infinite
-        // distance away from the observed body.
+        /*
+          mu0 is the angle between:
 
-        // tcosine =
-        //   std::pow(this->body_->eq_rad()
-        //   / this->body_->pol_rad(), 2.0)
-        //   * std::tan(lat) * std::tan(this->sub_solar_lat_);
-        double const tcosine = std::tan(latg) * std::tan(this->sub_solar_lat_);
+          -- the vector from the given point to the sun
+          -- the normal vector to the surface at the given point
 
-        if (tcosine >= -1 && tcosine <= 1) {
-            double const tedge = std::abs(std::acos (-tcosine));
+          The sun is assumed to be an infinite distance away.  For a
+          convex body, if this is positive, the point is on the lit
+          side of the planet, and if it's negative, the point is on
+          the dark side of the planet.
+        */
+        && (!flags::check(this->flags_, USE_TERMINATOR)
+            || this->body_->mu0(this->sub_solar_lat_,
+                                this->sub_solar_lon_,
+                                lat,
+                                lon) > 0);
 
-            double const lower_terminator = this->sub_solar_lon_ - tedge;
-            double const upper_terminator = this->sub_solar_lon_ + tedge;
-
-            /*
-              if (lower_terminator > lower)
-                  lower = lower_terminator;
-
-              if (upper_terminator < upper)
-                  upper = upper_terminator;
-            */
-
-            return (lon >= lower_terminator && lon <= upper_terminator);
-        } else {
-            return false;
-        }
-    }
-
-    /*
-    // Wrap around if necessary.
-    if (lower > lon)
-        lower -= C::_2pi;
-    else if (upper < lon)
-        upper += C::_2pi;
-
-    // Now check if longitude at given latitude is visible.
-    if (lon < lower || lon > upper)
-        return false;  // Not visible
-    */
-
-    // Assume it is visible regardless of location of terminator.
-    return true;
+     // Visible if both the far-side and (if requested) the dark-side
+     // checks passed.
 }
 
 int
@@ -417,31 +385,35 @@ MaRC::PhotoImage::finalize_setup()
     // All necessary image values and attributes should be set by now!
 
     if (this->km_per_pixel_ <= 0)
-        this->set_km_per_pixel ();
+        this->set_km_per_pixel();
 
     // Set optical axis
-    if (!flags::check (this->flags_, OA_SET)) {
+    if (!flags::check(this->flags_, OA_SET)) {
         this->OA_s_ = this->samples_ / 2.;
         this->OA_l_ = this->lines_ / 2.;
-        flags::set (this->flags_, OA_SET);
+        flags::set(this->flags_, OA_SET);
     }
 
-    // Set Body center to observer vectors
+    // Set Body center to observer vectors.
+
+    // Range vector in body coordinates.
     this->range_b_[0] =  0;
     this->range_b_[1] = -this->range_ * std::cos(this->sub_observ_lat_);
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
 
     /// Perpendicular distance from observer to image plane.
     if (!flags::check (this->flags_, LATLON_AT_CENTER)) {
+        /**
+         * @todo Verify that these values are consistent with the
+         *       coordinate system, including directions of all axes.
+         */
         DVector range_O;  // range_ vector in observer coordinates
 
         range_O[0] =
             (this->OA_s_ - this->sample_center_) * this->km_per_pixel_;
 
-        range_O[1] =  0;
-        // range_O[1] = (-this->focal_length_ * this->scale_ ) * km_per_pixel_; <---- set later
+        // range_O[1] is default initialized to zero.  Set below.
 
-        // range_O[2] =  (OA_l_ - line_center_) * km_per_pixel_;
         range_O[2] =
             (this->line_center_ - this->OA_l_) * this->km_per_pixel_;
         // Since line numbers increase top to bottom (e.g. VICAR images)
@@ -644,7 +616,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
 
         std::cout
             << "Computed NORAZ = "
-            << std::atan2 (-result[0], result[2]) / C::degree
+            << std::atan2(-result[0], result[2]) / C::degree
             << " degrees (positive is CCW)\n"
             "Computed North pole vector in camera space = " << result
             << "\n"
@@ -849,17 +821,25 @@ MaRC::PhotoImage::remove_sky()
 
             std::size_t const index =  offset + i;
 
-            // Any value below this threshold is considered zero.
-            static double const zero_threshold = 1e-11;
+            // "Units in the last place" used when determining if an
+            // image value is considered zero.
+            static constexpr int ulps = 2;
 
             // Consider zero/NaN data points invalid, i.e. "off the
             // body".
-            if (this->body_->ellipse_intersection (this->range_b_,
+            if (this->body_->ellipse_intersection(this->range_b_,
                                                   dVec,
                                                   lat,
                                                   lon) == 0
                 && !std::isnan(this->image_[index])
-                && fabs (this->image_[index]) >= zero_threshold) {
+                && !MaRC::almost_zero(this->image_[index], ulps)) {
+                /**
+                 * @todo We consider an image value of zero to be in
+                 *       the sky but what if zero is a legitimate
+                 *       value on the body?  It would be better to
+                 *       support a user-specified "blank" value
+                 *       instead.
+                 */
                 // On body
                 this->sky_mask_[index] = true;
 
@@ -883,7 +863,7 @@ MaRC::PhotoImage::arcsec_per_pixel(double arcseconds)
     // NOTE: range_ should be in units of kilometers at this point.
     if (arcseconds > 0) {
         // This conversion assumes that the observer-to-body range is
-        // much larger than than the distance viewed in the image.
+        // much larger than the distance viewed in the image.
 
         // pi radians per 648000 arcseconds.
         this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
@@ -935,21 +915,9 @@ MaRC::PhotoImage::set_km_per_pixel()
 
         this->km_per_pixel_ =
             this->range_ /
-            std::sqrt(this->focal_length_pixels_
-                      * this->focal_length_pixels_
-                      + (this->OA_s_ - this->sample_center_)
-                      * (this->OA_s_ - this->sample_center_)
-                      + (this->OA_l_ - this->line_center_)
-                      * (this->OA_l_ - this->line_center_));
-
-//       std::cout << "focal_length = " << this->focal_length_ << '\n'
-//                 << "scale        = " << this->scale_        << '\n'
-//                 << "OA_s         = " << this->OA_s_         << '\n'
-//                 << "OA_l         = " << this->OA_l_         << '\n'
-//                 << "sample_center= " << this->sample_center_<< '\n'
-//                 << "line_center  = " << this->line_center_  << '\n'
-//                 << "km_per_pixel = " << this->km_per_pixel_ << '\n'
-//                 << "range        = " << this->range_        << '\n';
+            MaRC::hypot(this->OA_s_ - this->sample_center_,
+                        this->focal_length_pixels_,
+                        this->OA_l_ - this->line_center_);
     } else if (this->km_per_pixel_ <= 0) {
         std::cerr
             << "ERROR: Attempt to compute number of kilometers per pixel\n"
@@ -1119,7 +1087,7 @@ void
 MaRC::PhotoImage::nibble(std::size_t n)
 {
     std::size_t const minimum_dimension =
-        (this->samples_ < this->lines_ ? this->samples_ : this->lines_);
+        std::min(this->samples_, this->lines_);
 
     if (n < (minimum_dimension / 2)) {
       this->nibble_left_   = n;
@@ -1207,20 +1175,15 @@ MaRC::PhotoImage::interpolate(bool enable)
 int
 MaRC::PhotoImage::emi_ang_limit(double angle)
 {
-    if (angle > 0 && angle < 90) {
-        this->mu_limit_ = std::cos(angle * C::degree);
-        flags::set(this->flags_, EMI_ANG_LIMIT);
-    }
-    else if (angle == static_cast<double>(90)) {
-        // Value equal to 90 means no cut-off, so we don't
-        // switch on the emission angle cut-off code.
-        flags::unset (this->flags_, EMI_ANG_LIMIT);
-    } else {
-        std::cerr << "Incorrect value value passed to EmiAngLimit routine: "
-                  << angle << '\n';
+    if (angle < 0 || angle > 90) {
+        std::cerr
+            << "Incorrect value value passed to emi_ang_limit() routine: "
+            << angle << '\n';
 
         return 1;  // Failure
     }
+
+    this->mu_limit_ = std::cos(angle * C::degree);
 
     return 0;  // Success
 }
@@ -1245,25 +1208,15 @@ MaRC::PhotoImage::read_data(double lat,
     if (!this->is_visible(lat, lon))
         return false;  // Failure
 
-    // Do not plot data close to limb
-    if (flags::check(this->flags_, EMI_ANG_LIMIT)
-        && this->body_->mu(this->sub_observ_lat_,
-                          this->sub_observ_lon_,
-                          lat,
-                          lon,
-                          this->range_) < this->mu_limit_) {
-        return false;  // Outside the configured emission angle limit.
-    }
-
     double x = 0, z = 0;
 
-    if (!this->latlon2pix(lat, lon, x, z)
-        || x < 0    // Prevent integer underflow since we're casting
-        || z < 0)   // to an unsigned integer below.
+    if (!this->latlon2pix(lat, lon, x, z))
         return false;
 
-    std::size_t const i = static_cast<std::size_t>(std::round(x));
-    std::size_t const k = static_cast<std::size_t>(std::round(z));
+    // x and z are 'pixel coordinates'.  In 'pixel coordinates', 0..1
+    // is inside pixel 0, 1..2 is inside pixel 1, etc.
+    std::size_t const i = static_cast<std::size_t>(std::floor(x));
+    std::size_t const k = static_cast<std::size_t>(std::floor(z));
 
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
@@ -1312,10 +1265,10 @@ MaRC::PhotoImage::read_data(double lat,
         // through the below sky mask scanning code below may be a
         // better choice in terms of quality.
         shortest_distance =
-            std::min (i,
-                      std::min (this->samples_ - i,
-                                std::min (k,
-                                          this->lines_ - k)));
+            std::min(i,
+                     std::min(this->samples_ - i,
+                              std::min(k,
+                                       this->lines_ - k)));
 
         // Scan across image for "off-body/image" pixels.
         if (!this->sky_mask_.empty()) {
@@ -1381,33 +1334,41 @@ MaRC::PhotoImage::latlon2pix(double lat,
 {
     double const radius = this->body_->centric_radius(lat);
 
-    double longitude;
-
-    if (this->body_->prograde ())
-        longitude = this->sub_observ_lon_ - lon;
+    if (this->body_->prograde())
+        lon  = this->sub_observ_lon_ - lon;
     else
-        longitude = lon - this->sub_observ_lon_;
+        lon -= this->sub_observ_lon_;
 
+    // Vector from center of the body to a point at the given latitude
+    // and longitude on the surface of the body in the body coordinate
+    // system.
+    /**
+     * @todo Confirm that Coord[0] and Coord[1] are not swapped,
+     *       i.e. 90 degrees off in the x-y plane!
+     *       @par
+     *       Swapping the two prevents the below @c assert() from
+     *       being triggered, but it's not yet clear if the
+     *       @c normal_range_ value is incorrect or if the @c Coord
+     *       vector is incorrect.
+     */
     DVector Coord;
-    Coord[0] =  radius * std::cos(lat) * std::sin(longitude);
-    Coord[1] = -radius * std::cos(lat) * std::cos(longitude);
+    Coord[0] =  radius * std::cos(lat) * std::sin(lon);
+    Coord[1] = -radius * std::cos(lat) * std::cos(lon);
     Coord[2] =  radius * std::sin(lat);
-
-//   Rotated = this->body2observ_ * Coord; // Convert to observer coordinates
-
-//   x = (Rotated[0] / this->km_per_pixel_ - (OA_s_ - this->sample_center_)) * this->normal_range_ /
-//     (this->normal_range_ + Rotated[1]);
-//   z = (Rotated[2] / this->km_per_pixel_ + (OA_l_ - this->line_center_)) * this->normal_range_ /
-//     (this->normal_range_ + Rotated[1]);
-                     // Why should we add instead of subtract?
-                     // For some reason incorrect results occur if
-                     // the supposedly correct subtraction is used.
 
     DVector const Obs(Coord - this->range_b_);
 
     // Convert to observer coordinates.
     DVector const Rotated(this->body2observ_ * Obs);
 
+    /**
+     * @todo Rotated[1] should never be larger than
+     *       @c normal_range_ since we verified that the point at the
+     *       given latitude and longitude is visible before getting
+     *       here.  If that is a correct assumption figure out what is
+     *       triggering the vector in observer coordinates to have a
+     *       y-component that is larger than the @c normal_range_.
+     */
     if (Rotated[1] > this->normal_range_)
         return false;  // On other side of image plane / body.
 
@@ -1415,7 +1376,6 @@ MaRC::PhotoImage::latlon2pix(double lat,
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
 
     x += this->OA_s_;
-    //  z += this->OA_l_;
     z = this->OA_l_ - z; // Assumes line numbers increase top to bottom.
 
     //std::cout << "* x = " << x << "\tz = " << z << '\n';
@@ -1423,7 +1383,9 @@ MaRC::PhotoImage::latlon2pix(double lat,
     // Convert from object space to image space.
     this->geometric_correction_->object_to_image(z, x);
 
-    return true;
+    // x and z are both positive if the point at the given latitude
+    // and longitude is in the image.
+    return x >= 0 && z >= 0;
 }
 
 void

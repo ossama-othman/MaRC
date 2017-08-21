@@ -28,7 +28,7 @@
 
 
 MaRC::Mu0ImageFactory::Mu0ImageFactory(
-    std::shared_ptr<OblateSpheroid> body,
+    std::shared_ptr<BodyData> body,
     double sub_solar_lat,
     double sub_solar_lon)
     : body_(body)

@@ -23,7 +23,8 @@
 #include "MapCommand_T.h"
 #include "FITS_traits.h"
 
-#include <MaRC/config.h>  // For NDEBUG
+#include <MaRC/VirtualImage.h>  // For scale_and_offset()
+#include <MaRC/config.h>        // For NDEBUG
 
 #include <cassert>
 

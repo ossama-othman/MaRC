@@ -24,6 +24,8 @@
 #include "LongitudeImage.h"
 #include "Constants.h"
 
+#include <cmath>
+
 
 MaRC::LongitudeImage::LongitudeImage(double scale, double offset)
     : VirtualImage(scale, offset)
@@ -35,12 +37,19 @@ MaRC::LongitudeImage::read_data_i(double /* lat */,
                                   double lon,
                                   double & data) const
 {
+    static constexpr int maxlon = 360;  // 0 to 360 degree range.
+
     data = lon / C::degree;  // Convert radians to degrees.
 
+    // Make sure the longitude is in the +/-360 degree range.
+    data = std::fmod(data, maxlon);
+
+    // Data is now in the +/- 360 range but we need it to be
+    // positive.  fmod() retains the sign of its first argument so
+    // shift the negative longitude to its positive equivalent (not
+    // the same as absolute value!).
     if (data < 0)
-        data += 360;
-    else if (data >= 360)
-        data -= 360;
+        data += maxlon;
 
     return true;
 }

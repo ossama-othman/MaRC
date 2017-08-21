@@ -32,7 +32,7 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
+    class BodyData;
 
     /**
      * @class Mu0Image
@@ -44,9 +44,6 @@ namespace MaRC
      * sun-local-normal (incidence) angle, &mu;<SUB>0</SUB>, on the
      * body being mapped.  The sun is assumed to be an infinite
      * distance away.
-     *
-     * @note This implementation requires that the body under
-     *       observation is modeled as an oblate spheroid.
      */
     class Mu0Image : public VirtualImage
     {
@@ -54,8 +51,7 @@ namespace MaRC
 
         /// Constructor
         /**
-         * @param[in] body          @c OblateSpheroid object
-         *                          representing the body being
+         * @param[in] body          Object representing the body being
          *                          mapped.
          * @param[in] sub_solar_lat Bodycentric sub-solar latitude in
          *                          degrees.
@@ -66,7 +62,7 @@ namespace MaRC
          *                          cosines after the scaling factor
          *                          has been applied.
          */
-        Mu0Image(std::shared_ptr<OblateSpheroid> body,
+        Mu0Image(std::shared_ptr<BodyData> body,
                  double sub_solar_lat,
                  double sub_solar_lon,
                  double scale,
@@ -78,8 +74,8 @@ namespace MaRC
         /**
          * @see MaRC::VirtualImage::read_data_i().
          */
-        virtual bool read_data_i(double Latitude,
-                                 double Longitude,
+        virtual bool read_data_i(double lat,
+                                 double lon,
                                  double & Data) const;
 
         /// Is point at given latitude and longitude visible to the
@@ -92,12 +88,7 @@ namespace MaRC
     private:
 
         /// Object representing the body being mapped.
-        /**
-         * @note OblateSpheroid is used instead of BodyData since some
-         *       code in this implementation assumes that the body is
-         *       modeled as an oblate spheroid.
-         */
-        std::shared_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Bodycentric sub-solar latitude in radians.
         const double sub_solar_lat_;

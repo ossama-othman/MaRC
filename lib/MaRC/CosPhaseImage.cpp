@@ -22,12 +22,11 @@
  */
 
 #include "CosPhaseImage.h"
-#include "MuImage.h"
-#include "OblateSpheroid.h"
+#include "BodyData.h"
 #include "Constants.h"
 
 
-MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<OblateSpheroid> body,
+MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<BodyData> body,
                                    double sub_observ_lat,
                                    double sub_observ_lon,
                                    double sub_solar_lat,
@@ -75,10 +74,9 @@ MaRC::CosPhaseImage::is_visible(double lat, double lon) const
     // This implementation is as the same as the one used by the
     // MuImage class.
 
-    return MaRC::MuImage::is_visible_i(*this->body_,
-                                       this->sub_observ_lat_,
-                                       this->sub_observ_lon_,
-                                       lat,
-                                       lon,
-                                       this->range_);
+    return this->body_->mu(this->sub_observ_lat_,
+                           this->sub_observ_lon_,
+                           lat,
+                           lon,
+                           this->range_) >= 0;
 }

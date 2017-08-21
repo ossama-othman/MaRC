@@ -97,7 +97,7 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     // Set flattening.
     // ----------------------------------------------
 
-    // flattening <  0 ----> eq_rad < pol_rad <----- Not valid
+    // flattening <  0 ----> Prolate Spheroid <----- Not valid
     // flattening > 0 < 1 -> Oblate Spheroid
     // flattening == 0 ----> Sphere
     // flattening == 1 ----> Disc!!  <--- Not valid
@@ -135,24 +135,53 @@ MaRC::OblateSpheroid::initialize_radii(double eq_rad,
     }
 }
 
-inline double
+double
 MaRC::OblateSpheroid::centric_radius(double lat) const
 {
-    /**
-     * @todo Can we leverage std::hypot() here to reduce floating
-     *       point error?  If not, at least switch to an
-     *       implementation that avoid underflow and overflow.
-     */
-    double const er2     = this->eq_rad_ * this->eq_rad_;
-    double const pr2     = this->pol_rad_ * this->pol_rad_;
-    double const sin_lat = std::sin(lat);
+    /*
+      Given a bodycentric latitude and longitude for a point (x, y, z)
+      on the surface of a spheroid:
 
-    return
-        this->eq_rad_ * this->pol_rad_ /
-        std::sqrt((er2 - pr2) * sin_lat * sin_lat + pr2);
+          x = r * cos(lat) * cos(lon)
+          y = r * cos(lat) * sin(lon)
+          z = r * sin(lat)
+
+      Assume longitude zero is along the observer optical axis, we
+      have:
+
+          x = r * cos(lat)
+          y = 0
+          z = r * sin(lat)
+
+      The Cartesian equation for an oblate spheroid is:
+
+           2    2    2
+          x  + y    z
+          ------- + -- = 1
+             2       2
+            a       c
+
+      We end up with:
+
+                       2                  2
+         (r * cos(lat))  +  (r * sin(lat))
+         ---------------    --------------- = 1
+                 2                   2
+                a                   c
+
+      and:
+
+                            1
+        r = -----------------------------------
+                             2               2
+            sqrt((cos(lat)/a)  + (sin(lat)/c) )
+
+    */
+    return 1 / MaRC::hypot(std::cos(lat) / this->eq_rad_,
+                           std::sin(lat) / this->pol_rad_);
 }
 
-inline double
+double
 MaRC::OblateSpheroid::centric_latitude(double lat) const
 {
     return
@@ -161,7 +190,7 @@ MaRC::OblateSpheroid::centric_latitude(double lat) const
                   * std::tan(lat));
 }
 
-inline double
+double
 MaRC::OblateSpheroid::graphic_latitude(double lat) const
 {
     return
@@ -177,7 +206,8 @@ MaRC::OblateSpheroid::mu(double sub_observ_lat,
                          double lon,
                          double range) const
 {
-    // Compute the local normal-observer angle - Emission Angle (Mu)
+    // Compute Mu, the cosine of local normal-observer (emission)
+    // angle.
 
   double const latg = this->graphic_latitude(lat);
   double const ellipse_radius = this->centric_radius(lat);
@@ -203,7 +233,7 @@ MaRC::OblateSpheroid::mu0(double sub_solar_lat,
                           double lat,
                           double lon) const
 {
-    // Compute the sun-local normal angle - Incidence Angle (Mu0)
+    // Compute Mu0, the cosine of sun-local normal (incidence) angle.
 
     double const latg = this->graphic_latitude(lat);
 
@@ -225,8 +255,8 @@ MaRC::OblateSpheroid::cos_phase(double sub_observ_lat,
                                 double lon,
                                 double range) const
 {
-    // Compute the Sun-point on surface of body-Observer angle
-    // (phase angle)
+    // Compute the cosine of the Sun-point on surface of body-Observer
+    // angle, i.e cosine of the phase angle Phi.
 
   double const ellipse_radius = this->centric_radius(lat);
 
@@ -248,7 +278,7 @@ MaRC::OblateSpheroid::cos_phase(double sub_observ_lat,
                  std::cos(lat) * std::cos(sub_observ_lon - lon)));
 }
 
-inline double
+double
 MaRC::OblateSpheroid::M(double lat)
 {
     double const fe2 =
@@ -260,7 +290,7 @@ MaRC::OblateSpheroid::M(double lat)
       / std::pow(1 - fe2 * sin_latg * sin_latg, 1.5);
 }
 
-inline double
+double
 MaRC::OblateSpheroid::N (double lat)
 {
     double const sin_latg = std::sin(this->graphic_latitude(lat));

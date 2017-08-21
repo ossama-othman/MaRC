@@ -22,13 +22,13 @@
  */
 
 #include "MuImage.h"
-#include "OblateSpheroid.h"
+#include "BodyData.h"
 #include "Constants.h"
 
 #include <cmath>
 
 
-MaRC::MuImage::MuImage(std::shared_ptr<OblateSpheroid> body,
+MaRC::MuImage::MuImage(std::shared_ptr<BodyData> body,
                        double sub_observ_lat,
                        double sub_observ_lon,
                        double range,
@@ -55,63 +55,11 @@ MaRC::MuImage::read_data_i(double lat, double lon, double & data) const
 }
 
 bool
-MaRC::MuImage::is_visible_i(OblateSpheroid const & body,
-                            double sub_observ_lat,
-                            double sub_observ_lon,
-                            double lat,
-                            double lon,
-                            double range)
-{
-    /**
-     * @todo This is ugly.  The visibility check is specific to an
-     *       oblate spheroid.  It should really be moved to the
-     *       @c OblateSpheroid strategy.  Alternatively, is there any
-     *       reason why we can't check if this->body_->mu() < 0 to
-     *       determine if the given latitude and longitude isn't
-     *       visible?  That would allow us to drop the OblateSpheroid
-     *       dependency entirely.
-     */
-
-    double const latg   = body.graphic_latitude(lat);
-
-    double const radius = body.centric_radius(lat);
-
-    double const cosine =
-        (radius * std::cos(lat - latg)
-         - range * std::sin(sub_observ_lat) * std::sin (latg))
-        / range / std::cos(sub_observ_lat) / std::cos(latg);
-
-    if (cosine >= -1 && cosine <= 1) {
-        // Partial range of longitudes are visible
-
-        double const lower = sub_observ_lon - std::abs(std::acos(cosine));
-        double const upper = sub_observ_lon + std::abs(std::acos(cosine));
-
-        // Now check if longitude at given latitude is visible
-        double l = lon;
-
-        if (l < lower)
-            l += C::_2pi;
-        else if (l > upper)
-            l -= C::_2pi;
-
-        if (l >= lower && l <= upper)
-            return true;
-    } else if (cosine < -1) {
-         // Full 360 degree visible longitude range
-        return true;
-    }
-
-  return false;
-}
-
-bool
 MaRC::MuImage::is_visible(double lat, double lon) const
 {
-    return MaRC::MuImage::is_visible_i(*this->body_,
-                                       this->sub_observ_lat_,
-                                       this->sub_observ_lon_,
-                                       lat,
-                                       lon,
-                                       this->range_);
+    return this->body_->mu(this->sub_observ_lat_,
+                           this->sub_observ_lon_,
+                           lat,
+                           lon,
+                           this->range_) >= 0;
 }

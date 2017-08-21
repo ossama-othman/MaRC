@@ -32,7 +32,7 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
+    class BodyData;
 
     /**
      * @class MuImage
@@ -49,9 +49,8 @@ namespace MaRC
 
         /// Constructor
         /**
-         * @param[in] body           @c OblateSpheroid object
-         *                           representing the body being
-         *                           mapped.
+         * @param[in] body           Object representing the body
+         *                           being mapped.
          * @param[in] sub_observ_lat Bodycentric sub-observer latitude
          *                           in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
@@ -64,26 +63,12 @@ namespace MaRC
          *                           cosines after the scaling factor
          *                           has been applied.
          */
-        MuImage(std::shared_ptr<OblateSpheroid> body,
+        MuImage(std::shared_ptr<BodyData> body,
                 double sub_observ_lat,
                 double sub_observ_lon,
                 double range,
                 double scale,
                 double offset);
-
-        /**
-         * Underlying implementation for
-         * @c MaRC::MuImage::is_visible() method.
-         *
-         * @note This method is @c static since it is also called
-         *       @c MaRC::CosPhaseImage::is_visible().
-         */
-        static bool is_visible_i(OblateSpheroid const & body,
-                                 double sub_observ_lat,
-                                 double sub_observ_lon,
-                                 double lat,
-                                 double lon,
-                                 double range);
 
     private:
 
@@ -105,12 +90,7 @@ namespace MaRC
     private:
 
         /// Object representing the body being mapped.
-        /**
-         * @note OblateSpheroid is used instead of BodyData since some
-         *       code in this implementation assumes that the body is
-         *       modeled as an oblate spheroid.
-         */
-        std::shared_ptr<OblateSpheroid> const body_;
+        std::shared_ptr<BodyData> const body_;
 
         /// Bodycentric sub-observer latitude in radians.
         double const sub_observ_lat_;
