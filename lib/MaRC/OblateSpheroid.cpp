@@ -177,8 +177,8 @@ MaRC::OblateSpheroid::centric_radius(double lat) const
             sqrt((cos(lat)/a)  + (sin(lat)/c) )
 
     */
-    return 1 / MaRC::hypot(std::cos(lat) / this->eq_rad_,
-                           std::sin(lat) / this->pol_rad_);
+    return 1 / std::hypot(std::cos(lat) / this->eq_rad_,
+                          std::sin(lat) / this->pol_rad_);
 }
 
 double
