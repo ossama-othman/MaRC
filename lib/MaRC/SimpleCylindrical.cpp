@@ -125,10 +125,10 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
                                       grid_type & grid)
 {
     // Convert back to degrees
-    double const lo_lat = this->lo_lat_ /= C::degree;
-    double const hi_lat = this->hi_lat_ /= C::degree;
-    double const lo_lon = this->lo_lon_ /= C::degree;
-    double const hi_lon = this->hi_lon_ /= C::degree;
+    double const lo_lat = this->lo_lat_ / C::degree;
+    double const hi_lat = this->hi_lat_ / C::degree;
+    double const lo_lon = this->lo_lon_ / C::degree;
+    double const hi_lon = this->hi_lon_ / C::degree;
 
     // Line-to-latitude ratio.
     double const lr = lines / (hi_lat - lo_lat);
