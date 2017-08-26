@@ -64,8 +64,7 @@ namespace MaRC
      *             using C++17 features in MaRC.
      */
     template <typename T>
-    typename std::enable_if<std::is_floating_point<T>::value, T>::type
-    hypot(T x, T y, T z)
+    auto hypot(T x, T y, T z)
     {
         /*
           Implement the missing three parameter std::hypot() function
@@ -216,8 +215,7 @@ namespace MaRC
      *
      * @returns @c true if real roots were found, @c false otherwise.
      */
-    inline
-    bool
+    inline bool
     quadratic_roots(double a,
                     double b,
                     double c,
