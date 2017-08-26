@@ -418,7 +418,7 @@ MaRC::PhotoImage::finalize_setup()
             (this->line_center_ - this->OA_l_) * this->km_per_pixel_;
         // Since line numbers increase top to bottom (e.g. VICAR images)
 
-        double const magRo = Geometry::Magnitude(range_O);
+        double const magRo = MaRC::magnitude(range_O);
 
         this->normal_range_ =
             std::sqrt(this->range_ * this->range_ - magRo * magRo);
@@ -448,7 +448,7 @@ MaRC::PhotoImage::finalize_setup()
         DVector const OA_prime(r0 - this->range_b_);
 
         DVector OA_hat(OA_prime);
-        Geometry::toUnitVector(OA_hat);
+        MaRC::to_unit_vector(OA_hat);
 
         // Dot product.
         double const dp =
@@ -493,7 +493,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     // ----------- TRY THE MOST POSITIVE ROOT ----------
 
     // Compute transformation matrices
-    Geometry::toUnitVector(r_o);
+    MaRC::to_unit_vector(r_o);
 
     DVector rotated;
     Geometry::RotY(-this->position_angle_, r_o, rotated);
@@ -535,7 +535,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     observ2body = o2b;
 
     double diff_magnitude =
-        Geometry::Magnitude(this->range_b_ - o2b * range_o);
+        MaRC::magnitude(this->range_b_ - o2b * range_o);
 
     // ----------- TRY THE SECOND ROOT -------------
     r_o = temp2; // Reset to value of vector after first rotation
@@ -553,7 +553,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
            * Geometry::RotYMatrix(-this->position_angle_));
 
     double const test_diff_magnitude =
-        Geometry::Magnitude(this->range_b_ - o2b * range_o);
+        MaRC::magnitude(this->range_b_ - o2b * range_o);
 
     if (diff_magnitude > test_diff_magnitude) {
         diff_magnitude = test_diff_magnitude;
@@ -561,7 +561,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     }
 
     double const percent_diff =
-        diff_magnitude / Geometry::Magnitude (this->range_b_);
+        diff_magnitude / MaRC::magnitude (this->range_b_);
 
     static constexpr double tolerance = 1e-8;
     if (percent_diff * 100 > tolerance) {
@@ -643,10 +643,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     NPole[2] = 1;
 
     // OA_O is the optical axis vector in observer coordinates
-    OA_O[1] = Geometry::Magnitude(OA); // Magnitude of optical axis.
+    OA_O[1] = MaRC::magnitude(OA); // Magnitude of optical axis.
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
-    Geometry::toUnitVector(UnitOpticalAxis);
+    MaRC::to_unit_vector(UnitOpticalAxis);
 
     // Dot product.
     double const dotProd =
@@ -659,7 +659,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
                                          // plane and OA.
 
     DVector R_b(range_b);
-    Geometry::toUnitVector(R_b);
+    MaRC::to_unit_vector(R_b);
 
     // Try first possibility
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
@@ -677,7 +677,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     observ2body = o2b;
 
     double diff_magnitude =
-        Geometry::Magnitude(OA_O - o2b * UnitOpticalAxis);
+        MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
 
     // Try second possibility
     SubLatMod[1] = C::pi - SubLatMod[0];
@@ -696,10 +696,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     double Ztwist, SubLatModified;
 #endif  /* DEBUG */
 
-    if (diff_magnitude > Geometry::Magnitude(OA_O -
+    if (diff_magnitude > MaRC::magnitude(OA_O -
                                              o2b * UnitOpticalAxis)) {
         diff_magnitude =
-            Geometry::Magnitude(OA_O - o2b * UnitOpticalAxis);
+            MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
         observ2body = o2b;
 
 #ifdef DEBUG
@@ -712,7 +712,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     }
 
     double const percent_diff =
-        diff_magnitude / Geometry::Magnitude(UnitOpticalAxis);
+        diff_magnitude / MaRC::magnitude(UnitOpticalAxis);
 
     static constexpr double tolerance = 1e-8;
 

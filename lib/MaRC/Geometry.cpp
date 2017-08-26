@@ -141,18 +141,3 @@ MaRC::Geometry::RotZMatrix(double angle)
 
     return matrix;
 }
-
-double
-MaRC::Geometry::Magnitude(DVector const & v)
-{
-    return MaRC::hypot(v[0], v[1], v[2]);
-}
-
-void
-MaRC::Geometry::toUnitVector(DVector & v)
-{
-    double const mag = Geometry::Magnitude(v);
-
-    for(std::size_t i = 0; i < 3; ++i)
-        v[i] /= mag;
-}

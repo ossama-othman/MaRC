@@ -119,41 +119,10 @@ bool test_rotation_matrices()
                       cmp);
 }
 
-bool test_vector_magnitude()
-{
-    MaRC::DVector const v{ 3, 4, 5 };
-
-    double const mag =
-        std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-
-    return MaRC::almost_equal(MaRC::Geometry::Magnitude(v),
-                              mag,
-                              ulps);
-}
-
-bool test_unit_vector()
-{
-    MaRC::DVector v{ 3, 4, 5 };
-    MaRC::Geometry::toUnitVector(v);
-
-    // Unit vector magnitude is always 1.
-    constexpr double unit_mag = 1;
-
-    return
-           std::abs(v[0]) <= unit_mag
-        && std::abs(v[1]) <= unit_mag
-        && std::abs(v[2]) <= unit_mag
-        && MaRC::almost_equal(MaRC::Geometry::Magnitude(v),
-                              unit_mag,
-                              ulps);
-}
-
 int main()
 {
     return
         test_vector_rotation()
         && test_rotation_matrices()
-        && test_vector_magnitude()
-        && test_unit_vector()
         ? 0 : -1;
 }

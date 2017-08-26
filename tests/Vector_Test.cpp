@@ -20,6 +20,15 @@
 
 #include <MaRC/Vector.h>
 
+
+namespace
+{
+    // "Units in the last place" for floating point equality
+    // comparison.
+    constexpr int ulps = 4;
+}
+
+
 bool test_vector_initialization()
 {
     static constexpr std::size_t ROWS = 3;
@@ -118,11 +127,44 @@ bool test_vector_multiplication()
     return v2 == prod && v1 * s == prod && s * v1 == prod;
 }
 
+
+bool test_vector_magnitude()
+{
+    using vector_type = MaRC::Vector<int, 3>;
+    vector_type  const v{ 3, 4, 5 };
+
+    double const mag =
+        std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+
+    return MaRC::almost_equal(MaRC::magnitude(v), mag, ulps);
+}
+
+bool test_unit_vector()
+{
+    using vector_type = MaRC::Vector<double, 3>;
+    vector_type v{ 3, 4, 5 };
+    MaRC::to_unit_vector(v);
+
+    // Unit vector magnitude is always 1.
+    constexpr double unit_mag = 1;
+
+    return
+           std::abs(v[0]) <= unit_mag
+        && std::abs(v[1]) <= unit_mag
+        && std::abs(v[2]) <= unit_mag
+        && MaRC::almost_equal(MaRC::magnitude(v),
+                              unit_mag,
+                              ulps);
+}
+
 int main()
 {
     return
         test_vector_initialization()
         && test_vector_comparison()
         && test_vector_addition()
-        && test_vector_subtraction() ? 0 : -1;
+        && test_vector_subtraction()
+        && test_vector_magnitude()
+        && test_unit_vector()
+        ? 0 : -1;
 }

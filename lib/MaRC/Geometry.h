@@ -34,7 +34,6 @@
 
 namespace MaRC
 {
-    template <typename T, std::size_t M, std::size_t N> class Matrix;
 
     /**
      * @name Convenience Vector and Matrix Types
@@ -139,20 +138,6 @@ namespace MaRC
         DMatrix RotZMatrix(double angle);
         //@}
 
-        /// Obtain magnitude of vector.
-        /**
-         * @param[in] v Vector for which the magnitude will be
-         *            calculated.
-         *
-         * @return Magnitude of vector @a v.
-         */
-        double Magnitude(DVector const & v);
-
-        /// Convert a vector of type double to a unit vector.
-        /**
-         * @param[in,out] v Vector to convert to a unit vector.
-         */
-        void toUnitVector(DVector & v);
     }
 }
 
