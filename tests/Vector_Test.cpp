@@ -157,6 +157,18 @@ bool test_unit_vector()
                               ulps);
 }
 
+bool test_dot_product()
+{
+    using vector_type = MaRC::Vector<int, 3>;
+
+    vector_type a{ 2, 3, 5   };
+    vector_type b{ 7, 11, 13 };
+
+    auto const dp = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+
+    return MaRC::dot_product(a, b) == dp;
+}
+
 int main()
 {
     return
@@ -166,5 +178,6 @@ int main()
         && test_vector_subtraction()
         && test_vector_magnitude()
         && test_unit_vector()
+        && test_dot_product()
         ? 0 : -1;
 }

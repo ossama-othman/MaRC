@@ -451,11 +451,7 @@ MaRC::PhotoImage::finalize_setup()
         MaRC::to_unit_vector(OA_hat);
 
         // Dot product.
-        double const dp =
-            std::inner_product(std::cbegin(r0),
-                               std::cend(r0),
-                               std::cbegin(OA_hat),
-                               0.0);
+        double const dp = MaRC::dot_product(r0, OA_hat);
 
         DVector r_OA(dp * OA_hat);
 
@@ -649,11 +645,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     MaRC::to_unit_vector(UnitOpticalAxis);
 
     // Dot product.
-    double const dotProd =
-        std::inner_product(std::cbegin(NPole),
-                           std::cend(NPole),
-                           std::cbegin(UnitOpticalAxis),
-                           0.0);
+    double const dotProd = MaRC::dot_product(NPole, UnitOpticalAxis);
 
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
                                          // plane and OA.

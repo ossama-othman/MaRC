@@ -401,18 +401,20 @@ namespace MaRC
 
     /// Obtain dot product of two vectors.
     /**
-     * @param[in] v1 First  vector operand.
-     * @param[in] v2 Second vector operand.
+     * Given two vector @a and @a b, calculate their dot product.
      *
-     * @return Dot product of vectors @a v1 and @a v2.
+     * @param[in] a First  vector operand.
+     * @param[in] b Second vector operand.
+     *
+     * @return Dot product of vectors @a a and @a b.
      */
     template <typename T, std::size_t M>
-    auto dot_product(Vector<T, M> const & v1,
-                     Vector<T, M> const & v2)
+    auto dot_product(Vector<T, M> const & a,
+                     Vector<T, M> const & b)
     {
-        return std::inner_product(std::cbegin(v1),
-                                  std::cend(v1),
-                                  std::cbegin(v2),
+        return std::inner_product(std::cbegin(a),
+                                  std::cend(a),
+                                  std::cbegin(b),
                                   T(0));
     }
 
