@@ -156,7 +156,7 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
 
     // "a" coefficient of the Quadratic Formula.
     double const CA =
-        diff * std::pow(std::sin(this->sub_observ_lat_), 2.0) + c2;
+        diff * std::pow(std::sin(this->sub_observ_lat_), 2) + c2;
 
     std::size_t offset = 0;
 
@@ -184,7 +184,7 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
                 diff * zz * std::sin(2 * this->sub_observ_lat_);
             double const CC =
                 a2 * zz * zz + c2 * x * x - a2 * c2 - diff *
-                zz * zz * std::pow(std::sin(this->sub_observ_lat_), 2.0);
+                zz * zz * std::pow(std::sin(this->sub_observ_lat_), 2);
 
             std::pair<double, double> roots;
 

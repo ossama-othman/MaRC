@@ -227,5 +227,5 @@ double
 MaRC::PolarStereographic<T>::distortion(double latg) const
 {
     // Note that latitude is bodyGRAPHIC.
-    return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2.0);
+    return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2);
 }
