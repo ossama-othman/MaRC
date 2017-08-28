@@ -182,20 +182,32 @@ MaRC::OblateSpheroid::centric_radius(double lat) const
 }
 
 double
-MaRC::OblateSpheroid::centric_latitude(double lat) const
+MaRC::OblateSpheroid::centric_latitude(double latg) const
 {
+    /*
+                                  2
+                    (polar radius)
+      tan(lat) = -------------------- * tan(latg)
+                                    2
+                 (equatorial radius)
+    */
     return
-        std::atan(this->pol_rad_ * this->pol_rad_
-                  / (this->eq_rad_ * this->eq_rad_)
-                  * std::tan(lat));
+        std::atan(std::pow(this->pol_rad_ / this->eq_rad_, 2)
+                  * std::tan(latg));
 }
 
 double
 MaRC::OblateSpheroid::graphic_latitude(double lat) const
 {
+    /*
+                                     2
+                  (equatorial radius)
+      tan(latg) = -------------------- * tan(lat)
+                                   2
+                     (polar radius)
+    */
     return
-        std::atan(this->eq_rad_ * this->eq_rad_
-                  / (this->pol_rad_ * this->pol_rad_)
+        std::atan(std::pow(this->eq_rad_ / this->pol_rad_, 2)
                   * std::tan(lat));
 }
 

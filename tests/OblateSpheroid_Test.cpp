@@ -37,13 +37,16 @@ namespace
     // "Units in the last place" for floating point equality
     // comparison.
     constexpr int ulps = 2;
+
+    // We require that the equatorial radius is always larger than the
+    // polar radius for all the test cases.
+    static_assert (a > c,
+                   "Test equatorial radius less than or equal "
+                   "to polar radius");
 }
 
 bool test_initialization()
 {
-    static_assert (a >= c,
-                   "Test equatorial radius less than polar radius");
-
     // Equatorial and polar radii given.
     auto const o1 =
         std::make_unique<MaRC::OblateSpheroid>(prograde,
@@ -97,7 +100,7 @@ bool test_centric_radius()
 
     double const r = o->centric_radius(latitude);
 
-    // Parametric equation for a spheroid at longitude zero.
+    // Polar coordinate based equation for a spheroid.
     double const x = r * std::cos(latitude) * std::cos(longitude);
     double const y = r * std::cos(latitude) * std::sin(longitude);;
     double const z = r * std::sin(latitude);
@@ -130,6 +133,7 @@ bool test_latitudes()
                                                c,
                                                -1 /* flattening*/);
 
+    // Arbitrary latitude that isn't the equator or a pole.
     constexpr double latc = 27 * C::degree;
 
     /**
@@ -140,11 +144,17 @@ bool test_latitudes()
 
     double const latg = o->graphic_latitude(latc);
 
+    // For oblate spheroid latitudes not at the equator or the
+    // poles, graphic latitudes will always be greater than the
+    // centric latitude counterparts.   They will also have the same
+    // sign.
     return
-        !MaRC::almost_equal(latc, latg, ulps)
-        && MaRC::almost_equal(latc,
-                              o->centric_latitude(latg),
-                              ulps);
+        MaRC::signum(latc) == MaRC::signum(latg)  // Same sign
+        && std::abs(latc) < std::abs(latg)  // True if not equator or pole
+        && !MaRC::almost_equal(latc, latg, ulps)
+        &&  MaRC::almost_equal(latc,
+                               o->centric_latitude(latg),
+                               ulps);
 }
 
 bool test_mu()
@@ -152,7 +162,7 @@ bool test_mu()
     /**
      * @todo Test @c OblateSpheroid::mu() method.
      */
-
+#if 0
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde,
                                                a,
@@ -161,6 +171,7 @@ bool test_mu()
 
     constexpr double sub_observ_lat = 42  * C::degree;
     constexpr double sub_observ_lon = 247 * C::degree;
+#endif
 
     return true;
 }
