@@ -98,7 +98,7 @@ namespace MaRC
         //@{
         virtual double centric_radius(double lat) const;
 
-        virtual double centric_latitude(double lat) const;
+        virtual double centric_latitude(double latg) const;
 
         virtual double graphic_latitude(double lat) const;
 
@@ -120,11 +120,26 @@ namespace MaRC
                                  double lat,
                                  double lon,
                                  double range) const;
-
-        virtual double M(double lat);
-
-        virtual double N(double lat);
         //@}
+
+        /// Radius of curvature of the meridian.
+        /**
+         * @param[in] lat Bodycentric latitude
+         *
+         * @return Radius of curvature of the meridian.
+         */
+        double M(double lat);
+
+        /// Radius of curvature in the direction of the prime vertical
+        /// perpendicular to the direction of the meridian.
+        /**
+         * @param[in] lat Bodycentric latitude
+         *
+         * @return Radius of curvature in the direction of the prime
+         *         vertical perpendicular to the direction of the
+         *         meridian.
+         */
+        double N(double lat);
 
         /// Intersection of tri-axial ellipsoid with line.
         /**

@@ -87,8 +87,8 @@ namespace MaRC
 
         /// Convert from GRAPHIC to CENTRIC latitude
         /**
-         * @param[in] lat Graphic (e.g. planetographic) latitude in
-         *                radians.
+         * @param[in] latg Graphic (e.g. planetographic) latitude in
+         *                 radians.
          *
          * @return Bodycentric latitude in radians.
          *
@@ -96,7 +96,7 @@ namespace MaRC
          *       all bodies are symmetrical about their polar axis.
          *
          */
-        virtual double centric_latitude(double lat) const = 0;
+        virtual double centric_latitude(double latg) const = 0;
 
         /// Convert from CENTRIC to GRAPHIC latitude
         /**
@@ -165,25 +165,6 @@ namespace MaRC
                                  double lat,
                                  double lon,
                                  double range) const = 0;
-
-        /// Radius of curvature of the meridian.
-        /**
-         * @param[in] lat Bodycentric latitude
-         *
-         * @return Radius of curvature of the meridian.
-         */
-        virtual double M(double lat) = 0;
-
-        /// Radius of curvature in the direction of the prime vertical
-        /// perpendicular to the direction of the meridian.
-        /**
-         * @param[in] lat Bodycentric latitude
-         *
-         * @return Radius of curvature in the direction of the prime
-         *         vertical  perpendicular to the direction of the
-         *         meridian.
-         */
-        virtual double N(double lat) = 0;
 
     private:
 
