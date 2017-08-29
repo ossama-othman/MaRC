@@ -769,6 +769,25 @@ MaRC::PhotoImage::remove_sky()
         std::size_t const offset = k * this->samples_;
 
         for (std::size_t i = this->nibble_left_; i < slen; ++i) {
+            std::size_t const index =  offset + i;
+
+            // "Units in the last place" used when determining if an
+            // image value is considered zero.
+            static constexpr int ulps = 2;
+
+            /**
+             * Consider zero/NaN data points invalid, i.e. "off the
+             * body".  No need to continue beyond this point.
+             *
+             * @todo We consider an image value of zero to be in the
+             *       sky but what if zero is a legitimate value on the
+             *       body?  It would be better to support a
+             *       user-specified "blank" value instead.
+             */
+            if (std::isnan(this->image_[index])
+                || MaRC::almost_zero(this->image_[index], ulps))
+                continue;
+
             double z = k;  // Reset "z" prior to geometric
                            // correction. Do not move to outer loop!
             double x = i;
@@ -799,39 +818,12 @@ MaRC::PhotoImage::remove_sky()
 
             double lat = 0, lon = 0;
 
-            std::size_t const index =  offset + i;
-
-            // "Units in the last place" used when determining if an
-            // image value is considered zero.
-            static constexpr int ulps = 2;
-
-            // Consider zero/NaN data points invalid, i.e. "off the
-            // body".
             if (this->body_->ellipse_intersection(this->range_b_,
                                                   dVec,
                                                   lat,
-                                                  lon) == 0
-                && !std::isnan(this->image_[index])
-                && !MaRC::almost_zero(this->image_[index], ulps)) {
-                /**
-                 * @todo We consider an image value of zero to be in
-                 *       the sky but what if zero is a legitimate
-                 *       value on the body?  It would be better to
-                 *       support a user-specified "blank" value
-                 *       instead.
-                 */
+                                                  lon) == 0) {
                 // On body
                 this->sky_mask_[index] = true;
-
-//               if (lat < this->min_lat_)
-//                 this->min_lat_ = lat;
-//               else if (lat > this->max_lat_)
-//                 this->max_lat_ = lat;
-
-//               if (lon < this->min_lon_)
-//                 this->min_lon_ = lon;
-//               else if (lon > this->max_lon_)
-//                 this->max_lon_ = lon;
             }
         }
     }
@@ -1197,6 +1189,7 @@ MaRC::PhotoImage::read_data(double lat,
     // is inside pixel 0, 1..2 is inside pixel 1, etc.
     std::size_t const i = static_cast<std::size_t>(std::floor(x));
     std::size_t const k = static_cast<std::size_t>(std::floor(z));
+    std::size_t const index = k * this->samples_ + i;
 
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
@@ -1204,10 +1197,10 @@ MaRC::PhotoImage::read_data(double lat,
     if (i < this->nibble_left_   || i >= this->samples_ - this->nibble_right_
         || k < this->nibble_top_ || k >= this->lines_ - this->nibble_bottom_
         || (!this->sky_mask_.empty()
-            && !this->sky_mask_[k * this->samples_ + i]))
+            && !this->sky_mask_[index]))
         return false;
 
-    data = this->image_[k * this->samples_ + i];
+    data = this->image_[index];
 
     if (!this->interpolation_strategy_->interpolate(this->image_.data(),
                                                     x,
@@ -1222,7 +1215,7 @@ MaRC::PhotoImage::read_data(double lat,
                                                   lon,
                                                   this->range_,
                                                   data) != 0
-        || std::isnan (data)) {
+        || std::isnan(data)) {
         return false;
     }
 
@@ -1242,24 +1235,25 @@ MaRC::PhotoImage::read_data(double lat,
         //
         // For most purposes, this quickly computed weight should be
         // sufficient.  If the image has gaps, determining weights
-        // through the below sky mask scanning code below may be a
-        // better choice in terms of quality.
+        // through the sky mask scanning code below may be a better
+        // choice in terms of quality.
         shortest_distance =
             std::min(i,
                      std::min(this->samples_ - i,
                               std::min(k,
                                        this->lines_ - k)));
 
-        // Scan across image for "off-body/image" pixels.
+        // Scan across image for "off-body/image" pixels, giving less
+        // weight to those on the body closer to the sky.
         if (!this->sky_mask_.empty()) {
-            auto const sky_mask = this->sky_mask_.cbegin();
+            auto const sky_iter = this->sky_mask_.cbegin();
 
-            std::size_t const offset = k * this->samples_;
+            // Scan across samples.
 
-            // Search from i to nibble_right.
-            auto begin = sky_mask + (offset + i);
-            auto end   = sky_mask +
-                (offset + (this->samples_ - this->nibble_right_));
+            // Search from nibble_left to i.
+            //   Beginning of line: index - i
+            auto begin = sky_iter + (index - i + this->nibble_left_);
+            auto end   = sky_iter + (index + 1);  // one past "i"
 
             auto result = std::find(begin, end, true);
 
@@ -1270,36 +1264,45 @@ MaRC::PhotoImage::read_data(double lat,
                     static_cast<std::size_t>(std::distance(begin, result)),
                     shortest_distance);
 
-            // Search from nibble_left to i.
-            begin = sky_mask + (offset + this->nibble_left_);
-            end   = sky_mask + (i + 1);
+            // Search from i to nibble_right.
+            //   "index" offsets to "i".
+            begin = sky_iter + index;
+            end   = sky_iter
+                + (index + (this->samples_ - this->nibble_right_));
 
             result = std::find(begin, end, true);
+
+            assert(begin < result);
 
             shortest_distance =
                 std::min(
                     static_cast<std::size_t>(std::distance(begin, result)),
                     shortest_distance);
 
-            // Search from k to nibble_bottom.
-            std::size_t const kend = this->lines_ - this->nibble_bottom_;
+            // -----------------------------------------------------
+
+            // Scan across lines.  Line numbers increase from top to
+            // bottom.
 
             std::size_t kk;
-            for (kk = k;
-                 kk < kend && sky_mask[kk * this->samples_ + i];
+
+            // Search from nibble_top to k.
+            for (kk = this->nibble_top_;
+                 kk <= k && this->sky_mask_[kk * this->samples_ + i];
                  ++kk)
                 ; // Nothing
 
             shortest_distance = std::min(kk - k, shortest_distance);
 
-            // Search from nibble_top to k.
+            // Search from k to nibble_bottom.
+            std::size_t const kend = this->lines_ - this->nibble_bottom_;
+
             for (kk = k;
-                 kk >= this->nibble_top_
-                     && sky_mask[kk * this->samples_ + i];
-                 --kk)
+                 kk < kend && this->sky_mask_[kk * this->samples_ + i];
+                 ++kk)
                 ; // Nothing
 
-            shortest_distance = std::min(k - kk, shortest_distance);
+            shortest_distance = std::min(kk - k, shortest_distance);
         }
     }
 
