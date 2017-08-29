@@ -73,7 +73,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , sub_observ_lon_(0)
     , sub_solar_lat_ (0)
     , sub_solar_lon_ (0)
-    , range_(std::sqrt (std::numeric_limits<double>::max () - 1))
+    , range_(std::sqrt(std::numeric_limits<double>::max() - 1))
     , position_angle_(0)
     , km_per_pixel_  (-1)        // Force "bad" value until set by caller
     , focal_length_  (-1)        // Force "bad" value until set by caller
@@ -95,10 +95,6 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , lat_at_center_ (0)
     , lon_at_center_ (0)
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
-    // , min_lat_(C::pi_2)  // Initialize to maximum (yes, the maximum!) possible
-    // , max_lat_(-C::pi_2) // Initialize to minimum possible
-    // , min_lon_(C::_2pi)  // Initialize to maximum possible
-    //,  max_lon_(0)        // Initialize to minimum possible
     , flags_(0)
 {
     if (samples < 2 || lines < 2) {
@@ -119,30 +115,6 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
 
 MaRC::PhotoImage::~PhotoImage (void)
 {
-}
-
-bool
-MaRC::PhotoImage::operator==(PhotoImage const & img)
-{
-    /**
-     * @bug Floating point equality comparison is not reliable.
-     */
-    return (this->samples_ == img.samples_
-            && this->lines_ == img.lines_
-            && this->flags_ == img.flags_
-            && this->km_per_pixel_ == img.km_per_pixel_
-            && this->nibble_left_   == img.nibble_left_
-            && this->nibble_right_  == img.nibble_right_
-            && this->nibble_top_    == img.nibble_top_
-            && this->nibble_bottom_ == img.nibble_bottom_
-            && this->sample_center_ == img.sample_center_
-            && this->line_center_ == img.line_center_
-            && this->sub_observ_lat_ == img.sub_observ_lat_
-            && this->sub_observ_lon_ == img.sub_observ_lon_
-            && this->sub_solar_lat_  == img.sub_solar_lat_
-            && this->sub_solar_lon_  == img.sub_solar_lon_
-            && this->range_ == img.range_
-            && this->position_angle_ == img.position_angle_);
 }
 
 bool
@@ -402,7 +374,7 @@ MaRC::PhotoImage::finalize_setup()
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
 
     /// Perpendicular distance from observer to image plane.
-    if (!flags::check (this->flags_, LATLON_AT_CENTER)) {
+    if (!flags::check(this->flags_, LATLON_AT_CENTER)) {
         /**
          * @todo Verify that these values are consistent with the
          *       coordinate system, including directions of all axes.
@@ -430,19 +402,19 @@ MaRC::PhotoImage::finalize_setup()
                            this->observ2body_,
                            this->body2observ_);
     } else {
-        double Longitude;
+        double lon;
 
         if (this->body_->prograde())
-            Longitude = this->sub_observ_lon_ - this->lon_at_center_;
+            lon = this->sub_observ_lon_ - this->lon_at_center_;
         else
-            Longitude = this->lon_at_center_ - this->sub_observ_lon_;
+            lon = this->lon_at_center_ - this->sub_observ_lon_;
 
         double const radius =
             this->body_->centric_radius(this->lat_at_center_);
 
         DVector r0;
-        r0[0] =  radius * std::cos(this->lat_at_center_) * std::sin(Longitude);
-        r0[1] = -radius * std::cos(this->lat_at_center_) * std::cos(Longitude);
+        r0[0] =  radius * std::cos(this->lat_at_center_) * std::sin(lon);
+        r0[1] = -radius * std::cos(this->lat_at_center_) * std::cos(lon);
         r0[2] =  radius * std::sin(this->lat_at_center_);
 
         DVector const OA_prime(r0 - this->range_b_);
@@ -557,7 +529,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude (this->range_b_);
+        diff_magnitude / MaRC::magnitude(this->range_b_);
 
     static constexpr double tolerance = 1e-8;
     if (percent_diff * 100 > tolerance) {
@@ -605,22 +577,22 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
         "SubLatMod = " << SubLatMod / C::degree << "\n"
         "Ztwist = " << Ztwist / C::degree << '\n';
 
-        DVector test;
-        test[2] = 1; // Unit vector along z-axis
-        DVector result(body2observ * test); // Test vector in camera
+    DVector test;
+    test[2] = 1; // Unit vector along z-axis
+    DVector result(body2observ * test); // Test vector in camera
                                             // coordinates.
 
-        std::cout
-            << "Computed NORAZ = "
-            << std::atan2(-result[0], result[2]) / C::degree
-            << " degrees (positive is CCW)\n"
-            "Computed North pole vector in camera space = " << result
-            << "\n"
-            "observ2body = " << observ2body << "\n"
-            "body2observ = " << body2observ << '\n';
+    std::cout
+        << "Computed NORAZ = "
+        << std::atan2(-result[0], result[2]) / C::degree
+        << " degrees (positive is CCW)\n"
+        "Computed North pole vector in camera space = " << result
+        << "\n"
+           "observ2body = " << observ2body << "\n"
+           "body2observ = " << body2observ << '\n';
 #endif
 
-        return 0;
+    return 0;
 }
 
 // Get rotation matrices for case when lat/lon at optical axis were given
@@ -638,21 +610,32 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     // Unit vector representing North pole in body coordinates
     NPole[2] = 1;
 
+    /**
+     * @todo Shouldn't this be @c OA_O[1] @c = @c -MaRC::magnitude(OA) ?
+     */
     // OA_O is the optical axis vector in observer coordinates
     OA_O[1] = MaRC::magnitude(OA); // Magnitude of optical axis.
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
     MaRC::to_unit_vector(UnitOpticalAxis);
 
-    // Dot product.
+    // Cosine of the angle between the North pole and the optical
+    // axis.  No need to divide by the product of the vector
+    // magnitudes since they're both unit vectors (magnitudes of 1).
     double const dotProd = MaRC::dot_product(NPole, UnitOpticalAxis);
 
+    /**
+     * @todo Shouldn't this be @c (C::pi_2 @c - @c std::acos(dotProd)) ?
+     */
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
                                          // plane and OA.
 
     DVector R_b(range_b);
     MaRC::to_unit_vector(R_b);
 
+    /**
+     * @bug This value is the same as the one computed above.
+     */
     // Try first possibility
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
                                          // plane and OA.
@@ -671,6 +654,11 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     double diff_magnitude =
         MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
 
+    /**
+     * @todo This seems like a hack.  Why do we need to check a second
+     *       value?  There should only be one value with this approach
+     *       since.
+     */
     // Try second possibility
     SubLatMod[1] = C::pi - SubLatMod[0];
     Geometry::RotX(-SubLatMod[1], range_b, rotated);
@@ -688,8 +676,8 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
     double Ztwist, SubLatModified;
 #endif  /* DEBUG */
 
-    if (diff_magnitude > MaRC::magnitude(OA_O -
-                                             o2b * UnitOpticalAxis)) {
+    if (diff_magnitude > MaRC::magnitude(OA_O
+                                         - o2b * UnitOpticalAxis)) {
         diff_magnitude =
             MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
         observ2body = o2b;
@@ -738,10 +726,10 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_b,
 
     std::cout
         << "UnitOpticalAxis = " << UnitOpticalAxis << "\n"
-        "OpticalAxis from transformation = "
+           "OpticalAxis from transformation = "
         << observ2body * OA_O << "\n"
-        "OA_O = " << OA_O << "\n"
-        "OA_O from transformation = " << body2observ * UnitOpticalAxis
+           "OA_O = " << OA_O << "\n"
+           "OA_O from transformation = " << body2observ * UnitOpticalAxis
         << '\n';
 //   output_ << "position_angle_ = " << position_angle_ / C::degree << " degrees (positive is CCW)\n"
 //       << "SubLatModified = " << SubLatModified / C::degree << '\n'

@@ -87,12 +87,6 @@ namespace MaRC
         /// Destructor.
         virtual ~PhotoImage();
 
-        /// Less than operator.
-        bool operator<(PhotoImage const & /* img */) { return false; }
-
-        /// Equality operator.
-        bool operator==(PhotoImage const & img);
-
         /// Set sky removal variable
         /**
          * Enabling sky removal prevents data believed (i.e. computed)
@@ -115,7 +109,6 @@ namespace MaRC
         int geometric_correction(
             std::unique_ptr<GeometricCorrection> strategy);
 
-
         /// Set the photometric correction strategy.
         int photometric_correction(
             std::unique_ptr<PhotometricCorrection> strategy);
@@ -131,13 +124,13 @@ namespace MaRC
         /**
          * @param[in] lat Sub-observation latitude  (degrees)
          */
-        int sub_observ_lat (double lat);
+        int sub_observ_lat(double lat);
 
         /// Set Sub-Observation longitude.
         /**
          * @param[in] lon Sub-observation longitude (degrees)
          */
-        int sub_observ_lon (double lon);
+        int sub_observ_lon(double lon);
 
         /// Set Sub-Solar latitude and longitude.
         /**
@@ -559,18 +552,6 @@ namespace MaRC
          * This is used to avoid mapping data close to the limb.
          */
         double mu_limit_;
-
-        /// Minimum latitude visible on body.
-        // double min_lat_;
-
-        /// Maximum latitude visible on body.
-        // double max_lat_;
-
-        /// Minimum longitude visible on body
-        // double min_lon_;
-
-        /// Maximum longitude visible on body
-        // double max_lon_;
 
         /// bit set used to keep track of which internal flags are
         /// set.
