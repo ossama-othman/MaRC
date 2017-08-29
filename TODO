@@ -1,22 +1,16 @@
 1.	Have to get photometric correction working.
 2.	Have to eventually change default ostream for FITS routines.
-3.	GUI must be completed.  (and started!)
+3.	Implement GUI.
 4.	Test the remaining projections and implement grid routines for them.
 5.	Implement signal handling.
 6.	Add despiking routine.
-7.	Clean up memory leaks, if any, resulting from exceptions.
 8.	WORK ON DOCUMENTATION.
 9.	Create HST-FITS file handling routines.
-10.	"operator==" in InputImage must be changed to include test for equality
-	of limb correction variable.
 11.	Add PostScript support.
 12.	Add JPEG and additional image format support.
 13.	Add support for other types of FITS formats. (e.g. Ascii Header Ext.)
 15.	The input image input file entry should be slightly reorganized.
-16.	Must implement map to map conversion routine(s).
-21.	Mu/Mu0/Phase planes should no longer be scaled by 10000 by default,
-	since it is currently possible to map values greater than 255 into
-	a BYTE map.
+16.	Implement map to map conversion routine(s).
 22.	Correct Perspective projection constructor to use new transformation
 	matrix procedure.  Correct Perspective projection grid creation routine
 	to use new perspective routines.
