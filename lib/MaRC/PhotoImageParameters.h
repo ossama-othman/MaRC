@@ -15,7 +15,6 @@
 #include <MaRC/SourceImage.h>
 #include <MaRC/Geometry.h>
 #include <MaRC/OblateSpheroid.h>
-#include <MaRC/Image.h>
 #include <MaRC/GeometricCorrection.h>
 #include <MaRC/PhotometricCorrection.h>
 #include <MaRC/InterpolationStrategy.h>
@@ -24,7 +23,6 @@
 #include <MaRC/Matrix.h>
 #include <MaRC/misc.h>
 #include <MaRC/Constants.h>
-#include <MaRC/ValuePtr.h>
 
 #include <cmath>
 #include <limits>
@@ -33,6 +31,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <memory>
+
 
 namespace MaRC {
 
@@ -383,13 +383,13 @@ namespace MaRC {
 
     /// Geometric/optical correction strategy used during
     /// latitude/longitude to pixel conversion, and vice versa.
-    ValuePtr<GeometricCorrection> geometric_correction_;
+    std::unique_ptr<GeometricCorrection> geometric_correction_;
 
     /// Pointer to the photometric correction strategy.
-    ValuePtr<PhotometricCorrection> photometric_correction_;
+    std::unique_ptr<PhotometricCorrection> photometric_correction_;
 
     /// Pointer to the photometric correction strategy.
-    ValuePtr<InterpolationStrategy> interpolation_strategy_;
+    std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
 
     /// Sub-Observer Latitude -- BodyCENTRIC (radians).
     double sub_observ_lat_;
@@ -525,7 +525,7 @@ namespace MaRC {
   {
     if (strategy != 0)
       {
-        this->geometric_correction_ = ValuePtr<GeometricCorrection> (strategy);
+        this->geometric_correction_.reset(strategy);
       }
     else
       {
@@ -539,8 +539,7 @@ namespace MaRC {
   {
     if (strategy != 0)
       {
-        this->photometric_correction_ =
-          ValuePtr<PhotometricCorrection> (strategy);
+        this->photometric_correction_.reset(strategy);
       }
     else
       {
@@ -880,17 +879,17 @@ namespace MaRC {
     if (i)
       {
         this->interpolation_strategy_ =
-          ValuePtr<InterpolationStrategy> (
-            new PhotoInterpolationStrategy (this->samples_,
-                                            this->lines_,
-                                            this->nibble_left_,
-                                            this->nibble_right_,
-                                            this->nibble_top_,
-                                            this->nibble_bottom_));
+            std::make_unique<PhotoInterpolationStrategy>(
+                this->samples_,
+                this->lines_,
+                this->nibble_left_,
+                this->nibble_right_,
+                this->nibble_top_,
+                this->nibble_bottom_));
       }
     else
       this->interpolation_strategy_ =
-        ValuePtr<InterpolationStrategy> (new NullInterpolationStrategy);
+          std::make_unique<NullInterpolationStrategy>();
   }
   
   inline void

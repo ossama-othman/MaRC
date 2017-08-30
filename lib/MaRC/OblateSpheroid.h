@@ -219,7 +219,7 @@ namespace MaRC
   // not a reference or pointer
 
   inline double
-  MaRC::OblateSpheroid::centric_radius (const double & lat) const
+  MaRC::OblateSpheroid::centric_radius (double lat) const
   {
     /*
       Given a bodycentric latitude and longitude for a point (x, y, z)
@@ -265,7 +265,7 @@ namespace MaRC
   }
   
   inline double
-  MaRC::OblateSpheroid::centric_latitude (const double & lat) const
+  MaRC::OblateSpheroid::centric_latitude (double latg) const
   {
     /*
                                   2
@@ -280,7 +280,7 @@ namespace MaRC
   }
   
   inline double
-  MaRC::OblateSpheroid::graphic_latitude (const double & lat) const
+  MaRC::OblateSpheroid::graphic_latitude (double lat) const
   {
     /*
                                      2
@@ -295,11 +295,11 @@ namespace MaRC
   }
   
   inline double
-  MaRC::OblateSpheroid::mu (const double & sub_observ_lat,
-                            const double & sub_observ_lon,
-                            const double & lat,
-                            const double & lon,
-                            const double & range) const
+  MaRC::OblateSpheroid::mu (double sub_observ_lat,
+                            double sub_observ_lon,
+                            double lat,
+                            double lon,
+                            double range) const
   {
     // Compute the local normal-observer angle - Emission Angle (Mu)
   
@@ -320,10 +320,10 @@ namespace MaRC
   }
   
   inline double
-  MaRC::OblateSpheroid::mu0 (const double & sub_solar_lat,
-                             const double & sub_solar_lon,
-                             const double & lat,
-                             const double & lon) const
+  MaRC::OblateSpheroid::mu0 (double sub_solar_lat,
+                             double sub_solar_lon,
+                             double lat,
+                             double lon) const
   {
     // Compute the sun-local normal angle - Incidence Angle (Mu0)
   

@@ -63,7 +63,7 @@ MaRC::GLLGeometricCorrection::image_to_object(double & z, double & x)
     // -------------- Image Space to Object Space  --------------------
 
     // Image-space radius from optical axis
-    double const is_rad = std::hypot(x, y);
+    double is_rad = std::hypot(x, z);
 
     // must always be radius in pixels in *full-frame* mode
     if (this->summation_mode_) {
