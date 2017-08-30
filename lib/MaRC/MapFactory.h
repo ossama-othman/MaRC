@@ -29,7 +29,6 @@
 
 #include <vector>
 #include <limits>
-#include <functional>
 #include <cstdint>
 
 
@@ -54,21 +53,6 @@ namespace MaRC
 
         /// @typedef Type returned from @c make_grid() method.
         using grid_type = std::vector<uint8_t>;
-
-        /**
-         * Map plot functor type.
-         *
-         * Concrete map factories will call a function of this type in
-         * their @c plot_map() implementation.
-         *
-         * @see @c plot() for parameter details.
-         *
-         */
-        using plot_type =
-            std::function<void(double lat,
-                               double lon,
-                               unsigned char percent_complete,
-                               std::size_t offset)>;
 
         /// Constructor.
         MapFactory();

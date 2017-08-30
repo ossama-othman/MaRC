@@ -31,6 +31,8 @@
  */
 #include "MaRC/config.h"      // For NDEBUG
 
+#include <future>
+#include <stdexcept>
 #include <iostream>
 
 
@@ -63,6 +65,45 @@ MaRC::MapFactory::make_map(SourceImage const & source,
                           std::ref(map));
 
     this->plot_map(samples, lines, plot);
+
+#if 0
+    // Number of map tasks to spawn unless user specified.
+    unsigned int tasks = std::thread::hardware_concurrency();
+
+    // Concurrently plot the map across the specified number of
+    // tasks.  Each task will plot an independent portion of the map.
+    // For example, one task could plot half of the map, while another
+    // task could map the other half in parallel.
+    //
+    // Concurrent map plotting is only performed and justified if the
+    // size of the map is sufficiently large.
+
+    auto begin = projection.begin(sample, lines);
+    auto end   = projection.end  (sample, lines);
+
+    auto const section_size = std::distance(begin, end) / tasks;
+
+    std::list<std::future<void>> futures;
+    for (unsigned int i = 0; i < tasks; ++i) {
+
+        futures.emplace_back(
+            std::async(std::launch::async,
+                       [=]
+                       {
+                           // Plot the section of the map assigned to
+                           // this task.
+
+                       }));
+    }
+
+    // Wait for map plotting to complete.
+    for (auto & f : futures) {
+        /**
+         * @todo Should we wait with timeout here?
+         */
+        f.wait();
+    }
+#endif
 
     return std::move(map);
 }
