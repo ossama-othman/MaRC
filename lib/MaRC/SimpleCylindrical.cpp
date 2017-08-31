@@ -27,6 +27,7 @@
 
 #include <limits>
 #include <cmath>
+#include <algorithm>
 
 
 template <typename T>
@@ -141,11 +142,13 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
         double const k = std::round((n - lo_lat) * lr);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
-            std::size_t const offset =
-                static_cast<std::size_t>(k) * samples;
+            auto const first =
+                std::begin(grid)
+                + static_cast<std::size_t>(k) * samples;
 
-            for (std::size_t i = 0; i < samples; ++i)
-                grid[offset + i] = white;
+            auto const last = first + samples;
+
+            std::fill(first, last, white);
         }
     }
 
