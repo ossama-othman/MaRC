@@ -147,8 +147,8 @@ MaRC::MapCommand::execute()
     /**
      * Establish that MaRC created this FITS files, e.g. "MaRC 1.0".
      *
-     * @note The @c CREATOR keyword is a commonly used, but not part
-     *       of the FITS standard.
+     * @note The @c CREATOR keyword is commonly used, but not part of
+     *       the FITS standard.
      * @note We could also use the @c PROGRAM keyword here instead.
      *       It is also commonly used but not in the FITS standard.
      */
@@ -156,7 +156,7 @@ MaRC::MapCommand::execute()
                     TSTRING,
                     "CREATOR",
                     const_cast<char *>(PACKAGE_STRING),
-                    "Software that created this FITS file",
+                    "software that created this FITS file",
                     &status);
 
     // Write the author name if supplied.
@@ -166,7 +166,7 @@ MaRC::MapCommand::execute()
                         TSTRING,
                         "AUTHOR",
                         const_cast<char *>(author),
-                        "Who compiled original data that was mapped",
+                        "who compiled original data that was mapped",
                         &status);
     }
 
@@ -178,7 +178,7 @@ MaRC::MapCommand::execute()
                         TSTRING,
                         "ORIGIN",
                         const_cast<char *>(origin),
-                        "Map creator organization",
+                        "map creator organization",
                         &status);
     }
 
@@ -192,7 +192,7 @@ MaRC::MapCommand::execute()
                     TSTRING,
                     "OBJECT",
                     const_cast<char *>(object),
-                    "Name of observed object.",
+                    "name of observed object.",
                     &status);
 
     // Write the map comments.
@@ -227,7 +227,7 @@ MaRC::MapCommand::execute()
                         &status);
     }
 
-    if (status != 0)  {
+    if (status != 0) {
         // Report any errors before creating the map since map
         // creation can be time consuming.
         fits_report_error(stderr, status);
@@ -256,103 +256,110 @@ MaRC::MapCommand::execute()
     // Write a checksum for the map.
     fits_write_chksum(fptr, &status);
 
-    if (this->create_grid_) {
-        long naxes[] = { this->samples_, this->lines_ };
-        constexpr int grid_naxis = sizeof(naxes) / sizeof(naxes[0]);
-
-        static_assert(grid_naxis == 2,
-                      "Map grid is not two dimensional.");
-
-        // Create the image extension containing the map grid.
-        /**
-         * @todo Check return value!
-         */
-        fits_create_img(fptr,
-                        FITS::traits<FITS::byte_type>::bitpix,
-                        grid_naxis,
-                        naxes,
-                        &status);
-
-        static char const extname[] = "GRID";
-        fits_update_key(fptr,
-                        TSTRING,
-                        "EXTNAME",
-                        const_cast<char *>(extname),
-                        "MaRC grid extension name",
-                        &status);
-
-
-        // Write the grid comments.
-        for (auto const & xcomment : this->xcomments_) {
-            fits_write_comment(fptr, xcomment.c_str(), &status);
-        }
-
-        std::string const xhistory =
-            std::string(this->projection_name())
-            + " projection grid created using " PACKAGE_STRING ".";
-
-        // Write some MaRC-specific HISTORY comments.
-        fits_write_history(fptr,
-                           xhistory.c_str(),
-                           &status);
-
-        // Write map grid DATAMIN and DATAMAX keywords.  Both are the
-        // SAME, since only one valid value exists in the grid image.
-        float minimum = std::numeric_limits<grid_type::value_type>::max();
-        float maximum = minimum;
-
-        fits_update_key(fptr,
-                        TFLOAT,
-                        "DATAMIN",
-                        &minimum,
-                        "minimum valid grid value",
-                        &status);
-
-        fits_update_key(fptr,
-                        TFLOAT,
-                        "DATAMAX",
-                        &maximum,
-                        "maximum valid grid value",
-                        &status);
-
-        int grid_blank = 0;
-        fits_update_key(fptr,
-                        TINT,
-                        "BLANK",
-                        &grid_blank,
-                        "value of off-grid pixels",
-                        &status);
-
-        grid_type grid(this->make_grid(this->samples_,
-                                       this->lines_,
-                                       this->lat_interval_,
-                                       this->lon_interval_));
-
-        // Sanity check.
-        assert(grid.size()
-               == static_cast<std::size_t>(this->samples_) * this->lines_);
-
-        // LONGLONG is a CFITSIO type.
-        constexpr LONGLONG fpixel = 1;  // First pixel/element
-        LONGLONG const nelements = grid.size();
-
-        /**
-         * @todo Check return value!
-         */
-        (void) fits_write_img(fptr,
-                              FITS::traits<grid_type::value_type>::datatype,
-                              fpixel,
-                              nelements,
-                              grid.data(),
-                              &status);
-
-        // Write a checksum for the grid.
-        fits_write_chksum(fptr, &status);
-    }
+    // Write the map grid if requested.
+    this->write_grid(fptr, status);
 
     fits_report_error(stderr, status);
 
     return status;
+}
+
+void
+MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
+{
+    if (!this->create_grid_)
+        return;
+
+    long naxes[] = { this->samples_, this->lines_ };
+    constexpr int grid_naxis = sizeof(naxes) / sizeof(naxes[0]);
+
+    static_assert(grid_naxis == 2,
+                  "Map grid is not two dimensional.");
+
+    // Create the image extension containing the map grid.
+    /**
+     * @todo Check return value!
+     */
+    fits_create_img(fptr,
+                    FITS::traits<FITS::byte_type>::bitpix,
+                    grid_naxis,
+                    naxes,
+                    &status);
+
+    static char const extname[] = "GRID";
+    fits_update_key(fptr,
+                    TSTRING,
+                    "EXTNAME",
+                    const_cast<char *>(extname),
+                    "MaRC grid extension name",
+                    &status);
+
+    // Write the grid comments.
+    for (auto const & xcomment : this->xcomments_) {
+        fits_write_comment(fptr, xcomment.c_str(), &status);
+    }
+
+    std::string const xhistory =
+        std::string(this->projection_name())
+        + " projection grid created using " PACKAGE_STRING ".";
+
+    // Write some MaRC-specific HISTORY comments.
+    fits_write_history(fptr,
+                       xhistory.c_str(),
+                       &status);
+
+    // Write map grid DATAMIN and DATAMAX keywords.  Both are the
+    // SAME, since only one valid value exists in the grid image.
+    float minimum = std::numeric_limits<grid_type::value_type>::max();
+    float maximum = minimum;
+
+    fits_update_key(fptr,
+                    TFLOAT,
+                    "DATAMIN",
+                    &minimum,
+                    "minimum valid grid value",
+                    &status);
+
+    fits_update_key(fptr,
+                    TFLOAT,
+                    "DATAMAX",
+                    &maximum,
+                    "maximum valid grid value",
+                    &status);
+
+    int grid_blank = 0;
+    fits_update_key(fptr,
+                    TINT,
+                    "BLANK",
+                    &grid_blank,
+                    "value of off-grid pixels",
+                    &status);
+
+    grid_type grid(this->make_grid(this->samples_,
+                                   this->lines_,
+                                   this->lat_interval_,
+                                   this->lon_interval_));
+
+    // Sanity check.
+    assert(grid.size()
+           == static_cast<std::size_t>(this->samples_) * this->lines_);
+
+    // LONGLONG is a CFITSIO type.
+    constexpr LONGLONG fpixel = 1;  // First pixel/element
+    LONGLONG const nelements = grid.size();
+
+    /**
+     * @todo Check return value!
+     */
+    (void) fits_write_img(fptr,
+                          FITS::traits<grid_type::value_type>::datatype,
+                          fpixel,
+                          nelements,
+                          grid.data(),
+                          &status);
+
+    // Write a checksum for the grid.
+    fits_write_chksum(fptr, &status);
 }
 
 void
@@ -449,6 +456,7 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
 
     double scale  = v->scale();
     double offset = v->offset();
+    std::string unit = v->unit();
 
     // Avoid writing "-0".  It's harmless but rather unsightly.
     constexpr double ulps = 1;
@@ -493,8 +501,14 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
         facts.emplace_back("Plane "
                            + std::to_string(plane)
                            + " characteristics:");
-        facts.emplace_back("    Scale:  " + double_to_string(scale));
-        facts.emplace_back("    Offset: " + double_to_string(offset));
+        facts.emplace_back("    BSCALE: " + double_to_string(scale));
+        facts.emplace_back("    BZERO:  " + double_to_string(offset));
+
+        if (!unit.empty()) {
+            // Single quote the unit string per FITS string value
+            // conventions.
+            facts.emplace_back("    BUNIT:  '" + unit + "'");
+        }
 
         for (auto & f : facts) {
             // Write some MaRC-specific HISTORY comments.

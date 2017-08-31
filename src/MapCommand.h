@@ -105,7 +105,7 @@ namespace MaRC
         /**
          * The default value of the FITS @c BZERO keyword is zero.
          *
-         * @param zero @c BZERO keyword value.
+         * @param[in] zero @c BZERO keyword value.
          *
          * @note Setting this value will cause the data written to the
          *       FITS file to be transformed according the equation:
@@ -119,12 +119,12 @@ namespace MaRC
         /**
          * The default value of the FITS @c BSCALE keyword is one.
          *
-         * @param scale @c BSCALE keyword value.
+         * @param[in] scale @c BSCALE keyword value.
          *
          * @note Setting this value will cause the data written to the
          *       FITS file to be transformed according the equation:
          * @code
-         *            (FITS value) = ((physical value) - BZERO) / BSCALE
+         *         (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
         void data_scale(double scale);
@@ -177,22 +177,34 @@ namespace MaRC
     private:
 
         /// Create FITS image array HDU.
+        /**
+         * @param[in]  fptr   CFITSIO pointer to the map FITS file.
+         * @param[out] status CFITSIO file operation status.
+         */
         virtual void initialize_FITS_image(fitsfile * fptr,
                                            int & status) = 0;
 
         /// Create and write map planes.
         /**
          * This is a "template method" (the design pattern, not a C++
-         * class member template) that performs type-specific map
+         * class template member) that performs type-specific map
          * plane creation.
+         *
+         * @param[in]  fptr   CFITSIO pointer to the map FITS file.
+         * @param[out] status CFITSIO file operation status.
          */
         virtual void make_map_planes(fitsfile * fptr, int & status) = 0;
 
-        /// Create and write grid image.
+        /// Create grid image.
         /**
          * This is a "template method" (the design pattern, not a C++
-         * class member template) that calls back on the type-specific
+         * class template member) that calls back on the type-specific
          * @c MapFactory to create the grid.
+         *
+         * @param[in] samples      Number of samples in the map.
+         * @param[in] lines        Number of lines   in the map.
+         * @param[in] lat_interval Grid latitude  spacing.
+         * @param[in] lon_interval Grid longitude spacing.
          *
          * @return @c Grid object containing grid image.
          */
@@ -200,6 +212,14 @@ namespace MaRC
                                     long lines,
                                     float lat_interval,
                                     float lon_interval) = 0;
+
+        /**
+         * @brief Write map grid to the map FITS file.
+         *
+         * @param[in]  fptr   CFITSIO pointer to the map FITS file.
+         * @param[out] status CFITSIO file operation status.
+         */
+        void write_grid(fitsfile * fptr, int & status);
 
     protected:
 

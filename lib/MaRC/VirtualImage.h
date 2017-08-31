@@ -314,6 +314,23 @@ namespace MaRC
         double offset() const { return this->scale() * -this->offset_; }
         //@}
 
+        /**
+         * @brief Physical unit of data after application of scale and
+         *        offset.
+         *
+         * Get the physical units of the data after transforming the
+         * virtual image data with the values returned from @c scale()
+         * and @c offset().  The unit should conform to IAU Style Manual
+         * recommendations.
+         *
+         * @see @c VirtualImage::scale()
+         * @see @c VirtualImage::offset()
+         * @see https://www.iau.org/publications/proceedings_rules/units/
+         *
+         * @return Physical unit of data in the virtual image.
+         */
+        virtual char const * unit() const { return ""; }
+
     private:
 
         /// Compute data specific to a given virtual image.

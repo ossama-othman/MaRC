@@ -183,6 +183,12 @@ MaRC::MapCommand_T<T>::make_grid(long samples,
                                  float lat_interval,
                                  float lon_interval)
 {
+    /**
+     * @todo This method isn't data type specific.  It should be moved
+     *       to the @c MapCommand base class if
+     *       @c Map_Factory<>::make_grid() is no longer class template
+     *       method.
+     */
     return this->factory_->make_grid(samples,
                                      lines,
                                      lat_interval,
