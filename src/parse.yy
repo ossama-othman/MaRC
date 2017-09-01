@@ -334,13 +334,19 @@ map_setup:
               check can be removed.
             */
             if (num_planes > 0 && planes_queued != num_planes) {
+                /**
+                 * @todo Call yyerror() here instead, e.g.:
+                 *       yyerror(&yylloc, pp, "some error message");
+                 */
+                //
                 std::cerr <<
                     "ERROR: Number of planes in map entry does not\n"
                     "       match the number of planes stated by \n"
                     "       the \"PLANES\" keyword.\n"
                     "           Expected planes: " << num_planes << "\n"
                     "           Actual planes:   " << planes_queued
-                    << "\n";
+                    << '\n';
+                YYERROR;
             } else {
                 std::unique_ptr<MaRC::MapCommand> map_command;
 
@@ -642,7 +648,8 @@ planes: | PLANES ':' size         {
               //              "planes is no longer necessary.\n";
           } else {
               std::cerr << "Incorrect number of planes entered: "
-                        << $3 << std::endl;
+                        << $3 << '\n';
+              YYERROR;
           }
         }
 ;
@@ -650,23 +657,23 @@ planes: | PLANES ':' size         {
 samples:
         SAMPLES ':' size        {
           if ($3 > 0)
-            map_samples = static_cast<long>($3);
-          else
-            {
+              map_samples = static_cast<long>($3);
+          else {
               std::cerr << "Incorrect value for SAMPLES entered: "
-                        << $3 << std::endl;
-            }
+                        << $3 << '\n';
+              YYERROR;
+          }
         }
 ;
 
 lines:  LINES ':' size  {
           if ($3 > 0)
-            map_lines = static_cast<long>($3);
-          else
-            {
+              map_lines = static_cast<long>($3);
+          else {
               std::cerr << "Incorrect value for LINES entered: " << $3
-                        << std::endl;
-            }
+                        << '\n';
+              YYERROR;
+          }
         }
 ;
 
@@ -773,8 +780,10 @@ plane_size:
            *       number.
            */
             if (num_planes == 0) {
-                std::cerr << "Number of planes not entered prior to plane "
-                          << "definition." << std::endl;
+                yyerror(&yylloc,
+                        pp,
+                        "Number of planes not entered prior to "
+                        "plane definition");
             } else {
                 // std::cout <<
                 //     "NOTE: Specifying the map plane number is no "
@@ -789,6 +798,10 @@ plane_size:
                     ++expected_plane;
                     ++planes_queued;
                 } else {
+                    /**
+                     * @todo Call yyerror() here instead, e.g.:
+                     *       yyerror(&yylloc, pp, "some error message");
+                     */
                     std::cerr <<
                         "\n"
                         "ERROR: Incorrect plane number entered.  Plane\n"
@@ -796,12 +809,18 @@ plane_size:
                         "       and less than or equal to the number\n"
                         "       of planes (" << num_planes << ").\n"
                         "       You entered:  " << $3 << '\n';
+                    YYERROR;
                 }
             } else {
-                std::cerr << "Incorrect plane number entered." << std::endl
-                          << "Expected plane number is: " << expected_plane
-                          << std::endl
-                          << "You entered:  " << $3 << std::endl;
+                /**
+                 * @todo Call yyerror() here instead, e.g.:
+                 *       yyerror(&yylloc, pp, "some error message");
+                 */
+                std::cerr << "Incorrect plane number entered.\n"
+                             "Expected plane number is: " << expected_plane
+                          << "\n"
+                             "You entered:  " << $3 << '\n';
+                YYERROR;
             }
 
             minimum = pp.minimum; maximum = pp.maximum;
@@ -814,32 +833,35 @@ plane_data_range:
         | DATA_MAX ':' size { maximum = $3; }
         | DATA_MIN ':' size
           DATA_MAX ':' size {
-            if ($3 < $6)
-              {
+            if ($3 < $6) {
                 minimum = $3;
                 maximum = $6;
-              }
-            else
-              {
+            } else {
+                /**
+                 * @todo Call yyerror() here instead, e.g.:
+                 *       yyerror(&yylloc, pp, "some error message");
+                 */
                 std::cerr << "Minimum data value: " << $3
                           << " is greater than\n"
-                          << "maximum data value: " << $6 << std::endl;
-              }
+                             "maximum data value: " << $6 << '\n';
+                YYERROR;
+            }
         }
         | DATA_MAX ':' size
           DATA_MIN ':' size {
-            if ($6 < $3)
-              {
+            if ($6 < $3) {
                 minimum = $6;
                 maximum = $3;
-              }
-            else
-              {
+            } else {
+                /**
+                 * @todo Call yyerror() here instead, e.g.:
+                 *       yyerror(&yylloc, pp, "some error message");
+                 */
                 std::cerr << "Minimum data value: " << $6
                           << " is greater than\n"
-                          << "maximum data value: " << $3
-                          << std::endl;
-              }
+                             "maximum data value: " << $3 << '\n';
+                YYERROR;
+            }
         }
 ;
 
@@ -968,18 +990,20 @@ nibbling:
 
 nibble:
         NIBBLE ':' size {
-          if ($3 >= 0)
-            {
+          if ($3 >= 0) {
               nibble_left_val   = static_cast<std::size_t>($3);
               nibble_right_val  = static_cast<std::size_t>($3);
               nibble_top_val    = static_cast<std::size_t>($3);
               nibble_bottom_val = static_cast<std::size_t>($3);
-            }
-          else
-            {
+          } else {
+              /**
+               * @todo Call yyerror() here instead, e.g.:
+               *       yyerror(&yylloc, pp, "some error message");
+               */
               std::cerr << "Incorrect value for NIBBLE entered: "
-                        << $3 << std::endl;
-            }
+                        << $3 << '\n';
+              YYERROR;
+          }
         }
 ;
 
@@ -1000,57 +1024,49 @@ nibble_lines:
 
 nibble_left:
         NIBBLE_LEFT ':' size {
-          if ($3 >= 0)
-            {
+          if ($3 >= 0) {
               nibble_left_val = static_cast<std::size_t>($3);
-            }
-          else
-            {
+          } else {
               std::cerr << "Incorrect value for NIBBLE_LEFT entered: "
-                        << $3 << std::endl;
-            }
+                        << $3 << '\n';
+              YYERROR;
+          }
         }
 ;
 
 nibble_right:
         NIBBLE_RIGHT ':' size {
-          if ($3 >= 0)
-            {
+          if ($3 >= 0) {
               nibble_right_val = static_cast<std::size_t>($3);
-            }
-          else
-            {
+          } else {
               std::cerr << "Incorrect value for NIBBLE_RIGHT entered: "
-                        << $3 << std::endl;
-            }
+                        << $3 << '\n';
+              YYERROR;
+          }
         }
 ;
 
 nibble_top:
         NIBBLE_TOP ':' size {
-          if ($3 >= 0)
-            {
+          if ($3 >= 0) {
               nibble_top_val = static_cast<std::size_t>($3);
-            }
-          else
-            {
+          } else {
               std::cerr << "Incorrect value for NIBBLE_TOP entered: "
-                        << $3 << std::endl;
-            }
+                        << $3 << '\n';
+              YYERROR;
+          }
         }
 ;
 
 nibble_bottom:
         NIBBLE_BOTTOM ':' size {
-          if ($3 >= 0)
-            {
+          if ($3 >= 0) {
               nibble_bottom_val = static_cast<std::size_t>($3);
-            }
-          else
-            {
+          } else {
               std::cerr << "Incorrect value for NIBBLE_BOTTOM entered: "
-                        << $3 << std::endl;
-            }
+                        << $3 << '\n';
+              YYERROR;
+          }
         }
 ;
 
@@ -1547,8 +1563,9 @@ position_angle:
                 $$ = $3;
             else {
                 std::cerr << "Incorrect position (North) angle entered: "
-                          << $3 << " CW" << std::endl
-                          << "Numeric value should be positive." << std::endl;
+                          << $3 << " CW" << '\n'
+                          << "Numeric value should be positive." << '\n';
+                YYERROR;
             }
         }
         | POSITION_ANGLE ':' expr CCW {
@@ -1556,8 +1573,9 @@ position_angle:
                 $$ = $3;
             else {
                 std::cerr << "Incorrect position (North) angle entered: "
-                          << $3 << " CCW" << std::endl
-                          << "Numeric value should be positive." << std::endl;
+                          << $3 << " CCW" << '\n'
+                          << "Numeric value should be positive." << '\n';
+                YYERROR;
             }
         }
 ;
@@ -1835,23 +1853,23 @@ simple_c_latlonrange:
 lat_range:
         LO_LAT ':' latitude
         HI_LAT ':' latitude  {
-          if ($3 < $6)
-            {
+          if ($3 < $6) {
               lo_lat = $3;
               hi_lat = $6;
-            }
-          else
-            std::cerr << "Error: LO_LAT is greater than HI_LAT\n";
+          } else  {
+              yyerror(&yylloc, pp, "ERROR: LO_LAT is greater than HI_LAT");
+              YYERROR;
+          }
         }
         | HI_LAT ':' latitude
           LO_LAT ':' latitude  {
-          if ($3 < $6)
-            {
+          if ($6 < $3) {
               lo_lat = $6;
               hi_lat = $3;
-            }
-          else
-            std::cerr << "Error: LO_LAT is greater than HI_LAT\n";
+          } else {
+              yyerror(&yylloc, pp, "ERROR: LO_LAT is greater than HI_LAT");
+              YYERROR;
+          }
         }
 ;
 
@@ -1913,7 +1931,7 @@ one_std_lat:
         | STD_LAT ':' latitude {
           if ((north_pole && $3 > 0 && $3 < 90) ||
               (!north_pole && $3 < 0 && $3 > -90)) {
-            MapEntry->setStdLat ($3);
+            MapEntry->setStdLat($3);
           }
           else {
             cerr << "ERROR: Standard latitude must be greater than zero for"
@@ -1925,6 +1943,7 @@ one_std_lat:
                  << "       latitude must also be less than 90 degrees."
                  << endl;
             cerr << "       STD_LAT: " << $3 << endl;
+            YYERROR;
           }
         }
 ;
@@ -1932,10 +1951,10 @@ one_std_lat:
 two_std_lats:
         | STD_LAT_1 ':' latitude
           STD_LAT_2 ':' latitude {
-            if (::fabs ($6) < fabs ($3) &&
+            if (std::fabs($6) < std::fabs($3) &&
                 (north_pole && $3 < 90 && $3 > 0) ||
                 (!north_pole && $3 > -90 && $3 < 0)) {
-              MapEntry->setStdLat ($3, $6);
+              MapEntry->setStdLat($3, $6);
             }
             else {
               cerr << "ERROR: Absolute value of first standard latitude must"
@@ -1953,6 +1972,7 @@ two_std_lats:
                    << endl;
               cerr << "       STD_LAT_1: " << $3 << endl
                    << "       STD_LAT_2: " << $6 << endl;
+              YYERROR;
             }
         }
 ;
@@ -1977,11 +1997,12 @@ latitude:
 
 latitude_sub:
         expr    {
-            if (::fabs($1) <= 90)
+            if (std::fabs($1) <= 90)
             $$ = $1;
             else {
                 std::cerr << "Incorrect latitude entered: " << $1
-                          << std::endl;
+                          << '\n';
+                YYERROR;
             }
         }
         | expr 'N' {
@@ -1990,6 +2011,7 @@ latitude_sub:
             else {
                 std::cerr << "Incorrect latitude entered: "
                           << $1 << " N\n";
+                YYERROR;
             }
         }
         | expr 'S' {
@@ -1998,45 +2020,49 @@ latitude_sub:
             else {
                 std::cerr << "Incorrect latitude entered: "
                           << $1 << " S\n";
+                YYERROR;
             }
         }
 ;
 
 longitude:
           expr {
-              if (::fabs($1) <= 360) {
+              if (std::fabs($1) <= 360) {
                   if ($1 < 0)
                       $1 += 360;
                   $$ = $1;
               } else {
                   std::cerr << "Incorrect longitude entered: " << $1
-                            << std::endl;
+                            << '\n';
+                  YYERROR;
               }
          }
          | expr 'E' {
-             if (::fabs($1) <= 360) {
+             if (std::fabs($1) <= 360) {
                  if ($1 < 0)
                      $1 += 360;
-                 if (oblate_spheroid->prograde ())
+                 if (oblate_spheroid->prograde())
                      $$ = 360 - $1;
                  else
                      $$ = $1;
              } else {
                  std::cerr << "Incorrect longitude entered: " << $1
                            << " E\n";
+                 YYERROR;
              }
         }
         | expr 'W'      {
-            if (::fabs ($1) <= 360) {
+            if (std::fabs($1) <= 360) {
                 if ($1 < 0)
                     $1 += 360;
-                if (oblate_spheroid->prograde ())
+                if (oblate_spheroid->prograde())
                     $$ = $1;
                 else
                     $$ = 360 - $1;
             } else {
                 std::cerr << "Incorrect longitude entered: " << $1
                           << " W\n";
+                YYERROR;
             }
         }
 ;

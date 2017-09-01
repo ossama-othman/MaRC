@@ -106,12 +106,12 @@ MaRC::ParseParameter::push_command(std::unique_ptr<MapCommand> c)
 // }
 
 void
-yyerror (YYLTYPE * /* locp */,
-         MaRC::ParseParameter & /* pp */,
-         char const * msg)
+yyerror(YYLTYPE * /* locp */,
+        MaRC::ParseParameter & /* pp */,
+        char const * msg)
 {
     /**
      * @todo Pull location from @a locp argument.
      */
-    std::cerr << msg << std::endl;
+    std::cerr << msg << '\n';
 }

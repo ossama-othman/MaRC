@@ -12,4 +12,4 @@ if test -z "${top_srcdir+set}"; then
   top_srcdir=..
 fi
 
-$top_builddir/src/marc $top_srcdir/tests/test_map.inp > /dev/null 2>&1
+$top_builddir/src/marc $top_srcdir/tests/test_map.inp
