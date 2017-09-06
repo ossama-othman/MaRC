@@ -131,7 +131,7 @@ namespace MaRC
             using difference_type   = std::ptrdiff_t;
             using value_type        = map_location;
             using pointer           = value_type *;
-            using reference         = value_type & ;
+            using reference         = value_type &;
             using iterator_category = std::random_access_iterator_tag;
             //@}
 

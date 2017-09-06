@@ -83,8 +83,10 @@ MaRC::MapFactory::make_map(SourceImage const & source,
 
     auto const section_size = std::distance(begin, end) / tasks;
 
+    //
     std::list<std::future<void>> futures;
-    for (unsigned int i = 0; i < tasks; ++i) {
+    for (unsigned int i = 1; i < tasks; ++i) {
+        auto intermediate_end = begin + section_size;
 
         futures.emplace_back(
             std::async(std::launch::async,
@@ -94,7 +96,24 @@ MaRC::MapFactory::make_map(SourceImage const & source,
                            // this task.
 
                        }));
+
+        begin = intermediate_end;
     }
+
+    futures.emplace_back(
+        std::async(std::launch::async,
+                   [=]
+                   {
+                       /*
+                         Plot the last section of the map assigned to
+                         this task.
+
+                         The last section could be slightly different
+                         in size than the others if the number of
+                         elements is not evenly divisible by the
+                         number of tasks.
+                       */
+                   }));
 
     // Wait for map plotting to complete.
     for (auto & f : futures) {
