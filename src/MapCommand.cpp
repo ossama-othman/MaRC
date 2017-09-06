@@ -35,6 +35,7 @@
 #include <iomanip>
 #include <memory>
 #include <type_traits>  // For sanity check below.
+#include <chrono>
 #include <cassert>
 
 #include <unistd.h>
@@ -235,8 +236,20 @@ MaRC::MapCommand::execute()
         return status;
     }
 
+    /**
+     * @todo Map timing should not include FITS operations.
+     */
+    auto const start =  std::chrono::high_resolution_clock::now();
+
     // Create and write the map planes.
     this->make_map_planes(fptr, status);
+
+    auto const end =  std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> const seconds = end - start;
+
+    std::cout << "Completed mapping data in " << seconds.count()
+              << " seconds.\n";
 
 //   // Write DATAMIN and DATAMAX keywords.
 //   fits_update_key(fptr,
@@ -335,10 +348,18 @@ MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
                     "value of off-grid pixels",
                     &status);
 
+    auto const start =  std::chrono::high_resolution_clock::now();
+
     grid_type grid(this->make_grid(this->samples_,
                                    this->lines_,
                                    this->lat_interval_,
                                    this->lon_interval_));
+    auto const end =  std::chrono::high_resolution_clock::now();
+
+    std::chrono::duration<double> const seconds = end - start;
+
+    std::cout << "Completed mapping grid in " << seconds.count()
+              << " seconds.\n";
 
     // Sanity check.
     assert(grid.size()
