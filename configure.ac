@@ -21,7 +21,7 @@ dnl An autoconf script to automatically configure MaRC.
 
 
 AC_PREREQ([2.69])
-AC_INIT([MaRC], [0.9.9], [othman@users.sourceforge.net], [marc])
+AC_INIT([MaRC], [0.9.10-beta], [othman@users.sourceforge.net], [marc])
 
 dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
@@ -89,9 +89,7 @@ AH_BOTTOM([
 // End:
 ])
 
-
 AH_TEMPLATE([NDEBUG],[Disable all debugging code.])
-
 
 AH_TEMPLATE([MARC_HAS_3_PARAM_STD_HYPOT],[C++ compiler supports C++17 three-parameter std::hypot().])
 
@@ -130,22 +128,29 @@ AS_IF([test "x$ac_cv_cxx_3_param_std_hypot_supported" = "xyes"],
 dnl Checks for header files.
 AC_HEADER_STDC
 
-dnl System specific configuration
+dnl Enable optimizations
 AS_IF([test "x$ax_enable_debug" != "xyes"],
-      [AS_IF([test "x$GXX" = "xyes"], [XCXXFLAGS="$XCXXFLAGS -O2"])
-       AX_GCC_ARCHFLAG([yes], [XCXXFLAGS="$XCXXFLAGS $ax_cv_gcc_archflag"])])
+      [
+       MARC_APPEND_COMPILE_FLAG([-O2])
 
-AX_CXXFLAGS_WARN_ALL([CXXFLAGS])
-AS_IF([test "x$GXX" = "xyes"],
-      [XCXXFLAGS="$XCXXFLAGS -Wextra -Wformat=2 -pedantic"],
-      [])
+       dnl System specific configuration
+       AX_GCC_ARCHFLAG([yes], [AX_APPEND_FLAG([$ax_cv_gcc_archflag], [XCXXFLAGS])])
+      ])
+
+dnl Enable additional compile-time warnings.
+dnl AX_COMPILER_FLAGS()
+
+AX_CXXFLAGS_WARN_ALL([XCXXFLAGS])
+MARC_APPEND_COMPILE_FLAG([-Wextra])
+MARC_APPEND_COMPILE_FLAG([-Wformat=2])
+MARC_APPEND_COMPILE_FLAG([-pedantic])
 
 dnl Combine package set flags with user's flags.
 dnl User's flags go after package flags to allow user to override
 dnl package defaults.
-CXXFLAGS="$XCXXFLAGS $CXXFLAGS"
+CXXFLAGS="$XCXXFLAGS $WARN_CXXFLAGS $CXXFLAGS "
 CPPFLAGS="$XCPPFLAGS $CPPFLAGS"
-LDFLAGS="$XLDFLAGS $LDFLAGS"
+LDFLAGS="$XLDFLAGS $WARN_LDFLAGS $LDFLAGS"
 
 AC_CONFIG_FILES([
   Makefile

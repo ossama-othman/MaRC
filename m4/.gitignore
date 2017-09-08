@@ -1,4 +1,4 @@
 # Ignore everything but this file and autoconf archive macros
 *
 !.gitignore
-!ax*.m4
+!marc*.m4
