@@ -43,7 +43,8 @@ marc_SOURCES = \
   parse.yy \
   lexer.ll
 
-marc_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+marc_CXXFLAGS = $(CFITSIO_CFLAGS)
+marc_LDADD    = $(CFITSIO_LIBS) $(top_builddir)/lib/MaRC/libMaRC.la
 
 noinst_HEADERS = \
   ImageFactory.h \

@@ -47,6 +47,9 @@ AC_PROG_LN_S
 AC_PROG_YACC
 AM_PROG_LEX
 
+# Check for pkg-config
+PKG_PROG_PKG_CONFIG
+
 # Check for Doxygen
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
@@ -97,19 +100,9 @@ dnl Checks for libraries.
 dnl We're of course going to need the C math library.
 AC_SEARCH_LIBS([cos],[m])
 
-dnl Check if the socket library is available and needed.  CFITSIO
-dnl requires socket support.
-AC_SEARCH_LIBS([socket],[socket],,,[nsl])
-
-dnl Check for gethostbyname in -lnsl since some platforms (e.g. Solaris)
-dnl put it there.  CFITSIO may need it.
-AX_LIB_SOCKET_NSL
-
-dnl Check for the CFITSIO library.
-dnl   fits_create_file is a preprocessor macro for ffinit.  *sigh*
-AC_SEARCH_LIBS([ffinit],[cfitsio],
-  [],
-  [AC_MSG_ERROR([MaRC requires CFITSIO.  CFITSIO library not found.])])
+PKG_CHECK_MODULES([CFITSIO], [cfitsio])
+AC_SUBST([CFITSIO_LIBS])
+AC_SUBST([CFITSIO_CFLAGS])
 
 dnl Check for C++17 three-parameter std::hypot() function.
 AC_CACHE_CHECK([if $CXX supports C++17 three-parameter std::hypot()],
