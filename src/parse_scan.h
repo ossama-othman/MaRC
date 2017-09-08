@@ -172,7 +172,6 @@ namespace MaRC
 
 YY_DECL;
 
-int yyparse (MaRC::ParseParameter & pp);
 void yyerror (YYLTYPE * locp, MaRC::ParseParameter & pp, char const * msg);
 
 
