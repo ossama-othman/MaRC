@@ -15,6 +15,7 @@ matrix:
             - flex
             - texinfo
             - cfitsio-dev
+            - autoconf-archive
 
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
@@ -33,6 +34,7 @@ matrix:
             - flex
             - texinfo
             - cfitsio-dev
+            - autoconf-archive
 
       env:  # For whatever reason CXXFLAGS is not honored.  Use CXX.
         - MATRIX_EVAL="CC=clang-3.9 && CXX='clang++-3.9 -stdlib=libc++'"
@@ -51,7 +53,7 @@ before_install:
     - eval "${MATRIX_EVAL}"
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cfitsio bison flex texinfo; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install cfitsio bison flex texinfo autoconf-archive; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
           for p in bison gettext flex texinfo; do
               export PATH="/usr/local/opt/$p/bin:$PATH";
