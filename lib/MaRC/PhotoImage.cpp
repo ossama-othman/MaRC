@@ -1185,8 +1185,11 @@ MaRC::PhotoImage::read_data(double lat,
     if (!this->latlon2pix(lat, lon, x, z))
         return false;
 
-    // x and z are 'pixel coordinates'.  In 'pixel coordinates', 0..1
-    // is inside pixel 0, 1..2 is inside pixel 1, etc.
+    assert(x >= 0 && z >= 0);
+
+    // x and z are 'pixel coordinates'.  In 'pixel coordinates', the
+    // half-open interval [0,1) is inside pixel 0, [1,2) is inside
+    // pixel 1, etc.
     std::size_t const i = static_cast<std::size_t>(std::floor(x));
     std::size_t const k = static_cast<std::size_t>(std::floor(z));
     std::size_t const index = k * this->samples_ + i;
