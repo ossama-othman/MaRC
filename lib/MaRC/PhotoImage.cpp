@@ -940,6 +940,9 @@ MaRC::PhotoImage::lon_at_center(double lon)
         return false;  // Failure
     }
 
+    if (lon < 0)
+      lon += 360;
+
     this->lon_at_center_ = lon * C::degree;
     flags::set(this->flags_, LATLON_AT_CENTER);
 
