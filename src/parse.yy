@@ -918,52 +918,46 @@ image_setup:
           nibble_top_val    = pp.nibble_top;
           nibble_bottom_val = pp.nibble_bottom;
 
-          if (km_per_pixel_val > 0)
-            {
-              photo_factory->km_per_pixel (km_per_pixel_val);
+          if (km_per_pixel_val > 0) {
+              photo_factory->km_per_pixel(km_per_pixel_val);
               km_per_pixel_val = -1;  // Reset to "bad" value.
-            }
+	  }
 
-          if (arcsec_per_pix_val > 0)
-            {
-              photo_factory->arcsec_per_pixel (arcsec_per_pix_val);
+          if (arcsec_per_pix_val > 0) {
+              photo_factory->arcsec_per_pixel(arcsec_per_pix_val);
               arcsec_per_pix_val = -1;  // Reset to "bad" value.
-            }
+	  }
 
-          if (focal_length_val > 0)
-            {
-              photo_factory->focal_length (focal_length_val);
+          if (focal_length_val > 0) {
+              photo_factory->focal_length(focal_length_val);
               focal_length_val = -1;  // Reset to "bad" value.
-            }
+	  }
 
-          if (pixel_scale_val > 0)
-            {
-              photo_factory->scale (pixel_scale_val);
+          if (pixel_scale_val > 0) {
+              photo_factory->scale(pixel_scale_val);
               pixel_scale_val = -1;  // Reset to "bad" value.
-            }
+	  }
 
-          if (!std::isnan(sample_center) && !std::isnan(line_center))
-            {
+          if (!std::isnan(sample_center) && !std::isnan(line_center)) {
               photo_factory->body_center(sample_center, line_center);
 
               // Reset to "bad" value.
               sample_center = std::numeric_limits<double>::quiet_NaN();
               line_center   = std::numeric_limits<double>::quiet_NaN();
-            }
+	  }
 
-          if (!std::isnan(lat_at_center) && !std::isnan(lon_at_center))
-            {
-              photo_factory->lat_lon_center (lat_at_center, lon_at_center);
+          if (!std::isnan(lat_at_center) && !std::isnan(lon_at_center)) {
+              photo_factory->lat_lon_center(lat_at_center, lon_at_center);
 
               // Reset to "bad" value.
               lat_at_center = std::numeric_limits<double>::quiet_NaN();
               lon_at_center = std::numeric_limits<double>::quiet_NaN();
-            }
+	  }
 
-          photo_factory->sub_observ (($13).lat, ($13).lon);
-          photo_factory->position_angle ($14);
-          photo_factory->sub_solar (($15).lat, ($15).lon);
-          photo_factory->range ($16);
+          photo_factory->sub_observ(($13).lat, ($13).lon);
+          photo_factory->position_angle($14);
+          photo_factory->sub_solar(($15).lat, ($15).lon);
+          photo_factory->range($16);
           photo_factories.push_back(std::move(photo_factory));
         }
 ;

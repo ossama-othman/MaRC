@@ -161,173 +161,131 @@ MaRC::PhotoImage::is_visible(double lat, double lon) const
      // checks passed.
 }
 
-int
+bool
 MaRC::PhotoImage::geometric_correction(
     std::unique_ptr<GeometricCorrection> strategy)
 {
     if (strategy) {
         this->geometric_correction_ = std::move(strategy);
 
-        return 0;  // Success
+        return true;  // Success
     } else {
         std::cerr
             << "ERROR: Null geometric correction strategy pointer.\n";
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 }
 
-int
+bool
 MaRC::PhotoImage::photometric_correction(
     std::unique_ptr<PhotometricCorrection> strategy)
 {
     if (strategy) {
         this->photometric_correction_ = std::move(strategy);
 
-        return 0;  // Success
+        return true;  // Success
     } else {
         std::cerr
             << "ERROR: Null photometric correction strategy pointer.\n";
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 }
 
-int
+bool
 MaRC::PhotoImage::sub_observ(double lat, double lon)
 {
-    if (std::abs(lat) <= 90)
-        this->sub_observ_lat_ = lat * C::degree;
-    else {
-        std::cerr
-            << "ERROR: Incorrect value for Sub-Observation Latitude: "
-            << lat << '\n';
-
-        return 1;  // Failure
-    }
-
-    if (std::abs(lon) <= 360) {
-        if (lon < 0)
-            lon += 360;
-        this->sub_observ_lon_ = lon * C::degree;
-    } else {
-        std::cerr
-            << "ERROR: Incorrect value for Central Meridian: "
-            << lon << '\n';
-
-        return 1;  // Failure
-    }
-
-    return 0;  // Success
+    return this->sub_observ_lat(lat) && this->sub_observ_lon(lon);
 }
 
-int
+bool
 MaRC::PhotoImage::sub_observ_lat(double lat)
 {
-    if (std::abs(lat) <= 90)
-        this->sub_observ_lat_ = lat * C::degree;
-    else {
+    if (std::abs(lat) > 90) {
         std::cerr
             << "ERROR: Incorrect value for Sub-Observation Latitude: "
                   << lat << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;  // Success
+    this->sub_observ_lat_ = lat * C::degree;
+
+    return true;  // Success
 }
 
-int
+bool
 MaRC::PhotoImage::sub_observ_lon(double lon)
 {
-    if (std::abs(lon) <= 360) {
-        if (lon < 0)
-            lon += 360;
-        this->sub_observ_lon_ = lon * C::degree;
-    } else {
+    if (std::abs(lon) > 360) {
         std::cerr
             << "ERROR: Incorrect value for Central Meridian: "
             << lon << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;
+    if (lon < 0)
+      lon += 360;
+
+    this->sub_observ_lon_ = lon * C::degree;
+
+    return true;
 }
 
-int
+bool
 MaRC::PhotoImage::sub_solar(double lat, double lon)
 {
-    if (std::abs(lat) <= 90)
-        this->sub_solar_lat_ = lat * C::degree;
-    else {
-        std::cerr << "ERROR: Incorrect value for Sub-Solar Latitude: "
-                  << lat << '\n';
-
-        return 1;  // Failure
-    }
-
-    if (std::abs(lon) <= 360) {
-        if (lon < 0)
-            lon += 360;
-        this->sub_solar_lon_ = lon * C::degree;
-    } else {
-        std::cerr << "ERROR: Incorrect value for Sub-Solar Longitude: "
-                  << lon
-                  << '\n';
-
-        return 1;  // Failure
-    }
-
-    return 0;
+    return this->sub_solar_lat(lat) && this->sub_solar_lon(lon);
 }
 
-int
+bool
 MaRC::PhotoImage::sub_solar_lat(double lat)
 {
-    if (std::abs(lat) <= 90)
-        this->sub_solar_lat_ = lat * C::degree;
-    else {
+    if (std::abs(lat) > 90) {
         std::cerr << "ERROR: Incorrect value for Sub-Solar Latitude: "
                   << lat << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;  // Success
+    this->sub_solar_lat_ = lat * C::degree;
+
+    return true;  // Success
 }
 
-int
+bool
 MaRC::PhotoImage::sub_solar_lon(double lon)
 {
-    if (std::abs(lon) <= 360) {
-      if (lon < 0)
-        lon += 360;
-      this->sub_solar_lon_ = lon * C::degree;
-    } else {
-      std::cerr << "ERROR: Incorrect value for Sub-Solar Longitude: "
-                << lon << '\n';
+    if (std::abs(lon) > 360) {
+        std::cerr << "ERROR: Incorrect value for Sub-Solar Longitude: "
+		  << lon << '\n';
 
-      return 1;  // Failure
+	return false;  // Failure
     }
 
-  return 0;  // Success
+    if (lon < 0)
+        lon += 360;
+
+    this->sub_solar_lon_ = lon * C::degree;
+
+    return true;  // Success
 }
 
-
-int
+bool
 MaRC::PhotoImage::position_angle(double north)
 {
-    if (std::abs(north) <= 360)
-        this->position_angle_ = north * C::degree;
-    else {
+    if (std::abs(north) > 360) {
         std::cerr << "ERROR: Incorrect position angle: "
                   << north << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;  // Success
+    this->position_angle_ = north * C::degree;
+
+    return true;  // Success
 }
 
 void
@@ -451,7 +409,7 @@ MaRC::PhotoImage::finalize_setup()
 }
 
 // Get rotation matrices for case when body centers were given
-int
+bool
 MaRC::PhotoImage::rot_matrices(DVector const & range_o,
                                DMatrix & observ2body,
                                DMatrix & body2observ)
@@ -484,7 +442,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
                "       suitable rotation matrices to go between\n"
                "       observer and body coordinates.\n";
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
     // ------------- TRY THE FIRST ROOT ------------
@@ -592,7 +550,7 @@ MaRC::PhotoImage::rot_matrices(DVector const & range_o,
            "body2observ = " << body2observ << '\n';
 #endif
 
-    return 0;
+    return true;
 }
 
 // Get rotation matrices for case when lat/lon at optical axis were given
@@ -829,45 +787,44 @@ MaRC::PhotoImage::remove_sky()
     }
 }
 
-int
+bool
 MaRC::PhotoImage::arcsec_per_pixel(double arcseconds)
 {
     // NOTE: range_ should be in units of kilometers at this point.
-    if (arcseconds > 0) {
-        // This conversion assumes that the observer-to-body range is
-        // much larger than the distance viewed in the image.
-
-        // pi radians per 648000 arcseconds.
-        this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
-    } else {
+    if (arcseconds <= 0) {
         std::cerr
             << "ERROR: Incorrect number of arcseconds "
                "per pixel entered: " << arcseconds << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;
+    // This conversion assumes that the observer-to-body range is much
+    // larger than the distance viewed in the image.
+
+    // pi radians per 648000 arcseconds.
+    this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
+
+    return true;  // Success
 }
 
-
-int
+bool
 MaRC::PhotoImage::km_per_pixel(double value)
 {
-    if (value > 0)
-        this->km_per_pixel_ =  value;
-    else {
+    if (value <= 0) {
         std::cerr
             << "ERROR: Incorrect number of kilometers per pixel entered: "
             << value << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-  return 0;  // Success
+    this->km_per_pixel_ =  value;
+
+    return true;  // Success
 }
 
-int
+bool
 MaRC::PhotoImage::set_km_per_pixel()
 {
     if (this->focal_length_ > 0 && this->scale_ > 0)  {
@@ -895,48 +852,48 @@ MaRC::PhotoImage::set_km_per_pixel()
             << "ERROR: Attempt to compute number of kilometers per pixel\n"
             << "       where no focal length and scale have been set.\n";
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
     // If km_per_pixel_ > 0 than, presumably, km_per_pixel_ has
     // already been set; so do nothing.
 
-    return 0; // Success
+    return true; // Success
 }
 
-int
+bool
 MaRC::PhotoImage::focal_length(double len)
 {
-    if (len > 0)
-        this->focal_length_ = len;
-    else {
+    if (len <= 0) {
         std::cerr << "Incorrect focal length entered: " << len << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;
+    this->focal_length_ = len;
+
+    return true;  // Success
 }
 
-int
+bool
 MaRC::PhotoImage::scale(double s)
 {
-    if (s > 0)
-        this->scale_ = s;
-    else {
-      std::cerr << "Incorrect image scale entered: " << s << '\n';
+    if (s <= 0) {
+        std::cerr << "Incorrect image scale entered: " << s << '\n';
 
-      return 1;  // Failure
+	return false;  // Failure
     }
 
-    return 0;  // Success
+    this->scale_ = s;
+
+    return true;  // Success
 }
 
 void
 MaRC::PhotoImage::body_center(double sample, double line)
 {
-  this->sample_center_ = sample;
-  this->line_center_ = line;
+    this->sample_center_ = sample;
+    this->line_center_   = line;
 }
 
 void
@@ -951,62 +908,42 @@ MaRC::PhotoImage::body_center_line(double line)
     this->line_center_ = line;
 }
 
-int
+bool
 MaRC::PhotoImage::lat_lon_center(double lat, double lon)
 {
-    if (std::abs(lat) <= 90) {
-        this->lat_at_center_ = lat * C::degree;
-        flags::set(this->flags_, LATLON_AT_CENTER);
-    } else {
-        std::cerr << "INCORRECT Latitude at picture center, entered: "
-                  << lat << '\n';
-
-        return 1;  // Failure
-    }
-
-    if (std::abs(lon) <= 360) {
-        this->lon_at_center_ = lon * C::degree;
-        flags::set(this->flags_, LATLON_AT_CENTER);
-    } else {
-        std::cerr << "INCORRECT Longitude at picture center, entered: "
-                  << lon << '\n';
-
-        return 1;  // Failure
-    }
-
-    return 0;
+    return this->lat_at_center(lat) && this->lon_at_center(lon);
 }
 
-int
+bool
 MaRC::PhotoImage::lat_at_center(double lat)
 {
-    if (std::abs(lat) <= 90) {
-        this->lat_at_center_ = lat * C::degree;
-        flags::set(this->flags_, LATLON_AT_CENTER);
-    } else {
+    if (std::abs(lat) > 90) {
         std::cerr << "INCORRECT Latitude at picture center, entered: "
                   << lat << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;  // Success
+    this->lat_at_center_ = lat * C::degree;
+    flags::set(this->flags_, LATLON_AT_CENTER);
+
+    return true;  // Success
 }
 
-int
+bool
 MaRC::PhotoImage::lon_at_center(double lon)
 {
-    if (std::abs(lon) <= 360) {
-        this->lon_at_center_ = lon * C::degree;
-      flags::set (this->flags_, LATLON_AT_CENTER);
-    } else {
+    if (std::abs(lon) > 360) {
         std::cerr << "INCORRECT Longitude at picture center, entered: "
                   << lon << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;  // Success
+    this->lon_at_center_ = lon * C::degree;
+    flags::set(this->flags_, LATLON_AT_CENTER);
+
+    return true;  // Success
 }
 
 void
@@ -1031,14 +968,14 @@ MaRC::PhotoImage::optical_axis_line(double line)
     flags::set(this->flags_, OA_SET);
 }
 
-int
+bool
 MaRC::PhotoImage::range(double r)
 {
     // value should be in kilometers!
     double const mr =
         std::min(this->body_->eq_rad(), this->body_->pol_rad());
 
-    if (r > mr && r < std::sqrt(std::numeric_limits<double>::max ()) - 1)
+    if (r > mr && r < std::sqrt(std::numeric_limits<double>::max()) - 1)
         this->range_ =  r;
     else {
         std::cerr << "ERROR: Incorrect range entered.\n"
@@ -1046,13 +983,13 @@ MaRC::PhotoImage::range(double r)
                   << mr
                   << '\n'
                   << "       and less than "
-                  << std::sqrt (std::numeric_limits<double>::max ()) - 1
+                  << std::sqrt(std::numeric_limits<double>::max()) - 1
                   << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
-    return 0;  // Success
+    return true;  // Success
 }
 
 void
@@ -1144,7 +1081,7 @@ MaRC::PhotoImage::interpolate(bool enable)
     }
 }
 
-int
+bool
 MaRC::PhotoImage::emi_ang_limit(double angle)
 {
     if (angle < 0 || angle > 90) {
@@ -1152,12 +1089,12 @@ MaRC::PhotoImage::emi_ang_limit(double angle)
             << "Incorrect value value passed to emi_ang_limit() routine: "
             << angle << '\n';
 
-        return 1;  // Failure
+        return false;  // Failure
     }
 
     this->mu_limit_ = std::cos(angle * C::degree);
 
-    return 0;  // Success
+    return true;  // Success
 }
 
 bool

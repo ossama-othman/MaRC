@@ -106,78 +106,96 @@ namespace MaRC
 
         /// Set the geometric correction strategy used during lat/lon
         /// to pixel conversion, and vice-versa.
-        int geometric_correction(
+        bool geometric_correction(
             std::unique_ptr<GeometricCorrection> strategy);
 
         /// Set the photometric correction strategy.
-        int photometric_correction(
+        bool photometric_correction(
             std::unique_ptr<PhotometricCorrection> strategy);
 
         /// Set sub-observation latitude and longitude.
         /**
          * @param[in] lat Sub-observation latitude  (degrees)
          * @param[in] lon Sub-observation longitude (degrees)
+	 *
+	 * @return @c true on success.
          */
-        int sub_observ(double lat, double lon);
+        bool sub_observ(double lat, double lon);
 
         /// Set Sub-Observation latitude.
         /**
          * @param[in] lat Sub-observation latitude  (degrees)
+	 *
+	 * @return @c true on success.
          */
-        int sub_observ_lat(double lat);
+        bool sub_observ_lat(double lat);
 
         /// Set Sub-Observation longitude.
         /**
          * @param[in] lon Sub-observation longitude (degrees)
+	 *
+	 * @return @c true on success.
          */
-        int sub_observ_lon(double lon);
+        bool sub_observ_lon(double lon);
 
         /// Set Sub-Solar latitude and longitude.
         /**
          * @param[in] lat Sub-solar latitude  (degrees)
          * @param[in] lon Sub-solar longitude (degrees)
+	 *
+	 * @return @c true on success.
          */
-        int sub_solar(double lat, double lon);
+        bool sub_solar(double lat, double lon);
 
         /// Set Sub-Solar latitude.
         /**
          * @param[in] lat Sub-solar latitude  (degrees)
+	 *
+	 * @return @c true on success.
          */
-        int sub_solar_lat(double lat);
+        bool sub_solar_lat(double lat);
 
         /// Set Sub-Solar longitude.
         /**
          * @param[in] lon Sub-solar longitude (degrees)
+	 *
+	 * @return @c true on success.
          */
-        int sub_solar_lon(double lon);
+        bool sub_solar_lon(double lon);
 
         /// Set observer to body distance (KM).
         /**
          * @param[in] r Distance from observer to body in kilometers.
+	 *
+	 * @return @c true on success.
          */
-        int range(double r);
+        bool range(double r);
 
         /// Set camera focal length (millimeters).
         /**
          * @param len Focal length in millimeters.
+	 *
+	 * @return @c true on success.
          */
-        int focal_length(double len);
+        bool focal_length(double len);
 
         /// Set input image scale (pixels / mm).
         /**
          * @param[in] s Image scale in pixels per millimeter.
+	 *
+	 * @return @c true on success.
          */
-        int scale(double s);
+        bool scale(double s);
 
         /// Set position angle (a.k.a. North Angle in degrees) found
         /// in image.
-        int position_angle(double north);
+        bool position_angle(double north);
 
         /// Arcseconds per pixel in image.
-        int arcsec_per_pixel(double arcseconds);
+        bool arcsec_per_pixel(double arcseconds);
 
         /// Kilometers per pixel in image.
-        int km_per_pixel(double k);
+        bool km_per_pixel(double k);
 
         /// Set all nibble values to @a n.
         /**
@@ -228,9 +246,9 @@ namespace MaRC
         /**
          * @param[in] angle Emission angle in degrees.
          *
-         * @return 0 on success.
+         * @return @c true on success.
          */
-        int emi_ang_limit(double angle);
+        bool emi_ang_limit(double angle);
 
         /// Set sample and line of body center.
         void body_center(double sample, double line);
@@ -246,25 +264,25 @@ namespace MaRC
          * @param[in] lat Latitude in degrees at center of image.
          * @param[in] lon Longitude in degrees at center of image.
          *
-         * @return 0 on success.
+         * @return @c true on success.
          */
-        int lat_lon_center(double lat, double lon);
+        bool lat_lon_center(double lat, double lon);
 
         /// Set latitude at center of image.
         /**
          * @param[in] lat Latitude in degrees at center of image.
          *
-         * @return 0 on success.
+         * @return @c true on success.
          */
-        int lat_at_center(double lat);
+        bool lat_at_center(double lat);
 
         /// Set longitude at center of image.
         /**
          * @param[in] lon Longitude in degrees at center of image.
          *
-         * @return 0 on success.
+         * @return @c true on success.
          */
-        int lon_at_center(double lon);
+        bool lon_at_center(double lon);
 
         /// Set the optical axis.
         /**
@@ -329,10 +347,16 @@ namespace MaRC
                                std::size_t & weight,
                                bool scan = true) const;
 
-        /// Returns "true" if latitude and longitude are visible.
+        /// Is given latitude and longitude visible?
+        /**
+	 * @param[in] lat Latitude
+	 * @param[in] lon Longitude
+	 *
+	 * @return @c true if latitude and longitude are visible.
+	 */
         bool is_visible(double lat, double lon) const;
 
-        /// Convert (latitude, longitude) to (sample, sine)
+        /// Convert (latitude, longitude) to (sample, line)
         /**
          * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
          *                 in radians.
@@ -365,9 +389,9 @@ namespace MaRC
          * Use range, focal length and scale to compute the kilometers
          * per pixel in the image.
          *
-         * @return 0 on success.
+         * @return @c true on success.
          */
-        int set_km_per_pixel();
+        bool set_km_per_pixel();
 
         /// Get rotation matrices for case when body centers are given.
         /**
@@ -377,11 +401,11 @@ namespace MaRC
          * @param[out] body2observ Body to observer coordinates
          *                         transformation matrix.
          *
-         * @return 0 on success.
+         * @return @c true on success.
          */
-        int rot_matrices(DVector const & range_o,
-                         DMatrix & observ2body,
-                         DMatrix & body2observ);
+        bool rot_matrices(DVector const & range_o,
+			  DMatrix & observ2body,
+			  DMatrix & body2observ);
 
         /// Get rotation matrices for case when lat/lon at optical axis
         /// were given.
