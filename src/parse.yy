@@ -104,13 +104,15 @@
     float lat_interval;
     float lon_interval;
 
-    std::unique_ptr<MaRC::ImageFactory> image_factory;
-
     std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
     MaRC::MosaicImageFactory::list_type photo_factories;
     MaRC::MosaicImage::average_type averaging_type =
         MaRC::MosaicImage::AVG_WEIGHTED;
 
+    // Map plane image factory.
+    std::unique_ptr<MaRC::ImageFactory> image_factory;
+
+    // Map plane image factories.
     MaRC::MapCommand::image_factories_type image_factories;
 
     bool north_pole = true;
@@ -124,15 +126,8 @@
     // Number of planes to be expected
     std::size_t num_planes = 0;
 
-    // Actual number of planes read
-    std::size_t planes_queued = 0;
-
     // Used to ensure num_planes are defined in sequence
     std::size_t expected_plane = 1;
-
-    // Number of samples in a given photo image.  Only used to
-    // determine whether Galileo images were written summation mode.
-    std::size_t photo_samples = 0;
 
     double minimum = std::numeric_limits<double>::quiet_NaN();
     double maximum = std::numeric_limits<double>::quiet_NaN();
@@ -333,7 +328,7 @@ map_setup:
               Once support for the "PLANES" keyword is removed, this
               check can be removed.
             */
-            if (num_planes > 0 && planes_queued != num_planes) {
+            if (num_planes > 0 && image_factories.size() != num_planes) {
                 /**
                  * @todo Call yyerror() here instead, e.g.:
                  *       yyerror(&yylloc, pp, "some error message");
@@ -344,8 +339,8 @@ map_setup:
                     "       match the number of planes stated by \n"
                     "       the \"PLANES\" keyword.\n"
                     "           Expected planes: " << num_planes << "\n"
-                    "           Actual planes:   " << planes_queued
-                    << '\n';
+                    "           Actual planes:   "
+                    << image_factories.size() << '\n';
                 YYERROR;
             } else {
                 std::unique_ptr<MaRC::MapCommand> map_command;
@@ -463,7 +458,7 @@ map_entry:
              * @deprecated Remove once deprecated plane number support
              *             is removed.
              */
-            num_planes = 0; expected_plane = 1; planes_queued = 0;
+            num_planes = 0; expected_plane = 1;
         }
 ;
 
@@ -766,7 +761,7 @@ plane_setup:
 
           image_factories.push_back(std::move(image_factory));
 
-          photo_factories.clear ();
+          photo_factories.clear();
         }
 ;
 
@@ -796,7 +791,6 @@ plane_size:
                 if (map_plane <= num_planes) {
                     plane_num = map_plane;
                     ++expected_plane;
-                    ++planes_queued;
                 } else {
                     /**
                      * @todo Call yyerror() here instead, e.g.:
