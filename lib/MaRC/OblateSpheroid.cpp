@@ -218,7 +218,7 @@ MaRC::OblateSpheroid::mu(double sub_observ_lat,
                          double lon,
                          double range) const
 {
-    // Compute Mu, the cosine of local normal-observer (emission)
+    // Compute mu, the cosine of local normal-observer (emission)
     // angle.
 
   double const latg = this->graphic_latitude(lat);
@@ -245,7 +245,7 @@ MaRC::OblateSpheroid::mu0(double sub_solar_lat,
                           double lat,
                           double lon) const
 {
-    // Compute Mu0, the cosine of sun-local normal (incidence) angle.
+    // Compute mu0, the cosine of sun-local normal (incidence) angle.
 
     double const latg = this->graphic_latitude(lat);
 

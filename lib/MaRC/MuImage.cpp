@@ -45,6 +45,12 @@ MaRC::MuImage::MuImage(std::shared_ptr<BodyData> body,
 bool
 MaRC::MuImage::read_data_i(double lat, double lon, double & data) const
 {
+    /*
+      A visible point at the given latitude and longitude will have an
+      emission angle in the interval [-90, 90], i.e. mu >= 0 where mu
+      is the cosine of the emission angle.  Points that are not
+      visible to the observer will have a value of mu < 0.
+    */
     data = this->body_->mu(this->sub_observ_lat_,
                            this->sub_observ_lon_,
                            lat,
@@ -52,14 +58,4 @@ MaRC::MuImage::read_data_i(double lat, double lon, double & data) const
                            this->range_);
 
     return true;
-}
-
-bool
-MaRC::MuImage::is_visible(double lat, double lon) const
-{
-    return this->body_->mu(this->sub_observ_lat_,
-                           this->sub_observ_lon_,
-                           lat,
-                           lon,
-                           this->range_) >= 0;
 }

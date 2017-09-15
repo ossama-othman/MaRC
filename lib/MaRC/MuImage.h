@@ -80,13 +80,6 @@ namespace MaRC
                                  double lon,
                                  double & data) const;
 
-        /// Is point at given latitude and longitude visible to the
-        /// observer?
-        /**
-         * @see MaRC::VirtualImage::is_visible().
-         */
-        virtual bool is_visible(double lat, double lon) const;
-
     private:
 
         /// Object representing the body being mapped.

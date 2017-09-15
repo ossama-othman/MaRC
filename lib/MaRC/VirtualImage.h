@@ -253,9 +253,9 @@ namespace MaRC
         /// Constructor.
         /**
          * @param[in] s Linear scaling coefficient applied to computed
-         *            data.
+         *              data.
          * @param[in] o Linear offset value applied to all (scaled)
-         *            computed data.
+         *              computed data.
          */
         VirtualImage(double s = 1, double o = 0);
 
@@ -271,7 +271,8 @@ namespace MaRC
          *
          * @param[out] data Data retrieved from image.
          *
-         * @return @c true - Data retrieved, @c false - No data retrieved.
+         * @retval true  Data retrieved
+         * @retval false No data retrieved.
          *
          * @see read_data_i()
          */
@@ -307,9 +308,10 @@ namespace MaRC
 
         /// Data offset
         /**
-         * Offset value applied to all (scaled) computed data.
+         * Offset value applied to all (scaled) computed data.  This
+         * value corresponds to zero in the virtual image.
          *
-         * @return Data offset
+         * @return Data offset.
          */
         double offset() const { return this->scale() * -this->offset_; }
         //@}
@@ -346,25 +348,11 @@ namespace MaRC
          * @retval true  Data retrieved
          * @retval false No data retrieved.
          *
-         * @see read_data().
+         * @see read_data()
          */
         virtual bool read_data_i(double lat,
                                  double lon,
                                  double & data) const = 0;
-
-        /// Is point at given latitude and longitude visible to the
-        /// observer?
-        /**
-         * @param lat Bodycentric (e.g. planetocentric) latitude in
-         *            radians.
-         * @param lon Longitude in radians.
-         *
-         * @retval true  Point is visible.
-         * @retval false Point is not visible.
-         *
-         * @note The default implementation always returns @c true.
-         */
-        virtual bool is_visible(double lat, double lon) const;
 
     private:
 

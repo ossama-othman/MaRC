@@ -49,6 +49,10 @@ MaRC::CosPhaseImage::read_data_i(double lat,
                                  double lon,
                                  double & data) const
 {
+    /*
+      The phase angle "phi" has values in the interval [0, 180]
+      (degrees), i.e. 1 >= cos(phi) >= -1.
+    */
     data = this->body_->cos_phase(this->sub_observ_lat_,
                                   this->sub_observ_lon_,
                                   this->sub_solar_lat_,
@@ -58,25 +62,4 @@ MaRC::CosPhaseImage::read_data_i(double lat,
                                   this->range_);
 
     return true;
-}
-
-bool
-MaRC::CosPhaseImage::is_visible(double lat, double lon) const
-{
-    /**
-     * @todo Check if &mu; is greater than or equal to zero to
-     *       determine if the given latitude and longitude are
-     *       visible.  That would allow us to avoid drop the below
-     *       static method call, and drop the dependency on the body
-     *       being an OblatedSpheroid.
-     */
-
-    // This implementation is as the same as the one used by the
-    // MuImage class.
-
-    return this->body_->mu(this->sub_observ_lat_,
-                           this->sub_observ_lon_,
-                           lat,
-                           lon,
-                           this->range_) >= 0;
 }

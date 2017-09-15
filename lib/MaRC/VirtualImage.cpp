@@ -33,18 +33,10 @@ MaRC::VirtualImage::VirtualImage(double s, double o)
 bool
 MaRC::VirtualImage::read_data(double lat, double lon, double & data) const
 {
-    if (this->is_visible(lat, lon)
-        && this->read_data_i(lat, lon, data)) {
+    bool const visible = this->read_data_i(lat, lon, data);
+
+    if (visible)
         data = (data * this->scale_) + this->offset_;
 
-        return true;
-    }
-
-  return false;
-}
-
-bool
-MaRC::VirtualImage::is_visible(double /* lat */, double /* lon */) const
-{
-    return true;  // Always visible by default.
+  return visible;
 }
