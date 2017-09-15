@@ -1117,6 +1117,10 @@ MaRC::PhotoImage::read_data(double lat,
                             std::size_t & weight,
                             bool scan) const
 {
+    /**
+     * @todo Validate @a lat and @a lon.
+     */
+
     if (!this->is_visible(lat, lon))
         return false;  // Failure
 

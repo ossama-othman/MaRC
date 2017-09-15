@@ -33,6 +33,10 @@ MaRC::VirtualImage::VirtualImage(double s, double o)
 bool
 MaRC::VirtualImage::read_data(double lat, double lon, double & data) const
 {
+    /**
+     * @todo Validate @a lat and @a lon.
+     */
+
     bool const visible = this->read_data_i(lat, lon, data);
 
     if (visible)
