@@ -14,14 +14,14 @@ XCOMMENT: Test FITS extension comment.
 
         OPTIONS:
                 CENTRIC
-                LO_LAT:         90 S
-                HI_LAT:         90 N
-                LO_LON:         0  W
-                HI_LON:         360 W
+                LO_LAT:         25 S
+                HI_LAT:         4 S
+                LO_LON:         45  W
+                HI_LON:         100 W
 
         PLANES:         9
-        SAMPLES:        2000
-        LINES:          500
+        SAMPLES:        50
+        LINES:          25
 
         PLANE:  1       #410nm
 
