@@ -2,10 +2,18 @@
 - The MU, MU0 and PHASE virtual images may now contain all cosine
   values i.e. the interval [-1, 1], and are no longer limited to
   positive values alone.  There was no real need to drop the negative
-  values.
+  values.  To obtain the old behavior where only cosine values [0, 1]
+  were mapped set the DATA_MIN keyword for the MU, MU0 and PHASE map
+  plane entries in your MaRC input file to zero, e.g.:
+
+      PLANE:
+              DATA_MIN: 0
+              MU: ...
+
 - The PHASE virtual image no longer ties the existence of a datum to a
   positive cosine of the emission of the angle (mu), meaning cosine of
   phase angle data will be plotted in areas of the map where mu < 0.
+
 - Improved speed of MU, MU0 and PHASE virtual image generation by up
   to 100% by dropping a redundant data "visibility" check.
 
