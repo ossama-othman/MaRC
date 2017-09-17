@@ -265,9 +265,9 @@ namespace MaRC
          * transformations, if any.  Raw data is computed/retrieved
          * from the @c read_data_i() template method.
          *
-         * @param lat  Bodycentric (e.g. planetocentric) latitude in
-         *             radians.
-         * @param lon  Longitude in radians.
+         * @param[in]  lat  Bodycentric (e.g. planetocentric) latitude
+         *                  in radians.
+         * @param[in]  lon  Longitude in radians.
          *
          * @param[out] data Data retrieved from image.
          *
@@ -308,8 +308,9 @@ namespace MaRC
 
         /// Data offset
         /**
-         * Offset value applied to all (scaled) computed data.  This
-         * value corresponds to zero in the virtual image.
+         * Offset value that should be applied to all (scaled)
+         * computed data.  This value corresponds to zero in the
+         * virtual image.
          *
          * @return Data offset.
          */
@@ -338,12 +339,13 @@ namespace MaRC
         /// Compute data specific to a given virtual image.
         /**
          * This template method is the core implementation of the
-         * read_data() method.
+         * @c read_data() method.
          *
-         * @param lat  Bodycentric (e.g. planetocentric) latitude in
-         *             radians.
-         * @param lon  Longitude in radians.
-         * @param data Data retrieved from image.
+         * @param[in]  lat  Bodycentric (e.g. planetocentric) latitude
+         *                  in radians.
+         * @param[in]  lon  Longitude in radians.
+         *
+         * @param[out] data Data retrieved from image.
          *
          * @retval true  Data retrieved
          * @retval false No data retrieved.
@@ -359,23 +361,27 @@ namespace MaRC
         /// Linear scaling coefficient applied to physical data.
         /**
          * Linear scaling coefficient applied to physical data to
-         * allow it to fit in map array element of specific type with
-         * the most amount of significant digits.
+         * allow data to fit in map array element of specific type
+         * with the most amount of significant digits.
          *
-         * @note This is inverse of the of scaling coefficient needed
-         *       to retrieve the true physical value.
+         * @note This is inverse of the of the scaling coefficient
+         *       needed to retrieve the true physical value.
+         *
+         * @see @c VirtualImage::scale()
          */
         double const scale_;
 
         /// Offset value applied to scaled physical data.
         /**
-         * This offset is applied to scaled physical data to allow it
-         * to fit in map array element of specific type with the most
-         * amount of significant digits.
+         * This offset is applied to scaled physical data to allow
+         * data fit in a map array element of specific type with the
+         * most amount of significant digits.
          *
-         * @note This is the offset multiplied by the inverse of the
-         *       of scaling value needed to retrieve the true physical
-         *       value.
+         * @note This is the negative offset multiplied by the inverse
+         *       of the of scaling value needed to retrieve the true
+         *       physical value.
+         *
+         * @see @c VirtualImage::offset()
          */
         double const offset_;
 
