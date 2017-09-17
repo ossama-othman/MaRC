@@ -1,3 +1,9 @@
+- Corrected automatic offset calculation for LONGITUDE map planes when
+  creating integer typed maps.  Longitude values closer 360 degrees
+  are no longer cutoff.  Beware that an offset must be applied to
+  convert from the map longitude value to the physical longitude
+  value.  See the generated map FITS header to obtain the offset
+  (BZERO) value.
 
 - The MU, MU0 and PHASE virtual images may now contain all cosine
   values i.e. the interval [-1, 1], and are no longer limited to

@@ -25,7 +25,8 @@ check_PROGRAMS =      \
   Vector_Test         \
   Matrix_Test         \
   Geometry_Test       \
-  OblateSpheroid_Test
+  OblateSpheroid_Test \
+  Scale_Offset_Test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
@@ -44,6 +45,8 @@ Geometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
 OblateSpheroid_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
+Scale_Offset_Test_SOURCES = Scale_Offset_Test.cpp
 
 TESTS = \
   $(check_PROGRAMS) \

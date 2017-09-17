@@ -70,10 +70,10 @@ namespace MaRC
 
             scale = std::pow(10, exponent);
 
-            if (min < T_lowest)
-                offset = (T_lowest - min) * scale;
-            else if (max > T_max)
-                offset = (max - T_max) * scale;
+            if (min * scale < T_lowest)
+                offset = data_range / 2 * scale;
+            else if (max * scale > T_max)
+                offset = -data_range / 2 * scale;
             else
                 offset = 0;
 

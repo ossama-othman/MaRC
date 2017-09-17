@@ -1845,7 +1845,9 @@ lat_range:
               lo_lat = $3;
               hi_lat = $6;
           } else  {
-              yyerror(&yylloc, pp, "ERROR: LO_LAT is greater than HI_LAT");
+              yyerror(&yylloc,
+                      pp,
+                      "ERROR: LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
           }
         }
@@ -1855,7 +1857,9 @@ lat_range:
               lo_lat = $6;
               hi_lat = $3;
           } else {
-              yyerror(&yylloc, pp, "ERROR: LO_LAT is greater than HI_LAT");
+              yyerror(&yylloc,
+                      pp,
+                      "ERROR: LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
           }
         }
