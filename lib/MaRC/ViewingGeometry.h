@@ -1,0 +1,403 @@
+// -*- C++ -*-
+/**
+ * @file ViewingGeometry.h
+ *
+ * Copyright (C) 1999, 2003-2005, 2017  Ossama Othman
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301  USA
+ *
+ * @author Ossama Othman
+ */
+
+#ifndef MARC_VIEWING_GEOMETRY_H
+#define MARC_VIEWING_GEOMETRY_H
+
+
+namespace MaRC
+{
+
+    class ViewingGeometry
+    {
+    public:
+
+        /// Constructor.
+        ViewingGeometry();
+
+        /// Make sure all pre-processing is done.
+        /**
+         * @todo Automate finalization of PhotoImage setup.
+         */
+        void finalize_setup();
+
+        /// Set sub-observation latitude and longitude.
+        /**
+         * @param[in] lat Sub-observation latitude  (degrees)
+         * @param[in] lon Sub-observation longitude (degrees)
+	 *
+	 * @return @c true on success.
+         */
+        bool sub_observ(double lat, double lon);
+
+        /// Set Sub-Observation latitude.
+        /**
+         * @param[in] lat Sub-observation latitude  (degrees)
+	 *
+	 * @return @c true on success.
+         */
+        bool sub_observ_lat(double lat);
+
+        /// Set Sub-Observation longitude.
+        /**
+         * @param[in] lon Sub-observation longitude (degrees)
+	 *
+	 * @return @c true on success.
+         */
+        bool sub_observ_lon(double lon);
+
+        /// Set Sub-Solar latitude and longitude.
+        /**
+         * @param[in] lat Sub-solar latitude  (degrees)
+         * @param[in] lon Sub-solar longitude (degrees)
+	 *
+	 * @return @c true on success.
+         */
+        bool sub_solar(double lat, double lon);
+
+        /// Set Sub-Solar latitude.
+        /**
+         * @param[in] lat Sub-solar latitude  (degrees)
+	 *
+	 * @return @c true on success.
+         */
+        bool sub_solar_lat(double lat);
+
+        /// Set Sub-Solar longitude.
+        /**
+         * @param[in] lon Sub-solar longitude (degrees)
+	 *
+	 * @return @c true on success.
+         */
+        bool sub_solar_lon(double lon);
+
+        /// Set observer to body distance (KM).
+        /**
+         * @param[in] r Distance from observer to body in kilometers.
+	 *
+	 * @return @c true on success.
+         */
+        bool range(double r);
+
+        /// Set camera focal length (millimeters).
+        /**
+         * @param len Focal length in millimeters.
+	 *
+	 * @return @c true on success.
+         */
+        bool focal_length(double len);
+
+        /// Set input image scale (pixels / mm).
+        /**
+         * @param[in] s Image scale in pixels per millimeter.
+	 *
+	 * @return @c true on success.
+         */
+        bool scale(double s);
+
+        /// Set position angle (a.k.a. North Angle in degrees) found
+        /// in image.
+        bool position_angle(double north);
+
+        /// Arcseconds per pixel in image.
+        bool arcsec_per_pixel(double arcseconds);
+
+        /// Kilometers per pixel in image.
+        bool km_per_pixel(double k);
+
+        /// Set sample and line of body center.
+        void body_center(double sample, double line);
+
+        /// Set sample of body center.
+        void body_center_sample(double);
+
+        /// Set line of body center.
+        void body_center_line(double);
+
+        /// Set latitude and longitude at center of image.
+        /**
+         * @param[in] lat Latitude in degrees at center of image.
+         * @param[in] lon Longitude in degrees at center of image.
+         *
+         * @return @c true on success.
+         */
+        bool lat_lon_center(double lat, double lon);
+
+        /// Set latitude at center of image.
+        /**
+         * @param[in] lat Latitude in degrees at center of image.
+         *
+         * @return @c true on success.
+         */
+        bool lat_at_center(double lat);
+
+        /// Set longitude at center of image.
+        /**
+         * @param[in] lon Longitude in degrees at center of image.
+         *
+         * @return @c true on success.
+         */
+        bool lon_at_center(double lon);
+
+        /// Set the optical axis.
+        /**
+         * @param[in] sample Optical axis sample.
+         * @param[in] line   Optical axis line.
+         */
+        void optical_axis(double sample, double line);
+
+        /// Set the optical axis sample.
+        /**
+         * @param[in] sample Optical axis sample.
+         */
+        void optical_axis_sample(double sample);
+
+        /// Set the optical axis line.
+        /**
+         * @param[in] line Optical axis line.
+         */
+        void optical_axis_line(double line);
+
+        /// Is given latitude and longitude visible?
+        /**
+	 * @param[in] lat Latitude
+	 * @param[in] lon Longitude
+	 *
+	 * @return @c true if latitude and longitude are visible.
+	 */
+        bool is_visible(double lat, double lon) const;
+
+        /// Convert (latitude, longitude) to (sample, line)
+        /**
+         * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
+         *                 in radians.
+         * @param[in]  lon Longitude in radians.
+         * @param[out] x   Sample at given latitude and longitude.
+         * @param[out] z   Line at given latitude and longitude.
+         *
+         * @retval true  Conversion succeeded.
+         * @retval false Conversion failed.
+         *
+         * @note Since @a x and @a z potentially include fractional
+         *       pixel components, they are more accurate than their
+         *       integer counterparts.
+         */
+        bool latlon2pix(double lat,
+                        double lon,
+                        double & x,
+                        double & z) const;
+        
+    private:
+
+        /// Finalize kilometers per pixel value.
+        /**
+         * Use range, focal length and scale to compute the kilometers
+         * per pixel in the image.
+         *
+         * @return @c true on success.
+         */
+        bool set_km_per_pixel();
+
+        /// Get rotation matrices for case when body centers are given.
+        /**
+         * @param[in]  range_o     Range vector in observer coordinates.
+         * @param[out] observ2body Observer to body coordinates
+         *                         transformation matrix.
+         * @param[out] body2observ Body to observer coordinates
+         *                         transformation matrix.
+         *
+         * @return @c true on success.
+         */
+        bool rot_matrices(DVector const & range_o,
+			  DMatrix & observ2body,
+			  DMatrix & body2observ);
+
+        /// Get rotation matrices for case when lat/lon at optical axis
+        /// were given.
+        /**
+         * @param[in]  range_b     The range vector in body
+         *                         coordinates.
+         * @param[in]  OA          The optical axis vector in body
+         *                         coordinates.
+         * @param[out] observ2body Observer to body coordinates
+         *                         transformation matrix.
+         * @param[out] body2observ Body to observer coordinates
+         *                         transformation matrix.
+         */
+        void rot_matrices(DVector const & range_b,
+                          DVector const & OA,
+                          DMatrix & observ2body,
+                          DMatrix & body2observ);
+
+    private:
+
+        /// Object representing the body being mapped.
+        /**
+         * @note OblateSpheroid is used instead of BodyData since some
+         *       code in this implementation assumes that the body is
+         *       modeled as an oblate spheroid.
+         */
+        std::shared_ptr<OblateSpheroid> const body_;
+
+        /// Pointer to the image array.
+        std::vector<double> const image_;
+
+        /// Number of samples in the image.
+        std::size_t const samples_;
+
+        /// Number of lines in the image.
+        std::size_t const lines_;
+
+        /// Geometric/optical correction strategy used during
+        /// latitude/longitude to pixel conversion, and vice versa.
+        std::unique_ptr<GeometricCorrection> geometric_correction_;
+
+        /// Pointer to the photometric correction strategy.
+        std::unique_ptr<PhotometricCorrection> photometric_correction_;
+
+        /// Pointer to the photometric correction strategy.
+        std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
+
+        /// Sub-Observer Latitude -- BodyCENTRIC (radians).
+        double sub_observ_lat_;
+
+        /// Sub-Observer Longitude -- Central Meridian (radians).
+        double sub_observ_lon_;
+
+        /// Sub-Solar Latitude -- BodyCENTRIC (radians)
+        double sub_solar_lat_;
+
+        /// Sub-Solar Longitude (radians)
+        double sub_solar_lon_;
+
+        /// Center of body distance to observer (Kilometers)
+        double range_;
+
+        /// Position angle in the image NOT in the sky.
+        double position_angle_;
+
+        /// Kilometers per pixel at plane that passes through body
+        /// center.
+        double km_per_pixel_;
+
+        /// Focal length in millimeters.
+        double focal_length_;
+
+        /// Focal length in pixels
+        /**
+         * @note Any distance unit may be used for the focal length
+         *       and the scale as long as BOTH use the SAME distance
+         *       unit (e.g. cm and pixels/cm).
+         */
+        double focal_length_pixels_;
+
+        /// pixels/mm at focal plane.
+        /**
+         * @see @c focal_length_pixels_
+         */
+        double scale_;
+
+        /// Perpendicular distance from observer to image plane.
+        double normal_range_;
+
+        /**
+         * @name Optical Axis
+         *
+         * The location of the optical axis (boresight) on the photo.
+         */
+        //@{
+        /// Sample component of optical axis.
+        double OA_s_;
+
+        /// Line component of optical axis.
+        double OA_l_;
+        //@}
+
+        /// Mask used when "removing" sky from source image.
+        /**
+         * A mask is used to mark which pixels in the photo are in the
+         * body and which are in the sky without actually modifying
+         * the original source photo.
+         *
+         * @note The sky mask is generally only useful when performing
+         *       weighted averaging in a mosaiced image.
+         *
+         * @see MosaicImage
+         */
+        std::vector<bool> sky_mask_;
+
+        /// Range vector in body coordinates, measured from the center
+        /// of the body to the observer.
+        DVector range_b_;
+
+        /// Transformation matrix to go from observer to body
+        /// coordinates.
+        DMatrix observ2body_;
+
+        /// Transformation matrix to go from body to observer
+        /// coordinates.
+        DMatrix body2observ_;
+
+        /// Amount of pixels to ignore from left side of input image
+        /// (photo).
+        std::size_t nibble_left_;
+
+        /// Amount of pixels to ignore from right side of input image
+        /// (photo).
+        std::size_t nibble_right_;
+
+        /// Amount of pixels to ignore from top side of input image
+        /// (photo).
+        std::size_t nibble_top_;
+
+        /// Amount of pixels to ignore from bottom side of input image
+        /// (photo).
+        std::size_t nibble_bottom_;
+
+        /**
+         * @name Object-Space Body Center
+         *
+         * Object space (e.g. corrected for lens aberration) center of
+         * body in the input image/photo.
+         */
+        //@{
+        /// Horizontal center of body in photo.
+        double sample_center_;
+
+        /// Vertical center of body in photo.
+        double line_center_;
+        //@}
+
+        /// BODYcentric latitude at picture center.
+        double lat_at_center_;
+
+        /// Longitude at picture center
+        double lon_at_center_;
+
+    };
+
+} // End MaRC namespace
+
+
+#endif  /* MARC_VIEWING_GEOMETRY_H */
