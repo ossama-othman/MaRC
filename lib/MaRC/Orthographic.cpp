@@ -488,7 +488,7 @@ MaRC::Orthographic<T>::map_parameters(std::size_t samples,
     if (this->km_per_pixel_ <= 0) {
         static constexpr double MAP_FRACTION = 0.9;
 
-        // The largest axis of the oblate spheroid will take up at most
+        // The largest axis of the spheroid will take up at most
         // MAP_FRACTION of the smallest dimension of the map.
         km_per_pixel =
             2 * std::max(this->body_->eq_rad(), this->body_->pol_rad())
