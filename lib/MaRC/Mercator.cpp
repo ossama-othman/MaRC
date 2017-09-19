@@ -68,7 +68,7 @@ template <typename T>
 void
 MaRC::Mercator<T>::plot_map(std::size_t samples,
                             std::size_t lines,
-                            plot_type plot)
+                            plot_type plot) const
 {
     std::size_t const nelem = samples * lines;
 
@@ -110,7 +110,7 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
                              std::size_t lines,
                              float lat_interval,
                              float lon_interval,
-                             grid_type & grid)
+                             grid_type & grid) const
 {
     // No need to take absolute value.  Always positive.
     double const xmax = static_cast<double>(lines) / samples * C::pi;

@@ -92,7 +92,7 @@ namespace MaRC
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              plot_type plot);
+                              plot_type plot) const;
 
         /**
          * Create the Polar Stereographic map latitude/longitude
@@ -104,7 +104,7 @@ namespace MaRC
                                std::size_t lines,
                                float lat_interval,
                                float lon_interval,
-                               grid_type & grid);
+                               grid_type & grid) const;
 
         /// The underlying Polar Stereographic projection equation.
         /**

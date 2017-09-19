@@ -78,7 +78,7 @@ template <typename T>
 void
 MaRC::SimpleCylindrical<T>::plot_map(std::size_t samples,
                                      std::size_t lines,
-                                     plot_type plot)
+                                     plot_type plot) const
 {
     // Conversion factor -- latitudes per line
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
@@ -112,7 +112,7 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
                                       std::size_t lines,
                                       float lat_interval,
                                       float lon_interval,
-                                      grid_type & grid)
+                                      grid_type & grid) const
 {
     // Convert back to degrees
     double const lo_lat = this->lo_lat_ / C::degree;

@@ -103,7 +103,7 @@ namespace MaRC
                                std::size_t lines,
                                float lat_interval,
                                float lon_interval,
-                               grid_type & grid) = 0;
+                               grid_type & grid) const = 0;
 
     };
 
@@ -196,7 +196,7 @@ namespace MaRC
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              plot_type plot) = 0;
+                              plot_type plot) const = 0;
 
         /// Plot the data on the map.
         /**

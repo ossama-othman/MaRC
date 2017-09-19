@@ -79,7 +79,7 @@ template <typename T>
 void
 MaRC::PolarStereographic<T>::plot_map(std::size_t samples,
                                       std::size_t lines,
-                                      plot_type plot)
+                                      plot_type plot) const
 {
     std::size_t const nelem = samples * lines;
 
@@ -140,7 +140,7 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
                                        std::size_t lines,
                                        float lat_interval,
                                        float lon_interval,
-                                       grid_type & grid)
+                                       grid_type & grid) const
 {
     static constexpr std::size_t imax = 2000;
 

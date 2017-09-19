@@ -26,6 +26,7 @@
 #include "MaRC/Constants.h"
 #include "MaRC/Geometry.h"
 #include "MaRC/Mathematics.h"
+#include "MaRC/Validate.h"
 
 #include <sstream>
 #include <cmath>
@@ -106,23 +107,92 @@ MaRC::Orthographic<T>::Orthographic (
     } else if (center.geometry == LAT_LON_GIVEN) {
         // Latitude and Longitude at center of map given (in addition
         // to KM/pixel)
-        if (center.sample_lat_center >= -90
-            && center.sample_lat_center <= 90)
-            this->lat_at_center_ =
-                center.sample_lat_center * C::degree; // Radians
+        this->lat_at_center_ =
+            MaRC::validate_latitude(center.sample_lat_center);
+
+        this->lon_at_center_ =
+            MaRC::validate_latitude(center.line_lon_center);
+
+        // Check if longitude at center (if supplied) is visible.
+
+        //cosine =
+        //  std::tan(this->body_->graphic_latitude(Lat)) *
+        //  std::tan(this->sub_observ_lat_);
+
+        double const cosine =
+            this->body_->eq_rad() * this->body_->eq_rad()
+            / this->body_->pol_rad() / this->body_->pol_rad() *
+        std::tan(this->lat_at_center_) * std::tan(this->sub_observ_lat_);
+
+        if (cosine < -1) {
+            std::ostringstream s;
+            s << "Desired LATITUDE (" << this->lat_at_center_ / C::degree
+              << ") at center of image is not visible.";
+
+            throw std::out_of_range(s.str());
+        }
+
+        double lower = this->sub_observ_lon_ - C::pi;
+        double upper = this->sub_observ_lon_ + C::pi;  // 360
+
+        if (!this->polar_ && std::abs(cosine) <= 1) {
+            // Lower boundary
+            lower = this->sub_observ_lon_ - std::abs(std::acos(-cosine));
+
+            // Upper boundary
+            upper = this->sub_observ_lon_ + std::abs(std::acos(-cosine));
+        }
+
+
+        if (this->lon_at_center_ < lower)
+            this->lon_at_center_ += C::_2pi;
+        else if (this->lon_at_center_ > upper)
+            this->lon_at_center_ -= C::_2pi;
+
+        if (this->lon_at_center_ < lower
+            || this->lon_at_center_ > upper) {
+            std::ostringstream s;
+            s << "Desired LONGITUDE (" << this->lon_at_center_ / C::degree
+              << ") at center of image is not visible.";
+
+            throw std::out_of_range(s.str());
+        }
+
+        double const shift = this->sub_observ_lon_ - this->lon_at_center_;
+
+        double pos[3];
+
+        if (this->body_->prograde())
+            pos[0] =
+                this->body_->centric_radius(this->lat_at_center_) *
+                std::cos(this->lat_at_center_) * std::sin(shift); // X
         else
-            this->lat_at_center_ = this->sub_observ_lat_;
+            pos[0] =
+                -this->body_->centric_radius(this->lat_at_center_) *
+                std::cos(this->lat_at_center_) * std::sin(shift); // X
 
-        if (center.line_lon_center >= -360
-            && center.line_lon_center <= 360) {
-            this->lon_at_center_ = center.line_lon_center; // Degrees
+        pos[1] =
+            -this->body_->centric_radius(this->lat_at_center_)
+            * std::cos(this->lat_at_center_) * std::cos(shift);   // Y
 
-            if (this->lon_at_center_ < 0)
-                this->lon_at_center_ += 360;
+        pos[2] =
+            this->body_->centric_radius(this->lat_at_center_)
+            * std::sin(this->lat_at_center_);                  // Z
 
-            this->lon_at_center_ *= C::degree; // Convert to radians
-        } else
-            this->lon_at_center_ = this->sub_observ_lon_;
+        // Centers in kilometers.
+        this->sample_center_ =
+            pos[0] * std::cos(this->PA_) + pos[1] * std::sin(this->PA_)
+            * std::sin(-this->sub_observ_lat_) - pos[2] * std::sin(this->PA_)
+            * std::cos(-this->sub_observ_lat_);
+
+        //   YCenter = pos[1] * std::cos(-this->sub_observ_lat_) + pos[2] *
+        //      std::sin(-this->sub_observ_lat_);
+        // Drop the Y Center (not needed).
+
+        this->line_center_ =
+            pos[0] * std::sin(this->PA_)
+            - pos[1] * std::sin(-this->sub_observ_lat_) * std::cos(this->PA_)
+            + pos[2] * std::cos(-this->sub_observ_lat_) * std::cos(this->PA_);
     }
 }
 
@@ -139,9 +209,17 @@ template <typename T>
 void
 MaRC::Orthographic<T>::plot_map(std::size_t samples,
                                 std::size_t lines,
-                                plot_type plot)
+                                plot_type plot) const
 {
-    this->init(samples, lines);
+    double km_per_pixel  = std::numeric_limits<double>::signaling_NaN();
+    double sample_center = std::numeric_limits<double>::signaling_NaN();
+    double line_center   = std::numeric_limits<double>::signaling_NaN();
+
+    this->map_parameters(samples,
+                         lines,
+                         km_per_pixel,
+                         sample_center,
+                         line_center);
 
     std::size_t const nelem = samples * lines;
 
@@ -162,11 +240,11 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const z =
-            (k + 0.5 - this->line_center_) * this->km_per_pixel_;
+            (k + 0.5 - line_center) * km_per_pixel;
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double x =
-                (i + 0.5 - this->sample_center_) * this->km_per_pixel_;
+                (i + 0.5 - sample_center) * km_per_pixel;
             double zz;
 
             if (!this->polar_) {
@@ -227,7 +305,7 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
 
         std::cout
             << "Body center in ORTHOGRAPHIC projection (line, sample): ("
-            << this->line_center_ << ", " << this->sample_center_
+            << line_center << ", " << sample_center
             << ")\n";
     }
 }
@@ -238,7 +316,7 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
                                  std::size_t lines,
                                  float lat_interval,
                                  float lon_interval,
-                                 grid_type & grid)
+                                 grid_type & grid) const
 {
     int i, k, imax = 2000;
     double low_bound, high_bound, x, z;
@@ -251,6 +329,16 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
 
     static constexpr auto white =
         std::numeric_limits<typename grid_type::value_type>::max();
+
+    double km_per_pixel  = std::numeric_limits<double>::signaling_NaN();
+    double sample_center = std::numeric_limits<double>::signaling_NaN();
+    double line_center   = std::numeric_limits<double>::signaling_NaN();
+
+    this->map_parameters(samples,
+                         lines,
+                         km_per_pixel,
+                         sample_center,
+                         line_center);
 
     // Draw latitude lines
     for (n = -90; n <= 90; n += lat_interval) {
@@ -306,11 +394,11 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
 
                 T_Coord = body2obs * Coord;
 
-                x = T_Coord[0] / this->km_per_pixel_;
-                z = T_Coord[2] / this->km_per_pixel_;
+                x = T_Coord[0] / km_per_pixel;
+                z = T_Coord[2] / km_per_pixel;
 
-                i = static_cast<int>(std::round(this->sample_center_ - x));
-                k = static_cast<int>(std::round(this->line_center_ + z));
+                i = static_cast<int>(std::round(sample_center - x));
+                k = static_cast<int>(std::round(line_center + z));
 
                 if (i >= 0 && static_cast<std::size_t> (i) < samples
                     && k >= 0 && static_cast<std::size_t> (k) < lines) {
@@ -370,11 +458,11 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
 
                 T_Coord = body2obs * Coord;
 
-                x = T_Coord[0] / this->km_per_pixel_;
-                z = T_Coord[2] / this->km_per_pixel_;
+                x = T_Coord[0] / km_per_pixel;
+                z = T_Coord[2] / km_per_pixel;
 
-                i = static_cast<int>(std::round(this->sample_center_ - x));
-                k = static_cast<int>(std::round(this->line_center_ + z));
+                i = static_cast<int>(std::round(sample_center - x));
+                k = static_cast<int>(std::round(line_center + z));
 
                 if (i >= 0 && static_cast<std::size_t>(i) < samples
                   && k >= 0 && static_cast<std::size_t>(k) < lines) {
@@ -391,119 +479,56 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
 
 template <typename T>
 void
-MaRC::Orthographic<T>::init(std::size_t samples, std::size_t lines)
+MaRC::Orthographic<T>::map_parameters(std::size_t samples,
+                                      std::size_t lines,
+                                      double & km_per_pixel,
+                                      double & sample_center,
+                                      double & line_center) const
 {
     if (this->km_per_pixel_ <= 0) {
         static constexpr double MAP_FRACTION = 0.9;
 
         // The largest axis of the oblate spheroid will take up at most
         // MAP_FRACTION of the smallest dimension of the map.
-        this->km_per_pixel_ =
+        km_per_pixel =
             2 * std::max(this->body_->eq_rad(), this->body_->pol_rad())
             / (MAP_FRACTION * std::min(samples, lines));
+    } else {
+        km_per_pixel = this->km_per_pixel_;
     }
 
-
+    /**
+     * @todo We really only need @c lat_at_center_ and
+     *       @c lon_at_center_ here to determine if @c sample_center_
+     *       and @c line_center_ is in kilometers or pixels by the
+     *       time we get here.  Perhaps replace with a simple boolean
+     *       value instead (e.g. @c convert_center_)?
+     */
     if (!std::isnan(this->lat_at_center_)
         && !std::isnan(this->lon_at_center_)) {
-        // Check if longitude at center (if supplied) is visible.
-
-        //cosine =
-        //  std::tan(this->body_->graphic_latitude(Lat)) *
-        //  std::tan(this->sub_observ_lat_);
-
-        double const cosine =
-            this->body_->eq_rad() * this->body_->eq_rad()
-            / this->body_->pol_rad() / this->body_->pol_rad() *
-        std::tan(this->lat_at_center_) * std::tan(this->sub_observ_lat_);
-
-        if (cosine < -1) {
-            std::ostringstream s;
-            s << "Desired LATITUDE (" << this->lat_at_center_ / C::degree
-              << ") at center of image is not visible.";
-
-            throw std::out_of_range(s.str());
-        }
-
-        double lower = this->sub_observ_lon_ - C::pi;
-        double upper = this->sub_observ_lon_ + C::pi;  // 360
-
-        if (!this->polar_ && std::abs(cosine) <= 1) {
-            // Lower boundary
-            lower = this->sub_observ_lon_ - std::abs(std::acos(-cosine));
-
-            // Upper boundary
-            upper = this->sub_observ_lon_ + std::abs(std::acos(-cosine));
-        }
-
-        if (this->lon_at_center_ < lower)
-            this->lon_at_center_ += C::_2pi;
-        else if (this->lon_at_center_ > upper)
-            this->lon_at_center_ -= C::_2pi;
-
-        if (this->lon_at_center_ < lower
-            || this->lon_at_center_ > upper) {
-            std::ostringstream s;
-            s << "Desired LONGITUDE (" << this->lon_at_center_ / C::degree
-              << ") at center of image is not visible.";
-
-            throw std::out_of_range(s.str());
-        }
-
-        double const shift = this->sub_observ_lon_ - this->lon_at_center_;
-
-        double pos[3];
-
-        if (this->body_->prograde())
-            pos[0] =
-                this->body_->centric_radius(this->lat_at_center_) *
-                std::cos(this->lat_at_center_) * std::sin(shift); // X
-        else
-            pos[0] =
-                -this->body_->centric_radius(this->lat_at_center_) *
-                std::cos(this->lat_at_center_) * std::sin(shift); // X
-
-        pos[1] =
-            -this->body_->centric_radius(this->lat_at_center_)
-            * std::cos(this->lat_at_center_) * std::cos(shift);   // Y
-
-        pos[2] =
-            this->body_->centric_radius(this->lat_at_center_)
-            * std::sin(this->lat_at_center_);                  // Z
-
-        this->sample_center_ =
-            pos[0] * std::cos(this->PA_) + pos[1] * std::sin(this->PA_)
-            * std::sin(-this->sub_observ_lat_) - pos[2] * std::sin(this->PA_)
-            * std::cos(-this->sub_observ_lat_);
-
-        //   YCenter = pos[1] * std::cos(-this->sub_observ_lat_) + pos[2] *
-        //      std::sin(-this->sub_observ_lat_);
-        // Drop the Y Center (not needed).
-
-        this->line_center_ =
-            pos[0] * std::sin(this->PA_)
-            - pos[1] * std::sin(-this->sub_observ_lat_) * std::cos(this->PA_)
-            + pos[2] * std::cos(-this->sub_observ_lat_) * std::cos(this->PA_);
-
-        this->sample_center_ /= this->km_per_pixel_; // Convert to pixels
-        this->line_center_   /= this->km_per_pixel_;
+        // Map latitude/longitude center given.  Convert to pixels
+        // here instead of in the constructor since the number of
+        // kilometers per pixel may depend on the map dimensions.
+        sample_center = this->sample_center_ / km_per_pixel; // Pixels
+        line_center   = this->line_center_   / km_per_pixel;
 
         // Shift to center of image.
 
         // X measured from left edge of image.
-        this->sample_center_ = samples / 2.0 - this->sample_center_;
+        sample_center = samples / 2.0 - sample_center;
 
         // Z measured from bottom edge of image.
-        this->line_center_   = lines   / 2.0 - this->line_center_;
+        line_center = lines / 2.0 - line_center;
 
-        // No longer need lat/lon_at_center_, so prevent this code from
-        // running again by resetting them to NaN.
-        this->lat_at_center_ = std::numeric_limits<double>::quiet_NaN();
-        this->lon_at_center_ = std::numeric_limits<double>::quiet_NaN();
     } else if (std::isnan(this->sample_center_)
                || std::isnan(this->line_center_)) {
-        this->sample_center_ = samples / 2.0;
-        this->line_center_   = lines   / 2.0;
+        // No map center given.
+        sample_center = samples / 2.0;
+        line_center   = lines   / 2.0;
+    } else {
+        // Map center in pixels give by user.
+        sample_center = this->sample_center_;
+        line_center   = this->line_center_;
     }
 }
 
