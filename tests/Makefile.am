@@ -20,12 +20,13 @@ MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib
 
-check_PROGRAMS =      \
-  Math_Test           \
-  Vector_Test         \
-  Matrix_Test         \
-  Geometry_Test       \
-  OblateSpheroid_Test \
+check_PROGRAMS =            \
+  DefaultConfiguration_Test \
+  Math_Test                 \
+  Vector_Test               \
+  Matrix_Test               \
+  Geometry_Test             \
+  OblateSpheroid_Test       \
   Scale_Offset_Test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
@@ -33,6 +34,8 @@ dist_check_SCRIPTS = MaRC_Prog_Test.sh
 dist_check_DATA = \
   test_map.inp \
   test.fits.gz
+
+DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
 
 Math_Test_SOURCES = Math_Test.cpp
 

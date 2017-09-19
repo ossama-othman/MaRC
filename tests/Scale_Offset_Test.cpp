@@ -19,6 +19,7 @@
  */
 
 #include <MaRC/VirtualImage.h>
+#include <MaRC/DefaultConfiguration.h>
 
 #include <limits>
 #include <cstdint>
@@ -55,19 +56,19 @@ bool test_cosine_scaling()
 template <typename T>
 bool test_latitude_scaling()
 {
-    // Latitude range is [-90, 90].
-    constexpr double minimum = -90;
-    constexpr double maximum =  90;
+    using namespace MaRC::default_configuration;
 
-    return test_scaling<T>(minimum, maximum);
+    // Latitude range is [-90, 90] by default.
+
+    return test_scaling<T>(latitude_low, latitude_high);
 }
 
 template <typename T>
 bool test_longitude_scaling()
 {
-    // Longitude range is [0, 360], not [-180, 180], in MaRC.
-    constexpr double minimum = 0;
-    constexpr double maximum = 360;
+    using namespace MaRC::default_configuration;
+
+    // Longitude range is [0, 360] by default.
 
     return
 
@@ -81,10 +82,10 @@ bool test_longitude_scaling()
                 e.g. UCHAR_WIDTH = 8.
         */
         (sizeof(T) == 1
-         && !test_scaling<T>(minimum, maximum))
+         && !test_scaling<T>(longitude_low, longitude_high))
 
         // Integer types larger than 8 bits.
-        || test_scaling<T>(minimum, maximum);
+        || test_scaling<T>(longitude_low, longitude_high);
 }
 
 

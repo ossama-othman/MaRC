@@ -40,6 +40,7 @@ src/marc
 test-driver
 tests/*.log
 tests/*.trs
+tests/DefaultConfiguration_Test
 tests/Math_Test
 tests/Vector_Test
 tests/Matrix_Test
