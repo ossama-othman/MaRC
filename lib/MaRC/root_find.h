@@ -44,7 +44,7 @@ namespace MaRC
                double ordinate_guess,
                double abscissa_guess,
                double (MAP_FACTORY::* equation)(double) const,
-               MAP_FACTORY * map)
+               MAP_FACTORY const * map)
     {
         double const tolerance = 1e-4;
         double const delta = 1e-3;

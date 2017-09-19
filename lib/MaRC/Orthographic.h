@@ -95,8 +95,26 @@ namespace MaRC
 
     private:
 
-        /// Initialize all attributes.
-        void init (std::size_t samples, std::size_t lines);
+        /// Retrieve map size dependent parameters.
+        /**
+         * Retrieve map parameters that may depend on the map
+         * dimensions.
+         *
+         * @param[in]  samples       Number of samples in the map.
+         * @param[in]  lines         Number of lines in the map.
+         * @param[out] km_per_pixel  The number of kilometers per
+         *                           pixel in the orthographic
+         *                           projection.
+         * @param[out] sample_center Body center sample in projection
+         *                           (measured from left edge).
+         * @param[out] line_center   Body center line in projection
+         *                           (measured from bottom edge).
+         */
+        void map_parameters(std::size_t samples,
+                            std::size_t lines,
+                            double & km_per_pixel,
+                            double & sample_center,
+                            double & line_center) const;
 
         /**
          * Create the Orthographic map projection.
@@ -105,7 +123,7 @@ namespace MaRC
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              plot_type plot);
+                              plot_type plot) const;
 
         /**
          * Create the Orthographic map latitude/longitude grid.
@@ -116,7 +134,7 @@ namespace MaRC
                                std::size_t lines,
                                float lat_interval,
                                float lon_interval,
-                               grid_type & grid);
+                               grid_type & grid) const;
 
     private:
 
@@ -136,13 +154,16 @@ namespace MaRC
         /// projection.
         double km_per_pixel_;
 
-        /// Body center sample in projection (measured from left edge).
+        /// Body center sample in projection (measured from left
+        /// edge).
         double sample_center_;
 
-        /// Body center line in projection (measured from bottom edge).
+        /// Body center line in projection (measured from bottom
+        /// edge).
         double line_center_;
 
-        /// Latitude at center of projection (measured from left edge).
+        /// Latitude at center of projection (measured from left
+        /// edge).
         double lat_at_center_;
 
         /// Line center of projection (measured from bottom edge).
