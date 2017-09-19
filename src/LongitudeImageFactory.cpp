@@ -23,6 +23,7 @@
 #include "LongitudeImageFactory.h"
 
 #include "MaRC/LongitudeImage.h"
+#include "MaRC/DefaultConfiguration.h"
 
 #include <stdexcept>
 
@@ -30,8 +31,8 @@
 std::unique_ptr<MaRC::SourceImage>
 MaRC::LongitudeImageFactory::make(scale_offset_functor calc_so)
 {
-    constexpr double lon_min = 0;
-    constexpr double lon_max = 360;
+    using namespace MaRC::default_configuration;
+
     double scale;
     double offset;
 
@@ -41,7 +42,7 @@ MaRC::LongitudeImageFactory::make(scale_offset_functor calc_so)
      *       @c std::unique_ptr<MaRC::SourceImage> instead?  The same
      *       go for the other @c VirtualImage factory implementations.
      */
-    if (!calc_so(lon_min, lon_max, scale, offset)) {
+    if (!calc_so(longitude_low, longitude_high, scale, offset)) {
         throw std::range_error("Cannot store longitudes in map of "
                                "chosen data type.");
     }

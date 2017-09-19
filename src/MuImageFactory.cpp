@@ -23,6 +23,7 @@
 #include "MuImageFactory.h"
 
 #include "MaRC/MuImage.h"
+#include "MaRC/DefaultConfiguration.h"
 
 #include <stdexcept>
 
@@ -41,12 +42,12 @@ MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<BodyData> body,
 std::unique_ptr<MaRC::SourceImage>
 MaRC::MuImageFactory::make(scale_offset_functor calc_so)
 {
-    constexpr double mu_min = -1;
-    constexpr double mu_max =  1;
+    using namespace MaRC::default_configuration;
+
     double scale;
     double offset;
 
-    if (!calc_so(mu_min, mu_max, scale, offset)) {
+    if (!calc_so(mu_low, mu_high, scale, offset)) {
         throw std::range_error("Cannot store mu (cosines) in map of "
                                "chosen data type.");
     }
