@@ -25,6 +25,10 @@
 #ifndef MARC_VALIDATE_H
 #define MARC_VALIDATE_H
 
+#include "MaRC/Constants.h"
+
+#include <stdexcept>
+
 
 namespace MaRC
 {
