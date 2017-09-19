@@ -24,6 +24,8 @@
 #include "MaRC/Mercator.h"
 #include "MaRC/Constants.h"
 #include "MaRC/OblateSpheroid.h"
+#include "MaRC/DefaultConfiguration.h"
+#include "MaRC/Mathematics.h"
 #include "MaRC/root_find.h"
 
 #include <limits>
@@ -36,6 +38,16 @@ MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body)
     : MapFactory<T>()
     , body_(body)
 {
+    using namespace MaRC::default_configuration;
+
+    // The MaRC Mercator projection currently expects a 360 degree
+    // longitude range.
+    static constexpr int ulps = 2;
+    static constexpr double expected_lon_range = 360;
+
+    if (!MaRC::almost_equal(longitude_range, expected_lon_range, ulps))
+        throw std::out_of_range("Mercator projection requires 360 "
+                                "longitude range.");
 }
 
 template <typename T>
@@ -148,8 +160,18 @@ double
 MaRC::Mercator<T>::get_longitude(std::size_t i,
                                  std::size_t samples) const
 {
+    using namespace MaRC::default_configuration;
+
+    static constexpr double lo_lon = longitude_low * C::degree;
+
+    /**
+     * @todo Verify that the shift by @c lo_lon below works as
+     *       expected when it is non-zero (e.g. -C::pi).
+     */
+
     // Compute longitude at center of pixel.
-    double lon = (i + 0.5) / samples * C::_2pi;
+    double lon =
+        (i + 0.5) / samples * C::_2pi + lo_lon;
 
     // PROGRADE ----> longitudes increase to the left
     // RETROGRADE --> longitudes increase to the right

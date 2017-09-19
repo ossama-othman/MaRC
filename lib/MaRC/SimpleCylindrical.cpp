@@ -24,6 +24,7 @@
 #include "MaRC/SimpleCylindrical.h"
 #include "MaRC/Constants.h"
 #include "MaRC/BodyData.h"
+#include "MaRC/Validate.h"
 
 #include <limits>
 #include <cmath>
@@ -40,33 +41,21 @@ MaRC::SimpleCylindrical<T>::SimpleCylindrical(
     bool graphic_lat)
     : MapFactory<T>()
     , body_(body)
-    , lo_lat_(C::pi_2)
-    , hi_lat_(-C::pi_2)
-    , lo_lon_(0)
-    , hi_lon_(C::_2pi)
+    , lo_lat_(MaRC::validate_latitude(lo_lat))
+    , hi_lat_(MaRC::validate_latitude(hi_lat))
+    , lo_lon_(MaRC::validate_longitude(lo_lon))
+    , hi_lon_(MaRC::validate_longitude(hi_lon))
     , graphic_lat_(graphic_lat)
 {
-    // Set latitude range.
     // All latitudes are fed to SimpleCylindrical as CENTRIC.
-    if (lo_lat >= -90 && lo_lat <= 90)
-        this->lo_lat_ = lo_lat * C::degree;
-
-    if (hi_lat >= -90 && hi_lat <= 90)
-        this->hi_lat_ = hi_lat * C::degree;
-
     // Convert to GRAPHIC latitude if requested.
     if (graphic_lat) {
         this->lo_lat_ = this->body_->graphic_latitude(this->lo_lat_);
         this->hi_lat_ = this->body_->graphic_latitude(this->hi_lat_);
     }
 
-    // Set longitude range
-    if (lo_lon >= -360 && lo_lon <= 360)
-        this->lo_lon_ = lo_lon * C::degree;
-
-    if (hi_lon >= -360 && hi_lon <= 360)
-        this->hi_lon_ = hi_lon * C::degree;
-
+    // Set lower longitude to equivalent longitude less than upper
+    // longitude to make sure longitude range is computed correctly.
     if (this->lo_lon_ > this->hi_lon_)
         this->lo_lon_ -= C::_2pi;
 }

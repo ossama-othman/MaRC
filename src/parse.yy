@@ -51,6 +51,7 @@
 #include <MaRC/SimpleCylindrical.h>
 
 #include <MaRC/Constants.h>
+#include "MaRC/DefaultConfiguration.h"
 
 #include "parse_scan.h"
 #include "calc.h"
@@ -132,10 +133,10 @@
     double minimum = std::numeric_limits<double>::quiet_NaN();
     double maximum = std::numeric_limits<double>::quiet_NaN();
 
-    std::size_t nibble_left_val;
-    std::size_t nibble_right_val;
-    std::size_t nibble_top_val;
-    std::size_t nibble_bottom_val;
+    std::size_t nibble_left_val   = 0;
+    std::size_t nibble_right_val  = 0;
+    std::size_t nibble_top_val    = 0;
+    std::size_t nibble_bottom_val = 0;
 
     double sample_center = std::numeric_limits<double>::quiet_NaN();
     double line_center   = std::numeric_limits<double>::quiet_NaN();
@@ -155,10 +156,10 @@
     double max_lat = std::numeric_limits<double>::quiet_NaN();
 
     // Simple Cylindrical projection options
-    double lo_lat = -90;
-    double hi_lat = 90;
-    double lo_lon = 0;
-    double hi_lon = 360;
+    double lo_lat = MaRC::default_configuration::latitude_low;
+    double hi_lat = MaRC::default_configuration::latitude_high;
+    double lo_lon = MaRC::default_configuration::longitude_low;
+    double hi_lon = MaRC::default_configuration::longitude_high;
 
     // Orthographic and Perspective projection options
 
@@ -1983,7 +1984,7 @@ latitude:
         | latitude_sub 'C'      { $$ = $1; }
         | latitude_sub 'G'      {
             /* Convert to CENTRIC latitude. */
-            $$ = oblate_spheroid->centric_latitude ($1 * C::degree)
+            $$ = oblate_spheroid->centric_latitude($1 * C::degree)
                    / C::degree; }
 ;
 

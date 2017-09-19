@@ -23,6 +23,7 @@
 #include "CosPhaseImageFactory.h"
 
 #include "MaRC/CosPhaseImage.h"
+#include "MaRC/DefaultConfiguration.h"
 
 #include <stdexcept>
 
@@ -46,12 +47,12 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
 std::unique_ptr<MaRC::SourceImage>
 MaRC::CosPhaseImageFactory::make(scale_offset_functor calc_so)
 {
-    constexpr double cos_phase_min = -1;
-    constexpr double cos_phase_max =  1;
+    using namespace MaRC::default_configuration;
+
     double scale;
     double offset;
 
-    if (!calc_so(cos_phase_min, cos_phase_max, scale, offset)) {
+    if (!calc_so(cos_phase_low, cos_phase_high, scale, offset)) {
         throw std::range_error("Cannot store cosine of phase angles in "
                                "map of chosen datatype.");
     }

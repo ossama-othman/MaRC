@@ -51,6 +51,7 @@ libMaRC_la_SOURCES = \
   Version.cpp
 
 pkginclude_HEADERS = \
+  DefaultConfiguration.h \
   config.h \
   \
   Mathematics.h   \
@@ -92,6 +93,7 @@ pkginclude_HEADERS = \
   PolarStereographic.cpp \
   SimpleCylindrical.h \
   SimpleCylindrical.cpp \
+  Validate.h \
   \
   Constants.h \
   \
