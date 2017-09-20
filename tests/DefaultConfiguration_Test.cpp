@@ -1,5 +1,5 @@
 /**
- * @file Default_Configuration_Test.cpp
+ * @file DefaultConfiguration_Test.cpp
  *
  * Copyright (C) 2017 Ossama Othman
  *
@@ -20,6 +20,7 @@
 
 #include <MaRC/DefaultConfiguration.h>
 #include <MaRC/Mathematics.h>
+
 
 /**
  * @todo The built-in @c operator<=() and operator>=() for floating
