@@ -52,6 +52,9 @@ namespace MaRC
          * @param[in] eq_rad     Equatorial radius in kilometers.
          * @param[in] pol_rad    Polar radius in kilometers.
          * @param[in] flattening Flattening ((eq_rad-pol_rad)/eq_rad).
+         *
+         * @note Two of three parameters @a eq_rad, @a pol_rad and
+         *       @a flattening must be valid.
          */
         OblateSpheroid(bool prograde,
                        double eq_rad,
