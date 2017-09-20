@@ -99,16 +99,22 @@ int main()
         && test_cosine_scaling<int16_t>()
         && test_cosine_scaling<int32_t>()
         && test_cosine_scaling<int64_t>()
+        && test_cosine_scaling<float>()
+        && test_cosine_scaling<double>()
 
         && test_latitude_scaling<uint8_t>()
         && test_latitude_scaling<int16_t>()
         && test_latitude_scaling<int32_t>()
         && test_latitude_scaling<int64_t>()
+        && test_latitude_scaling<float>()
+        && test_latitude_scaling<double>()
 
         && test_longitude_scaling<uint8_t>()
         && test_longitude_scaling<int16_t>()
         && test_longitude_scaling<int32_t>()
         && test_longitude_scaling<int64_t>()
+        && test_longitude_scaling<float>()
+        && test_longitude_scaling<double>()
 
         ? 0 : -1;
 }
