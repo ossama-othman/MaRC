@@ -41,12 +41,16 @@ MaRC::LatitudeImage::read_data_i(double lat,
                                  double /* lon */,
                                  double & data) const
 {
+    // Valid latitude range is [-90, 90] degrees.
+    if (lat < -C::pi_2 || lat > C::pi_2)
+        return false;
+
     if (this->graphic_latitudes_)
         data = this->body_->graphic_latitude(lat);
     else
         data = lat;
 
-    data /=  C::degree;  // Convert radians to degrees.
+    data /= C::degree;  // Convert radians to degrees.
 
     return true;
 }

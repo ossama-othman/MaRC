@@ -302,12 +302,17 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
                 plot(lat, lon, percent_complete, offset);
             }
         }
-
-        std::cout
-            << "Body center in ORTHOGRAPHIC projection (line, sample): ("
-            << line_center << ", " << sample_center
-            << ")\n";
     }
+
+    /**
+     * @bug This is printed after each map plane plotting run, and
+     *      interferes with the map progress output.  Print only once
+     *      per orthographic map.
+     */
+    std::cout
+        << "Body center in ORTHOGRAPHIC projection (line, sample): ("
+        << line_center << ", " << sample_center
+        << ")\n";
 }
 
 template <typename T>
