@@ -23,6 +23,7 @@
 
 #include "LongitudeImage.h"
 #include "Constants.h"
+#include "DefaultConfiguration.h"
 
 
 MaRC::LongitudeImage::LongitudeImage(double scale, double offset)
@@ -35,7 +36,22 @@ MaRC::LongitudeImage::read_data_i(double /* lat */,
                                   double lon,
                                   double & data) const
 {
+    using namespace MaRC::default_configuration;
+
     data = lon / C::degree;  // Convert radians to degrees.
+
+    // Make sure the longitude is in the +/-360 degree range.  Note
+    // that fmod() retains the sign of its first argument.
+    data = std::fmod(data, longitude_range);
+
+    // Data is now in the +/- 360 range but we need it to be between
+    // [0, 360] or [-180, 180], depending on the configuration.  Shift
+    // the longitude to the equivalent within the configured longitude
+    // range.
+    if (data < longitude_low)
+        data += longitude_range;
+    else if (data > longitude_high)
+        data -= longitude_range;
 
     return true;
 }
