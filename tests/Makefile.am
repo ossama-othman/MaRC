@@ -65,7 +65,7 @@ TESTS = \
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
 
-CLEANFILES = test_map.fits
+CLEANFILES = test_map.fits test_map_ortho.fits
 
 all-local:
 	@if test ! -r test.fits.gz; then \

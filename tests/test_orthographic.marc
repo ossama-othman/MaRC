@@ -1,0 +1,186 @@
+MAP:     test_map_ortho.fits
+COMMENT: Orthographic map test.
+XCOMMENT: Orthographic map grid test.
+
+        BODY:   Jupiter
+        EQ_RAD:         71492
+        POL_RAD:        66854
+        ROTATION:       PROGRADE
+
+        DATA_TYPE:      SHORT
+        GRID:           YES
+        GRID_INTERVAL:  2
+        TYPE:           ORTHO
+        		OPTIONS:
+				SUB_OBSERV_LAT:	-5
+				SUB_OBSERV_LON: 215 E
+				POSITION_ANGLE: 20
+
+        PLANES:         9
+        SAMPLES:        60
+        LINES:          50
+
+        PLANE:  1       #410nm
+
+# The `test.fits.gz' file used below currently contains only a test
+# pattern unrelated to any planet/body.
+
+                IMAGE:  test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2807.61
+                        LINE_CENTER:            1200.67
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         215.63 E
+                        POSITION_ANGLE:         179.175
+                        SUB_SOLAR_LAT:          0.22
+                        SUB_SOLAR_LON:          284.67 E
+                        RANGE:                  1211230
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             YES
+                        SAMPLE_CENTER:          2456.39
+                        LINE_CENTER:            1195.58
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         215.48 E
+                        POSITION_ANGLE:         179.163
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          284.52 E
+                        RANGE:                  1211114
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+        PLANE:  2       #756nm
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        INTERPOLATE:		YES
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2833.21
+                        LINE_CENTER:            1201.89
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         215.05 E
+                        POSITION_ANGLE:         179.175
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          284.05 E
+                        RANGE:                  1210750
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2561.00
+                        LINE_CENTER:            845.733
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         214.61 E
+                        POSITION_ANGLE:         179.246
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          283.60 E
+                        RANGE:                  1210392
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+
+        PLANE:  3       #727nm
+
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2587.43
+                        LINE_CENTER:            842.981
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         214.03 E
+                        POSITION_ANGLE:         179.246
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          282.99 E
+                        RANGE:                  1209912
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+        PLANE:  4       #889nm
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2967.82
+                        LINE_CENTER:            848.808
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         213.60 E
+                        POSITION_ANGLE:         179.247
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          282.53 E
+                        RANGE:                  1209552
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2617.95
+                        LINE_CENTER:            843.217
+                        # FLAT_FIELD:             test.fits.gz
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         213.45 E
+                        POSITION_ANGLE:         179.246
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          282.37 E
+                        RANGE:                  1209431
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+        PLANE:  5
+                MU:     SUB_OBSERV_LAT:         -0.06 C
+                        SUB_OBSERV_LON:         214.54 E
+                        RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LAT:          -0.22 C
+                        SUB_SOLAR_LON:          283.52 E
+
+        PLANE:  6
+                MU0:    SUB_OBSERV_LAT:         -0.06 C
+                        SUB_OBSERV_LON:         214.54 E
+                        RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LAT:          -0.22 C
+                        SUB_SOLAR_LON:          283.52 E
+
+        PLANE:  7
+                PHASE:  SUB_OBSERV_LAT:         -0.06 C
+                        SUB_OBSERV_LON:         214.54 E
+                        RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LAT:          -0.22 C
+                        SUB_SOLAR_LON:          283.52 E
+
+        PLANE:  8
+                LATITUDE : CENTRIC
+
+        PLANE: 9
+                LONGITUDE
