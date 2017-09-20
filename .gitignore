@@ -47,6 +47,8 @@ tests/Matrix_Test
 tests/Geometry_Test
 tests/OblateSpheroid_Test
 tests/Scale_Offset_Test
+tests/LatitudeImage_Test
+tests/LongitudeImage_Test
 tests/test-suite.log
 tests/test_map.fits
 ylwrap

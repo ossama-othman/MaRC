@@ -27,7 +27,9 @@ check_PROGRAMS =            \
   Matrix_Test               \
   Geometry_Test             \
   OblateSpheroid_Test       \
-  Scale_Offset_Test
+  Scale_Offset_Test         \
+  LatitudeImage_Test        \
+  LongitudeImage_Test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
@@ -50,6 +52,12 @@ OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
 OblateSpheroid_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 Scale_Offset_Test_SOURCES = Scale_Offset_Test.cpp
+
+LatitudeImage_Test_SOURCES = LatitudeImage_Test.cpp
+LatitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
+LongitudeImage_Test_SOURCES = LongitudeImage_Test.cpp
+LongitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 TESTS = \
   $(check_PROGRAMS) \
