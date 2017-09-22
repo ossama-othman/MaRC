@@ -25,16 +25,30 @@
 #ifndef MARC_VIEWING_GEOMETRY_H
 #define MARC_VIEWING_GEOMETRY_H
 
+#include <MaRC/Geometry.h>
+
+#include <memory>
+
 
 namespace MaRC
 {
+    class OblateSpheroid;
 
     class ViewingGeometry
     {
-    public:
+    public: 
+       
+        /// Constructor.
+        ViewingGeometry(std::shared_ptr<OblateSpheroid> body,
+                        std::size_t samples,
+                        std::size_t lines);
 
         /// Constructor.
-        ViewingGeometry();
+        ~ViewingGeometry();
+
+        // Disallow copying.
+        ViewingGeometry(ViewingGeometry const &) = delete;
+        ViewingGeometry & operator=(ViewingGeometry const &) = delete;
 
         /// Make sure all pre-processing is done.
         /**
@@ -47,84 +61,105 @@ namespace MaRC
          * @param[in] lat Sub-observation latitude  (degrees)
          * @param[in] lon Sub-observation longitude (degrees)
 	 *
-	 * @return @c true on success.
+         * @throw std::range_error Invalid @a lat or @a lon.
          */
-        bool sub_observ(double lat, double lon);
+        void sub_observ(double lat, double lon);
 
         /// Set Sub-Observation latitude.
         /**
          * @param[in] lat Sub-observation latitude  (degrees)
 	 *
-	 * @return @c true on success.
+         * @throw std::range_error Invalid @a lat.
          */
-        bool sub_observ_lat(double lat);
+        void sub_observ_lat(double lat);
 
         /// Set Sub-Observation longitude.
         /**
          * @param[in] lon Sub-observation longitude (degrees)
 	 *
-	 * @return @c true on success.
+         * @throw std::range_error Invalid @a lon.
          */
-        bool sub_observ_lon(double lon);
+        void sub_observ_lon(double lon);
 
         /// Set Sub-Solar latitude and longitude.
         /**
          * @param[in] lat Sub-solar latitude  (degrees)
          * @param[in] lon Sub-solar longitude (degrees)
 	 *
-	 * @return @c true on success.
+         * @throw std::range_error Invalid @a lat or @a lon.
          */
-        bool sub_solar(double lat, double lon);
+        void sub_solar(double lat, double lon);
 
         /// Set Sub-Solar latitude.
         /**
          * @param[in] lat Sub-solar latitude  (degrees)
 	 *
-	 * @return @c true on success.
+         * @throw std::range_error Invalid @a lat.
          */
-        bool sub_solar_lat(double lat);
+        void sub_solar_lat(double lat);
 
         /// Set Sub-Solar longitude.
         /**
          * @param[in] lon Sub-solar longitude (degrees)
 	 *
-	 * @return @c true on success.
+         * @throw std::range_error Invalid @a lon.
          */
-        bool sub_solar_lon(double lon);
+        void sub_solar_lon(double lon);
 
         /// Set observer to body distance (KM).
         /**
          * @param[in] r Distance from observer to body in kilometers.
 	 *
-	 * @return @c true on success.
+         * @throw std::invalid_argument Invalid @a r.
          */
-        bool range(double r);
+        void range(double r);
 
         /// Set camera focal length (millimeters).
         /**
          * @param len Focal length in millimeters.
 	 *
-	 * @return @c true on success.
+         * @throw std::invalid_argument Invalid @a len.
          */
-        bool focal_length(double len);
+        void focal_length(double len);
 
         /// Set input image scale (pixels / mm).
         /**
          * @param[in] s Image scale in pixels per millimeter.
 	 *
-	 * @return @c true on success.
+         * @throw std::invalid_argument Invalid @a s.
          */
-        bool scale(double s);
+        void scale(double s);
 
-        /// Set position angle (a.k.a. North Angle in degrees) found
-        /// in image.
-        bool position_angle(double north);
+        /// Set position (i.e. North) angle in degrees found in
+        /// image.
+        /**
+         * @param[in] north Position angle (degrees).
+         *
+         * @throw std::range_error Invalid @a north.
+         */
+        void position_angle(double north);
 
         /// Arcseconds per pixel in image.
-        bool arcsec_per_pixel(double arcseconds);
+        /**
+         * @param[in] arcseconds Arcseconds per pixel in the image.
+         *
+         * @throw std::invalid_argument Invalid @a arcseconds.
+         *
+         * @attention Set the range before calling this method.
+         *
+         * @todo Forcing the caller to set the range beforehand is
+         *       rather brittle.  Try to do away with that
+         *       requirement.
+         */
+        void arcsec_per_pixel(double arcseconds);
 
         /// Kilometers per pixel in image.
-        bool km_per_pixel(double k);
+        /**
+         * @param[in] k Kilometer per pixel in the image.
+         *
+         * @throw std::invalid_argument Invalid @a k.
+         */
+        void km_per_pixel(double k);
 
         /// Set sample and line of body center.
         void body_center(double sample, double line);
@@ -140,44 +175,66 @@ namespace MaRC
          * @param[in] lat Latitude in degrees at center of image.
          * @param[in] lon Longitude in degrees at center of image.
          *
-         * @return @c true on success.
+         * @throw std::range_error Invalid @a lat or @a lon.
          */
-        bool lat_lon_center(double lat, double lon);
+        void lat_lon_center(double lat, double lon);
 
         /// Set latitude at center of image.
         /**
          * @param[in] lat Latitude in degrees at center of image.
          *
-         * @return @c true on success.
+         * @throw std::range_error Invalid @a lat.
          */
-        bool lat_at_center(double lat);
+        void lat_at_center(double lat);
 
         /// Set longitude at center of image.
         /**
          * @param[in] lon Longitude in degrees at center of image.
          *
-         * @return @c true on success.
+         * @throw std::range_error Invalid @a lon.
          */
-        bool lon_at_center(double lon);
+        void lon_at_center(double lon);
 
         /// Set the optical axis.
         /**
          * @param[in] sample Optical axis sample.
          * @param[in] line   Optical axis line.
+         *
+         * @throw std::invalid_argument Invalid @a sample or @a line.
          */
         void optical_axis(double sample, double line);
 
         /// Set the optical axis sample.
         /**
          * @param[in] sample Optical axis sample.
+         *
+         * @throw std::invalid_argument Invalid @a sample.
          */
         void optical_axis_sample(double sample);
 
         /// Set the optical axis line.
         /**
          * @param[in] line Optical axis line.
+         *
+         * @throw std::invalid_argument Invalid @a line.
          */
         void optical_axis_line(double line);
+
+
+        /// Set emission angle beyond which no data will be read.
+        /**
+         * @param[in] angle Emission angle in degrees.
+         *
+         * @throw std::range_error Invalid @a angle.
+         */
+        void emi_ang_limit(double angle);
+
+        /**
+         * Set flag that determines whether or not terminator is taken
+         * into account when determining if data point on body is
+         * visible.
+         */
+        void use_terminator(bool u);
 
         /// Is given latitude and longitude visible?
         /**
@@ -207,17 +264,15 @@ namespace MaRC
                         double lon,
                         double & x,
                         double & z) const;
-        
+
     private:
 
         /// Finalize kilometers per pixel value.
         /**
          * Use range, focal length and scale to compute the kilometers
          * per pixel in the image.
-         *
-         * @return @c true on success.
          */
-        bool set_km_per_pixel();
+        void set_km_per_pixel();
 
         /// Get rotation matrices for case when body centers are given.
         /**
@@ -259,25 +314,6 @@ namespace MaRC
          *       modeled as an oblate spheroid.
          */
         std::shared_ptr<OblateSpheroid> const body_;
-
-        /// Pointer to the image array.
-        std::vector<double> const image_;
-
-        /// Number of samples in the image.
-        std::size_t const samples_;
-
-        /// Number of lines in the image.
-        std::size_t const lines_;
-
-        /// Geometric/optical correction strategy used during
-        /// latitude/longitude to pixel conversion, and vice versa.
-        std::unique_ptr<GeometricCorrection> geometric_correction_;
-
-        /// Pointer to the photometric correction strategy.
-        std::unique_ptr<PhotometricCorrection> photometric_correction_;
-
-        /// Pointer to the photometric correction strategy.
-        std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
 
         /// Sub-Observer Latitude -- BodyCENTRIC (radians).
         double sub_observ_lat_;
@@ -334,19 +370,6 @@ namespace MaRC
         double OA_l_;
         //@}
 
-        /// Mask used when "removing" sky from source image.
-        /**
-         * A mask is used to mark which pixels in the photo are in the
-         * body and which are in the sky without actually modifying
-         * the original source photo.
-         *
-         * @note The sky mask is generally only useful when performing
-         *       weighted averaging in a mosaiced image.
-         *
-         * @see MosaicImage
-         */
-        std::vector<bool> sky_mask_;
-
         /// Range vector in body coordinates, measured from the center
         /// of the body to the observer.
         DVector range_b_;
@@ -358,22 +381,6 @@ namespace MaRC
         /// Transformation matrix to go from body to observer
         /// coordinates.
         DMatrix body2observ_;
-
-        /// Amount of pixels to ignore from left side of input image
-        /// (photo).
-        std::size_t nibble_left_;
-
-        /// Amount of pixels to ignore from right side of input image
-        /// (photo).
-        std::size_t nibble_right_;
-
-        /// Amount of pixels to ignore from top side of input image
-        /// (photo).
-        std::size_t nibble_top_;
-
-        /// Amount of pixels to ignore from bottom side of input image
-        /// (photo).
-        std::size_t nibble_bottom_;
 
         /**
          * @name Object-Space Body Center
@@ -394,6 +401,18 @@ namespace MaRC
 
         /// Longitude at picture center
         double lon_at_center_;
+
+        /**
+         * The cosine, &mu;, of the emission angle outside of which no
+         * data will be plotted / retrieved.
+         *
+         * This is used to avoid mapping data close to the limb.
+         */
+        double mu_limit_;
+
+        /// Take into account terminator when determing if lat/lon is
+        /// visible.
+        bool use_terminator_;
 
     };
 

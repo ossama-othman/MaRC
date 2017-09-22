@@ -27,6 +27,8 @@ libMaRC_la_SOURCES = \
   BodyData.cpp \
   OblateSpheroid.cpp \
   \
+  ViewingGeometry.cpp \
+  \
   GeometricCorrection.cpp \
   GLLGeometricCorrection.cpp \
   NullGeometricCorrection.cpp \
@@ -63,6 +65,8 @@ pkginclude_HEADERS = \
   BodyData.h \
   OblateSpheroid.h \
   \
+  ViewingGeometry.h \
+  \
   SourceImage.h \
   VirtualImage.h \
   MuImage.h \
@@ -94,14 +98,13 @@ pkginclude_HEADERS = \
   SimpleCylindrical.h \
   SimpleCylindrical.cpp \
   Validate.h \
+  root_find.h \
   \
   Constants.h \
   \
   Version.h
 
 noinst_HEADERS = \
-  misc.h \
-  root_find.h \
   \
   NullInterpolationStrategy.h \
   PhotoInterpolationStrategy.h
