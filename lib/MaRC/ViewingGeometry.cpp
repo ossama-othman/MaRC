@@ -636,19 +636,25 @@ MaRC::ViewingGeometry::scale(double s)
 void
 MaRC::ViewingGeometry::body_center(double sample, double line)
 {
-    this->sample_center_ = sample;
-    this->line_center_   = line;
+    this->body_center_sample(sample);
+    this->body_center_line(line);
 }
 
 void
 MaRC::ViewingGeometry::body_center_sample(double sample)
 {
+    if (std::isnan(sample))
+        throw std::invalid_argument("invalid body center sample");
+
     this->sample_center_ = sample;
 }
 
 void
 MaRC::ViewingGeometry::body_center_line(double line)
 {
+    if (std::isnan(line))
+        throw std::invalid_argument("invalid body center line");
+
     this->line_center_ = line;
 }
 

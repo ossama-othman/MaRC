@@ -155,7 +155,7 @@ namespace MaRC
 
         /// Kilometers per pixel in image.
         /**
-         * @param[in] k Kilometer per pixel in the image.
+         * @param[in] k Kilometers per pixel in the image.
          *
          * @throw std::invalid_argument Invalid @a k.
          */
