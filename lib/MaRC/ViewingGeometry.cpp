@@ -25,6 +25,7 @@
 #include "Constants.h"
 #include "OblateSpheroid.h"
 #include "Mathematics.h"
+#include "Validate.h"
 
 #include <cmath>
 #include <limits>
@@ -32,51 +33,34 @@
 #include <numeric>
 #include <iostream>
 #include <sstream>
-#include <cassert>
-
 
 
 MaRC::ViewingGeometry::ViewingGeometry(
     std::shared_ptr<OblateSpheroid> body,
-    std::vector<double> && image,
     std::size_t samples,
-    std::size_t lines,
-    std::unique_ptr<GeometricCorrection> gc)
-    : SourceImage()
-    , body_(body)
-    , image_(std::move(image))
-    , samples_(samples)
-    , lines_(lines)
-    , geometric_correction_(gc
-                            ? std::move(gc)
-                            : std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
-    , sub_observ_lat_(0)
-    , sub_observ_lon_(0)
-    , sub_solar_lat_ (0)
-    , sub_solar_lon_ (0)
+    std::size_t lines)
+    : body_(body)
+    , sub_observ_lat_(std::numeric_limits<double>::signaling_NaN())
+    , sub_observ_lon_(std::numeric_limits<double>::signaling_NaN())
+    , sub_solar_lat_ (std::numeric_limits<double>::signaling_NaN())
+    , sub_solar_lon_ (std::numeric_limits<double>::signaling_NaN())
     , range_(std::sqrt(std::numeric_limits<double>::max() - 1))
-    , position_angle_(0)
-    , km_per_pixel_  (-1)        // Force "bad" value until set by caller
-    , focal_length_  (-1)        // Force "bad" value until set by caller
-    , focal_length_pixels_(-1)   // Force "bad" value until fully initialized
-    , scale_         (-1)        // Force "bad" value until set by caller
-    , normal_range_  (0)
-    , OA_s_          (0)
-    , OA_l_          (0)
-    , sky_mask_      (samples * lines, false) // Enable sky removal.
+    , position_angle_(std::numeric_limits<double>::signaling_NaN())
+    , km_per_pixel_  (-1)       // Force "bad" value until set by caller
+    , focal_length_  (-1)       // Force "bad" value until set by caller
+    , focal_length_pixels_(-1)  // Force "bad" value until fully initialized
+    , scale_         (-1)       // Force "bad" value until set by caller
+    , normal_range_  (std::numeric_limits<double>::signaling_NaN())
+    , OA_s_          (samples / 2.0)
+    , OA_l_          (lines / 2.0)
     , range_b_       ()
     , observ2body_   ()
     , body2observ_   ()
-    , nibble_left_   (0)
-    , nibble_right_  (0)
-    , nibble_top_    (0)
-    , nibble_bottom_ (0)
-    , sample_center_ (0)
-    , line_center_   (0)
-    , lat_at_center_ (0)
-    , lon_at_center_ (0)
+    , sample_center_ (std::numeric_limits<double>::signaling_NaN())
+    , line_center_   (std::numeric_limits<double>::signaling_NaN())
+    , lat_at_center_ (std::numeric_limits<double>::signaling_NaN())
+    , lon_at_center_ (std::numeric_limits<double>::signaling_NaN())
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
-    , flags_(0)
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
@@ -86,11 +70,6 @@ MaRC::ViewingGeometry::ViewingGeometry(
           << ") must both be greater than one.";
 
         throw std::invalid_argument(s.str());
-    }
-
-    if (this->image_.size() != samples * lines) {
-        throw std::invalid_argument(
-            "Source image size does not match samples and lines");
     }
 }
 
@@ -132,7 +111,7 @@ MaRC::ViewingGeometry::is_visible(double lat, double lon) const
           side of the planet, and if it's negative, the point is on
           the dark side of the planet.
         */
-        && (!flags::check(this->flags_, USE_TERMINATOR)
+        && (!this->use_terminator_
             || this->body_->mu0(this->sub_solar_lat_,
                                 this->sub_solar_lon_,
                                 lat,
@@ -142,131 +121,56 @@ MaRC::ViewingGeometry::is_visible(double lat, double lon) const
      // checks passed.
 }
 
-bool
-MaRC::ViewingGeometry::geometric_correction(
-    std::unique_ptr<GeometricCorrection> strategy)
-{
-    if (strategy) {
-        this->geometric_correction_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null geometric correction strategy pointer.\n";
-
-        return false;  // Failure
-    }
-}
-
-bool
-MaRC::ViewingGeometry::photometric_correction(
-    std::unique_ptr<PhotometricCorrection> strategy)
-{
-    if (strategy) {
-        this->photometric_correction_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null photometric correction strategy pointer.\n";
-
-        return false;  // Failure
-    }
-}
-
-bool
+void
 MaRC::ViewingGeometry::sub_observ(double lat, double lon)
 {
-    return this->sub_observ_lat(lat) && this->sub_observ_lon(lon);
+    this->sub_observ_lat(lat);
+    this->sub_observ_lon(lon);
 }
 
-bool
+void
 MaRC::ViewingGeometry::sub_observ_lat(double lat)
 {
-    if (std::abs(lat) > 90) {
-        std::cerr
-            << "ERROR: Incorrect value for Sub-Observation Latitude: "
-                  << lat << '\n';
-
-        return false;  // Failure
-    }
-
-    this->sub_observ_lat_ = lat * C::degree;
-
-    return true;  // Success
+    this->sub_observ_lat_ = MaRC::validate_latitude(lat);
 }
 
-bool
+void
 MaRC::ViewingGeometry::sub_observ_lon(double lon)
 {
-    if (std::abs(lon) > 360) {
-        std::cerr
-            << "ERROR: Incorrect value for Central Meridian: "
-            << lon << '\n';
+    this->sub_observ_lon_ = MaRC::validate_longitude(lon);
 
-        return false;  // Failure
-    }
-
-    if (lon < 0)
-      lon += 360;
-
-    this->sub_observ_lon_ = lon * C::degree;
-
-    return true;
+    if (this->sub_observ_lon_ < 0)
+        this->sub_observ_lon_ += C::_2pi;  // Equivalent positive
+                                           // longitude.
 }
 
-bool
+void
 MaRC::ViewingGeometry::sub_solar(double lat, double lon)
 {
-    return this->sub_solar_lat(lat) && this->sub_solar_lon(lon);
+    this->sub_solar_lat(lat);
+    this->sub_solar_lon(lon);
 }
 
-bool
+void
 MaRC::ViewingGeometry::sub_solar_lat(double lat)
 {
-    if (std::abs(lat) > 90) {
-        std::cerr << "ERROR: Incorrect value for Sub-Solar Latitude: "
-                  << lat << '\n';
-
-        return false;  // Failure
-    }
-
-    this->sub_solar_lat_ = lat * C::degree;
-
-    return true;  // Success
+    this->sub_solar_lat_ = MaRC::validate_latitude(lat);
 }
 
-bool
+void
 MaRC::ViewingGeometry::sub_solar_lon(double lon)
 {
-    if (std::abs(lon) > 360) {
-        std::cerr << "ERROR: Incorrect value for Sub-Solar Longitude: "
-		  << lon << '\n';
+    this->sub_solar_lon_ = MaRC::validate_longitude(lon);
 
-	return false;  // Failure
-    }
-
-    if (lon < 0)
-        lon += 360;
-
-    this->sub_solar_lon_ = lon * C::degree;
-
-    return true;  // Success
+    if (this->sub_solar_lon_ < 0)
+        this->sub_solar_lon_ += C::_2pi;  // Equivalent positive
+                                          // longitude.
 }
 
-bool
+void
 MaRC::ViewingGeometry::position_angle(double north)
 {
-    if (std::abs(north) > 360) {
-        std::cerr << "ERROR: Incorrect position angle: "
-                  << north << '\n';
-
-        return false;  // Failure
-    }
-
-    this->position_angle_ = north * C::degree;
-
-    return true;  // Success
+    this->position_angle_ = MaRC::validate_position_angle(north);
 }
 
 void
@@ -277,13 +181,6 @@ MaRC::ViewingGeometry::finalize_setup()
     if (this->km_per_pixel_ <= 0)
         this->set_km_per_pixel();
 
-    // Set optical axis
-    if (!flags::check(this->flags_, OA_SET)) {
-        this->OA_s_ = this->samples_ / 2.;
-        this->OA_l_ = this->lines_ / 2.;
-        flags::set(this->flags_, OA_SET);
-    }
-
     // Set Body center to observer vectors.
 
     // Range vector in body coordinates.
@@ -292,7 +189,8 @@ MaRC::ViewingGeometry::finalize_setup()
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
 
     /// Perpendicular distance from observer to image plane.
-    if (!flags::check(this->flags_, LATLON_AT_CENTER)) {
+    if (std::isnan(this->lat_at_center_)
+        || std::isnan(this->lon_at_center_)) {
         /**
          * @todo Verify that these values are consistent with the
          *       coordinate system, including directions of all axes.
@@ -657,106 +555,82 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 #endif
 }
 
-bool
+void
 MaRC::ViewingGeometry::arcsec_per_pixel(double arcseconds)
 {
     // NOTE: range_ should be in units of kilometers at this point.
-    if (arcseconds <= 0) {
-        std::cerr
-            << "ERROR: Incorrect number of arcseconds "
-               "per pixel entered: " << arcseconds << '\n';
-
-        return false;  // Failure
-    }
+    if (arcseconds <= 0)
+        throw std::invalid_argument("invalid number of arcseconds");
+    else if (this->range_ <= 0)
+        throw std::logic_error("range not previously set");
 
     // This conversion assumes that the observer-to-body range is much
     // larger than the distance viewed in the image.
 
     // pi radians per 648000 arcseconds.
     this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
-
-    return true;  // Success
 }
 
-bool
+void
 MaRC::ViewingGeometry::km_per_pixel(double value)
 {
-    if (value <= 0) {
-        std::cerr
-            << "ERROR: Incorrect number of kilometers per pixel entered: "
-            << value << '\n';
-
-        return false;  // Failure
-    }
+    if (value <= 0)
+        throw std::invalid_argument("invalid kilometers per pixel");
 
     this->km_per_pixel_ =  value;
-
-    return true;  // Success
 }
 
-bool
+void
 MaRC::ViewingGeometry::set_km_per_pixel()
 {
-    if (this->focal_length_ > 0 && this->scale_ > 0)  {
-        // User has set these values
+    if (this->km_per_pixel_ > 0)
+        return;  // Nothing to be done.
 
-        if (!flags::check(this->flags_, OA_SET)) {
-            // Make sure we have a "good" default value.
+    if (this->focal_length_ <= 0 || this->scale_ <= 0)
+        throw std::logic_error("cannot set kilometers per pixel "
+                               "without focal length and scale");
 
-            // samples_ and lines_ should be set by now!
-            this->OA_s_ = this->samples_ / 2.;
-            this->OA_l_ = this->lines_ / 2.;
-            flags::set(this->flags_, OA_SET);
-        }
+    // Focal length and scale are available.
 
-        this->focal_length_pixels_ =
-            this->focal_length_ * this->scale_;
+    this->focal_length_pixels_ = this->focal_length_ * this->scale_;
 
-        this->km_per_pixel_ =
-            this->range_ /
-            MaRC::hypot(this->OA_s_ - this->sample_center_,
-                        this->focal_length_pixels_,
-                        this->OA_l_ - this->line_center_);
-    } else if (this->km_per_pixel_ <= 0) {
-        std::cerr
-            << "ERROR: Attempt to compute number of kilometers per pixel\n"
-            << "       where no focal length and scale have been set.\n";
-
-        return false;  // Failure
-    }
-
-    // If km_per_pixel_ > 0 than, presumably, km_per_pixel_ has
-    // already been set; so do nothing.
-
-    return true; // Success
+    this->km_per_pixel_ =
+        this->range_ /
+        MaRC::hypot(this->OA_s_ - this->sample_center_,
+                    this->focal_length_pixels_,
+                    this->OA_l_ - this->line_center_);
 }
 
-bool
+void
+MaRC::ViewingGeometry::range(double r)
+{
+    // value should be in kilometers!
+    double const mr =
+        std::min(this->body_->eq_rad(), this->body_->pol_rad());
+
+    // Check if the observer is too close or too far.
+    if (r <= mr || r >= std::sqrt(std::numeric_limits<double>::max()) - 1)
+        throw std::invalid_argument("invalid range");
+
+    this->range_ = r;
+}
+
+void
 MaRC::ViewingGeometry::focal_length(double len)
 {
-    if (len <= 0) {
-        std::cerr << "Incorrect focal length entered: " << len << '\n';
-
-        return false;  // Failure
-    }
+    if (len <= 0)
+        throw std::invalid_argument("invalid focal length");
 
     this->focal_length_ = len;
-
-    return true;  // Success
 }
 
-bool
+void
 MaRC::ViewingGeometry::scale(double s)
 {
-    if (s <= 0) {
-        std::cerr << "Incorrect image scale entered: " << s << '\n';
-
-	return false;  // Failure
-    }
+    if (s <= 0)
+        throw std::invalid_argument("invalid image scale");
 
     this->scale_ = s;
-
-    return true;  // Success
 }
 
 void
@@ -778,92 +652,63 @@ MaRC::ViewingGeometry::body_center_line(double line)
     this->line_center_ = line;
 }
 
-bool
+void
 MaRC::ViewingGeometry::lat_lon_center(double lat, double lon)
 {
-    return this->lat_at_center(lat) && this->lon_at_center(lon);
+    this->lat_at_center(lat);
+    this->lon_at_center(lon);
 }
 
-bool
+void
 MaRC::ViewingGeometry::lat_at_center(double lat)
 {
-    if (std::abs(lat) > 90) {
-        std::cerr << "INCORRECT Latitude at picture center, entered: "
-                  << lat << '\n';
-
-        return false;  // Failure
-    }
-
-    this->lat_at_center_ = lat * C::degree;
-    flags::set(this->flags_, LATLON_AT_CENTER);
-
-    return true;  // Success
+    this->lat_at_center_ = MaRC::validate_latitude(lat);
 }
 
-bool
+void
 MaRC::ViewingGeometry::lon_at_center(double lon)
 {
-    if (std::abs(lon) > 360) {
-        std::cerr << "INCORRECT Longitude at picture center, entered: "
-                  << lon << '\n';
+    this->lon_at_center_ = MaRC::validate_longitude(lon);
 
-        return false;  // Failure
-    }
-
-    if (lon < 0)
-      lon += 360;
-
-    this->lon_at_center_ = lon * C::degree;
-    flags::set(this->flags_, LATLON_AT_CENTER);
-
-    return true;  // Success
+    if (this->lon_at_center_ < 0)
+        this->lon_at_center_ += C::_2pi; // Equivalent positive
+                                         // longitude.
 }
 
 void
 MaRC::ViewingGeometry::optical_axis(double sample, double line)
 {
-    this->OA_s_ = sample;
-    this->OA_l_ = line;
-    flags::set(this->flags_, OA_SET);
+    this->optical_axis_sample(sample);
+    this->optical_axis_line(line);
 }
 
 void
 MaRC::ViewingGeometry::optical_axis_sample(double sample)
 {
+    if (std::isnan(sample))
+        throw std::invalid_argument("invalid optical axis sample");
+
     this->OA_s_ = sample;
-    flags::set(this->flags_, OA_SET);
 }
 
 void
 MaRC::ViewingGeometry::optical_axis_line(double line)
 {
+    if (std::isnan(line))
+        throw std::invalid_argument("invalid optical axis line");
+
     this->OA_l_ = line;
-    flags::set(this->flags_, OA_SET);
 }
 
-bool
-MaRC::ViewingGeometry::range(double r)
+void
+MaRC::ViewingGeometry::emi_ang_limit(double angle)
 {
-    // value should be in kilometers!
-    double const mr =
-        std::min(this->body_->eq_rad(), this->body_->pol_rad());
+    // Any emission angle beyond 90 degrees isn't visible.
+    if (angle < -90 || angle > 90)
+        throw std::range_error("invalid emission angle limit");
 
-    if (r > mr && r < std::sqrt(std::numeric_limits<double>::max()) - 1)
-        this->range_ =  r;
-    else {
-        std::cerr << "ERROR: Incorrect range entered.\n"
-                  << "       Range must be greater than "
-                  << mr
-                  << '\n'
-                  << "       and less than "
-                  << std::sqrt(std::numeric_limits<double>::max()) - 1
-                  << '\n';
-
-        return false;  // Failure
-    }
-
-    return true;  // Success
-}
+    this->mu_limit_ = std::cos(angle * C::degree);
+}            
 
 bool
 MaRC::ViewingGeometry::latlon2pix(double lat,
@@ -871,6 +716,9 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
                                   double & x,
                                   double & z) const
 {
+    if (!this->is_visible(lat, lon))
+        return false;  // Failure
+
     double const radius = this->body_->centric_radius(lat);
 
     if (this->body_->prograde())
@@ -918,9 +766,6 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     z = this->OA_l_ - z; // Assumes line numbers increase top to bottom.
 
     //std::cout << "* x = " << x << "\tz = " << z << '\n';
-
-    // Convert from object space to image space.
-    this->geometric_correction_->object_to_image(z, x);
 
     // x and z are both positive if the point at the given latitude
     // and longitude is in the image.

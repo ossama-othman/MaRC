@@ -26,7 +26,6 @@
 #define MARC_PHOTO_IMAGE_H
 
 #include <MaRC/SourceImage.h>
-#include <MaRC/Geometry.h>
 
 #include <memory>
 #include <vector>
@@ -52,19 +51,6 @@ namespace MaRC
     class PhotoImage : public SourceImage
     {
     public:
-
-        /**
-         * @enum sflags
-         *
-         * Flags that state which PhotoImage attributes have been set.
-         */
-        enum sflags
-        {
-            LATLON_AT_CENTER = 1 << 0,
-            OA_SET           = 1 << 1,
-            EXTREMA_SET      = 1 << 2,
-            USE_TERMINATOR   = 1 << 3
-        };
 
         /// Constructor
         /**
@@ -158,22 +144,6 @@ namespace MaRC
         /// Enable/disable pixel interpolation when reading data.
         void interpolate(bool enable);
 
-        /// Set emission angle beyond which no data will be read.
-        /**
-         * @param[in] angle Emission angle in degrees.
-         *
-         * @return @c true on success.
-         */
-        bool emi_ang_limit(double angle);
-
-
-        /**
-         * Set flag that determines whether or not terminator is taken
-         * into account when determining if data point on body is
-         * visible.
-         */
-        void use_terminator(bool u);
-
         /// Retrieve data from source image.
         /**
          * Retrieve data from source image. The configured data
@@ -254,22 +224,6 @@ namespace MaRC
         /// Amount of pixels to ignore from bottom side of input image
         /// (photo).
         std::size_t nibble_bottom_;
-
-        /**
-         * The cosine, &mu; of the emission angle outside of which no
-         * data will be plotted / retrieved.
-         *
-         * This is used to avoid mapping data close to the limb.
-         */
-        double mu_limit_;
-
-        /// bit set used to keep track of which internal flags are
-        /// set.
-        /**
-         * @todo Should we replace the "flags" implementation with
-         *       @c std::bitset<> instead?
-         */
-        unsigned long flags_;
 
   };
 
