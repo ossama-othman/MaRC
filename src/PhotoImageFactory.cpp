@@ -38,7 +38,8 @@
 
 MaRC::PhotoImageFactory::PhotoImageFactory(
     char const * filename,
-    std::shared_ptr<OblateSpheroid> body)
+    std::shared_ptr<OblateSpheroid> body,
+    std::unique_ptr<ViewingGeometry> geometry)
     : filename_(filename)
     , flat_field_()
     , body_(body)
@@ -54,16 +55,16 @@ MaRC::PhotoImageFactory::PhotoImageFactory(
     , km_per_pixel_(-1)
     , focal_length_(-1)
     , scale_(-1)
-    , OA_s_(std::numeric_limits<double>::quiet_NaN())
-    , OA_l_(std::numeric_limits<double>::quiet_NaN())
+    , OA_s_(std::numeric_limits<double>::signaling_NaN())
+    , OA_l_(std::numeric_limits<double>::signaling_NaN())
     , nibble_left_(0)
     , nibble_right_(0)
     , nibble_top_(0)
     , nibble_bottom_(0)
     , sample_center_(0)
     , line_center_(0)
-    , lat_at_center_(std::numeric_limits<double>::quiet_NaN())
-    , lon_at_center_(std::numeric_limits<double>::quiet_NaN())
+    , lat_at_center_(std::numeric_limits<double>::signaling_NaN())
+    , lon_at_center_(std::numeric_limits<double>::signaling_NaN())
     , emi_ang_limit_(-1)
     , remove_sky_(true)
     , interpolate_(false)
@@ -131,11 +132,11 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 
     // Note that we're only reading a 2-dimensional image above.
     std::vector<double> img(nelements,
-                            std::numeric_limits<double>::quiet_NaN());
+                            std::numeric_limits<double>::signaling_NaN());
 
     long fpixel[MAXDIM] = { 1, 1 };
 
-    double nulval = std::numeric_limits<double>::quiet_NaN();
+    double nulval = std::numeric_limits<double>::signaling_NaN();
     int anynul = 0;  // Unused
 
     (void) fits_read_pix(fptr,
@@ -375,6 +376,8 @@ MaRC::PhotoImageFactory::invert_h(std::vector<double> & image,
                                   std::size_t samples,
                                   std::size_t lines)
 {
+    assert(image.size() == samples * lines);
+
     // Invert image from left to right.
     auto begin = image.begin();
     for (std::size_t line = 0; line < lines; ++line) {
@@ -389,6 +392,8 @@ MaRC::PhotoImageFactory::invert_v(std::vector<double> & image,
                                   std::size_t samples,
                                   std::size_t lines)
 {
+    assert(image.size() == samples * lines);
+
     // Invert image from top to bottom.
     std::size_t const middle = lines / 2;
 
@@ -469,7 +474,7 @@ MaRC::PhotoImageFactory::flat_field_correct(
         f_img.resize(nelements);
 
         long fpixel[MAXDIM] = { 1, 1 };
-        double nulval = std::numeric_limits<double>::quiet_NaN();
+        double nulval = std::numeric_limits<double>::signaling_NaN();
         int anynul;  // Unused
 
         (void) fits_read_pix(fptr,

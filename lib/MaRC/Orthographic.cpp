@@ -49,10 +49,10 @@ MaRC::Orthographic<T>::Orthographic (
     , sub_observ_lon_(0)
     , PA_(0)
     , km_per_pixel_(-1)
-    , sample_center_(std::numeric_limits<double>::quiet_NaN())
-    , line_center_(std::numeric_limits<double>::quiet_NaN())
-    , lat_at_center_(std::numeric_limits<double>::quiet_NaN())
-    , lon_at_center_(std::numeric_limits<double>::quiet_NaN())
+    , sample_center_(std::numeric_limits<double>::signaling_NaN())
+    , line_center_(std::numeric_limits<double>::signaling_NaN())
+    , lat_at_center_(std::numeric_limits<double>::signaling_NaN())
+    , lon_at_center_(std::numeric_limits<double>::signaling_NaN())
     , polar_(false)
 {
     if (sub_observ_lat >= -90 && sub_observ_lat <= 90)
@@ -541,7 +541,7 @@ MaRC::Orthographic<T>::map_parameters(std::size_t samples,
 
 MaRC::OrthographicCenter::OrthographicCenter()
     : geometry(DEFAULT)
-    , sample_lat_center(std::numeric_limits<double>::quiet_NaN())
-    , line_lon_center(std::numeric_limits<double>::quiet_NaN())
+    , sample_lat_center(std::numeric_limits<double>::signaling_NaN())
+    , line_lon_center(std::numeric_limits<double>::signaling_NaN())
 {
 }
