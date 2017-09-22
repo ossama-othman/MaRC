@@ -130,18 +130,18 @@
     // Used to ensure num_planes are defined in sequence
     std::size_t expected_plane = 1;
 
-    double minimum = std::numeric_limits<double>::quiet_NaN();
-    double maximum = std::numeric_limits<double>::quiet_NaN();
+    double minimum = std::numeric_limits<double>::signaling_NaN();
+    double maximum = std::numeric_limits<double>::signaling_NaN();
 
     std::size_t nibble_left_val   = 0;
     std::size_t nibble_right_val  = 0;
     std::size_t nibble_top_val    = 0;
     std::size_t nibble_bottom_val = 0;
 
-    double sample_center = std::numeric_limits<double>::quiet_NaN();
-    double line_center   = std::numeric_limits<double>::quiet_NaN();
-    double lat_at_center = std::numeric_limits<double>::quiet_NaN();
-    double lon_at_center = std::numeric_limits<double>::quiet_NaN();
+    double sample_center = std::numeric_limits<double>::signaling_NaN();
+    double line_center   = std::numeric_limits<double>::signaling_NaN();
+    double lat_at_center = std::numeric_limits<double>::signaling_NaN();
+    double lon_at_center = std::numeric_limits<double>::signaling_NaN();
 
     double km_per_pixel_val   = -1;
     double arcsec_per_pix_val = -1;
@@ -153,7 +153,7 @@
     bool graphic_lat = false;
 
     // Conformal projection options
-    double max_lat = std::numeric_limits<double>::quiet_NaN();
+    double max_lat = std::numeric_limits<double>::signaling_NaN();
 
     // Simple Cylindrical projection options
     double lo_lat = MaRC::default_configuration::latitude_low;
@@ -165,8 +165,8 @@
 
     // Sub-observer latitude and longitude.
     MaRC::SubObserv sub_observation_data = {
-        std::numeric_limits<double>::quiet_NaN(),
-        std::numeric_limits<double>::quiet_NaN()
+        std::numeric_limits<double>::signaling_NaN(),
+        std::numeric_limits<double>::signaling_NaN()
     };
 
     double position_angle_val = -1;   // Position (north) angle
@@ -937,16 +937,16 @@ image_setup:
               photo_factory->body_center(sample_center, line_center);
 
               // Reset to "bad" value.
-              sample_center = std::numeric_limits<double>::quiet_NaN();
-              line_center   = std::numeric_limits<double>::quiet_NaN();
+              sample_center = std::numeric_limits<double>::signaling_NaN();
+              line_center   = std::numeric_limits<double>::signaling_NaN();
 	  }
 
           if (!std::isnan(lat_at_center) && !std::isnan(lon_at_center)) {
               photo_factory->lat_lon_center(lat_at_center, lon_at_center);
 
               // Reset to "bad" value.
-              lat_at_center = std::numeric_limits<double>::quiet_NaN();
-              lon_at_center = std::numeric_limits<double>::quiet_NaN();
+              lat_at_center = std::numeric_limits<double>::signaling_NaN();
+              lon_at_center = std::numeric_limits<double>::signaling_NaN();
 	  }
 
           photo_factory->sub_observ(($13).lat, ($13).lon);
@@ -1450,7 +1450,7 @@ ortho:  MAP_TYPE ':' _ORTHO
           sub_observation_data.lat = 0;
           sub_observation_data.lon = 0;
           km_per_pixel_val = -1;
-          position_angle_val = std::numeric_limits<double>::quiet_NaN();
+          position_angle_val = std::numeric_limits<double>::signaling_NaN();
           ortho_center.geometry = MaRC::DEFAULT;
         }
 ;
@@ -1475,8 +1475,8 @@ ortho_optsub:
                 ortho_center.line_lon_center   = line_center;
 
                 // Reset to "bad" value.
-                sample_center = std::numeric_limits<double>::quiet_NaN();
-                line_center   = std::numeric_limits<double>::quiet_NaN();
+                sample_center = std::numeric_limits<double>::signaling_NaN();
+                line_center   = std::numeric_limits<double>::signaling_NaN();
             } else if (!std::isnan(lat_at_center)
                        && !std::isnan(lon_at_center)) {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
@@ -1484,8 +1484,8 @@ ortho_optsub:
                 ortho_center.line_lon_center   = lon_at_center;
 
                 // Reset to "bad" value.
-                lat_at_center = std::numeric_limits<double>::quiet_NaN();
-                lon_at_center = std::numeric_limits<double>::quiet_NaN();
+                lat_at_center = std::numeric_limits<double>::signaling_NaN();
+                lon_at_center = std::numeric_limits<double>::signaling_NaN();
             }
         }
         | sub_observ position_angle {
@@ -1508,8 +1508,8 @@ ortho_optsub:
                 ortho_center.line_lon_center   = line_center;
 
                 // Reset to "bad" value.
-                sample_center = std::numeric_limits<double>::quiet_NaN();
-                line_center   = std::numeric_limits<double>::quiet_NaN();
+                sample_center = std::numeric_limits<double>::signaling_NaN();
+                line_center   = std::numeric_limits<double>::signaling_NaN();
             } else if (!std::isnan(lat_at_center)
                        && !std::isnan(lon_at_center)) {
                 ortho_center.geometry = MaRC::LAT_LON_GIVEN;
@@ -1517,8 +1517,8 @@ ortho_optsub:
                 ortho_center.line_lon_center   = lon_at_center;
 
                 // Reset to "bad" value.
-                lat_at_center = std::numeric_limits<double>::quiet_NaN();
-                lon_at_center = std::numeric_limits<double>::quiet_NaN();
+                lat_at_center = std::numeric_limits<double>::signaling_NaN();
+                lon_at_center = std::numeric_limits<double>::signaling_NaN();
             }
         }
 ;
@@ -1716,7 +1716,7 @@ p_stereo:
             }
 
           // Reset options
-          max_lat = std::numeric_limits<double>::quiet_NaN();
+          max_lat = std::numeric_limits<double>::signaling_NaN();
           north_pole = true;
         }
 ;
