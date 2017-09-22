@@ -55,9 +55,9 @@ MaRC::PhotoInterpolationStrategy::interpolate(double const * image,
     // Bilinear interpolation over 2x2 area of pixels.
 
     std::size_t const l = static_cast<std::size_t>(x); // floor(x)
-    std::size_t const r = l + 1;                       // ceil  (x);
+    std::size_t const r = l + 1;                       // ceil (x);
     std::size_t const b = static_cast<std::size_t>(z); // floor(z)
-    std::size_t const t = b + 1;                       // ceil  (z);
+    std::size_t const t = b + 1;                       // ceil (z);
 
     // Offsets
     std::size_t const ob = b * this->samples_;
