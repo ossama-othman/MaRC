@@ -24,10 +24,10 @@
  */
 
 %{
-  // BodyData strategies
+// BodyData strategies
 #include <MaRC/OblateSpheroid.h>
 
-  // SourceImage factories
+// SourceImage factories
 #include "PhotoImageFactory.h"
 #include "MosaicImageFactory.h"
 #include "MuImageFactory.h"
@@ -36,7 +36,10 @@
 #include "LatitudeImageFactory.h"
 #include "LongitudeImageFactory.h"
 
-  // Geometric correction strategies
+// Image parameters
+#include <MaRC/ViewingGeometry.h>
+
+// Geometric correction strategies
 #include <MaRC/NullGeometricCorrection.h>
 #include <MaRC/GLLGeometricCorrection.h>
 
@@ -109,6 +112,7 @@
     MaRC::MosaicImageFactory::list_type photo_factories;
     MaRC::MosaicImage::average_type averaging_type =
         MaRC::MosaicImage::AVG_WEIGHTED;
+    std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
 
     // Map plane image factory.
     std::unique_ptr<MaRC::ImageFactory> image_factory;
@@ -962,6 +966,16 @@ image_initialize:
         // object.
         _IMAGE ':' _STRING {
             auto_free<char> str($3);
+
+            photo_parameters =
+                std::make_unique<MaRC::PhotoImageParameters>();
+
+            viewing_geometry =
+                std::make_unique<MaRC::ViewingGeomety>(oblate_spheroid);
+
+            /**
+             * @todo Move this to the end of the image parsing.
+             */
             photo_factory =
                 std::make_unique<MaRC::PhotoImageFactory>(
                     $3,

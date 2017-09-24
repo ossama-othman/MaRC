@@ -68,81 +68,13 @@ namespace MaRC
                    std::vector<double> && image, // moved, not copied!
                    std::size_t samples,
                    std::size_t lines,
-                   std::unique_ptr<GeometricCorrection> gc);
+                   std::unique_ptr<PhotoImageParameters> config);
 
         /// Destructor.
         virtual ~PhotoImage();
 
-        /// Set sky removal variable
-        /**
-         * Enabling sky removal prevents data believed (i.e. computed)
-         * to be in the sky rather than on the body from being
-         * mapped.
-         *
-         * @param[in] remove @c true  == create sky removal mask,
-         *                   @c false == do not create sky removal
-         *                               mask.
-         *
-         * @note The source image array will not be modified.
-         */
-        void remove_sky(bool remove);
-
         /// Create sky removal mask.
         void remove_sky();
-
-        /// Set the geometric correction strategy used during lat/lon
-        /// to pixel conversion, and vice-versa.
-        bool geometric_correction(
-            std::unique_ptr<GeometricCorrection> strategy);
-
-        /// Set the photometric correction strategy.
-        bool photometric_correction(
-            std::unique_ptr<PhotometricCorrection> strategy);
-
-        /// Set all nibble values to @a n.
-        /**
-         * @param[in] n Nibble value for all image sides.
-         */
-        void nibble(std::size_t n);
-
-        /// Set left nibble value to @a n.
-        /**
-         * @param[in] n Nibble value for left image side.
-         */
-        void nibble_left(std::size_t n);
-
-        /// Set right nibble value to @a n.
-        /**
-         * @param[in] n Nibble value for right image side.
-         */
-        void nibble_right(std::size_t n);
-
-        /// Set top nibble value to @a n.
-        /**
-         * @param[in] n Nibble value for top image side.
-         */
-        void nibble_top(std::size_t n);
-
-        /// Set bottom nibble value to @a n.
-        /**
-         * @param[in] n Nibble value for bottom image side.
-         */
-        void nibble_bottom(std::size_t n);
-
-        /// Return left nibble value.
-        std::size_t nibble_left() const   { return this->nibble_left_;   }
-
-        /// Return right nibble value.
-        std::size_t nibble_right() const  { return this->nibble_right_;  }
-
-        /// Return top nibble value.
-        std::size_t nibble_top() const    { return this->nibble_top_;    }
-
-        /// Return bottom nibble value.
-        std::size_t nibble_bottom() const { return this->nibble_bottom_; }
-
-        /// Enable/disable pixel interpolation when reading data.
-        void interpolate(bool enable);
 
         /// Retrieve data from source image.
         /**
@@ -186,16 +118,6 @@ namespace MaRC
         /// Pointer to the image array.
         std::vector<double> const image_;
 
-        /// Geometric/optical correction strategy used during
-        /// latitude/longitude to pixel conversion, and vice versa.
-        std::unique_ptr<GeometricCorrection> geometric_correction_;
-
-        /// Pointer to the photometric correction strategy.
-        std::unique_ptr<PhotometricCorrection> photometric_correction_;
-
-        /// Pointer to the photometric correction strategy.
-        std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
-
         /// Mask used when "removing" sky from source image.
         /**
          * A mask is used to mark which pixels in the photo are in the
@@ -209,23 +131,7 @@ namespace MaRC
          */
         std::vector<bool> sky_mask_;
 
-        /// Amount of pixels to ignore from left side of input image
-        /// (photo).
-        std::size_t nibble_left_;
-
-        /// Amount of pixels to ignore from right side of input image
-        /// (photo).
-        std::size_t nibble_right_;
-
-        /// Amount of pixels to ignore from top side of input image
-        /// (photo).
-        std::size_t nibble_top_;
-
-        /// Amount of pixels to ignore from bottom side of input image
-        /// (photo).
-        std::size_t nibble_bottom_;
-
-  };
+    };
 
 }
 
