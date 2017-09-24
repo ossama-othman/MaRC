@@ -36,9 +36,7 @@
 
 
 MaRC::ViewingGeometry::ViewingGeometry(
-    std::shared_ptr<OblateSpheroid> body,
-    std::size_t samples,
-    std::size_t lines)
+    std::shared_ptr<OblateSpheroid> body)
     : body_(body)
     , sub_observ_lat_(std::numeric_limits<double>::signaling_NaN())
     , sub_observ_lon_(std::numeric_limits<double>::signaling_NaN())
@@ -51,8 +49,8 @@ MaRC::ViewingGeometry::ViewingGeometry(
     , focal_length_pixels_(-1)  // Force "bad" value until fully initialized
     , scale_         (-1)       // Force "bad" value until set by caller
     , normal_range_  (std::numeric_limits<double>::signaling_NaN())
-    , OA_s_          (samples / 2.0)
-    , OA_l_          (lines / 2.0)
+    , OA_s_          (std::numeric_limits<double>::signaling_NaN())
+    , OA_l_          (std::numeric_limits<double>::signaling_NaN())
     , range_b_       ()
     , observ2body_   ()
     , body2observ_   ()

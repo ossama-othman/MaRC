@@ -20,6 +20,9 @@
  * 02110-1301  USA
  *
  * @author Ossama Othman
+ *
+ * @todo Rename this file and the functions inside it to something
+ *       less confusing.
  */
 
 #ifndef MARC_VALIDATE_H
