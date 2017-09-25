@@ -25,10 +25,10 @@
 
 
 MaRC::BodyData::BodyData(bool prograde)
-  : prograde_(prograde)
+    : prograde_(prograde)
 {
 }
 
-MaRC::BodyData::~BodyData (void)
+MaRC::BodyData::~BodyData()
 {
 }

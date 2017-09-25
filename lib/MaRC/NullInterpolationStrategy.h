@@ -31,27 +31,28 @@
 namespace MaRC
 {
 
-  /**
-   * @class NullInterpolationStrategy
-   *
-   * @brief Null (no-op) interpolation strategy.
-   *
-   * This interpolation strategy is a no-op.  It performs no
-   * interpolation.
-   */
-  class NullInterpolationStrategy : public InterpolationStrategy
-  {
-  public:
+    /**
+     * @class NullInterpolationStrategy
+     *
+     * @brief Null (no-op) interpolation strategy.
+     *
+     * This interpolation strategy is a no-op.  It performs no
+     * interpolation.
+     */
+    class NullInterpolationStrategy : public InterpolationStrategy
+    {
+    public:
 
-    /// Destructor.
-    virtual ~NullInterpolationStrategy (void);
+        /// Destructor.
+        virtual ~NullInterpolationStrategy();
 
-    /// Performs no interpolation.
-    virtual bool interpolate (const double *,
-                              double,
-                              double,
-                              double &) const;
-  };
+        /// Performs no interpolation.
+        virtual bool interpolate(double const *,
+                                 double,
+                                 double,
+                                 double &) const;
+
+    };
 
 }
 

@@ -64,10 +64,10 @@ namespace MaRC
          *
          * @return @c true if interpolation succeeded.
          */
-        virtual bool interpolate (double const * image,
-                                  double x,
-                                  double z,
-                                  double & data) const = 0;
+        virtual bool interpolate(double const * image,
+                                 double x,
+                                 double z,
+                                 double & data) const = 0;
 
     };
 

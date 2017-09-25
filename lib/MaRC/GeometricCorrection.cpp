@@ -25,6 +25,6 @@
 #include "GeometricCorrection.h"
 
 
-MaRC::GeometricCorrection::~GeometricCorrection (void)
+MaRC::GeometricCorrection::~GeometricCorrection()
 {
 }
