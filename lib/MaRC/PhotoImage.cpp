@@ -183,21 +183,14 @@ MaRC::PhotoImage::remove_sky()
         for (std::size_t i = this->nibble_left_; i < slen; ++i) {
             std::size_t const index =  offset + i;
 
-            // "Units in the last place" used when determining if an
-            // image value is considered zero.
-            static constexpr int ulps = 2;
-
             /**
-             * Consider zero/NaN data points invalid, i.e. "off the
-             * body".  No need to continue beyond this point.
+             * Consider NaN data points invalid, i.e. "off the body".
+             * No need to continue beyond this point.
              *
-             * @todo We consider an image value of zero to be in the
-             *       sky but what if zero is a legitimate value on the
-             *       body?  It would be better to support a
-             *       user-specified "blank" value instead.
+             * @todo Check for a user-specified "blank" value as
+             *       well.
              */
-            if (std::isnan(this->image_[index])
-                || MaRC::almost_zero(this->image_[index], ulps))
+            if (std::isnan(this->image_[index]))
                 continue;
 
             double z = k;  // Reset "z" prior to geometric
