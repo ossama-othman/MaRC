@@ -22,13 +22,14 @@
  */
 
 #include "PhotoImage.h"
-#include "Constants.h"
+#include "PhotoImageParameters.h"
+#include "ViewingGeometry.h"
 #include "OblateSpheroid.h"
+
 #include "NullGeometricCorrection.h"
 #include "NullPhotometricCorrection.h"
 #include "NullInterpolationStrategy.h"
 #include "PhotoInterpolationStrategy.h"
-#include "Mathematics.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -52,12 +53,15 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
                              std::vector<double> && image,
                              std::size_t samples,
                              std::size_t lines,
-                             std::unique_ptr<GeometricCorrection> gc)
+                             std::unique_ptr<PhotoImageParameters> config,
+                             std::unique_ptr<ViewingGeometry> geometry)
     : SourceImage()
     , body_(body)
     , image_(std::move(image))
     , samples_(samples)
     , lines_(lines)
+    , config_(std::move(config))
+    , geometry_(std::move(geometry))
     , geometric_correction_(gc
                             ? std::move(gc)
                             : std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
@@ -65,12 +69,8 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_strategy_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
-    , sky_mask_      (samples * lines, false) // Enable sky removal.
-    , nibble_left_   (0)
-    , nibble_right_  (0)
-    , nibble_top_    (0)
-    , nibble_bottom_ (0)
-    , geometry_      (nullptr)
+    , sky_mask_(samples * lines, false) // Enable sky removal.
+    , geometry_(geometry)
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
@@ -88,7 +88,7 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     }
 }
 
-MaRC::PhotoImage::~PhotoImage (void)
+MaRC::PhotoImage::~PhotoImage()
 {
 }
 
@@ -127,27 +127,6 @@ MaRC::PhotoImage::photometric_correction(
 void
 MaRC::PhotoImage::finalize_setup()
 {
-    // Run some sanity checks on nibbling values
-    if (this->samples_ - this->nibble_right_ < this->nibble_left_) {
-        std::cerr
-            << "WARNING: Either the left or right (or both) nibble "
-               "value is too large.\n"
-               "         Both the left and right nibble values will "
-               "be set to zero.\n";
-        this->nibble_left_  = 0;
-        this->nibble_right_ = 0;
-    }
-
-    if (this->lines_ - this->nibble_top_ < this->nibble_bottom_) {
-        std::cerr
-            << "WARNING: Either the top or bottom (or both) nibble value "
-            << "is too large.\n"
-            << "         Both the top and bottom nibble values will "
-               "be set to zero.\n";
-        this->nibble_top_    = 0;
-        this->nibble_bottom_ = 0;
-    }
-
     // All necessary image values and attributes should be set by now!
 
     // Scan across and determine where points lie off of the body, i.e.
@@ -234,77 +213,6 @@ MaRC::PhotoImage::remove_sky()
     }
 }
 
-void
-MaRC::PhotoImage::nibble(std::size_t n)
-{
-    std::size_t const minimum_dimension =
-        std::min(this->samples_, this->lines_);
-
-    if (n < (minimum_dimension / 2)) {
-      this->nibble_left_   = n;
-      this->nibble_right_  = n;
-      this->nibble_top_    = n;
-      this->nibble_bottom_ = n;
-    } else {
-      std::ostringstream s;
-      s << "Invalid overall nibble value (" << n << ")";
-
-      throw std::invalid_argument(s.str ());
-    }
-}
-
-void
-MaRC::PhotoImage::nibble_left(std::size_t n)
-{
-    if (n < (this->samples_ - this->nibble_right_))
-        this->nibble_left_ = n;
-    else {
-        std::ostringstream s;
-        s << "Invalid nibble left value (" << n << ")";
-
-        throw std::invalid_argument(s.str ());
-    }
-}
-
-void
-MaRC::PhotoImage::nibble_right(std::size_t n)
-{
-    if (n < (this->samples_ - this->nibble_left_))
-        this->nibble_right_ = n;
-    else {
-        std::ostringstream s;
-        s << "Invalid nibble right value (" << n << ")";
-
-        throw std::invalid_argument(s.str ());
-    }
-}
-
-void
-MaRC::PhotoImage::nibble_top(std::size_t n)
-{
-    if (n < (this->lines_ - this->nibble_bottom_))
-        this->nibble_top_ = n;
-    else {
-        std::ostringstream s;
-        s << "Invalid nibble top value (" << n << ")";
-
-        throw std::invalid_argument(s.str ());
-    }
-}
-
-void
-MaRC::PhotoImage::nibble_bottom(std::size_t n)
-{
-    if (n < (this->lines_ - this->nibble_top_))
-        this->nibble_bottom_ = n;
-    else {
-        std::ostringstream s;
-        s << "Invalid nibble bottom value (" << n << ")";
-
-        throw std::invalid_argument (s.str ());
-    }
-}
-
 bool
 MaRC::PhotoImage::read_data(double lat, double lon, double & data) const
 {
@@ -357,15 +265,8 @@ MaRC::PhotoImage::read_data(double lat,
                                                     x,
                                                     z,
                                                     data)
-        || this->photometric_correction_->correct(*this->body_,
-                                                  this->sub_observ_lat_,
-                                                  this->sub_observ_lon_,
-                                                  this->sub_solar_lat_,
-                                                  this->sub_solar_lon_,
-                                                  lat,
-                                                  lon,
-                                                  this->range_,
-                                                  data) != 0
+        || !this->photometric_correction_->correct(*this->geometry_,
+                                                   data)
         || std::isnan(data)) {
         return false;
     }
