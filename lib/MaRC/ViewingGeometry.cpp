@@ -62,7 +62,7 @@ MaRC::ViewingGeometry::ViewingGeometry(
 {
 }
 
-MaRC::ViewingGeometry::~ViewingGeometry (void)
+MaRC::ViewingGeometry::~ViewingGeometry()
 {
 }
 
@@ -758,7 +758,8 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
 
     x += this->OA_s_;
-    z = this->OA_l_ - z; // Assumes line numbers increase top to bottom.
+    z  = this->OA_l_ - z; // Assumes line numbers increase top to
+                          // bottom.
 
     //std::cout << "* x = " << x << "\tz = " << z << '\n';
 

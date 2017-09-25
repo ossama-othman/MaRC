@@ -24,7 +24,7 @@
 #include "NullInterpolationStrategy.h"
 
 
-MaRC::NullInterpolationStrategy::~NullInterpolationStrategy (void)
+MaRC::NullInterpolationStrategy::~NullInterpolationStrategy()
 {
 }
 
@@ -34,5 +34,5 @@ MaRC::NullInterpolationStrategy::interpolate(double const *,
                                              double,
                                              double &) const
 {
-  return true;
+    return true;
 }
