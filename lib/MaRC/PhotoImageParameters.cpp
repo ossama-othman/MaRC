@@ -83,7 +83,7 @@ MaRC::PhotoImageParameters::PhotoImageParameters(
     }
 }
 
-MaRC::PhotoImageParameters::~PhotoImageParameters(void)
+MaRC::PhotoImageParameters::~PhotoImageParameters()
 {
 }
 

@@ -38,6 +38,9 @@ namespace MaRC
     class PhotometricCorrection;
     class InterpolationStrategy;
 
+    class PhotoImageParameters;
+    class ViewingGeometry;
+
     /**
      * @class PhotoImage
      *
@@ -130,6 +133,12 @@ namespace MaRC
          * @see MosaicImage
          */
         std::vector<bool> sky_mask_;
+
+        /// @c PhotoImage configuration parameters.
+        std::unique_ptr<PhotoImageParameters> const config_;
+
+        /// @c PhotoImage viewing geometry.
+        std::unique_ptr<ViewingGeometry> const geometry_;
 
     };
 

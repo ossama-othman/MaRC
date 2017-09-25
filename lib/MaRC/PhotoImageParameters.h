@@ -56,7 +56,7 @@ namespace MaRC
         PhotoImageParameters() = default;
 
         /// Destructor.
-        ~PhotoImage();
+        ~PhotoImageParameters();
 
         /// Set sky removal variable
         /**
