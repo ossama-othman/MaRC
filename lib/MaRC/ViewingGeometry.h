@@ -39,9 +39,7 @@ namespace MaRC
     public: 
        
         /// Constructor.
-        ViewingGeometry(std::shared_ptr<OblateSpheroid> body,
-                        std::size_t samples,
-                        std::size_t lines);
+        ViewingGeometry(std::shared_ptr<OblateSpheroid> body);
 
         /// Constructor.
         ~ViewingGeometry();

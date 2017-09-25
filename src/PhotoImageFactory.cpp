@@ -119,6 +119,9 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 
     long fpixel[MAXDIM] = { 1, 1 };
 
+    // For integer typed FITS images with a BLANK value, set the
+    // "blank" value in our floating point converted copy of the image
+    // to NaN.
     double nulval = std::numeric_limits<double>::signaling_NaN();
     int anynul = 0;  // Unused
 
@@ -126,9 +129,9 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
                          TDOUBLE, // Array of type "double".
                          fpixel,
                          nelements,
-                         &nulval,
+                         &nulval,  // "Blank" value in our image.
                          img.data(),
-                         &anynul,
+                         &anynul,  // Were any blank values found?
                          &status);
 
     fits_report_error(stderr, status);

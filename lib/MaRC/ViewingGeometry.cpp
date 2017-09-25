@@ -60,15 +60,6 @@ MaRC::ViewingGeometry::ViewingGeometry(
     , lon_at_center_ (std::numeric_limits<double>::signaling_NaN())
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
 {
-    if (samples < 2 || lines < 2) {
-        // Why would there ever be a one pixel source image?
-        std::ostringstream s;
-        s << "Source image samples (" << samples
-          << ") and lines (" << lines
-          << ") must both be greater than one.";
-
-        throw std::invalid_argument(s.str());
-    }
 }
 
 MaRC::ViewingGeometry::~ViewingGeometry (void)

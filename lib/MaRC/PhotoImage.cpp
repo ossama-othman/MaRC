@@ -319,7 +319,7 @@ MaRC::PhotoImage::read_data(double lat, double lon, double & data) const
 
     static const bool scan = false; // Do not scan for data weight.
 
-    return this->read_data (lat, lon, data, weight, scan);
+    return this->read_data(lat, lon, data, weight, scan);
 }
 
 bool
@@ -355,8 +355,7 @@ MaRC::PhotoImage::read_data(double lat,
     // CHECK ME!
     if (i < this->nibble_left_   || i >= this->samples_ - this->nibble_right_
         || k < this->nibble_top_ || k >= this->lines_ - this->nibble_bottom_
-        || (!this->sky_mask_.empty()
-            && !this->sky_mask_[index]))
+        || (!this->sky_mask_.empty() && !this->sky_mask_[index]))
         return false;
 
     data = this->image_[index];
