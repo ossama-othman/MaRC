@@ -24,11 +24,13 @@
 #include "FITS_memory.h"
 
 #include "MaRC/PhotoImage.h"
-#include "MaRC/GLLGeometricCorrection.h"
-#include "MaRC/NullGeometricCorrection.h"
+#include "MaRC/PhotoImageParameters.h"
+#include "MaRC/ViewingGeometry.h"
 
 #include <fitsio.h>
 
+#include <limits>
+#include <algorithm>
 #include <stdexcept>
 #include <sstream>
 #include <memory>
@@ -38,28 +40,23 @@
 
 MaRC::PhotoImageFactory::PhotoImageFactory(
     char const * filename,
-    std::shared_ptr<OblateSpheroid> body,
+    std::unique_ptr<PhotoImageParameters> config,
     std::unique_ptr<ViewingGeometry> geometry)
     : filename_(filename)
     , flat_field_()
-    , body_(body)
-    , geometry_(std::move(geometry))
-    , geometric_correction_(false)
-    , photometric_correction_(false)
-    , nibble_left_(0)
-    , nibble_right_(0)
-    , nibble_top_(0)
-    , nibble_bottom_(0)
-    , remove_sky_(true)
-    , interpolate_(false)
     , invert_v_(false)
     , invert_h_(false)
+    , config_(std::move(config))
+    , geometry_(std::move(geometry))
 {
 }
 
 std::unique_ptr<MaRC::SourceImage>
 MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 {
+    if (!this->config_ || !this->geometry_)
+        return nullptr;  // make() already called!
+
     fitsfile * fptr = nullptr;
     static constexpr int mode = READONLY;
     int status = 0;  // CFITSIO requires initialization of status
@@ -117,6 +114,11 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     std::vector<double> img(nelements,
                             std::numeric_limits<double>::signaling_NaN());
 
+    /**
+     * First pixel to be read.
+     *
+     * @attention First pixel in CFITSIO is { 1, 1 } not { 0, 0 }.
+     */
     long fpixel[MAXDIM] = { 1, 1 };
 
     // For integer typed FITS images with a BLANK value, set the
@@ -144,7 +146,7 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     if (result != 0) {
         // Report any errors before creating the map since map
         // creation can be time consuming.
-        return std::unique_ptr<SourceImage>();
+        return nullptr;
     }
 
     std::size_t const samples = static_cast<std::size_t>(naxes[0]);
@@ -157,72 +159,12 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     if (this->invert_v_)
         this->invert_v(img, samples, lines);
 
-    std::unique_ptr<MaRC::GeometricCorrection> gc;
-    if (this->geometric_correction_) {
-        gc =
-            std::make_unique<MaRC::GLLGeometricCorrection>(samples);
-    } else {
-        gc = std::make_unique<MaRC::NullGeometricCorrection>();
-    }
-
-    std::unique_ptr<PhotoImage> photo(
-        std::make_unique<MaRC::PhotoImage>(
-            this->body_,
-            std::move(img),
-            samples,
-            lines,
-            std::move(gc)));
-
-    photo->nibble_left  (this->nibble_left_);
-    photo->nibble_right (this->nibble_right_);
-    photo->nibble_top   (this->nibble_top_);
-    photo->nibble_bottom(this->nibble_bottom_);
-
-    if (this->km_per_pixel_ > 0)
-        photo->km_per_pixel(this->km_per_pixel_);
-
-    if (this->arcsec_per_pixel_ > 0)
-        photo->arcsec_per_pixel(this->arcsec_per_pixel_);
-
-    if (this->focal_length_ > 0)
-        photo->focal_length(this->focal_length_);
-
-    if (this->scale_ > 0)
-        photo->scale(this->scale_);
-
-    if (!std::isnan(this->OA_s_))
-        photo->optical_axis_sample(this->OA_s_);
-
-    if (!std::isnan(this->OA_l_))
-        photo->optical_axis_line(this->OA_l_);
-
-    if (!std::isnan(this->sample_center_))
-        photo->body_center_sample(this->sample_center_);
-
-    if (!std::isnan(this->line_center_))
-        photo->body_center_line(this->line_center_);
-
-    if (!std::isnan(this->lat_at_center_))
-        photo->lat_at_center(this->lat_at_center_);
-
-    if (!std::isnan(this->lon_at_center_))
-        photo->lon_at_center(this->lon_at_center_);
-
-    if (this->emi_ang_limit_ > 0)
-        photo->emi_ang_limit(this->emi_ang_limit_);
-
-    photo->sub_observ(this->sub_observ_lat_, this->sub_observ_lon_);
-    photo->position_angle(this->position_angle_);
-    photo->sub_solar(this->sub_solar_lat_, this->sub_solar_lon_);
-    photo->range(this->range_);
-
-    photo->remove_sky(this->remove_sky_);
-    photo->interpolate(this->interpolate_);
-    photo->use_terminator(this->use_terminator_);
-
-    photo->finalize_setup();
-
-    return std::move(photo);
+    return
+        std::make_unique<MaRC::PhotoImage>(std::move(img),
+                                           samples,
+                                           lines,
+                                           std::move(this->config_),
+                                           std::move(this->geometry_));
 }
 
 void
@@ -232,129 +174,10 @@ MaRC::PhotoImageFactory::flat_field(char const * name)
 }
 
 void
-MaRC::PhotoImageFactory::nibbling(std::size_t left,
-                                  std::size_t right,
-                                  std::size_t top,
-                                  std::size_t bottom)
-{
-    this->nibble_left_   = left;
-    this->nibble_right_  = right;
-    this->nibble_top_    = top;
-    this->nibble_bottom_ = bottom;
-}
-
-void
 MaRC::PhotoImageFactory::invert(bool vertical, bool horizontal)
 {
     this->invert_v_ = vertical;
     this->invert_h_ = horizontal;
-}
-
-void
-MaRC::PhotoImageFactory::interpolate(bool enable)
-{
-    this->interpolate_ = enable;
-}
-
-void
-MaRC::PhotoImageFactory::remove_sky(bool enable)
-{
-    this->remove_sky_ = enable;
-}
-
-void
-MaRC::PhotoImageFactory::emi_ang_limit(double angle)
-{
-    this->emi_ang_limit_ = angle;
-}
-
-void
-MaRC::PhotoImageFactory::body_center(double sample, double line)
-{
-    this->sample_center_ = sample;
-    this->line_center_   = line;
-}
-
-void
-MaRC::PhotoImageFactory::lat_lon_center(double lat, double lon)
-{
-    this->lat_at_center_ = lat;
-    this->lon_at_center_ = lon;
-}
-
-void
-MaRC::PhotoImageFactory::optical_axis(double sample, double line)
-{
-    this->OA_s_ = sample;
-    this->OA_l_ = line;
-}
-
-void
-MaRC::PhotoImageFactory::geometric_correction(bool enable)
-{
-    this->geometric_correction_ = enable;
-}
-
-void
-MaRC::PhotoImageFactory::photometric_correction(bool enable)
-{
-    this->photometric_correction_ = enable;
-}
-
-void
-MaRC::PhotoImageFactory::sub_observ(double lat, double lon)
-{
-    this->sub_observ_lat_ = lat;
-    this->sub_observ_lon_ = lon;
-}
-
-void
-MaRC::PhotoImageFactory::sub_solar(double lat, double lon)
-{
-    this->sub_solar_lat_ = lat;
-    this->sub_solar_lon_ = lon;
-}
-
-void
-MaRC::PhotoImageFactory::range(double r)
-{
-    this->range_ = r;
-}
-
-void
-MaRC::PhotoImageFactory::focal_length(double len)
-{
-    this->focal_length_ = len;
-}
-
-void
-MaRC::PhotoImageFactory::scale(double s)
-{
-    this->scale_ = s;
-}
-
-void
-MaRC::PhotoImageFactory::position_angle(double north)
-{
-    this->position_angle_ = north;
-}
-
-void
-MaRC::PhotoImageFactory::arcsec_per_pixel(double a)
-{
-    this->arcsec_per_pixel_ = a;
-}
-
-void
-MaRC::PhotoImageFactory::km_per_pixel(double k)
-{
-    this->km_per_pixel_ = k;
-}
-
-void
-MaRC::PhotoImageFactory::use_terminator(bool u)
-{
-    this->use_terminator_ = u;
 }
 
 void
@@ -477,7 +300,7 @@ MaRC::PhotoImageFactory::flat_field_correct(
 
     if (status != 0) {
         char fits_error[FLEN_STATUS] = { 0 };
-        fits_get_errstatus (status, fits_error);
+        fits_get_errstatus(status, fits_error);
 
         throw std::runtime_error(fits_error);
     }

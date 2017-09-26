@@ -48,6 +48,8 @@ namespace MaRC
 
         /// Performs no interpolation.
         virtual bool interpolate(double const *,
+                                 std::size_t,
+                                 std::size_t,
                                  double,
                                  double,
                                  double &) const;
