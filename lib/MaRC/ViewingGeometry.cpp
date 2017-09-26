@@ -30,34 +30,39 @@
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#include <numeric>
 #include <iostream>
-#include <sstream>
+
+
+namespace
+{
+    static constexpr double not_a_number =
+        std::numeric_limits<double>::signaling_NaN();
+}
 
 
 MaRC::ViewingGeometry::ViewingGeometry(
     std::shared_ptr<OblateSpheroid> body)
     : body_(body)
-    , sub_observ_lat_(std::numeric_limits<double>::signaling_NaN())
-    , sub_observ_lon_(std::numeric_limits<double>::signaling_NaN())
-    , sub_solar_lat_ (std::numeric_limits<double>::signaling_NaN())
-    , sub_solar_lon_ (std::numeric_limits<double>::signaling_NaN())
-    , range_(std::sqrt(std::numeric_limits<double>::max() - 1))
-    , position_angle_(std::numeric_limits<double>::signaling_NaN())
-    , km_per_pixel_  (-1)       // Force "bad" value until set by caller
-    , focal_length_  (-1)       // Force "bad" value until set by caller
-    , focal_length_pixels_(-1)  // Force "bad" value until fully initialized
-    , scale_         (-1)       // Force "bad" value until set by caller
-    , normal_range_  (std::numeric_limits<double>::signaling_NaN())
-    , OA_s_          (std::numeric_limits<double>::signaling_NaN())
-    , OA_l_          (std::numeric_limits<double>::signaling_NaN())
+    , sub_observ_lat_(not_a_number)
+    , sub_observ_lon_(not_a_number)
+    , sub_solar_lat_ (not_a_number)
+    , sub_solar_lon_ (not_a_number)
+    , range_         (not_a_number)
+    , position_angle_(not_a_number)
+    , km_per_pixel_  (not_a_number)
+    , focal_length_  (not_a_number)
+    , focal_length_pixels_(not_a_number)
+    , scale_         (not_a_number)
+    , normal_range_  (not_a_number)
+    , OA_s_          (not_a_number)
+    , OA_l_          (not_a_number)
     , range_b_       ()
     , observ2body_   ()
     , body2observ_   ()
-    , sample_center_ (std::numeric_limits<double>::signaling_NaN())
-    , line_center_   (std::numeric_limits<double>::signaling_NaN())
-    , lat_at_center_ (std::numeric_limits<double>::signaling_NaN())
-    , lon_at_center_ (std::numeric_limits<double>::signaling_NaN())
+    , sample_center_ (not_a_number)
+    , line_center_   (not_a_number)
+    , lat_at_center_ (not_a_number)
+    , lon_at_center_ (not_a_number)
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
 {
 }
@@ -167,7 +172,7 @@ MaRC::ViewingGeometry::finalize_setup()
 {
     // All necessary image values and attributes should be set by now!
 
-    if (this->km_per_pixel_ <= 0)
+    if (std::isnan(this->km_per_pixel_))
         this->set_km_per_pixel();
 
     // Set Body center to observer vectors.
@@ -177,7 +182,6 @@ MaRC::ViewingGeometry::finalize_setup()
     this->range_b_[1] = -this->range_ * std::cos(this->sub_observ_lat_);
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
 
-    /// Perpendicular distance from observer to image plane.
     if (std::isnan(this->lat_at_center_)
         || std::isnan(this->lon_at_center_)) {
         /**
@@ -197,6 +201,7 @@ MaRC::ViewingGeometry::finalize_setup()
 
         double const magRo = MaRC::magnitude(range_O);
 
+        // Perpendicular distance from observer to image plane.
         this->normal_range_ =
             std::sqrt(this->range_ * this->range_ - magRo * magRo);
 
@@ -240,11 +245,12 @@ MaRC::ViewingGeometry::finalize_setup()
                            this->observ2body_,
                            this->body2observ_);
 
-        // In case focal length and scale are not set or used.
+        // Set perpendicular distance from observer to image plane in
+        // case focal length and scale are not set or used.
         this->normal_range_ = -(this->body2observ_ * this->range_b_)[1];
     }
 
-    if (this->focal_length_pixels_ < 0) {
+    if (std::isnan(this->focal_length_pixels_)) {
         this->focal_length_pixels_ =
             this->normal_range_ / this->km_per_pixel_;
     }
@@ -550,7 +556,7 @@ MaRC::ViewingGeometry::arcsec_per_pixel(double arcseconds)
     // NOTE: range_ should be in units of kilometers at this point.
     if (arcseconds <= 0)
         throw std::invalid_argument("invalid number of arcseconds");
-    else if (this->range_ <= 0)
+    else if (std::isnan(this->range_))
         throw std::logic_error("range not previously set");
 
     // This conversion assumes that the observer-to-body range is much
@@ -572,10 +578,10 @@ MaRC::ViewingGeometry::km_per_pixel(double value)
 void
 MaRC::ViewingGeometry::set_km_per_pixel()
 {
-    if (this->km_per_pixel_ > 0)
+    if (!std::isnan(this->km_per_pixel_))
         return;  // Nothing to be done.
 
-    if (this->focal_length_ <= 0 || this->scale_ <= 0)
+    if (std::isnan(this->focal_length_) || std::isnan(this->scale_))
         throw std::logic_error("cannot set kilometers per pixel "
                                "without focal length and scale");
 
@@ -593,12 +599,16 @@ MaRC::ViewingGeometry::set_km_per_pixel()
 void
 MaRC::ViewingGeometry::range(double r)
 {
-    // value should be in kilometers!
-    double const mr =
+    // Range value should be in kilometers!
+
+    auto const min_range =
         std::min(this->body_->eq_rad(), this->body_->pol_rad());
 
+    constexpr auto max_range =
+        std::sqrt(std::numeric_limits<decltype(this->range_)>::max());
+
     // Check if the observer is too close or too far.
-    if (r <= mr || r >= std::sqrt(std::numeric_limits<double>::max()) - 1)
+    if (r <= min_range || r >= max_range)
         throw std::invalid_argument("invalid range");
 
     this->range_ = r;
