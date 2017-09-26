@@ -30,7 +30,7 @@ namespace MaRC
 {
 
     /**
-     * @class Interpolation Strategy
+     * @class InterpolationStrategy
      *
      * @brief Abstract base class for all interpolation strategies.
      *
@@ -56,18 +56,18 @@ namespace MaRC
          * The interpolation technique will not include invalid data
          * (e.g. @c NaN) when computing interpolated values.
          *
-         * @param[in] image The image array containing the data to be
-         *                  interpolated.
-         * @param[in] x     Floating point sample in image.
-         * @param[in] z     Floating point line in image.
-         * @param[out] data Interpolated data.
+         * @param[in]  data  The array containing the data to be
+         *                   interpolated.
+         * @param[in]  x     Floating point sample in image.
+         * @param[in]  z     Floating point line in image.
+         * @param[out] datum Interpolated datum.
          *
          * @return @c true if interpolation succeeded.
          */
-        virtual bool interpolate(double const * image,
+        virtual bool interpolate(double const * data,
                                  double x,
                                  double z,
-                                 double & data) const = 0;
+                                 double & datum) const = 0;
 
     };
 

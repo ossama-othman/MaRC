@@ -37,7 +37,7 @@ libMaRC_la_SOURCES = \
   NullPhotometricCorrection.cpp \
   \
   InterpolationStrategy.cpp \
-  PhotoInterpolationStrategy.cpp \
+  BilinearInterpolationStrategy.cpp \
   NullInterpolationStrategy.cpp \
   \
   SourceImage.cpp \
@@ -47,6 +47,7 @@ libMaRC_la_SOURCES = \
   CosPhaseImage.cpp \
   LatitudeImage.cpp \
   LongitudeImage.cpp \
+  PhotoImageParameters.cpp \
   PhotoImage.cpp \
   MosaicImage.cpp \
   \
@@ -74,6 +75,7 @@ pkginclude_HEADERS = \
   CosPhaseImage.h \
   LatitudeImage.h \
   LongitudeImage.h \
+  PhotoImageParameters.h \
   PhotoImage.h \
   MosaicImage.h \
   \
@@ -82,6 +84,8 @@ pkginclude_HEADERS = \
   NullGeometricCorrection.h \
   \
   InterpolationStrategy.h \
+  BilinearInterpolationStrategy.h \
+  NullInterpolationStrategy.h \
   \
   PhotometricCorrection.h \
   NullPhotometricCorrection.h \
@@ -104,7 +108,4 @@ pkginclude_HEADERS = \
   \
   Version.h
 
-noinst_HEADERS = \
-  \
-  NullInterpolationStrategy.h \
-  PhotoInterpolationStrategy.h
+# noinst_HEADERS =
