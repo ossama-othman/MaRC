@@ -33,6 +33,8 @@
 
 namespace MaRC
 {
+    class OblateSpheroid;
+
     class GeometricCorrection;
     class PhotometricCorrection;
     class InterpolationStrategy;
@@ -52,7 +54,10 @@ namespace MaRC
     public:
 
         /// Constructor
-        PhotoImageParameters() = default;
+        PhotoImageParameters(std::shared_ptr<OblateSpheroid> body,
+                             std::vector<double> && image,
+                             std::size_t samples,
+                             std::size_t lines);
 
         /// Destructor.
         ~PhotoImageParameters() = default;
@@ -77,7 +82,10 @@ namespace MaRC
 
         /// Set the geometric correction strategy used during lat/lon
         /// to pixel conversion, and vice-versa.
-        bool geometric_correction(
+        /**
+         * @throw std::invalid_argument @a strategy is a nullptr.
+         */
+        void geometric_correction(
             std::unique_ptr<GeometricCorrection> strategy);
 
         /// Get the geometric correction strategy used during lat/lon
@@ -88,7 +96,10 @@ namespace MaRC
         }
 
         /// Set the photometric correction strategy.
-        bool photometric_correction(
+        /**
+         * @throw std::invalid_argument @a strategy is @c nullptr.
+         */
+        void photometric_correction(
             std::unique_ptr<PhotometricCorrection> strategy);
 
         /// Get the photometric correction strategy.
@@ -98,6 +109,9 @@ namespace MaRC
         }
 
         /// Set the interpolation strategy used when reading data.
+        /**
+         * @throw std::invalid_argument @a strategy is @c nullptr.
+         */         
         void interpolation_strategy(
             std::unique_ptr<InterpolationStrategy> strategy);
 

@@ -26,37 +26,22 @@
 #include "ViewingGeometry.h"
 #include "OblateSpheroid.h"
 
-#include "NullGeometricCorrection.h"
-#include "NullPhotometricCorrection.h"
-#include "NullInterpolationStrategy.h"
-#include "PhotoInterpolationStrategy.h"
+#include "GeometricCorrection.h"
+#include "InterpolationStrategy.h"
+#include "PhotometricCorrection.h"
 
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
 #include <cassert>
 
-#ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
-# define MARC_DEFAULT_GEOM_CORR_STRATEGY MaRC::NullGeometricCorrection
-#endif  /* MARC_DEFAULT_GEOM_CORR_STRATEGY */
 
-#ifndef MARC_DEFAULT_PHOTO_CORR_STRATEGY
-# define MARC_DEFAULT_PHOTO_CORR_STRATEGY MaRC::NullPhotometricCorrection
-#endif  /* MARC_DEFAULT_PHOTO_CORR_STRATEGY */
-
-#ifndef MARC_DEFAULT_INTERPOLATION_STRATEGY
-# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolationStrategy
-#endif  /* MARC_DEFAULT_INTERPOLATION_STRATEGY */
-
-
-MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
-                             std::vector<double> && image,
+MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
                              std::size_t samples,
                              std::size_t lines,
                              std::unique_ptr<PhotoImageParameters> config,
                              std::unique_ptr<ViewingGeometry> geometry)
     : SourceImage()
-    , body_(body)
     , image_(std::move(image))
     , samples_(samples)
     , lines_(lines)
@@ -129,6 +114,8 @@ MaRC::PhotoImage::read_data(double lat,
 
     if (!config->interpolation_strategy()->interpolate(
             this->image_.data(),
+            this->samples_,
+            this->lines_,
             x,
             z,
             data)

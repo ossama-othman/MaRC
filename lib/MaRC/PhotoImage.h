@@ -33,11 +33,6 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
-    class GeometricCorrection;
-    class PhotometricCorrection;
-    class InterpolationStrategy;
-
     class PhotoImageParameters;
     class ViewingGeometry;
 
@@ -57,8 +52,6 @@ namespace MaRC
 
         /// Constructor
         /**
-         * @param[in]     body    Pointer to OblateSpheroid object
-         *                        representing body being mapped.
          * @param[in,out] image   Array containing the image data.
          *                        Ownership is transferred through a
          *                        move operation.
@@ -69,8 +62,7 @@ namespace MaRC
          *                        transferred to the @c PhotoImage.
          *
          */
-        PhotoImage(std::shared_ptr<OblateSpheroid> body,
-                   std::vector<double> && image, // moved, not copied!
+        PhotoImage(std::vector<double> && image, // moved, not copied!
                    std::size_t samples,
                    std::size_t lines,
                    std::unique_ptr<PhotoImageParameters> config,
@@ -163,10 +155,10 @@ namespace MaRC
         std::vector<bool> sky_mask_;
 
         /// @c PhotoImage configuration parameters.
-        std::unique_ptr<PhotoImageParameters> const config_;
+        std::unique_ptr<PhotoImageParameters const> const config_;
 
         /// @c PhotoImage viewing geometry.
-        std::unique_ptr<ViewingGeometry> const geometry_;
+        std::unique_ptr<ViewingGeometry const> const geometry_;
 
     };
 

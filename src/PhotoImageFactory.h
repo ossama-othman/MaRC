@@ -26,9 +26,6 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/PhotoImage.h"  /* Need complete type for covariant
-                                 return type in make() method. */
-
 #include <vector>
 #include <string>
 #include <cstddef>
@@ -36,8 +33,8 @@
 
 namespace MaRC
 {
-    class GeometricCorrection;
-    class PhotometricCorrection;
+    class PhotoImageParameters;
+    class ViewingGeometry;
 
     /**
      * @class PhotoImageFactory
@@ -59,11 +56,10 @@ namespace MaRC
         /// Constructor.
         /**
          * @param[in] filename Name of file containing image.
-         * @param[in] body     Body being mapped (currently must be
-         *                     represented as an oblate spheroid).
          */
         PhotoImageFactory(char const * filename,
-                          std::shared_ptr<OblateSpheroid> body);
+                          std::unique_ptr<PhotoImageParameters> config,
+                          std::unique_ptr<ViewingGeometry> geometry);
 
         /// Create a @c PhotoImage.
         virtual std::unique_ptr<SourceImage> make(
@@ -72,92 +68,8 @@ namespace MaRC
         /// Set the flat field image filename.
         void flat_field(char const * name);
 
-        /// Set the nibbling values.
-        void nibbling(std::size_t left,
-                      std::size_t right,
-                      std::size_t top,
-                      std::size_t bottom);
-
         /// Set the image inversion flags.
         void invert(bool vertical, bool horizontal);
-
-        /// Set image interpolation flag.
-        void interpolate(bool enable);
-
-        /// Set image sky removal flag.
-        void remove_sky(bool enable);
-
-        /// Set emission angle beyond which no data will be read.
-        void emi_ang_limit(double angle);
-
-        /// Set sample and line of body center.
-        void body_center(double sample, double line);
-
-        /// Set latitude and longitude at center of image.
-        void lat_lon_center(double lat, double lon);
-
-        /// Set the optical axis.
-        /**
-         * @param[in] sample Optical axis sample.
-         * @param[in] line   Optical axis line.
-         */
-        void optical_axis(double sample, double line);
-
-        /// Enable the geometric correction strategy during
-        /// lat/lon to pixel conversion, and vice-versa.
-        void geometric_correction(bool enable);
-
-        /// Enable the photometric correction strategy.
-        void photometric_correction(bool enable);
-
-        /// Set sub-observation latitude and longitude.
-        /**
-         * @param[in] lat Sub-observation latitude  (degrees)
-         * @param[in] lon Sub-observation longitude (degrees)
-         */
-        void sub_observ(double lat, double lon);
-
-        /// Set Sub-Solar latitude and longitude.
-        /**
-         * @param[in] lat Sub-solar latitude  (degrees)
-         * @param[in] lon Sub-solar longitude (degrees)
-         */
-        void sub_solar(double lat, double lon);
-
-        /// Set observer to body distance (KM).
-        /**
-         * @param[in] r Distance from observer to body in kilometers.
-         */
-        void range(double r);
-
-        /// Set camera focal length (millimeters).
-        /**
-         * @param[in] len Focal length in millimeters.
-         */
-        void focal_length(double len);
-
-        /// Set input image scale (pixels / mm).
-        /**
-         * @param[in] s Image scale in pixels per millimeter.
-         */
-        void scale(double s);
-
-        /// Set position angle (North Angle in degrees) found
-        /// in image.
-        void position_angle(double north);
-
-        /// Arcseconds per pixel in image.
-        void arcsec_per_pixel(double a);
-
-        /// Kilometers per pixel in image.
-        void km_per_pixel(double k);
-
-        /**
-         * Set flag that determines whether or not terminator is taken
-         * into account when determining if data point on body is
-         * visible.
-         */
-        void use_terminator(bool u);
 
         /// Invert image from left to right.
         /**
@@ -205,121 +117,17 @@ namespace MaRC
         /// photo/image containing the actual data.
         std::string flat_field_;
 
-        /// Object representing the body being mapped.
-        /**
-         * @note OblateSpheroid is used instead of BodyData since some
-         *       code in this implementation assumes that the body is
-         *       modeled as an oblate spheroid.
-         */
-        std::shared_ptr<OblateSpheroid> const body_;
-
-        /// Enable/disable geometric correction.
-        /**
-         * @note Only GLL spacecraft geometric lens abberration
-         *       correct is currently supported.
-         */
-        bool geometric_correction_;
-
-        /// Enable/disable photometric correction.
-        bool photometric_correction_;
-
-        /// Sub-Observer Latitude -- BodyCENTRIC (radians).
-        double sub_observ_lat_;
-
-        /// Sub-Observer Longitude -- Central Meridian (radians).
-        double sub_observ_lon_;
-
-        /// Sub-Solar Latitude -- BodyCENTRIC (radians)
-        double sub_solar_lat_;
-
-        /// Sub-Solar Longitude (radians)
-        double sub_solar_lon_;
-
-        /// Center of body distance to observer (Kilometers)
-        double range_;
-
-        /// Position angle in the image NOT in the sky.
-        double position_angle_;
-
-        /// Arcseconds per pixel.
-        double arcsec_per_pixel_;
-
-        /// Kilometers per pixel at plane that passes through body
-        /// center.
-        double km_per_pixel_;
-
-        /// Focal length in millimeters.
-        double focal_length_;
-
-        /// pixels/mm at focal plane.
-        double scale_;
-
-        /**
-         * @name Optical Axis
-         *
-         * The location of the optical axis (boresight) on the photo.
-         */
-        //@{
-        /// Sample component of optical axis.
-        double OA_s_;
-
-        /// Line component of optical axis.
-        double OA_l_;
-        //@}
-
-        /// Amount of pixels to ignore from left side of input image
-        /// (photo).
-        std::size_t nibble_left_;
-
-        /// Amount of pixels to ignore from right side of input image
-        /// (photo).
-        std::size_t nibble_right_;
-
-        /// Amount of pixels to ignore from top side of input image
-        /// (photo).
-        std::size_t nibble_top_;
-
-        /// Amount of pixels to ignore from bottom side of input image
-        /// (photo).
-        std::size_t nibble_bottom_;
-
-        /**
-         * @name Object-Space Body Center
-         *
-         * Object space (e.g. corrected for lens aberration) center of
-         * body in the input image/photo.
-         */
-        //@{
-        /// Horizontal center of body in photo.
-        double sample_center_;
-
-        /// Vertical center of body in photo.
-        double line_center_;
-        //@}
-
-        /// BODYcentric latitude at picture center.
-        double lat_at_center_;
-
-        /// Longitude at picture center
-        double lon_at_center_;
-
-        /// Emission angle beyond which no data will be mapped.
-        double emi_ang_limit_;
-
-        /// Perform sky removal.
-        bool remove_sky_;
-
-        /// Perform pixel interpolation.
-        bool interpolate_;
-
-        /// Enable/disable mapping beyond terminator.
-        bool use_terminator_;
-
         /// Invert image top to bottom.
         bool invert_v_;
 
         /// Invert image left to right.
         bool invert_h_;
+
+        /// @c PhotoImage configuration parameters.
+        std::unique_ptr<PhotoImageParameters> config_;
+
+        /// @c PhotoImage viewing geometry.
+        std::unique_ptr<ViewingGeometry> geometry_;
 
     };
 

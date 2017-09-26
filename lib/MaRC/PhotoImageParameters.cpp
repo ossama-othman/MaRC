@@ -41,7 +41,7 @@
 #endif  /* MARC_DEFAULT_PHOTO_CORR_STRATEGY */
 
 #ifndef MARC_DEFAULT_INTERPOLATION_STRATEGY
-# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolation
+# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolationStrategy
 #endif  /* MARC_DEFAULT_INTERPOLATION_STRATEGY */
 
 
@@ -50,7 +50,7 @@ MaRC::PhotoImageParameters::PhotoImageParameters(
     std::vector<double> && image,
     std::size_t samples,
     std::size_t lines)
-    , body_(body)
+    : body_(body)
     , image_(std::move(image))
     , samples_(samples)
     , lines_(lines)
@@ -82,52 +82,41 @@ MaRC::PhotoImageParameters::PhotoImageParameters(
     }
 }
 
-bool
+void
 MaRC::PhotoImageParameters::geometric_correction(
     std::unique_ptr<GeometricCorrection> strategy)
 {
-    if (strategy) {
-        this->geometric_correction_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null geometric correction strategy pointer.\n";
-
-        return false;  // Failure
+    if (!strategy) {
+        std::invalid_argument(
+            "Null geometric correction strategy pointer.");
     }
+
+    this->geometric_correction_ = std::move(strategy);
 }
 
-bool
+void
 MaRC::PhotoImageParameters::photometric_correction(
     std::unique_ptr<PhotometricCorrection> strategy)
 {
-    if (strategy) {
-        this->photometric_correction_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null photometric correction strategy pointer.\n";
-
-        return false;  // Failure
+    if (!strategy) {
+        throw
+            std::invalid_argument(
+                "Null photometric correction strategy pointer.");
     }
+
+    this->photometric_correction_ = std::move(strategy);
 }
 
-bool
-MaRC::PhotoImageParameters::interpolation(
-    std::unique_ptr<Interpolation> strategy)
+void
+MaRC::PhotoImageParameters::interpolation_strategy(
+    std::unique_ptr<InterpolationStrategy> strategy)
 {
-    if (strategy) {
-        this->interpolation_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null interpolation strategy pointer.\n";
-
-        return false;  // Failure
+    if (!strategy) {
+        throw
+            std::invalid_argument("Null interpolation strategy pointer.");
     }
+
+    this->interpolation_ = std::move(strategy);
 }
 
 void
@@ -255,7 +244,7 @@ MaRC::PhotoImageParameters::nibble(std::size_t n)
       std::ostringstream s;
       s << "Invalid overall nibble value (" << n << ")";
 
-      throw std::invalid_argument(s.str ());
+      throw std::invalid_argument(s.str());
     }
 }
 
@@ -268,7 +257,7 @@ MaRC::PhotoImageParameters::nibble_left(std::size_t n)
         std::ostringstream s;
         s << "Invalid nibble left value (" << n << ")";
 
-        throw std::invalid_argument(s.str ());
+        throw std::invalid_argument(s.str());
     }
 }
 
@@ -281,7 +270,7 @@ MaRC::PhotoImageParameters::nibble_right(std::size_t n)
         std::ostringstream s;
         s << "Invalid nibble right value (" << n << ")";
 
-        throw std::invalid_argument(s.str ());
+        throw std::invalid_argument(s.str());
     }
 }
 
@@ -294,7 +283,7 @@ MaRC::PhotoImageParameters::nibble_top(std::size_t n)
         std::ostringstream s;
         s << "Invalid nibble top value (" << n << ")";
 
-        throw std::invalid_argument(s.str ());
+        throw std::invalid_argument(s.str());
     }
 }
 
@@ -307,6 +296,6 @@ MaRC::PhotoImageParameters::nibble_bottom(std::size_t n)
         std::ostringstream s;
         s << "Invalid nibble bottom value (" << n << ")";
 
-        throw std::invalid_argument (s.str ());
+        throw std::invalid_argument (s.str());
     }
 }

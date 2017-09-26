@@ -47,16 +47,12 @@ namespace MaRC
 
       /// Constructor
       /**
-       * @param[in] samples        Number of samples in image.
-       * @param[in] lines          Number of lines   in image.
        * @param[in] nibble_left    Left   nibble value.
        * @param[in] nibble_right   Right  nibble value.
        * @param[in] nibble_top     Top    nibble value.
        * @param[in] nibble_bottom  Bottom nibble value.
        */
-      BilinearInterpolationStrategy(std::size_t samples,
-                                    std::size_t lines,
-                                    std::size_t nibble_left,
+      BilinearInterpolationStrategy(std::size_t nibble_left,
                                     std::size_t nibble_right,
                                     std::size_t nibble_top,
                                     std::size_t nibble_bottom);
@@ -70,14 +66,13 @@ namespace MaRC
        * @see @c InterpolationStrategy for parameter details.
        */
       virtual bool interpolate(double const * data,
+                               std::size_t samples,
+                               std::size_t lines,
                                double x,
                                double z,
                                double & datum) const;
 
   private:
-
-      /// Number of samples in image.
-      std::size_t const samples_;
 
       /// Left most sample in image.
       std::size_t const left_;

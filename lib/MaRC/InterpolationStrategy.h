@@ -25,6 +25,8 @@
 #ifndef MARC_INTERPOLATION_STRATEGY_H
 #define MARC_INTERPOLATION_STRATEGY_H
 
+#include <cstddef>
+
 
 namespace MaRC
 {
@@ -56,15 +58,19 @@ namespace MaRC
          * The interpolation technique will not include invalid data
          * (e.g. @c NaN) when computing interpolated values.
          *
-         * @param[in]  data  The array containing the data to be
-         *                   interpolated.
-         * @param[in]  x     Floating point sample in image.
-         * @param[in]  z     Floating point line in image.
+         * @param[in]  data    The array containing the data to be
+         *                     interpolated.
+         * @param[in]  samples Number of samples in the image array.
+         * @param[in]  lines   Number of lines   in the image array.
+         * @param[in]  x       Floating point sample in image.
+         * @param[in]  z       Floating point line in image.
          * @param[out] datum Interpolated datum.
          *
          * @return @c true if interpolation succeeded.
          */
         virtual bool interpolate(double const * data,
+                                 std::size_t samples,
+                                 std::size_t lines,
                                  double x,
                                  double z,
                                  double & datum) const = 0;
