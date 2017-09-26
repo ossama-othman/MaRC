@@ -64,14 +64,17 @@ namespace MaRC
          *                        move operation.
          * @param[in]     samples Number of samples in the image.
          * @param[in]     lines   Number of lines   in the image.
-         * @param[in,out] gc      Geometric correction strategy.
-         *                        (@c PhotoImage assumes ownership).
+         * @param[in,out] config  Configuration parameters specific to
+         *                        a @c PhotoImage.  Ownership is
+         *                        transferred to the @c PhotoImage.
+         *
          */
         PhotoImage(std::shared_ptr<OblateSpheroid> body,
                    std::vector<double> && image, // moved, not copied!
                    std::size_t samples,
                    std::size_t lines,
-                   std::unique_ptr<PhotoImageParameters> config);
+                   std::unique_ptr<PhotoImageParameters> config,
+                   std::unique_ptr<ViewingGeometry> geometry);
 
         /// Destructor.
         virtual ~PhotoImage();
@@ -118,8 +121,33 @@ namespace MaRC
 
     private:
 
+        /**
+         * @brief Obtain data weight for given image pixel.
+         *
+         * Obtain the data weight based on how close the pixel at
+         * sample @a i and line @k is to the edge of the image or the
+         * sky if sky removal is enabled.  For example, less weight is
+         * given to pixels close to an edge of the image.
+         *
+         * @param[in]  i      Image pixel sample.
+         * @param[in]  k      Image pixel line.
+         * @param[out] weight Data weight at the given image pixel
+         *                    coordinate.
+         */
+        void data_weight(std::size_t i,
+                         std::size_t k,
+                         std::size_t & weight) const;
+
+    private:
+
         /// Pointer to the image array.
         std::vector<double> const image_;
+
+        /// Number of samples in the image.
+        std::size_t const samples_;
+
+        /// Number of lines in the image.
+        std::size_t const lines_;
 
         /// Mask used when "removing" sky from source image.
         /**

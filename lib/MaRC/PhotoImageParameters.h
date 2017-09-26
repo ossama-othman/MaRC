@@ -33,7 +33,6 @@
 
 namespace MaRC
 {
-    class OblateSpheroid;
     class GeometricCorrection;
     class PhotometricCorrection;
     class InterpolationStrategy;
@@ -56,7 +55,11 @@ namespace MaRC
         PhotoImageParameters() = default;
 
         /// Destructor.
-        ~PhotoImageParameters();
+        ~PhotoImageParameters() = default;
+
+        // Disallow copying.
+        PhotoImageParameters(PhotoImageParameters const &) = delete;
+        void operator=(PhotoImageParameters const &) = delete;
 
         /// Set sky removal variable
         /**
@@ -77,9 +80,32 @@ namespace MaRC
         bool geometric_correction(
             std::unique_ptr<GeometricCorrection> strategy);
 
+        /// Get the geometric correction strategy used during lat/lon
+        /// to pixel conversion, and vice-versa.
+        auto geometric_correction() const
+        {
+            return this->geometric_correction_.get();
+        }
+
         /// Set the photometric correction strategy.
         bool photometric_correction(
             std::unique_ptr<PhotometricCorrection> strategy);
+
+        /// Get the photometric correction strategy.
+        auto photometric_correction() const
+        {
+            return this->photometric_correction_.get();
+        }
+
+        /// Set the interpolation strategy used when reading data.
+        void interpolation_strategy(
+            std::unique_ptr<InterpolationStrategy> strategy);
+
+        /// Get the interpolation strategy used when reading data.
+        auto interpolation_strategy() const
+        {
+            return this->interpolation_strategy_.get();
+        }
 
         /// Set all nibble values to @a n.
         /**
@@ -123,9 +149,6 @@ namespace MaRC
         /// Return bottom nibble value.
         std::size_t nibble_bottom() const { return this->nibble_bottom_; }
 
-        /// Enable/disable pixel interpolation when reading data.
-        void interpolate(bool enable);
-
     private:
 
         /// Geometric/optical correction strategy used during
@@ -135,7 +158,7 @@ namespace MaRC
         /// Pointer to the photometric correction strategy.
         std::unique_ptr<PhotometricCorrection> photometric_correction_;
 
-        /// Pointer to the photometric correction strategy.
+        /// Pointer to the interpolation strategy.
         std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
 
         /// Amount of pixels to ignore from left side of input image
