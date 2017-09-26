@@ -1,5 +1,5 @@
 /**
- * @file PhotoInterpolationStrategy.cpp
+ * @file BilinearInterpolationStrategy.cpp
  *
  * Copyright (C) 2003-2004, 2017  Ossama Othman
  *
@@ -21,12 +21,12 @@
  * @author Ossama Othman
  */
 
-#include "PhotoInterpolationStrategy.h"
+#include "BilinearInterpolationStrategy.h"
 
 #include <cmath>
 
 
-MaRC::PhotoInterpolationStrategy::PhotoInterpolationStrategy(
+MaRC::BilinearInterpolationStrategy::BilinearInterpolationStrategy(
     std::size_t samples,
     std::size_t lines,
     std::size_t nibble_left,
@@ -42,15 +42,15 @@ MaRC::PhotoInterpolationStrategy::PhotoInterpolationStrategy(
 {
 }
 
-MaRC::PhotoInterpolationStrategy::~PhotoInterpolationStrategy()
+MaRC::BilinearInterpolationStrategy::~BilinearInterpolationStrategy()
 {
 }
 
 bool
-MaRC::PhotoInterpolationStrategy::interpolate(double const * image,
-                                              double x,
-                                              double z,
-                                              double & data) const
+MaRC::BilinearInterpolationStrategy::interpolate(double const * data,
+                                                 double x,
+                                                 double z,
+                                                 double & datum) const
 {
     // Bilinear interpolation over 2x2 area of pixels.
 
@@ -67,39 +67,39 @@ MaRC::PhotoInterpolationStrategy::interpolate(double const * image,
 
     // e.g., l > 0 && r < samples && b > 0 && < t < lines
 
-    if (l < this->left_ || r >= this->right_
+    if (   l < this->left_ || r >= this->right_
         || b < this->top_  || t >= this->bottom_)
         return false;
 
     int count = 0;
     double tmp = 0;
 
-    if (!std::isnan(image[ob + r]) && !std::isnan(image[ob + l])) {
+    if (!std::isnan(data[ob + r]) && !std::isnan(data[ob + l])) {
         // [0][0]
-        tmp += (image[ob + r] - image[ob + l]) * (x - l) + image[ob + l];
+        tmp += (data[ob + r] - data[ob + l]) * (x - l) + data[ob + l];
 
         // [1][1] =
-        tmp += (image[ob + r] - image[ob + l]) * (z - b) + image[ob + r];
+        tmp += (data[ob + r] - data[ob + l]) * (z - b) + data[ob + r];
 
         count += 2;
     }
 
-    if (!std::isnan(image[ot + r]) && !std::isnan(image[ot + l])) {
+    if (!std::isnan(data[ot + r]) && !std::isnan(data[ot + l])) {
         // [0][1]
-        tmp += (image[ot + r] - image[ot + l]) * (x - l) + image[ot + l];
+        tmp += (data[ot + r] - data[ot + l]) * (x - l) + data[ot + l];
 
         ++count;
     }
 
-    if (!std::isnan(image[ot + l]) && !std::isnan(image[ob + l])) {
+    if (!std::isnan(data[ot + l]) && !std::isnan(data[ob + l])) {
         // [1][0]
-        tmp += (image[ot + l] - image[ob + l]) * (z - b) + image[ob + l];
+        tmp += (data[ot + l] - data[ob + l]) * (z - b) + data[ob + l];
 
         ++count;
     }
 
     if (count > 0) {
-        data = tmp / count;
+        datum = tmp / count;
 
         return true;
     }
