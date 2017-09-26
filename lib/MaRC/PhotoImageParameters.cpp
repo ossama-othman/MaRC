@@ -22,6 +22,7 @@
  */
 
 #include "PhotoImageParameters.h"
+#include "OblateSpheroid.h"  /// @todo Remove
 #include "NullGeometricCorrection.h"
 #include "NullPhotometricCorrection.h"
 #include "NullInterpolationStrategy.h"
@@ -40,7 +41,7 @@
 #endif  /* MARC_DEFAULT_PHOTO_CORR_STRATEGY */
 
 #ifndef MARC_DEFAULT_INTERPOLATION_STRATEGY
-# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolationStrategy
+# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolation
 #endif  /* MARC_DEFAULT_INTERPOLATION_STRATEGY */
 
 
@@ -48,18 +49,16 @@ MaRC::PhotoImageParameters::PhotoImageParameters(
     std::shared_ptr<OblateSpheroid> body,
     std::vector<double> && image,
     std::size_t samples,
-    std::size_t lines,
-    std::unique_ptr<GeometricCorrection> gc)
+    std::size_t lines)
     , body_(body)
     , image_(std::move(image))
     , samples_(samples)
     , lines_(lines)
-    , geometric_correction_(gc
-                            ? std::move(gc)
-                            : std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
+    , geometric_correction_(
+        std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
     , photometric_correction_(
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
-    , interpolation_strategy_(
+    , interpolation_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
     , sky_mask_      (samples * lines, false) // Enable sky removal.
     , nibble_left_   (0)
@@ -81,10 +80,6 @@ MaRC::PhotoImageParameters::PhotoImageParameters(
         throw std::invalid_argument(
             "Source image size does not match samples and lines");
     }
-}
-
-MaRC::PhotoImageParameters::~PhotoImageParameters()
-{
 }
 
 bool
@@ -114,6 +109,22 @@ MaRC::PhotoImageParameters::photometric_correction(
     } else {
         std::cerr
             << "ERROR: Null photometric correction strategy pointer.\n";
+
+        return false;  // Failure
+    }
+}
+
+bool
+MaRC::PhotoImageParameters::interpolation(
+    std::unique_ptr<Interpolation> strategy)
+{
+    if (strategy) {
+        this->interpolation_ = std::move(strategy);
+
+        return true;  // Success
+    } else {
+        std::cerr
+            << "ERROR: Null interpolation strategy pointer.\n";
 
         return false;  // Failure
     }
@@ -151,7 +162,8 @@ MaRC::PhotoImageParameters::finalize_setup()
     this->remove_sky(); // Remove sky from source image
 }
 
-void MaRC::PhotoImageParameters::remove_sky(bool r)
+void
+MaRC::PhotoImageParameters::remove_sky(bool r)
 {
     if (r)
         this->sky_mask_.resize(this->samples_ * this->lines_, false);
@@ -178,21 +190,14 @@ MaRC::PhotoImageParameters::remove_sky()
         for (std::size_t i = this->nibble_left_; i < slen; ++i) {
             std::size_t const index =  offset + i;
 
-            // "Units in the last place" used when determining if an
-            // image value is considered zero.
-            static constexpr int ulps = 2;
-
             /**
-             * Consider zero/NaN data points invalid, i.e. "off the
-             * body".  No need to continue beyond this point.
+             * Consider NaN data points invalid, i.e. "off the body".
+             * No need to continue beyond this point.
              *
-             * @todo We consider an image value of zero to be in the
-             *       sky but what if zero is a legitimate value on the
-             *       body?  It would be better to support a
-             *       user-specified "blank" value instead.
+             * @todo Check for a user-specified "blank" value as
+             *       well.
              */
-            if (std::isnan(this->image_[index])
-                || MaRC::almost_zero(this->image_[index], ulps))
+            if (std::isnan(this->image_[index]))
                 continue;
 
             double z = k;  // Reset "z" prior to geometric
@@ -208,11 +213,10 @@ MaRC::PhotoImageParameters::remove_sky()
             // ---------------------------------------------
             // Convert from observer coordinates to body coordinates
             DVector coord;
-            coord[0] = x;
-            coord[1] = 0;
+            coord[0] =  x;
+            coord[1] =  0;
             coord[2] = -z; // Negative since line numbers increase top to
                            // bottom (?)
-            //      coord[2] = z;
 
             // Do the transformation
             DVector rotated(this->observ2body_ * coord);

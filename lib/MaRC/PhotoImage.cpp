@@ -62,70 +62,6 @@ MaRC::PhotoImage::PhotoImage(std::shared_ptr<OblateSpheroid> body,
     , lines_(lines)
     , config_(std::move(config))
     , geometry_(std::move(geometry))
-    , geometric_correction_(gc
-                            ? std::move(gc)
-                            : std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
-    , photometric_correction_(
-        std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
-    , interpolation_strategy_(
-        std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
-    , sky_mask_(samples * lines, false) // Enable sky removal.
-    , geometry_(geometry)
-{
-    if (samples < 2 || lines < 2) {
-        // Why would there ever be a one pixel source image?
-        std::ostringstream s;
-        s << "Source image samples (" << samples
-          << ") and lines (" << lines
-          << ") must both be greater than one.";
-
-        throw std::invalid_argument(s.str());
-    }
-
-    if (this->image_.size() != samples * lines) {
-        throw std::invalid_argument(
-            "Source image size does not match samples and lines");
-    }
-}
-
-MaRC::PhotoImage::~PhotoImage()
-{
-}
-
-bool
-MaRC::PhotoImage::geometric_correction(
-    std::unique_ptr<GeometricCorrection> strategy)
-{
-    if (strategy) {
-        this->geometric_correction_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null geometric correction strategy pointer.\n";
-
-        return false;  // Failure
-    }
-}
-
-bool
-MaRC::PhotoImage::photometric_correction(
-    std::unique_ptr<PhotometricCorrection> strategy)
-{
-    if (strategy) {
-        this->photometric_correction_ = std::move(strategy);
-
-        return true;  // Success
-    } else {
-        std::cerr
-            << "ERROR: Null photometric correction strategy pointer.\n";
-
-        return false;  // Failure
-    }
-}
-
-void
-MaRC::PhotoImage::finalize_setup()
 {
     // All necessary image values and attributes should be set by now!
 
@@ -135,82 +71,8 @@ MaRC::PhotoImage::finalize_setup()
     this->remove_sky(); // Remove sky from source image
 }
 
-void MaRC::PhotoImage::remove_sky(bool r)
+MaRC::PhotoImage::~PhotoImage()
 {
-    if (r)
-        this->sky_mask_.resize(this->samples_ * this->lines_, false);
-    else
-        this->sky_mask_.clear();
-}
-
-void
-MaRC::PhotoImage::remove_sky()
-{
-    if (this->sky_mask_.empty())
-        return;
-
-    /**
-     * @todo This routine is currently oblate spheroid specific.
-     */
-
-    std::size_t const llen = this->lines_   - this->nibble_bottom_;
-    std::size_t const slen = this->samples_ - this->nibble_right_;
-
-    for (std::size_t k = this->nibble_top_; k < llen; ++k) {
-        std::size_t const offset = k * this->samples_;
-
-        for (std::size_t i = this->nibble_left_; i < slen; ++i) {
-            std::size_t const index =  offset + i;
-
-            /**
-             * Consider NaN data points invalid, i.e. "off the body".
-             * No need to continue beyond this point.
-             *
-             * @todo Check for a user-specified "blank" value as
-             *       well.
-             */
-            if (std::isnan(this->image_[index]))
-                continue;
-
-            double z = k;  // Reset "z" prior to geometric
-                           // correction. Do not move to outer loop!
-            double x = i;
-
-            // Convert from image space to object space.
-            this->geometric_correction_->image_to_object(z, x);
-
-            z -= this->line_center_;
-            x -= this->sample_center_;
-
-            // ---------------------------------------------
-            // Convert from observer coordinates to body coordinates
-            DVector coord;
-            coord[0] = x;
-            coord[1] = 0;
-            coord[2] = -z; // Negative since line numbers increase top to
-                           // bottom (?)
-            //      coord[2] = z;
-
-            // Do the transformation
-            DVector rotated(this->observ2body_ * coord);
-            rotated *= this->km_per_pixel_;
-
-            // ---------------------------------------------
-
-            // Vector from observer to point on image
-            DVector const dVec(rotated - this->range_b_);
-
-            double lat = 0, lon = 0;
-
-            if (this->body_->ellipse_intersection(this->range_b_,
-                                                  dVec,
-                                                  lat,
-                                                  lon) == 0) {
-                // On body
-                this->sky_mask_[index] = true;
-            }
-        }
-    }
 }
 
 bool
@@ -236,11 +98,13 @@ MaRC::PhotoImage::read_data(double lat,
 
     double x = 0, z = 0;
 
-    if (!this->latlon2pix(lat, lon, x, z))
+    if (!this->geometry_->latlon2pix(lat, lon, x, z))
         return false;
 
+    auto const & config = this->config_;
+
     // Convert from object space to image space.
-    this->geometric_correction_->object_to_image(z, x);
+    config->geometric_correction()->object_to_image(z, x);
 
     assert(x >= 0 && z >= 0);
 
@@ -254,109 +118,122 @@ MaRC::PhotoImage::read_data(double lat,
     // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
     // The following assumes that line numbers increase downward.
     // CHECK ME!
-    if (i < this->nibble_left_   || i >= this->samples_ - this->nibble_right_
-        || k < this->nibble_top_ || k >= this->lines_ - this->nibble_bottom_
+    if (i < config->nibble_left()
+        || i >= this->samples_ - config->nibble_right()
+        || k < config->nibble_top()
+        || k >= this->lines_ - config->nibble_bottom()
         || (!this->sky_mask_.empty() && !this->sky_mask_[index]))
         return false;
 
     data = this->image_[index];
 
-    if (!this->interpolation_strategy_->interpolate(this->image_.data(),
-                                                    x,
-                                                    z,
-                                                    data)
-        || !this->photometric_correction_->correct(*this->geometry_,
-                                                   data)
+    if (!config->interpolation_strategy()->interpolate(
+            this->image_.data(),
+            x,
+            z,
+            data)
+        || !config->photometric_correction()->correct(*this->geometry_,
+                                                      data)
         || std::isnan(data)) {
         return false;
     }
 
     // Scan across image for "off-planet/image" pixels and compute
-    // averaging weights.
+    // data weight.
+    if (scan)
+        this->data_weight(i, k, weight);
+
+    return true;  // Success
+}
+
+void
+MaRC::PhotoImage::data_weight(std::size_t i,
+                              std::size_t k,
+                              std::size_t & weight) const
+{
+    std::size_t & shortest_distance = weight;
+
+    // Give less weight to pixels close to an edge of the image.
+    //
+    // No need to include nibble values in this calculation since
+    // we're guaranteed to be within the non-nibbled image area due to
+    // the earlier nibble value check.
+    //
+    // For most purposes, this quickly computed weight should be
+    // sufficient.  If the image has gaps, determining weights through
+    // the sky mask scanning code below may be a better choice in
+    // terms of quality.
     //
     // Note that a weight is computed regardless of whether or not sky
     // removal is enabled.
-    if (scan) {
-        std::size_t & shortest_distance = weight;
 
-        // Give less weight to pixels close to an edge of the image.
-        //
-        // No need to include nibble values in this calculation since
-        // we're guaranteed to be within the non-nibbled image area due
-        // to the nibble value check earlier in this method.
-        //
-        // For most purposes, this quickly computed weight should be
-        // sufficient.  If the image has gaps, determining weights
-        // through the sky mask scanning code below may be a better
-        // choice in terms of quality.
-        shortest_distance =
-            std::min(i,
-                     std::min(this->samples_ - i,
-                              std::min(k,
-                                       this->lines_ - k)));
+    shortest_distance =
+        std::min(i,
+                 std::min(this->samples_ - i,
+                          std::min(k,
+                                   this->lines_ - k)));
 
-        // Scan across image for "off-body/image" pixels, giving less
-        // weight to those on the body closer to the sky.
-        if (!this->sky_mask_.empty()) {
-            auto const sky_iter = this->sky_mask_.cbegin();
+    // Scan across image for "off-body/image" pixels, giving less
+    // weight to those on the body closer to the sky.
+    if (this->sky_mask_.empty())
+        return;
 
-            // Scan across samples.
+    auto const sky_iter = this->sky_mask_.cbegin();
 
-            // Search from nibble_left to i.
-            //   Beginning of line: index - i
-            auto begin = sky_iter + (index - i + this->nibble_left_);
-            auto end   = sky_iter + (index + 1);  // one past "i"
+    auto const & config = this->config_;
 
-            auto result = std::find(begin, end, true);
+    // Scan across samples.
 
-            assert(begin < result);
+    // Search from nibble_left to i.
+    //   Beginning of line: index - i
+    auto begin = sky_iter + (index - i + config->nibble_left());
+    auto end   = sky_iter + (index + 1);  // one past "i"
 
-            shortest_distance =
-                std::min(
-                    static_cast<std::size_t>(std::distance(begin, result)),
-                    shortest_distance);
+    auto result = std::find(begin, end, true);
 
-            // Search from i to nibble_right.
-            //   "index" offsets to "i".
-            begin = sky_iter + index;
-            end   = sky_iter
-                + (index + (this->samples_ - this->nibble_right_));
+    assert(begin < result);
 
-            result = std::find(begin, end, true);
+    shortest_distance =
+        std::min(
+            static_cast<std::size_t>(std::distance(begin, result)),
+            shortest_distance);
 
-            assert(begin < result);
+    // Search from i to nibble_right.
+    //   "index" offsets to "i".
+    begin = sky_iter + index;
+    end   =
+        sky_iter + (index + (this->samples_ - config->nibble_right()));
 
-            shortest_distance =
-                std::min(
-                    static_cast<std::size_t>(std::distance(begin, result)),
-                    shortest_distance);
+    result = std::find(begin, end, true);
 
-            // -----------------------------------------------------
+    assert(begin < result);
 
-            // Scan across lines.  Line numbers increase from top to
-            // bottom.
+    shortest_distance =
+        std::min(
+            static_cast<std::size_t>(std::distance(begin, result)),
+            shortest_distance);
 
-            std::size_t kk;
+    // -----------------------------------------------------
 
-            // Search from nibble_top to k.
-            for (kk = this->nibble_top_;
-                 kk <= k && this->sky_mask_[kk * this->samples_ + i];
-                 ++kk)
-                ; // Nothing
+    // Scan across lines.  Line numbers increase from top to bottom.
 
-            shortest_distance = std::min(kk - k, shortest_distance);
+    std::size_t kk;
 
-            // Search from k to nibble_bottom.
-            std::size_t const kend = this->lines_ - this->nibble_bottom_;
+    // Search from nibble_top to k.
+    for (kk = config->nibble_top();
+         kk <= k && this->sky_mask_[kk * this->samples_ + i];
+         ++kk)
+        ; // Nothing
 
-            for (kk = k;
-                 kk < kend && this->sky_mask_[kk * this->samples_ + i];
-                 ++kk)
-                ; // Nothing
+    shortest_distance = std::min(kk - k, shortest_distance);
 
-            shortest_distance = std::min(kk - k, shortest_distance);
-        }
-    }
+    // Search from k to nibble_bottom.
+    std::size_t const kend = this->lines_ - config->nibble_bottom();
 
-    return true;  // Success
+    for (kk = k;
+         kk < kend && this->sky_mask_[kk * this->samples_ + i];
+         ++kk)
+        ; // Nothing
+
+    shortest_distance = std::min(kk - k, shortest_distance);
 }
