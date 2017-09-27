@@ -21,35 +21,36 @@
  * @author Ossama Othman
  */
 
-#include "BilinearInterpolationStrategy.h"
+#include "BilinearInterpolation.h"
 
 #include <cmath>
 
 
-MaRC::BilinearInterpolationStrategy::BilinearInterpolationStrategy(
+MaRC::BilinearInterpolation::BilinearInterpolation(
+    std::size_t samples,
+    std::size_t lines,
     std::size_t nibble_left,
     std::size_t nibble_right,
     std::size_t nibble_top,
     std::size_t nibble_bottom)
     : InterpolationStrategy()
+    , samples_(samples)
     , left_(nibble_left)
-    , right_(nibble_right)
+    , right_(samples - nibble_right)
     , top_(nibble_top)
-    , bottom_(nibble_bottom)
+    , bottom_(lines - nibble_bottom)
 {
 }
 
-MaRC::BilinearInterpolationStrategy::~BilinearInterpolationStrategy()
+MaRC::BilinearInterpolation::~BilinearInterpolation()
 {
 }
 
 bool
-MaRC::BilinearInterpolationStrategy::interpolate(double const * data,
-                                                 std::size_t samples,
-                                                 std::size_t lines,
-                                                 double x,
-                                                 double z,
-                                                 double & datum) const
+MaRC::BilinearInterpolation::interpolate(double const * data,
+                                         double x,
+                                         double z,
+                                         double & datum) const
 {
     // Bilinear interpolation over 2x2 area of pixels.
 
@@ -59,15 +60,15 @@ MaRC::BilinearInterpolationStrategy::interpolate(double const * data,
     std::size_t const t = b + 1;                       // ceil (z);
 
     // Offsets
-    std::size_t const ob = b * samples;
-    std::size_t const ot = t * samples;
+    std::size_t const ob = b * this->samples_;  // Bottom line
+    std::size_t const ot = t * this->samples_;  // Top line
 
     // Note that we assume the image is inverted from top to bottom.
 
     // e.g., l > 0 && r < samples && b > 0 && < t < lines
 
-    if (   l < this->left_ || r >= samples - this->right_
-        || b < this->top_  || t >= lines - this->bottom_)
+    if (   l < this->left_ || r >= this->right_
+        || b < this->top_  || t >= this->bottom_)
         return false;
 
     int count = 0;

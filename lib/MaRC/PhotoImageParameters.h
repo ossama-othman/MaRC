@@ -25,7 +25,9 @@
 #ifndef MARC_PHOTO_IMAGE_PARAMETERS_H
 #define MARC_PHOTO_IMAGE_PARAMETERS_H
 
-#include <MaRC/SourceImage.h>
+#include "MaRC/GeometricCorrection.h"
+#include "MaRC/PhotometricCorrection.h"
+#include "MaRC/InterpolationStrategy.h"
 
 #include <memory>
 #include <vector>
@@ -35,25 +37,25 @@ namespace MaRC
 {
     class OblateSpheroid;
 
-    class GeometricCorrection;
-    class PhotometricCorrection;
-    class InterpolationStrategy;
-
     /**
-     * @class PhotoImage
+     * @class PhotoImageParameters
      *
-     * @brief Concrete SourceImage strategy for mapping bodies in
-     *        photos.
-     *
-     * PhotoImages have viewing geometries that may differ from other
-     * photos of the same body being mapped.  For example, photos from
-     * telescope observations fit into this category.
+     * @brief Configuration parameters specific to @c PhotoImage.
      */
     class PhotoImageParameters
     {
     public:
 
         /// Constructor
+        /**
+         * @param[in]     body    Pointer to OblateSpheroid object
+         *                        representing body being mapped.
+         * @param[in,out] image   Array containing the image data.
+         *                        Ownership is transferred through a
+         *                        move operation.
+         * @param[in]     samples Number of samples in the image.
+         * @param[in]     lines   Number of lines   in the image.
+         */
         PhotoImageParameters(std::shared_ptr<OblateSpheroid> body,
                              std::vector<double> && image,
                              std::size_t samples,
@@ -111,7 +113,7 @@ namespace MaRC
         /// Set the interpolation strategy used when reading data.
         /**
          * @throw std::invalid_argument @a strategy is @c nullptr.
-         */         
+         */
         void interpolation_strategy(
             std::unique_ptr<InterpolationStrategy> strategy);
 

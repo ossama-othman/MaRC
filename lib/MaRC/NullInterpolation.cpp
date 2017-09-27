@@ -21,20 +21,18 @@
  * @author Ossama Othman
  */
 
-#include "NullInterpolationStrategy.h"
+#include "NullInterpolation.h"
 
 
-MaRC::NullInterpolationStrategy::~NullInterpolationStrategy()
+MaRC::NullInterpolation::~NullInterpolation()
 {
 }
 
 bool
-MaRC::NullInterpolationStrategy::interpolate(double const *,
-                                             std::size_t,
-                                             std::size_t,
-                                             double,
-                                             double,
-                                             double &) const
+MaRC::NullInterpolation::interpolate(double const *,
+                                     double,
+                                     double,
+                                     double &) const
 {
     return true;
 }

@@ -32,6 +32,9 @@
  * Conversion from C++ structure to namespace by Ossama Othman
  * in November 2003.
  *
+ * Use of C++11 constexpr keyword introduced by Ossama Othman
+ * in July 2017.
+ *
  *  @author Associated Universities, Inc. Washington DC, USA
  *  @author Ossama Othman
  */

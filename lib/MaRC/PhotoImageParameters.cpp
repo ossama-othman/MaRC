@@ -25,7 +25,7 @@
 #include "OblateSpheroid.h"  /// @todo Remove
 #include "NullGeometricCorrection.h"
 #include "NullPhotometricCorrection.h"
-#include "NullInterpolationStrategy.h"
+#include "NullInterpolation.h"
 
 #include <stdexcept>
 #include <iostream>
@@ -41,7 +41,7 @@
 #endif  /* MARC_DEFAULT_PHOTO_CORR_STRATEGY */
 
 #ifndef MARC_DEFAULT_INTERPOLATION_STRATEGY
-# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolationStrategy
+# define MARC_DEFAULT_INTERPOLATION_STRATEGY MaRC::NullInterpolation
 #endif  /* MARC_DEFAULT_INTERPOLATION_STRATEGY */
 
 
@@ -116,7 +116,7 @@ MaRC::PhotoImageParameters::interpolation_strategy(
             std::invalid_argument("Null interpolation strategy pointer.");
     }
 
-    this->interpolation_ = std::move(strategy);
+    this->interpolation_strategy_ = std::move(strategy);
 }
 
 void

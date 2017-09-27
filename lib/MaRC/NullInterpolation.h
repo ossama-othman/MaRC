@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file NullInterpolationStrategy.h
+ * @file NullInterpolation.h
  *
  * Copyright (C) 2004-2005, 2017  Ossama Othman
  *
@@ -22,34 +22,32 @@
  * @author Ossama Othman
  */
 
-#ifndef MARC_NULL_INTERPOLATION_STRATEGY_H
-#define MARC_NULL_INTERPOLATION_STRATEGY_H
+#ifndef MARC_NULL_INTERPOLATION_H
+#define MARC_NULL_INTERPOLATION_H
 
-#include "InterpolationStrategy.h"
+#include "MaRC/InterpolationStrategy.h"
 
 
 namespace MaRC
 {
 
     /**
-     * @class NullInterpolationStrategy
+     * @class NullInterpolation
      *
      * @brief Null (no-op) interpolation strategy.
      *
      * This interpolation strategy is a no-op.  It performs no
      * interpolation.
      */
-    class NullInterpolationStrategy : public InterpolationStrategy
+    class NullInterpolation : public InterpolationStrategy
     {
     public:
 
         /// Destructor.
-        virtual ~NullInterpolationStrategy();
+        virtual ~NullInterpolation();
 
         /// Performs no interpolation.
         virtual bool interpolate(double const *,
-                                 std::size_t,
-                                 std::size_t,
                                  double,
                                  double,
                                  double &) const;
@@ -59,4 +57,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_NULL_INTERPOLATION_STRATEGY_H */
+#endif  /* MARC_NULL_INTERPOLATION_H */

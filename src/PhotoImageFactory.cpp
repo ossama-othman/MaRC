@@ -27,6 +27,18 @@
 #include "MaRC/PhotoImageParameters.h"
 #include "MaRC/ViewingGeometry.h"
 
+// Geometric correction strategies
+#include "MaRC/NullGeometricCorrection.h"
+#include "MaRC/GLLGeometricCorrection.h"
+
+// Photometric correction strategies
+#include "MaRC/NullPhotometricCorrection.h"
+//#include "MaRC/MinnaertPhotometricCorrection.h"
+
+// Interpolation strategies
+#include "MaRC/NullInterpolation.h"
+#include "MaRC/BilinearInterpolation.h"
+
 #include <fitsio.h>
 
 #include <limits>
@@ -158,6 +170,17 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 
     if (this->invert_v_)
         this->invert_v(img, samples, lines);
+
+    if (this->interpolate_) {
+        this->config_->interpolation_strategy(
+            std::make_unique<BilinearInterpolation>(
+                samples,
+                lines,
+                this->config_->nibble_left(),
+                this->config_->nibble_right(),
+                this->config_->nibble_top(),
+                this->config_->nibble_bottom()));
+    }
 
     return
         std::make_unique<MaRC::PhotoImage>(std::move(img),

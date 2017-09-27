@@ -37,8 +37,8 @@ libMaRC_la_SOURCES = \
   NullPhotometricCorrection.cpp \
   \
   InterpolationStrategy.cpp \
-  BilinearInterpolationStrategy.cpp \
-  NullInterpolationStrategy.cpp \
+  BilinearInterpolation.cpp \
+  NullInterpolation.cpp \
   \
   SourceImage.cpp \
   VirtualImage.cpp \
@@ -84,8 +84,8 @@ pkginclude_HEADERS = \
   NullGeometricCorrection.h \
   \
   InterpolationStrategy.h \
-  BilinearInterpolationStrategy.h \
-  NullInterpolationStrategy.h \
+  BilinearInterpolation.h \
+  NullInterpolation.h \
   \
   PhotometricCorrection.h \
   NullPhotometricCorrection.h \

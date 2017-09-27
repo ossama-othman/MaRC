@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file BilinearInterpolationStrategy.h
+ * @file BilinearInterpolation.h
  *
  * Copyright (C) 2004-2005, 2017  Ossama Othman
  *
@@ -22,10 +22,10 @@
  * @author Ossama Othman
  */
 
-#ifndef MARC_BILINEAR_INTERPOLATION_STRATEGY_H
-#define MARC_BILINEAR_INTERPOLATION_STRATEGY_H
+#ifndef MARC_BILINEAR_INTERPOLATION_H
+#define MARC_BILINEAR_INTERPOLATION_H
 
-#include "InterpolationStrategy.h"
+#include "MaRC/InterpolationStrategy.h"
 
 #include <cstddef>
 
@@ -34,31 +34,35 @@ namespace MaRC
 {
 
   /**
-   * @class BilinearInterpolationStrategy
+   * @class BilinearInterpolation
    *
    * @brief Bilinear interpolation strategy.
    *
    * This strategy performs bilinear interpolation over 2x2 block of
    * data.
    */
-  class BilinearInterpolationStrategy : public InterpolationStrategy
+  class BilinearInterpolation : public InterpolationStrategy
   {
   public:
 
       /// Constructor
       /**
+       * @param[in] samples        Number of samples in image.
+       * @param[in] lines          Number of lines   in image.
        * @param[in] nibble_left    Left   nibble value.
        * @param[in] nibble_right   Right  nibble value.
        * @param[in] nibble_top     Top    nibble value.
        * @param[in] nibble_bottom  Bottom nibble value.
        */
-      BilinearInterpolationStrategy(std::size_t nibble_left,
-                                    std::size_t nibble_right,
-                                    std::size_t nibble_top,
-                                    std::size_t nibble_bottom);
+      BilinearInterpolation(std::size_t samples,
+                            std::size_t lines,
+                            std::size_t nibble_left,
+                            std::size_t nibble_right,
+                            std::size_t nibble_top,
+                            std::size_t nibble_bottom);
 
       /// Destructor.
-      virtual ~BilinearInterpolationStrategy();
+      virtual ~BilinearInterpolation();
 
       /// Perform bilinear interpolation over a 2x2 area of pixels on
       /// the given pixel.
@@ -66,13 +70,14 @@ namespace MaRC
        * @see @c InterpolationStrategy for parameter details.
        */
       virtual bool interpolate(double const * data,
-                               std::size_t samples,
-                               std::size_t lines,
                                double x,
                                double z,
                                double & datum) const;
 
   private:
+
+      /// Number of samples in image.
+      std::size_t const samples_;
 
       /// Left most sample in image.
       std::size_t const left_;
@@ -91,4 +96,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_BILINEAR_INTERPOLATION_STRATEGY_H */
+#endif  /* MARC_BILINEAR_INTERPOLATION_H */
