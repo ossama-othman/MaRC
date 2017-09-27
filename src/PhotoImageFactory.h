@@ -74,7 +74,7 @@ namespace MaRC
         void geometric_correction(bool enable);
 
         /// Enable the photometric correction strategy.
-        void photometric_correction(bool enable);
+        // void photometric_correction(bool enable);
 
         /// Set image interpolation flag.
         void interpolate(bool enable);
@@ -136,7 +136,7 @@ namespace MaRC
         bool geometric_correction_;
 
         /// Enable/disable photometric correction.
-        bool photometric_correction_;
+        // bool photometric_correction_;
 
         /// Perform pixel interpolation.
         bool interpolate_;

@@ -959,7 +959,8 @@ image_initialize:
             auto_free<char> str($3);
 
             photo_parameters =
-                std::make_unique<MaRC::PhotoImageParameters>();
+                std::make_unique<MaRC::PhotoImageParameters>(
+                    oblate_spheroid);
 
             // Set user default nibbling values.
             photo_parameters->nibble_left  (pp.nibble_left);

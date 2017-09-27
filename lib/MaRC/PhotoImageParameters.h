@@ -56,10 +56,7 @@ namespace MaRC
          * @param[in]     samples Number of samples in the image.
          * @param[in]     lines   Number of lines   in the image.
          */
-        PhotoImageParameters(std::shared_ptr<OblateSpheroid> body,
-                             std::vector<double> && image,
-                             std::size_t samples,
-                             std::size_t lines);
+        PhotoImageParameters(std::shared_ptr<OblateSpheroid> body);
 
         /// Destructor.
         ~PhotoImageParameters() = default;
@@ -67,6 +64,14 @@ namespace MaRC
         // Disallow copying.
         PhotoImageParameters(PhotoImageParameters const &) = delete;
         void operator=(PhotoImageParameters const &) = delete;
+
+        void image_info(std::vector<double> && image,
+                        std::size_t samples,
+                        std::size_t lines);
+
+        std::vector<double> const & image() const { return this->image_; }
+        std::size_t samples() const { return this->samples_; }
+        std::size_t lines()   const { return this->lines_;   }
 
         /// Set sky removal variable
         /**
@@ -167,15 +172,14 @@ namespace MaRC
 
     private:
 
-        /// Geometric/optical correction strategy used during
-        /// latitude/longitude to pixel conversion, and vice versa.
-        std::unique_ptr<GeometricCorrection> geometric_correction_;
+        /// Image container.
+        std::vector<double> image_;
 
-        /// Pointer to the photometric correction strategy.
-        std::unique_ptr<PhotometricCorrection> photometric_correction_;
+        /// Number of samples in the image.
+        std::size_t samples_;
 
-        /// Pointer to the interpolation strategy.
-        std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
+        /// Number of lines in the image.
+        std::size_t lines_;
 
         /// Amount of pixels to ignore from left side of input image
         /// (photo).
@@ -192,6 +196,16 @@ namespace MaRC
         /// Amount of pixels to ignore from bottom side of input image
         /// (photo).
         std::size_t nibble_bottom_;
+
+        /// Geometric/optical correction strategy used during
+        /// latitude/longitude to pixel conversion, and vice versa.
+        std::unique_ptr<GeometricCorrection> geometric_correction_;
+
+        /// Pointer to the photometric correction strategy.
+        std::unique_ptr<PhotometricCorrection> photometric_correction_;
+
+        /// Pointer to the interpolation strategy.
+        std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
 
     };
 
