@@ -551,19 +551,38 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 }
 
 void
-MaRC::ViewingGeometry::arcsec_per_pixel(double arcseconds)
+MaRC::ViewingGeometry::arcsec_per_pixel(double a)
 {
     // NOTE: range_ should be in units of kilometers at this point.
-    if (arcseconds <= 0)
+    if (a <= 0)
         throw std::invalid_argument("invalid number of arcseconds");
     else if (std::isnan(this->range_))
         throw std::logic_error("range not previously set");
 
-    // This conversion assumes that the observer-to-body range is much
-    // larger than the distance viewed in the image.
+    /*
+      This conversion assumes that the observer-to-body range is much
+      larger than the distance viewed in the image so that the small
+      angle approximation, tan(theta) = theta in radians, applies.
+      We end up with:
 
-    // pi radians per 648000 arcseconds.
-    this->km_per_pixel_ = C::pi / 648e3 * arcseconds * this->range_;
+                 648000 arcseconds   kilometers in image
+         theta = ----------------- * -------------------
+                     pi radians             range
+
+      Solving for kilometers in the image:
+
+                                 pi
+         kilometers in image = ------ * theta * range
+                               648000
+
+      Supplying a value of arcseconds per pixel instead of arcseconds
+      in this case simply results in a value of kilometers per pixel,
+      which is what we calcule below.
+    */
+
+    // pi radians per 648000 arcseconds, i.e.:
+    //       C::circle / C::arcsec
+    this->km_per_pixel_ = C::pi / 648000 * a * this->range_;
 }
 
 void

@@ -52,15 +52,18 @@ namespace MaRC
 
         /// Constructor
         /**
-         * @param[in,out] image   Array containing the image data.
-         *                        Ownership is transferred through a
-         *                        move operation.
-         * @param[in]     samples Number of samples in the image.
-         * @param[in]     lines   Number of lines   in the image.
-         * @param[in,out] config  Configuration parameters specific to
-         *                        a @c PhotoImage.  Ownership is
-         *                        transferred to the @c PhotoImage.
-         *
+         * @param[in,out] image    Array containing the image data.
+         *                         Ownership is transferred to the
+         *                         @c PhotoImage.
+         * @param[in]     samples  Number of samples in the image.
+         * @param[in]     lines    Number of lines   in the image.
+         * @param[in,out] config   Configuration parameters specific
+         *                         to a @c PhotoImage.  Ownership is
+         *                         transferred to the @c PhotoImage.
+         * @param[in,out] geometry Viewing geometry for the photo
+         *                         image data encapsulated by this
+         *                         @c PhotoImage object.  Ownership is
+         *                         transferred to the @c PhotoImage.
          */
         PhotoImage(std::vector<double> && image, // moved, not copied!
                    std::size_t samples,

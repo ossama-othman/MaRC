@@ -37,20 +37,8 @@
 #include "LongitudeImageFactory.h"
 
 // Image parameters
-#include <MaRC/PhotoImageParameters.h> 
+#include <MaRC/PhotoImageParameters.h>
 #include <MaRC/ViewingGeometry.h>
-
-// Geometric correction strategies
-#include <MaRC/NullGeometricCorrection.h>
-#include <MaRC/GLLGeometricCorrection.h>
-
-// Photometric correction strategies
-#include <MaRC/NullPhotometricCorrection.h>
-  //#include <MaRC/MinnaertPhotometricCorrection.h>
-
-// Interpolation strategies
-#include <MaRC/NullInterpolationStrategy.h>
-#include <MaRC/BilinearInterpolationStrategy.h>
 
 // Map Strategies
 #include <MaRC/Mercator.h>
@@ -123,6 +111,8 @@
     MaRC::MosaicImageFactory::list_type photo_factories;
     MaRC::MosaicImage::average_type averaging_type =
         MaRC::MosaicImage::AVG_WEIGHTED;
+
+    std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
     std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
 
     // Map plane image factory.
@@ -978,7 +968,7 @@ image_initialize:
             photo_parameters->nibble_bottom(pp.nibble_bottom);
 
             viewing_geometry =
-                std::make_unique<MaRC::ViewingGeomety>(oblate_spheroid);
+                std::make_unique<MaRC::ViewingGeometry>(oblate_spheroid);
 
             /**
              * @todo Move this to the end of the image parsing.
@@ -1088,18 +1078,8 @@ inversion:
 
 image_interpolate:
         /* If INTERPOLATE is not found, use the program default */
-        | _INTERPOLATE ':' YES {
-            photo_parameters->interpolation_strategy(
-                std::make_unique<BilinearInterpolationStrategy>(
-                    nibble_left_val,
-                    nibble_right_val,
-                    nibble_top_val,
-                    nibble_bottom_val));
-        }
-        | _INTERPOLATE ':' NO  {
-            photo_parameters->interpolation_strategy(
-                std::make_unique<NullInterpolationStrategy>());
-        }
+        | _INTERPOLATE ':' YES { photo_factory->interpolate(true);  }
+        | _INTERPOLATE ':' NO  { photo_factory->interpolate(false); }
 ;
 
 remove_sky:
@@ -1175,7 +1155,7 @@ flat_field:
 ;
 
 photo_correct:
-        | MINNAERT ':' expr { /* Image->setMinnaertExponent ($3); */ }
+        | MINNAERT ':' expr { /* Image->setMinnaertExponent($3); */ }
         | MINNAERT ':' AUTO {
             /* Image->setLimbCorrect(SourceImage::MINNAERT_AUTO); */ }
         | MINNAERT ':' TABLE {
@@ -1195,17 +1175,21 @@ geom_correct:
 ;
 
 emi_ang_limit:
-        | _EMI_ANG_LIMIT ':' expr { photo_factory->emi_ang_limit($3); }
+        | _EMI_ANG_LIMIT ':' expr { viewing_geometry->emi_ang_limit($3); }
 ;
 
 terminator:
-        | TERMINATOR ':' YES { photo_factory->use_terminator(true);  }
-        | TERMINATOR ':' NO  { photo_factory->use_terminator(false); }
+        | TERMINATOR ':' YES { viewing_geometry->use_terminator(true);  }
+        | TERMINATOR ':' NO  { viewing_geometry->use_terminator(false); }
 ;
 
 range:  RANGE ':' expr  { $$ = $3; }
         | RANGE ':' expr KM  { $$ = $3; }
-        | RANGE ':' expr AU  { $$ = $3 * C::astronomical_unit / 1000; }
+        | RANGE ':' expr AU  {
+            // Convert astronomical units to kilometers.
+            $$ = $3 * C::astronomical_unit
+                / 1000 /* (C::kilo * C::meter) */;
+          }
 ;
 
 image_geometry:
@@ -1654,9 +1638,9 @@ lat_lon_given:
 
 optical_axis:
         | SAMPLE_OA ':' expr
-          LINE_OA   ':' expr  { photo_factory->optical_axis ($3, $6); }
+          LINE_OA   ':' expr  { viewing_geometry->optical_axis($3, $6); }
         | LINE_OA   ':' expr
-          SAMPLE_OA ':' expr  { photo_factory->optical_axis ($6, $3); }
+          SAMPLE_OA ':' expr  { viewing_geometry->optical_axis($6, $3); }
 ;
 
 /* ----------------------- Perspective Projection ------------------------- */

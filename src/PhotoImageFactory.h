@@ -26,6 +26,9 @@
 
 #include "ImageFactory.h"
 
+#include "MaRC/PhotoImageParameters.h"
+#include "MaRC/ViewingGeometry.h"
+
 #include <vector>
 #include <string>
 #include <cstddef>
@@ -33,8 +36,6 @@
 
 namespace MaRC
 {
-    class PhotoImageParameters;
-    class ViewingGeometry;
 
     /**
      * @class PhotoImageFactory
@@ -67,6 +68,16 @@ namespace MaRC
 
         /// Set the flat field image filename.
         void flat_field(char const * name);
+
+        /// Enable the geometric correction strategy during
+        /// lat/lon to pixel conversion, and vice-versa.
+        void geometric_correction(bool enable);
+
+        /// Enable the photometric correction strategy.
+        void photometric_correction(bool enable);
+
+        /// Set image interpolation flag.
+        void interpolate(bool enable);
 
         /// Set the image inversion flags.
         void invert(bool vertical, bool horizontal);
@@ -116,6 +127,19 @@ namespace MaRC
         /// Name of flat field image to be substracted from the
         /// photo/image containing the actual data.
         std::string flat_field_;
+
+        /// Enable/disable geometric correction.
+        /**
+         * @note Only GLL spacecraft geometric lens abberration
+         *       correct is currently supported.
+         */
+        bool geometric_correction_;
+
+        /// Enable/disable photometric correction.
+        bool photometric_correction_;
+
+        /// Perform pixel interpolation.
+        bool interpolate_;
 
         /// Invert image top to bottom.
         bool invert_v_;

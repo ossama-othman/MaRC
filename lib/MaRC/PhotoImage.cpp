@@ -114,8 +114,6 @@ MaRC::PhotoImage::read_data(double lat,
 
     if (!config->interpolation_strategy()->interpolate(
             this->image_.data(),
-            this->samples_,
-            this->lines_,
             x,
             z,
             data)
