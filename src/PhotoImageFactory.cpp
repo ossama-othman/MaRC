@@ -28,15 +28,12 @@
 #include "MaRC/ViewingGeometry.h"
 
 // Geometric correction strategies
-#include "MaRC/NullGeometricCorrection.h"
 #include "MaRC/GLLGeometricCorrection.h"
 
 // Photometric correction strategies
-#include "MaRC/NullPhotometricCorrection.h"
 //#include "MaRC/MinnaertPhotometricCorrection.h"
 
 // Interpolation strategies
-#include "MaRC/NullInterpolation.h"
 #include "MaRC/BilinearInterpolation.h"
 
 #include <fitsio.h>
@@ -56,6 +53,9 @@ MaRC::PhotoImageFactory::PhotoImageFactory(
     std::unique_ptr<ViewingGeometry> geometry)
     : filename_(filename)
     , flat_field_()
+    , geometric_correction_(false)
+    // , photometric_correction_(false)
+    , interpolate_(false)
     , invert_v_(false)
     , invert_h_(false)
     , config_(std::move(config))
@@ -171,6 +171,11 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     if (this->invert_v_)
         this->invert_v(img, samples, lines);
 
+    if (this->geometric_correction_) {
+        this->config_->geometric_correction(
+            std::make_unique<MaRC::GLLGeometricCorrection>(samples));
+    }
+
     if (this->interpolate_) {
         this->config_->interpolation_strategy(
             std::make_unique<BilinearInterpolation>(
@@ -194,6 +199,18 @@ void
 MaRC::PhotoImageFactory::flat_field(char const * name)
 {
     this->flat_field_ = name;
+}
+
+void
+MaRC::PhotoImageFactory::geometric_correction(bool enable)
+{
+    this->geometric_correction_ = enable;
+}
+
+void
+MaRC::PhotoImageFactory::interpolate(bool enable)
+{
+    this->interpolate_ = enable;
 }
 
 void

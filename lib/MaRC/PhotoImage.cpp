@@ -36,18 +36,19 @@
 #include <cassert>
 
 
-MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
-                             std::size_t samples,
-                             std::size_t lines,
-                             std::unique_ptr<PhotoImageParameters> config,
+MaRC::PhotoImage::PhotoImage(std::unique_ptr<PhotoImageParameters> config,
                              std::unique_ptr<ViewingGeometry> geometry)
     : SourceImage()
-    , image_(std::move(image))
-    , samples_(samples)
-    , lines_(lines)
-    , config_(std::move(config))
+    , config_  (std::move(config))
     , geometry_(std::move(geometry))
 {
+    if (this->config_.image().empty()
+        || this->config_.image().size()
+           != this->config_->samples() * this->config_->lines()) {
+        throw std::logic_error(
+            "Photo image parameters not correctly set.")
+    }
+
     // All necessary image values and attributes should be set by now!
 
     // Scan across and determine where points lie off of the body, i.e.

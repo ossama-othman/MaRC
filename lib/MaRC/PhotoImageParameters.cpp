@@ -30,7 +30,6 @@
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
-#include <cassert>
 
 #ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
 # define MARC_DEFAULT_GEOM_CORR_STRATEGY MaRC::NullGeometricCorrection
@@ -46,25 +45,28 @@
 
 
 MaRC::PhotoImageParameters::PhotoImageParameters(
-    std::shared_ptr<OblateSpheroid> body,
-    std::vector<double> && image,
-    std::size_t samples,
-    std::size_t lines)
+    std::shared_ptr<OblateSpheroid> body)
     : body_(body)
-    , image_(std::move(image))
-    , samples_(samples)
-    , lines_(lines)
+    , image_()
+    , samples_(0)
+    , lines_(0)
+    , nibble_left_   (0)
+    , nibble_right_  (0)
+    , nibble_top_    (0)
+    , nibble_bottom_ (0)
     , geometric_correction_(
         std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
     , photometric_correction_(
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
-    , sky_mask_      (samples * lines, false) // Enable sky removal.
-    , nibble_left_   (0)
-    , nibble_right_  (0)
-    , nibble_top_    (0)
-    , nibble_bottom_ (0)
+{
+}
+
+void
+MaRC::PhotoImageParameters::image_info(std::vector<double> && image,
+                                       std::size_t samples,
+                                       std::size_t lines)
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
@@ -88,7 +90,7 @@ MaRC::PhotoImageParameters::geometric_correction(
 {
     if (!strategy) {
         std::invalid_argument(
-            "Null geometric correction strategy pointer.");
+            "Null geometric correction strategy argument.");
     }
 
     this->geometric_correction_ = std::move(strategy);
@@ -101,7 +103,7 @@ MaRC::PhotoImageParameters::photometric_correction(
     if (!strategy) {
         throw
             std::invalid_argument(
-                "Null photometric correction strategy pointer.");
+                "Null photometric correction strategy argument.");
     }
 
     this->photometric_correction_ = std::move(strategy);
@@ -113,7 +115,7 @@ MaRC::PhotoImageParameters::interpolation_strategy(
 {
     if (!strategy) {
         throw
-            std::invalid_argument("Null interpolation strategy pointer.");
+            std::invalid_argument("Null interpolation strategy argument.");
     }
 
     this->interpolation_strategy_ = std::move(strategy);
