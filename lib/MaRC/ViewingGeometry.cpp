@@ -26,6 +26,7 @@
 #include "OblateSpheroid.h"
 #include "Mathematics.h"
 #include "Validate.h"
+#include "GeometricCorrection.h"
 
 #include <cmath>
 #include <limits>
@@ -795,4 +796,64 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     // x and z are both positive if the point at the given latitude
     // and longitude is in the image.
     return x >= 0 && z >= 0;
+}
+
+std::vector<bool>
+MaRC::ViewingGeometry::body_mask(
+    std::size_t samples,
+    std::size_t lines,
+    GeometricCorrection const & correct) const
+{
+    /**
+     * @todo This routine is currently oblate spheroid specific.
+     */
+
+    std::vector<bool> mask(samples * lines, false);
+
+    for (std::size_t k = 0; k < lines; ++k) {
+        std::size_t const offset = k * samples;
+
+        for (std::size_t i = 0; i < samples; ++i) {
+            double z = k;  // Reset "z" prior to geometric
+                           // correction. Do not move to outer loop!
+            double x = i;
+
+            // Convert from image space to object space.
+            correct.image_to_object(z, x);
+
+            z -= this->line_center_;
+            x -= this->sample_center_;
+
+            // ---------------------------------------------
+
+            // Convert from observer coordinates to body coordinates
+            DVector coord;
+            coord[0] =  x;
+            coord[1] =  0;
+            coord[2] = -z; // Negative since line numbers increase top to
+                           // bottom (?)
+
+            // Do the transformation
+            DVector rotated(this->observ2body_ * coord);
+            rotated *= this->km_per_pixel_;
+
+            // ---------------------------------------------
+
+            // Vector from observer to point on image
+            DVector const dVec(rotated - this->range_b_);
+
+            double lat, lon;
+
+            if (this->body_->ellipse_intersection(this->range_b_,
+                                                  dVec,
+                                                  lat,
+                                                  lon) == 0) {
+                // On body
+                std::size_t const index = offset + i;
+                mask[index] = true;
+            }
+        }
+    }
+
+    return mask;
 }

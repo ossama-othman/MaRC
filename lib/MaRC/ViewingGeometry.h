@@ -25,14 +25,17 @@
 #ifndef MARC_VIEWING_GEOMETRY_H
 #define MARC_VIEWING_GEOMETRY_H
 
-#include <MaRC/Geometry.h>
+#include "MaRC/Geometry.h"
 
+#include <vector>
+#include <cstddef>
 #include <memory>
 
 
 namespace MaRC
 {
     class OblateSpheroid;
+    class GeometricCorrection;
 
     class ViewingGeometry
     {
@@ -262,6 +265,25 @@ namespace MaRC
                         double lon,
                         double & x,
                         double & z) const;
+
+        /**
+         * @brief Mask that marks where the observed body is in the
+         *        image.
+         *
+         * Mark where the observed body with the encapsulated viewing
+         * geometry lies in an image with @a samples and @a lines.
+         *
+         * @param[in] samples Samples in the image.
+         * @param[in] lines   Lines   in the image.
+         * @param[in] correct Lens geometric correction strategy.
+         *
+         * @return Vector of boolean values, where @c true refers to a
+         *         point on the body.
+         */
+        std::vector<bool> body_mask(
+            std::size_t samples,
+            std::size_t lines,
+            GeometricCorrection const & correct) const;
 
     private:
 

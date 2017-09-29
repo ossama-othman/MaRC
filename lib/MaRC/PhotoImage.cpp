@@ -36,25 +36,49 @@
 #include <cassert>
 
 
-MaRC::PhotoImage::PhotoImage(std::unique_ptr<PhotoImageParameters> config,
+MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
+                             std::size_t samples,
+                             std::size_t lines,
+                             std::unique_ptr<PhotoImageParameters> config,
                              std::unique_ptr<ViewingGeometry> geometry)
     : SourceImage()
-    , config_  (std::move(config))
-    , geometry_(std::move(geometry))
+    , image_    (std::move(image))
+    , samples_  (samples)
+    , lines_    (lines)
+    , config_   (std::move(config))
+    , geometry_ (std::move(geometry))
+    , body_mask_(geometry_->body_mask(samples,
+                                      lines,
+                                      *config_->geometric_correction()))
 {
-    if (this->config_.image().empty()
-        || this->config_.image().size()
-           != this->config_->samples() * this->config_->lines()) {
+    if (samples < 2 || lines < 2) {
+        // Why would there ever be a one pixel source image?
+        std::ostringstream s;
+        s << "Source image samples (" << samples
+          << ") and lines (" << lines
+          << ") must both be greater than one.";
+
+        throw std::invalid_argument(s.str());
+    }
+
+    if (this->image_.size() != samples * lines) {
+        throw std::invalid_argument(
+            "Source image size does not match samples and lines");
+    }
+
+    if (this->image_.empty()
+        || this->image_.size() != this->body_mask_.size()) {
         throw std::logic_error(
-            "Photo image parameters not correctly set.")
+            "Photo image parameters not correctly set.");
     }
 
     // All necessary image values and attributes should be set by now!
 
-    // Scan across and determine where points lie off of the body, i.e.
-    // remove the sky from the image.  The image will not actually be
-    // modified.
-    this->remove_sky(); // Remove sky from source image
+    /**
+     * @todo This configuration validation approach seems rather
+     *       brittle.  Revisit.
+     */
+    this->config_->validate_parameters(samples, lines);
 }
 
 MaRC::PhotoImage::~PhotoImage()
@@ -101,14 +125,23 @@ MaRC::PhotoImage::read_data(double lat,
     std::size_t const k = static_cast<std::size_t>(std::floor(z));
     std::size_t const index = k * this->samples_ + i;
 
-    // e.g., if (i < 0 || i >= samples_ || k < 0 || k >= lines_)
-    // The following assumes that line numbers increase downward.
-    // CHECK ME!
+    /**
+     * The following assumes that line numbers increase downward.
+     *
+     * @todo Verify that this "nibbling" works as described.
+     *
+     * Consider NaN data points invalid, i.e. "off the body".
+     * No need to continue beyond this point.
+     *
+     * @todo Check for a user-specified "blank" value as
+     *       well.
+     */
     if (i < config->nibble_left()
         || i >= this->samples_ - config->nibble_right()
         || k < config->nibble_top()
         || k >= this->lines_ - config->nibble_bottom()
-        || (!this->sky_mask_.empty() && !this->sky_mask_[index]))
+        || (!this->body_mask_.empty() && !this->body_mask_[index])
+        || std::isnan(data))
         return false;
 
     data = this->image_[index];
@@ -133,6 +166,15 @@ MaRC::PhotoImage::read_data(double lat,
 }
 
 void
+MaRC::PhotoImage::remove_sky(bool r)
+{
+    if (r)
+        this->body_mask_.resize(this->samples_ * this->lines_, false);
+    else
+        this->body_mask_.clear();
+}
+
+void
 MaRC::PhotoImage::data_weight(std::size_t i,
                               std::size_t k,
                               std::size_t & weight) const
@@ -147,7 +189,7 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     //
     // For most purposes, this quickly computed weight should be
     // sufficient.  If the image has gaps, determining weights through
-    // the sky mask scanning code below may be a better choice in
+    // the body mask scanning code below may be a better choice in
     // terms of quality.
     //
     // Note that a weight is computed regardless of whether or not sky
@@ -161,12 +203,14 @@ MaRC::PhotoImage::data_weight(std::size_t i,
 
     // Scan across image for "off-body/image" pixels, giving less
     // weight to those on the body closer to the sky.
-    if (this->sky_mask_.empty())
+    if (this->body_mask_.empty())
         return;
 
-    auto const sky_iter = this->sky_mask_.cbegin();
+    auto const sky_iter = this->body_mask_.cbegin();
 
     auto const & config = this->config_;
+
+    std::size_t const index = k * this->samples_ + i;
 
     // Scan across samples.
 
@@ -207,7 +251,7 @@ MaRC::PhotoImage::data_weight(std::size_t i,
 
     // Search from nibble_top to k.
     for (kk = config->nibble_top();
-         kk <= k && this->sky_mask_[kk * this->samples_ + i];
+         kk <= k && this->body_mask_[kk * this->samples_ + i];
          ++kk)
         ; // Nothing
 
@@ -217,7 +261,7 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     std::size_t const kend = this->lines_ - config->nibble_bottom();
 
     for (kk = k;
-         kk < kend && this->sky_mask_[kk * this->samples_ + i];
+         kk < kend && this->body_mask_[kk * this->samples_ + i];
          ++kk)
         ; // Nothing
 
