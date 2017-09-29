@@ -61,7 +61,8 @@ namespace MaRC
          * @param[in,out] sample Image-space sample coordinate
          *                       converted to object space.
          */
-        virtual void image_to_object(double & line, double & sample) = 0;
+        virtual void image_to_object(double & line,
+                                     double & sample) const = 0;
 
         /// Convert from object space to image space.
         /**
@@ -73,7 +74,9 @@ namespace MaRC
          * @param[in,out] sample Object-space sample coordinate
          *                       converted to image space.
          */
-        virtual void object_to_image(double & line, double & sample) = 0;
+        virtual void object_to_image(double & line,
+                                     double & sample) const = 0;
+
     };
 
 } // End MaRC namespace

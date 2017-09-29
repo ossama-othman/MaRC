@@ -57,7 +57,7 @@ MaRC::GLLGeometricCorrection::GLLGeometricCorrection(std::size_t samples)
 
 void
 MaRC::GLLGeometricCorrection::image_to_object(double & line,
-                                              double & sample)
+                                              double & sample) const
 {
     // -------------- Image Space to Object Space  --------------------
 
@@ -101,7 +101,7 @@ MaRC::GLLGeometricCorrection::image_to_object(double & line,
 
 void
 MaRC::GLLGeometricCorrection::object_to_image(double & line,
-                                              double & sample)
+                                              double & sample) const
 {
     // -------------- Object Space to Image Space  --------------------
 
