@@ -30,12 +30,10 @@
 #include "MaRC/InterpolationStrategy.h"
 
 #include <memory>
-#include <vector>
 
 
 namespace MaRC
 {
-    class OblateSpheroid;
 
     /**
      * @class PhotoImageParameters
@@ -47,16 +45,7 @@ namespace MaRC
     public:
 
         /// Constructor
-        /**
-         * @param[in]     body    Pointer to OblateSpheroid object
-         *                        representing body being mapped.
-         * @param[in,out] image   Array containing the image data.
-         *                        Ownership is transferred through a
-         *                        move operation.
-         * @param[in]     samples Number of samples in the image.
-         * @param[in]     lines   Number of lines   in the image.
-         */
-        PhotoImageParameters(std::shared_ptr<OblateSpheroid> body);
+        PhotoImageParameters();
 
         /// Destructor.
         ~PhotoImageParameters() = default;
@@ -64,28 +53,6 @@ namespace MaRC
         // Disallow copying.
         PhotoImageParameters(PhotoImageParameters const &) = delete;
         void operator=(PhotoImageParameters const &) = delete;
-
-        void image_info(std::vector<double> && image,
-                        std::size_t samples,
-                        std::size_t lines);
-
-        std::vector<double> const & image() const { return this->image_; }
-        std::size_t samples() const { return this->samples_; }
-        std::size_t lines()   const { return this->lines_;   }
-
-        /// Set sky removal variable
-        /**
-         * Enabling sky removal prevents data believed (i.e. computed)
-         * to be in the sky rather than on the body from being
-         * mapped.
-         *
-         * @param[in] remove @c true  == create sky removal mask,
-         *                   @c false == do not create sky removal
-         *                               mask.
-         *
-         * @note The source image array will not be modified.
-         */
-        void remove_sky(bool remove);
 
         /// Set the geometric correction strategy used during lat/lon
         /// to pixel conversion, and vice-versa.
@@ -170,16 +137,16 @@ namespace MaRC
         /// Return bottom nibble value.
         std::size_t nibble_bottom() const { return this->nibble_bottom_; }
 
+        /**
+         * @brief Validate current @c PhotoImage parameters.
+         *
+         * @param[in] samples  Number of samples in the image.
+         * @param[in] lines    Number of lines   in the image.
+         */
+        void validate_parameters(std::size_t samples,
+                                 std::size_t lines) const;
+
     private:
-
-        /// Image container.
-        std::vector<double> image_;
-
-        /// Number of samples in the image.
-        std::size_t samples_;
-
-        /// Number of lines in the image.
-        std::size_t lines_;
 
         /// Amount of pixels to ignore from left side of input image
         /// (photo).

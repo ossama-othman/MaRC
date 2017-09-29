@@ -74,9 +74,6 @@ namespace MaRC
         /// Destructor.
         virtual ~PhotoImage();
 
-        /// Create sky removal mask.
-        void remove_sky();
-
         /// Retrieve data from source image.
         /**
          * Retrieve data from source image. The configured data
@@ -114,6 +111,20 @@ namespace MaRC
                                std::size_t & weight,
                                bool scan = true) const;
 
+        /// Set sky removal variable
+        /**
+         * Enabling sky removal prevents data believed (i.e. computed)
+         * to be in the sky rather than on the body from being
+         * mapped.
+         *
+         * @param[in] remove @c true  == create sky removal mask,
+         *                   @c false == do not create sky removal
+         *                               mask.
+         *
+         * @note The source image array will not be modified.
+         */
+        void remove_sky(bool remove);
+
     private:
 
         /**
@@ -144,24 +155,24 @@ namespace MaRC
         /// Number of lines in the image.
         std::size_t const lines_;
 
+        /// @c PhotoImage configuration parameters.
+        std::unique_ptr<PhotoImageParameters const> const config_;
+
+        /// @c PhotoImage viewing geometry.
+        std::unique_ptr<ViewingGeometry const> const geometry_;
+
         /// Mask used when "removing" sky from source image.
         /**
          * A mask is used to mark which pixels in the photo are in the
          * body and which are in the sky without actually modifying
          * the original source photo.
          *
-         * @note The sky mask is generally only useful when performing
-         *       weighted averaging in a mosaiced image.
+         * @note The body mask is generally only useful when
+         *       performing weighted averaging in a mosaiced image.
          *
          * @see MosaicImage
          */
-        std::vector<bool> sky_mask_;
-
-        /// @c PhotoImage configuration parameters.
-        std::unique_ptr<PhotoImageParameters const> const config_;
-
-        /// @c PhotoImage viewing geometry.
-        std::unique_ptr<ViewingGeometry const> const geometry_;
+        std::vector<bool> body_mask_;
 
     };
 
