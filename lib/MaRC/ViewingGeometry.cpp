@@ -735,6 +735,12 @@ MaRC::ViewingGeometry::emi_ang_limit(double angle)
     this->mu_limit_ = std::cos(angle * C::degree);
 }            
 
+void
+MaRC::ViewingGeometry::use_terminator(bool u)
+{
+    this->use_terminator_ = u;
+}
+
 bool
 MaRC::ViewingGeometry::latlon2pix(double lat,
                                   double lon,

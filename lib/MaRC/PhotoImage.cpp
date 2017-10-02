@@ -35,6 +35,28 @@
 #include <sstream>
 #include <cassert>
 
+namespace
+{
+    /// Create body mask vector for use in "sky removal".
+    auto body_mask(std::size_t samples,
+                   std::size_t lines,
+                   MaRC::PhotoImageParameters const * config,
+                   MaRC::ViewingGeometry const * geometry)
+    {
+        if (!config || !geometry) {
+            throw std::invalid_argument(
+                "Null PhotoImage parameters or geometry.");
+        }
+
+        if (config->remove_sky()) {
+            return geometry->body_mask(samples,
+                                       lines,
+                                       *config->geometric_correction());
+        }
+
+        return std::vector<bool>();
+    }
+}
 
 MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
                              std::size_t samples,
@@ -47,9 +69,10 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     , lines_    (lines)
     , config_   (std::move(config))
     , geometry_ (std::move(geometry))
-    , body_mask_(geometry_->body_mask(samples,
-                                      lines,
-                                      *config_->geometric_correction()))
+    , body_mask_(body_mask(samples,
+                           lines,
+                           config_.get(),
+                           geometry_.get()))
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
@@ -64,12 +87,6 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     if (this->image_.size() != samples * lines) {
         throw std::invalid_argument(
             "Source image size does not match samples and lines");
-    }
-
-    if (this->image_.empty()
-        || this->image_.size() != this->body_mask_.size()) {
-        throw std::logic_error(
-            "Photo image parameters not correctly set.");
     }
 
     // All necessary image values and attributes should be set by now!
@@ -163,15 +180,6 @@ MaRC::PhotoImage::read_data(double lat,
         this->data_weight(i, k, weight);
 
     return true;  // Success
-}
-
-void
-MaRC::PhotoImage::remove_sky(bool r)
-{
-    if (r)
-        this->body_mask_.resize(this->samples_ * this->lines_, false);
-    else
-        this->body_mask_.clear();
 }
 
 void

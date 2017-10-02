@@ -54,6 +54,7 @@ MaRC::PhotoImageParameters::PhotoImageParameters()
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_strategy_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
+    , remove_sky_(false)
 {
 }
 
@@ -166,18 +167,24 @@ MaRC::PhotoImageParameters::nibble_bottom(std::size_t n)
 }
 
 void
+MaRC::PhotoImageParameters::remove_sky(bool r)
+{
+    this->remove_sky_ = r;
+}
+
+void
 MaRC::PhotoImageParameters::validate_parameters(std::size_t samples,
                                                 std::size_t lines) const
 {
     // Run some sanity checks on nibbling values
-    if (samples - this->nibble_right_ < this->nibble_left_) {
+    if (samples - this->nibble_right_ <= this->nibble_left_) {
         throw
             std::invalid_argument(
                 "Either the left or right (or both) "
                 "nibble value is too large.");
     }
 
-    if (lines - this->nibble_top_ < this->nibble_bottom_) {
+    if (lines - this->nibble_top_ <= this->nibble_bottom_) {
         throw
             std::invalid_argument(
                 "Either the top or bottom (or both) "

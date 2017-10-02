@@ -137,6 +137,23 @@ namespace MaRC
         /// Return bottom nibble value.
         std::size_t nibble_bottom() const { return this->nibble_bottom_; }
 
+        /// Set sky removal variable
+        /**
+         * Enabling sky removal prevents data believed (i.e. computed)
+         * to be in the sky rather than on the body from being
+         * mapped.
+         *
+         * @param[in] remove @c true  == create sky removal mask,
+         *                   @c false == do not create sky removal
+         *                               mask.
+         *
+         * @note The source image array will not be modified.
+         */
+        void remove_sky(bool remove);
+
+        /// Should the sky removal mask be generated.
+        bool remove_sky() const { return this->remove_sky_; }
+
         /**
          * @brief Validate current @c PhotoImage parameters.
          *
@@ -173,6 +190,9 @@ namespace MaRC
 
         /// Pointer to the interpolation strategy.
         std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
+
+        /// Should the sky removal mask be generated.
+        bool remove_sky_;
 
     };
 
