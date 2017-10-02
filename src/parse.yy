@@ -907,6 +907,16 @@ image_setup:
         sub_solar
         range
         image_geometry {
+          photo_parameters->nibble_left(nibble_left_val);
+          photo_parameters->nibble_right(nibble_right_val);
+          photo_parameters->nibble_top(nibble_top_val);
+          photo_parameters->nibble_bottom(nibble_bottom_val);
+
+          nibble_left_val   = pp.nibble_left;
+          nibble_right_val  = pp.nibble_right;
+          nibble_top_val    = pp.nibble_top;
+          nibble_bottom_val = pp.nibble_bottom;
+
           if (km_per_pixel_val > 0) {
               viewing_geometry->km_per_pixel(km_per_pixel_val);
               km_per_pixel_val = -1;  // Reset to "bad" value.
