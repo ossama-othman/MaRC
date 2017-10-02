@@ -168,7 +168,7 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
         this->invert_v(img, samples, lines);
 
     if (this->geometric_correction_) {
-        this->config_->geometric_correction(
+        this->geometry_->geometric_correction(
             std::make_unique<MaRC::GLLGeometricCorrection>(samples));
     }
 
@@ -184,9 +184,10 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     }
 
     /**
-     * @todo Finalizing setup like this is brittle. Revisit.
+     * @todo Finalizing viewing geometry setup like this is
+     *       brittle. Revisit.
      */
-    this->geometry_->finalize_setup();
+    this->geometry_->finalize_setup(samples, lines);
 
     return
         std::make_unique<MaRC::PhotoImage>(std::move(img),

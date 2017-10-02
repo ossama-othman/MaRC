@@ -26,12 +26,16 @@
 #include "OblateSpheroid.h"
 #include "Mathematics.h"
 #include "Validate.h"
-#include "GeometricCorrection.h"
+#include "NullGeometricCorrection.h"
 
 #include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <iostream>
+
+#ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
+# define MARC_DEFAULT_GEOM_CORR_STRATEGY MaRC::NullGeometricCorrection
+#endif  /* MARC_DEFAULT_GEOM_CORR_STRATEGY */
 
 
 namespace
@@ -65,11 +69,21 @@ MaRC::ViewingGeometry::ViewingGeometry(
     , lat_at_center_ (not_a_number)
     , lon_at_center_ (not_a_number)
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
+    , geometric_correction_(
+        std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
 {
 }
 
-MaRC::ViewingGeometry::~ViewingGeometry()
+void
+MaRC::ViewingGeometry::geometric_correction(
+    std::unique_ptr<GeometricCorrection> strategy)
 {
+    if (!strategy) {
+        std::invalid_argument(
+            "Null geometric correction strategy argument.");
+    }
+
+    this->geometric_correction_ = std::move(strategy);
 }
 
 bool
@@ -169,8 +183,21 @@ MaRC::ViewingGeometry::position_angle(double north)
 }
 
 void
-MaRC::ViewingGeometry::finalize_setup()
+MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
+                                      std::size_t lines)
 {
+    /**
+     * @todo We really shouldn't set the optical axis like this.  The
+     *       user should provide suitable values.  This is kept around
+     *       for backward compatibility.
+     */
+    // Make sure optical axis set.
+    if (std::isnan(this->OA_s_))
+        this->optical_axis_sample(samples / 2.0);
+
+    if (std::isnan(this->OA_l_))
+        this->optical_axis_line(lines / 2.0);
+
     // All necessary image values and attributes should be set by now!
 
     if (std::isnan(this->km_per_pixel_))
@@ -799,16 +826,17 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
 
     //std::cout << "* x = " << x << "\tz = " << z << '\n';
 
+    // Convert from object space to image space.
+    this->geometric_correction_->object_to_image(z, x);
+
     // x and z are both positive if the point at the given latitude
     // and longitude is in the image.
     return x >= 0 && z >= 0;
 }
 
 std::vector<bool>
-MaRC::ViewingGeometry::body_mask(
-    std::size_t samples,
-    std::size_t lines,
-    GeometricCorrection const & correct) const
+MaRC::ViewingGeometry::body_mask(std::size_t samples,
+                                 std::size_t lines) const
 {
     /**
      * @todo This routine is currently oblate spheroid specific.
@@ -825,7 +853,7 @@ MaRC::ViewingGeometry::body_mask(
             double x = i;
 
             // Convert from image space to object space.
-            correct.image_to_object(z, x);
+            this->geometric_correction_->image_to_object(z, x);
 
             z -= this->line_center_;
             x -= this->sample_center_;

@@ -25,7 +25,6 @@
 #ifndef MARC_PHOTO_IMAGE_PARAMETERS_H
 #define MARC_PHOTO_IMAGE_PARAMETERS_H
 
-#include "MaRC/GeometricCorrection.h"
 #include "MaRC/PhotometricCorrection.h"
 #include "MaRC/InterpolationStrategy.h"
 
@@ -53,21 +52,6 @@ namespace MaRC
         // Disallow copying.
         PhotoImageParameters(PhotoImageParameters const &) = delete;
         void operator=(PhotoImageParameters const &) = delete;
-
-        /// Set the geometric correction strategy used during lat/lon
-        /// to pixel conversion, and vice-versa.
-        /**
-         * @throw std::invalid_argument @a strategy is a nullptr.
-         */
-        void geometric_correction(
-            std::unique_ptr<GeometricCorrection> strategy);
-
-        /// Get the geometric correction strategy used during lat/lon
-        /// to pixel conversion, and vice-versa.
-        auto geometric_correction() const
-        {
-            return this->geometric_correction_.get();
-        }
 
         /// Set the photometric correction strategy.
         /**
@@ -180,10 +164,6 @@ namespace MaRC
         /// Amount of pixels to ignore from bottom side of input image
         /// (photo).
         std::size_t nibble_bottom_;
-
-        /// Geometric/optical correction strategy used during
-        /// latitude/longitude to pixel conversion, and vice versa.
-        std::unique_ptr<GeometricCorrection> geometric_correction_;
 
         /// Pointer to the photometric correction strategy.
         std::unique_ptr<PhotometricCorrection> photometric_correction_;
