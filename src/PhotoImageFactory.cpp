@@ -24,8 +24,6 @@
 #include "FITS_memory.h"
 
 #include "MaRC/PhotoImage.h"
-#include "MaRC/PhotoImageParameters.h"
-#include "MaRC/ViewingGeometry.h"
 
 // Geometric correction strategies
 #include "MaRC/GLLGeometricCorrection.h"
@@ -48,9 +46,7 @@
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(
-    char const * filename,
-    std::unique_ptr<PhotoImageParameters> config,
-    std::unique_ptr<ViewingGeometry> geometry)
+    char const * filename)
     : filename_(filename)
     , flat_field_()
     , geometric_correction_(false)
@@ -58,8 +54,8 @@ MaRC::PhotoImageFactory::PhotoImageFactory(
     , interpolate_(false)
     , invert_v_(false)
     , invert_h_(false)
-    , config_(std::move(config))
-    , geometry_(std::move(geometry))
+    , config_()
+    , geometry_()
 {
 }
 
@@ -67,7 +63,7 @@ std::unique_ptr<MaRC::SourceImage>
 MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 {
     if (!this->config_ || !this->geometry_)
-        return nullptr;  // make() already called!
+        return nullptr;  // not set or make() already called!
 
     fitsfile * fptr = nullptr;
     static constexpr int mode = READONLY;
@@ -187,6 +183,11 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
                 this->config_->nibble_bottom()));
     }
 
+    /**
+     * @todo Finalizing setup like this is brittle. Revisit.
+     */
+    this->geometry_->finalize_setup();
+
     return
         std::make_unique<MaRC::PhotoImage>(std::move(img),
                                            samples,
@@ -258,6 +259,20 @@ MaRC::PhotoImageFactory::invert_v(std::vector<double> & image,
         // Swap the lines.
         std::swap_ranges(top_begin, top_end, bottom_begin);
     }
+}
+
+void
+MaRC::PhotoImageFactory::photo_config(
+    std::unique_ptr<PhotoImageParameters> config)
+{
+    this->config_ = std::move(config);
+}
+
+void
+MaRC::PhotoImageFactory::viewing_geometry(
+    std::unique_ptr<ViewingGeometry> geometry)
+{
+    this->geometry_ = std::move(geometry);
 }
 
 int

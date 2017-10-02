@@ -948,6 +948,10 @@ image_setup:
           viewing_geometry->position_angle($14);
           viewing_geometry->sub_solar(($15).lat, ($15).lon);
           viewing_geometry->range($16);
+
+          photo_factory->photo_config(std::move(photo_parameters));
+          photo_factory->viewing_geometry(std::move(viewing_geometry));
+
           photo_factories.push_back(std::move(photo_factory));
         }
 ;
@@ -959,8 +963,7 @@ image_initialize:
             auto_free<char> str($3);
 
             photo_parameters =
-                std::make_unique<MaRC::PhotoImageParameters>(
-                    oblate_spheroid);
+                std::make_unique<MaRC::PhotoImageParameters>();
 
             // Set user default nibbling values.
             photo_parameters->nibble_left  (pp.nibble_left);
@@ -975,9 +978,7 @@ image_initialize:
              * @todo Move this to the end of the image parsing.
              */
             photo_factory =
-                std::make_unique<MaRC::PhotoImageFactory>(
-                    $3,
-                    oblate_spheroid);
+                std::make_unique<MaRC::PhotoImageFactory>($3);
         }
 ;
 
@@ -1084,8 +1085,8 @@ image_interpolate:
 ;
 
 remove_sky:
-        | _REMOVE_SKY ':' YES { photo_factory->remove_sky(true);  }
-        | _REMOVE_SKY ':' NO  { photo_factory->remove_sky(false); }
+        | _REMOVE_SKY ':' YES { photo_parameters->remove_sky(true);  }
+        | _REMOVE_SKY ':' NO  { photo_parameters->remove_sky(false); }
 ;
 
 mu:     _MU ':'

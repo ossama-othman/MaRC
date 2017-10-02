@@ -58,9 +58,7 @@ namespace MaRC
         /**
          * @param[in] filename Name of file containing image.
          */
-        PhotoImageFactory(char const * filename,
-                          std::unique_ptr<PhotoImageParameters> config,
-                          std::unique_ptr<ViewingGeometry> geometry);
+        PhotoImageFactory(char const * filename);
 
         /// Create a @c PhotoImage.
         virtual std::unique_ptr<SourceImage> make(
@@ -102,6 +100,12 @@ namespace MaRC
                              std::size_t samples,
                              std::size_t lines);
 
+        /// Set @c PhotoImage configuration parameters.
+        void photo_config(std::unique_ptr<PhotoImageParameters> config);
+
+        /// Set @c PhotoImage viewing geometry.
+        void viewing_geometry(std::unique_ptr<ViewingGeometry> geometry);
+
     private:
 
         /// Perform flat-field correction on the photo image.
@@ -118,6 +122,7 @@ namespace MaRC
          */
         int flat_field_correct(long const naxes[2],
                                std::vector<double> & img) const;
+
 
     private:
 
