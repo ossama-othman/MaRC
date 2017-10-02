@@ -26,6 +26,7 @@
 #define MARC_VIEWING_GEOMETRY_H
 
 #include "MaRC/Geometry.h"
+#include "MaRC/GeometricCorrection.h"
 
 #include <vector>
 #include <cstddef>
@@ -44,18 +45,27 @@ namespace MaRC
         /// Constructor.
         ViewingGeometry(std::shared_ptr<OblateSpheroid> body);
 
-        /// Constructor.
-        ~ViewingGeometry();
-
         // Disallow copying.
         ViewingGeometry(ViewingGeometry const &) = delete;
         ViewingGeometry & operator=(ViewingGeometry const &) = delete;
 
         /// Make sure all pre-processing is done.
         /**
+         * @param[in] samples  Number of samples in the image.
+         * @param[in] lines    Number of lines   in the image.
+         *
          * @todo Automate finalization of PhotoImage setup.
          */
-        void finalize_setup();
+        void finalize_setup(std::size_t samples,
+                            std::size_t lines);
+
+        /// Set the geometric correction strategy used during lat/lon
+        /// to pixel conversion, and vice-versa.
+        /**
+         * @throw std::invalid_argument @a strategy is a nullptr.
+         */
+        void geometric_correction(
+            std::unique_ptr<GeometricCorrection> strategy);
 
         /// Set sub-observation latitude and longitude.
         /**
@@ -275,15 +285,12 @@ namespace MaRC
          *
          * @param[in] samples Samples in the image.
          * @param[in] lines   Lines   in the image.
-         * @param[in] correct Lens geometric correction strategy.
          *
          * @return Vector of boolean values, where @c true refers to a
          *         point on the body.
          */
-        std::vector<bool> body_mask(
-            std::size_t samples,
-            std::size_t lines,
-            GeometricCorrection const & correct) const;
+        std::vector<bool> body_mask(std::size_t samples,
+                                    std::size_t lines) const;
 
     private:
 
@@ -433,6 +440,10 @@ namespace MaRC
         /// Take into account terminator when determing if lat/lon is
         /// visible.
         bool use_terminator_;
+
+        /// Geometric/optical correction strategy used during
+        /// latitude/longitude to pixel conversion, and vice versa.
+        std::unique_ptr<GeometricCorrection> geometric_correction_;
 
     };
 

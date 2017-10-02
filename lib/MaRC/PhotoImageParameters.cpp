@@ -22,17 +22,12 @@
  */
 
 #include "PhotoImageParameters.h"
-#include "NullGeometricCorrection.h"
 #include "NullPhotometricCorrection.h"
 #include "NullInterpolation.h"
 
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
-
-#ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
-# define MARC_DEFAULT_GEOM_CORR_STRATEGY MaRC::NullGeometricCorrection
-#endif  /* MARC_DEFAULT_GEOM_CORR_STRATEGY */
 
 #ifndef MARC_DEFAULT_PHOTO_CORR_STRATEGY
 # define MARC_DEFAULT_PHOTO_CORR_STRATEGY MaRC::NullPhotometricCorrection
@@ -48,26 +43,12 @@ MaRC::PhotoImageParameters::PhotoImageParameters()
     , nibble_right_ (0)
     , nibble_top_   (0)
     , nibble_bottom_(0)
-    , geometric_correction_(
-        std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
     , photometric_correction_(
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_strategy_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
     , remove_sky_(false)
 {
-}
-
-void
-MaRC::PhotoImageParameters::geometric_correction(
-    std::unique_ptr<GeometricCorrection> strategy)
-{
-    if (!strategy) {
-        std::invalid_argument(
-            "Null geometric correction strategy argument.");
-    }
-
-    this->geometric_correction_ = std::move(strategy);
 }
 
 void

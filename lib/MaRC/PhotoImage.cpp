@@ -49,9 +49,7 @@ namespace
         }
 
         if (config->remove_sky()) {
-            return geometry->body_mask(samples,
-                                       lines,
-                                       *config->geometric_correction());
+            return geometry->body_mask(samples, lines);
         }
 
         return std::vector<bool>();
@@ -128,11 +126,6 @@ MaRC::PhotoImage::read_data(double lat,
     if (!this->geometry_->latlon2pix(lat, lon, x, z))
         return false;
 
-    auto const & config = this->config_;
-
-    // Convert from object space to image space.
-    config->geometric_correction()->object_to_image(z, x);
-
     assert(x >= 0 && z >= 0);
 
     // x and z are 'pixel coordinates'.  In 'pixel coordinates', the
@@ -141,6 +134,8 @@ MaRC::PhotoImage::read_data(double lat,
     std::size_t const i = static_cast<std::size_t>(std::floor(x));
     std::size_t const k = static_cast<std::size_t>(std::floor(z));
     std::size_t const index = k * this->samples_ + i;
+
+    auto const & config = this->config_;
 
     /**
      * The following assumes that line numbers increase downward.
