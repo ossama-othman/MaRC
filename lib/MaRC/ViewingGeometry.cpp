@@ -651,7 +651,7 @@ MaRC::ViewingGeometry::range(double r)
     auto const min_range =
         std::min(this->body_->eq_rad(), this->body_->pol_rad());
 
-    constexpr auto max_range =
+    auto const max_range =
         std::sqrt(std::numeric_limits<decltype(this->range_)>::max());
 
     // Check if the observer is too close or too far.
