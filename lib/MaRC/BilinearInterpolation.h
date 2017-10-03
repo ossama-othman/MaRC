@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file PhotoInterpolationStrategy.h
+ * @file BilinearInterpolation.h
  *
  * Copyright (C) 2004-2005, 2017  Ossama Othman
  *
@@ -22,10 +22,10 @@
  * @author Ossama Othman
  */
 
-#ifndef MARC_PHOTO_INTERPOLATION_STRATEGY_H
-#define MARC_PHOTO_INTERPOLATION_STRATEGY_H
+#ifndef MARC_BILINEAR_INTERPOLATION_H
+#define MARC_BILINEAR_INTERPOLATION_H
 
-#include "InterpolationStrategy.h"
+#include "MaRC/InterpolationStrategy.h"
 
 #include <cstddef>
 
@@ -34,14 +34,14 @@ namespace MaRC
 {
 
   /**
-   * @class PhotoInterpolationStrategy
+   * @class BilinearInterpolation
    *
-   * @brief Bilinear interpolation strategy for PhotoImages.
+   * @brief Bilinear interpolation strategy.
    *
-   * This strategy performs bilinear interpolation over 2x2 area of
-   * pixels.
+   * This strategy performs bilinear interpolation over 2x2 block of
+   * data.
    */
-  class PhotoInterpolationStrategy : public InterpolationStrategy
+  class BilinearInterpolation : public InterpolationStrategy
   {
   public:
 
@@ -54,25 +54,25 @@ namespace MaRC
        * @param[in] nibble_top     Top    nibble value.
        * @param[in] nibble_bottom  Bottom nibble value.
        */
-      PhotoInterpolationStrategy(std::size_t samples,
-                                 std::size_t lines,
-                                 std::size_t nibble_left,
-                                 std::size_t nibble_right,
-                                 std::size_t nibble_top,
-                                 std::size_t nibble_bottom);
+      BilinearInterpolation(std::size_t samples,
+                            std::size_t lines,
+                            std::size_t nibble_left,
+                            std::size_t nibble_right,
+                            std::size_t nibble_top,
+                            std::size_t nibble_bottom);
 
       /// Destructor.
-      virtual ~PhotoInterpolationStrategy();
+      virtual ~BilinearInterpolation();
 
       /// Perform bilinear interpolation over a 2x2 area of pixels on
       /// the given pixel.
       /**
-       * @todo Document parameters.
+       * @see @c InterpolationStrategy for parameter details.
        */
-      virtual bool interpolate(double const * image,
+      virtual bool interpolate(double const * data,
                                double x,
                                double z,
-                               double & data) const;
+                               double & datum) const;
 
   private:
 
@@ -96,4 +96,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_PHOTO_INTERPOLATION_STRATEGY_H */
+#endif  /* MARC_BILINEAR_INTERPOLATION_H */

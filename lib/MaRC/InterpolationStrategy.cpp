@@ -24,6 +24,6 @@
 #include "InterpolationStrategy.h"
 
 
-MaRC::InterpolationStrategy::~InterpolationStrategy (void)
+MaRC::InterpolationStrategy::~InterpolationStrategy()
 {
 }

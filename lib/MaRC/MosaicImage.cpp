@@ -45,7 +45,8 @@ MaRC::MosaicImage::read_data(double lat,
 {
     bool found_data = false;
 
-    // Buffer holding weighted sum for a given pixel.
+    // Weighted sum of data from potentially multiple images at given
+    // latitude and longitude.
     long double weighted_data_sum = 0;
 
     // Sum of shortest distances.
@@ -65,14 +66,13 @@ MaRC::MosaicImage::read_data(double lat,
                 std::size_t weight = 1;
 
                 // Scan for data weight.
-                static bool const scan = true;
+                static constexpr bool scan = true;
 
                 if (i->read_data(lat,
                                  lon,
                                  data,
                                  weight,
-                                 scan)
-                    && !MaRC::almost_zero(data, 5)) {
+                                 scan)) {
                     weighted_data_sum += weight * data;
                     weight_sum += weight;
 
@@ -83,8 +83,7 @@ MaRC::MosaicImage::read_data(double lat,
             break;
 
         case AVG_UNWEIGHTED:  // Unweighted averaging.
-            if (i->read_data(lat, lon, data)
-                && !MaRC::almost_zero(data, 5)) {
+            if (i->read_data(lat, lon, data)) {
                 weighted_data_sum += data;
                 ++weight_sum;
 
@@ -94,8 +93,7 @@ MaRC::MosaicImage::read_data(double lat,
             break;
 
         default:      // No averaging
-            if (i->read_data(lat, lon, data)
-                && !MaRC::almost_zero(data, 5)) {
+            if (i->read_data(lat, lon, data)) {
                 found_data = true;
 
                 // No point in continuing.  Just return the first

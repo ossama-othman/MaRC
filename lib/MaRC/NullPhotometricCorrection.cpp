@@ -24,21 +24,13 @@
 #include "NullPhotometricCorrection.h"
 
 
-MaRC::NullPhotometricCorrection::~NullPhotometricCorrection (void)
+MaRC::NullPhotometricCorrection::~NullPhotometricCorrection()
 {
 }
 
-int
-MaRC::NullPhotometricCorrection::correct (
-  BodyData const & /* body */,
-  double /* sub_observ_lat */,
-  double /* sub_observ_lon */,
-  double /* sub_solar_lat */,
-  double /* sub_solar_lon */,
-  double /* lat */,
-  double /* lon */,
-  double /* range */,
-  double & /* data */)
+bool
+MaRC::NullPhotometricCorrection::correct(ViewingGeometry const &,
+                                         double & /* data */)
 {
-  return 0;
+    return true;
 }

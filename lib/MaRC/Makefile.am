@@ -27,6 +27,8 @@ libMaRC_la_SOURCES = \
   BodyData.cpp \
   OblateSpheroid.cpp \
   \
+  ViewingGeometry.cpp \
+  \
   GeometricCorrection.cpp \
   GLLGeometricCorrection.cpp \
   NullGeometricCorrection.cpp \
@@ -35,8 +37,8 @@ libMaRC_la_SOURCES = \
   NullPhotometricCorrection.cpp \
   \
   InterpolationStrategy.cpp \
-  PhotoInterpolationStrategy.cpp \
-  NullInterpolationStrategy.cpp \
+  BilinearInterpolation.cpp \
+  NullInterpolation.cpp \
   \
   SourceImage.cpp \
   VirtualImage.cpp \
@@ -45,6 +47,7 @@ libMaRC_la_SOURCES = \
   CosPhaseImage.cpp \
   LatitudeImage.cpp \
   LongitudeImage.cpp \
+  PhotoImageParameters.cpp \
   PhotoImage.cpp \
   MosaicImage.cpp \
   \
@@ -63,6 +66,8 @@ pkginclude_HEADERS = \
   BodyData.h \
   OblateSpheroid.h \
   \
+  ViewingGeometry.h \
+  \
   SourceImage.h \
   VirtualImage.h \
   MuImage.h \
@@ -70,6 +75,7 @@ pkginclude_HEADERS = \
   CosPhaseImage.h \
   LatitudeImage.h \
   LongitudeImage.h \
+  PhotoImageParameters.h \
   PhotoImage.h \
   MosaicImage.h \
   \
@@ -78,6 +84,8 @@ pkginclude_HEADERS = \
   NullGeometricCorrection.h \
   \
   InterpolationStrategy.h \
+  BilinearInterpolation.h \
+  NullInterpolation.h \
   \
   PhotometricCorrection.h \
   NullPhotometricCorrection.h \
@@ -94,14 +102,10 @@ pkginclude_HEADERS = \
   SimpleCylindrical.h \
   SimpleCylindrical.cpp \
   Validate.h \
+  root_find.h \
   \
   Constants.h \
   \
   Version.h
 
-noinst_HEADERS = \
-  misc.h \
-  root_find.h \
-  \
-  NullInterpolationStrategy.h \
-  PhotoInterpolationStrategy.h
+# noinst_HEADERS =
