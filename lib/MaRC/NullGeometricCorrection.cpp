@@ -25,15 +25,17 @@
 
 
 void
-MaRC::NullGeometricCorrection::image_to_object(double & /* line */,
-                                               double & /* sample */)
+MaRC::NullGeometricCorrection::image_to_object(
+    double & /* line */,
+    double & /* sample */) const
 {
-  // No correction.
+    // No correction.
 }
 
 void
-MaRC::NullGeometricCorrection::object_to_image(double & /* line */,
-                                               double & /* sample */)
+MaRC::NullGeometricCorrection::object_to_image(
+    double & /* line */,
+    double & /* sample */) const
 {
-  // No correction.
+    // No correction.
 }

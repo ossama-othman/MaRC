@@ -303,7 +303,7 @@ MaRC::OblateSpheroid::M(double lat)
 }
 
 double
-MaRC::OblateSpheroid::N (double lat)
+MaRC::OblateSpheroid::N(double lat)
 {
     double const sin_latg = std::sin(this->graphic_latitude(lat));
 
@@ -353,10 +353,6 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
     double const & Axis_c = this->pol_rad_;
 
     double const semis[] = { Axis_a, Axis_b, Axis_c };
-
-    // Initialize to zero just in case error occurs
-    lat = 0;
-    lon = 0;
 
     // Convert inputs to quadratic coefficients
     double a = 0;
