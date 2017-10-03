@@ -760,7 +760,7 @@ MaRC::ViewingGeometry::emi_ang_limit(double angle)
         throw std::range_error("invalid emission angle limit");
 
     this->mu_limit_ = std::cos(angle * C::degree);
-}            
+}
 
 void
 MaRC::ViewingGeometry::use_terminator(bool u)

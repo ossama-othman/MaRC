@@ -38,12 +38,29 @@ namespace MaRC
     class OblateSpheroid;
     class GeometricCorrection;
 
+    /**
+     * @class ViewingGeometry
+     *
+     * @brief Viewing geometry necessary to go from latitude/longitude
+     *        to image pixel.
+     *
+     * This class encapsulates parameters and operations needed to
+     * convert a point (latitude and longitude) on an observed body to
+     * an image pixel.
+     *
+     * @note The observed body is currently required to be modeled as
+     *       an oblate spheroid due to the way the rotation matrices
+     *       are generated.
+     */
     class ViewingGeometry
     {
-    public: 
-       
+    public:
+
         /// Constructor.
         ViewingGeometry(std::shared_ptr<OblateSpheroid> body);
+
+        /// Destructor.
+        ~ViewingGeometry() = default;
 
         // Disallow copying.
         ViewingGeometry(ViewingGeometry const &) = delete;
