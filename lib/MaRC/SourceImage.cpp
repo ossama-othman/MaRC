@@ -24,7 +24,7 @@
 #include "SourceImage.h"
 
 
-MaRC::SourceImage::~SourceImage (void)
+MaRC::SourceImage::~SourceImage()
 {
 }
 

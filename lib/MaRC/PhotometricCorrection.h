@@ -28,7 +28,7 @@
 
 namespace MaRC
 {
-    class BodyData;
+    class ViewingGeometry;
 
     /**
      * @class PhotometricCorrection
@@ -53,35 +53,20 @@ namespace MaRC
             PhotometricCorrection const &) = delete;
 
         /// Destructor
-        virtual ~PhotometricCorrection (void);
+        virtual ~PhotometricCorrection();
 
         /// Perform photometric correction.
         /**
-         * @param[in]  body           Pointer to BodyData object
-         *                            representing body being mapped.
-         * @param[in]  sub_observ_lat Bodycentric subobservation
-         *                            latitude.
-         * @param[in]  sub_observ_lon Subobservation longitude.
-         * @param[in]  sub_solar_lat  Bodycentric subsolar latitude.
-         * @param[in]  sub_solar_lon  Subsolar longitude.
-         * @param[in]  lat            Bodycentric latitude.
-         * @param[in]  lon            Longitude.
-         * @param[out] range          Observer range to subobservation
-         *                            point.
+         * @param[in]     geometry Viewing geometry.
+         * @param[in,out] data     Data to be photometrically
+         *                         corrected.
          *
-         * @return 0 on successful correction.
+         * @return @c true on successful correction.
          */
-        virtual int correct(BodyData const & body,
-                            double sub_observ_lat,
-                            double sub_observ_lon,
-                            double sub_solar_lat,
-                            double sub_solar_lon,
-                            double lat,
-                            double lon,
-                            double range,
-                            double & data) = 0;
+        virtual bool correct(ViewingGeometry const & geometry,
+                             double & data) = 0;
 
-  };
+    };
 
 }
 

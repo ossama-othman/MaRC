@@ -30,7 +30,6 @@
 
 namespace MaRC
 {
-    class BodyData;
 
     /**
      * @class NullPhotometricCorrection
@@ -45,7 +44,7 @@ namespace MaRC
     public:
 
         /// Destructor
-        virtual ~NullPhotometricCorrection (void);
+        virtual ~NullPhotometricCorrection();
 
         /**
          * @name PhotometricCorrection Methods
@@ -59,19 +58,14 @@ namespace MaRC
         /// Perform photometric correction.
         /**
          * This particular implementation is a no-op.
+         *
+         * @return @c true in all cases.
          */
-        virtual int correct(BodyData const & body,
-                            double sub_observ_lat,
-                            double sub_observ_lon,
-                            double sub_solar_lat,
-                            double sub_solar_lon,
-                            double lat,
-                            double lon,
-                            double range,
-                            double & data);
+        virtual bool correct(ViewingGeometry const & geometry,
+                             double & data);
         //@}
 
-  };
+    };
 
 }
 

@@ -24,6 +24,6 @@
 #include "PhotometricCorrection.h"
 
 
-MaRC::PhotometricCorrection::~PhotometricCorrection (void)
+MaRC::PhotometricCorrection::~PhotometricCorrection()
 {
 }
