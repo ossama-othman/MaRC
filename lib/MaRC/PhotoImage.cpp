@@ -35,6 +35,7 @@
 #include <sstream>
 #include <cassert>
 
+
 namespace
 {
     /// Create body mask vector for use in "sky removal".
@@ -87,6 +88,11 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
             "Source image size does not match samples and lines");
     }
 
+    /**
+     * @note Null config and geometry parameter checks are done in the
+     *       call to body_mask() in the anonymous namespace above.
+     */
+
     // All necessary image values and attributes should be set by now!
 
     /**
@@ -105,7 +111,7 @@ MaRC::PhotoImage::read_data(double lat, double lon, double & data) const
 {
     std::size_t weight = 1;  // Unused.
 
-    static const bool scan = false; // Do not scan for data weight.
+    static constexpr bool scan = false; // Do not scan for data weight.
 
     return this->read_data(lat, lon, data, weight, scan);
 }

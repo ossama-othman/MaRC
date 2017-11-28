@@ -40,15 +40,15 @@ namespace MaRC
      */
     template <class MAP_FACTORY>
     double
-    root_find (double ordinate,
-               double ordinate_guess,
-               double abscissa_guess,
-               double (MAP_FACTORY::* equation)(double) const,
-               MAP_FACTORY const * map)
+    root_find(double ordinate,
+              double ordinate_guess,
+              double abscissa_guess,
+              double (MAP_FACTORY::* equation)(double) const,
+              MAP_FACTORY const * map)
     {
-        double const tolerance = 1e-4;
-        double const delta = 1e-3;
-        unsigned int const max_iterations = 10;
+        constexpr double tolerance = 1e-4;
+        constexpr double delta = 1e-3;
+        constexpr unsigned int max_iterations = 10;
         double const abscissa_guess_orig = abscissa_guess;
 
         double abscissa;
@@ -57,10 +57,10 @@ namespace MaRC
             // Center divided difference numerical method of computing
             // the first derivative (VERY LOW ERROR)
             double const deriv =
-                (-(map->*equation) (abscissa_guess + 2 * delta)
-                 + 8 * (map->*equation) (abscissa_guess + delta)
-                 - 8 * (map->*equation) (abscissa_guess - delta)
-                 + (map->*equation) (abscissa_guess - 2 * delta))
+                (-(map->*equation)(abscissa_guess + 2 * delta)
+                 + 8 * (map->*equation)(abscissa_guess + delta)
+                 - 8 * (map->*equation)(abscissa_guess - delta)
+                 + (map->*equation)(abscissa_guess - 2 * delta))
                 / 12 / delta;
 
             abscissa =
@@ -86,26 +86,26 @@ namespace MaRC
         for (unsigned int count = 0; count < max_iterations; ++count) {
             double const temp = abscissa_guess;
 
-            ordinate_guess = (map->*equation) (abscissa_guess);
+            ordinate_guess = (map->*equation)(abscissa_guess);
 
             for (unsigned int i = 0; i < max_iterations; ++i) {
                 // Center divided difference numerical method of
                 // computing the first derivative (VERY LOW ERROR).
                 double const deriv =
-                    (-(map->*equation) (abscissa_guess + 2 * delta)
-                     + 8 * (map->*equation) (abscissa_guess + delta)
-                     - 8 * (map->*equation) (abscissa_guess - delta)
-                     + (map->*equation) (abscissa_guess - 2 * delta))
+                    (-(map->*equation)(abscissa_guess + 2 * delta)
+                     + 8 * (map->*equation)(abscissa_guess + delta)
+                     - 8 * (map->*equation)(abscissa_guess - delta)
+                     + (map->*equation)(abscissa_guess - 2 * delta))
                     / 12 / delta;
 
                 abscissa =
                     abscissa_guess + (ordinate - ordinate_guess) / deriv;
 
-                if (::fabs (abscissa - abscissa_guess) < tolerance)
+                if (std::abs(abscissa - abscissa_guess) < tolerance)
                     return abscissa;
 
                 abscissa_guess = abscissa;
-                ordinate_guess = (map->*equation) (abscissa_guess);
+                ordinate_guess = (map->*equation)(abscissa_guess);
             }
 
             abscissa_guess = temp;

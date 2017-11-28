@@ -33,22 +33,22 @@ bool test_almost_equal()
      */
 
     // Start out with an arbitrary floating point value.
-    float x  = 12345.6789;
+    float x = 12345.6789;
 
-    // Interpret its memory as memory belong to an integer of the same
-    // size.  We are casting the pointer to float to a pointer to
+    // Interpret its memory as memory belonging to an integer of the
+    // same size.  We are casting the pointer to float to a pointer to
     // int32_t.  We are NOT casting the float value to an int32_t.
-    int32_t * xi = reinterpret_cast<int32_t *>(&x);
+    int32_t * const xi = reinterpret_cast<int32_t *>(&x);
 
     // Add 4 Units in the Last Place (ULPs) to the integer
-    // representation .  This is NOT the same as adding 4 to the
+    // representation.  This is NOT the same as adding 4 to the
     // floating point value x.
     int32_t yi = *xi + 4;
 
     // Interpret the memory of the new integer as memory belonging to
-    // a float of the same size.  We are casting the pointer to float
-    // to a pointer to int32_t.  We are NOT casting the float value to
-    // an int32_t.
+    // a float of the same size.  We are casting the pointer to
+    // int32_t to a pointer to float.  We are NOT casting the int32_t
+    // value to a float.
     float * y  = reinterpret_cast<float *>(&yi);
 
     return
@@ -69,12 +69,14 @@ bool test_almost_equal()
 
 bool test_almost_zero()
 {
-    constexpr float x = 0;
-    constexpr float y = -1e-5;
-    constexpr float z = 1;
+    constexpr float  w = 0;
+    constexpr double x = std::numeric_limits<double>::min();
+    constexpr float  y = -1e-5;
+    constexpr float  z = 1;
 
     return
-        MaRC::almost_zero(x, 1)
+           MaRC::almost_zero(w, 1)
+        && MaRC::almost_zero(x, 1)
         && MaRC::almost_zero(y, 100)
         && !MaRC::almost_zero(z, 100000);
 }

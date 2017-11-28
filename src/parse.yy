@@ -1974,7 +1974,7 @@ one_std_lat:
 two_std_lats:
         | STD_LAT_1 ':' latitude
           STD_LAT_2 ':' latitude {
-            if (std::fabs($6) < std::fabs($3) &&
+            if (std::abs($6) < std::abs($3) &&
                 (north_pole && $3 < 90 && $3 > 0) ||
                 (!north_pole && $3 > -90 && $3 < 0)) {
               MapEntry->setStdLat($3, $6);
@@ -2020,7 +2020,7 @@ latitude:
 
 latitude_sub:
         expr    {
-            if (std::fabs($1) <= 90)
+            if (std::abs($1) <= 90)
             $$ = $1;
             else {
                 std::cerr << "Incorrect latitude entered: " << $1
@@ -2050,7 +2050,7 @@ latitude_sub:
 
 longitude:
           expr {
-              if (std::fabs($1) <= 360) {
+              if (std::abs($1) <= 360) {
                   if ($1 < 0)
                       $1 += 360;
                   $$ = $1;
@@ -2061,7 +2061,7 @@ longitude:
               }
          }
          | expr 'E' {
-             if (std::fabs($1) <= 360) {
+             if (std::abs($1) <= 360) {
                  if ($1 < 0)
                      $1 += 360;
                  if (oblate_spheroid->prograde())
@@ -2075,7 +2075,7 @@ longitude:
              }
         }
         | expr 'W'      {
-            if (std::fabs($1) <= 360) {
+            if (std::abs($1) <= 360) {
                 if ($1 < 0)
                     $1 += 360;
                 if (oblate_spheroid->prograde())

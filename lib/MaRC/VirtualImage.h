@@ -43,7 +43,8 @@ namespace MaRC
      *
      * @see MaRC::scale_and_offset()
      *
-     * @internal This functor is not part of public MaRC library API.
+     * @internal This functor is not part of the public MaRC library
+     *           API.
      */
     template <typename T>
     struct scale_and_offset_impl
@@ -200,23 +201,22 @@ namespace MaRC
      *            greater than or equal to one if this function
      *            completes successfully.
      *
-     * @param[in]     min    The lowest physical value to be plotted
-     *                       on a map.  For example, this would be -1
-     *                       for source images that generate cosines.
-     * @param[in]     max    The highest physical value to be plotted
-     *                       on a map.  For example, this would be 1
-     *                       for source images that generate cosines.
-     * @param[in,out] scale  Linear scaling value by which physical
-     *                       data should be multiplied to maximize the
-     *                       number of significant digits prior to
-     *                       storing data in an integer typed map.
-     *                       This will be 1 for floating point typed
-     *                       maps.
-     * @param[in,out] offset Offset value to be added to data after
-     *                       the scaling factor has been applied to
-     *                       force that data to fit within the integer
-     *                       typed map data range.  This will be 0 for
-     *                       floating point typed maps.
+     * @param[in]  min    The lowest physical value to be plotted on a
+     *                    map.  For example, this would be -1 for
+     *                    source images that generate cosines.
+     * @param[in]  max    The highest physical value to be plotted on
+     *                    a map.  For example, this would be 1 for
+     *                    source images that generate cosines.
+     * @param[out] scale  Linear scaling value by which physical data
+     *                    should be multiplied to maximize the number
+     *                    of significant digits prior to storing data
+     *                    in an integer typed map. This will be 1 for
+     *                    floating point typed maps.
+     * @param[out] offset Offset value to be added to data after the
+     *                    scaling factor has been applied to force
+     *                    that data to fit within the integer typed
+     *                    map data range.  This will be 0 for floating
+     *                    point typed maps.
      *
      * @retval true  Suitable @a scale and @a offset values were
      *               found.

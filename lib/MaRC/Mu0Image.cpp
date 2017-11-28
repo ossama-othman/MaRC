@@ -46,7 +46,7 @@ MaRC::Mu0Image::read_data_i(double lat, double lon, double & data) const
     /*
       An illuminated point at the given latitude and longitude will
       have an incidence angle in the interval [-90, 90], i.e. mu0 >= 0
-      where mu0is the cosine of the incidence angle.  Points that are
+      where mu0 is the cosine of the incidence angle.  Points that are
       not illuminated will have a value of mu0 < 0.
     */
     data = this->body_->mu0(this->sub_solar_lat_,

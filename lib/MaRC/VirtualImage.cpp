@@ -42,5 +42,5 @@ MaRC::VirtualImage::read_data(double lat, double lon, double & data) const
     if (visible)
         data = (data * this->scale_) + this->offset_;
 
-  return visible;
+    return visible;
 }
