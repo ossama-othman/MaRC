@@ -791,8 +791,8 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
      * @todo Confirm that Coord[0] and Coord[1] are not swapped,
      *       i.e. 90 degrees off in the x-y plane!
      *       @par
-     *       Swapping the two prevents the below @c assert() from
-     *       being triggered, but it's not yet clear if the
+     *       Swapping the two prevents the below normal range check
+     *       from being triggered, but it's not yet clear if the
      *       @c normal_range_ value is incorrect or if the @c Coord
      *       vector is incorrect.
      */
@@ -813,6 +813,8 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
      *       here.  If that is a correct assumption figure out what is
      *       triggering the vector in observer coordinates to have a
      *       y-component that is larger than the @c normal_range_.
+     *       Remember that the optical axis may not coincide with
+     *       sub-observation point.
      */
     if (Rotated[1] > this->normal_range_)
         return false;  // On other side of image plane / body.
@@ -824,14 +826,10 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     z  = this->OA_l_ - z; // Assumes line numbers increase top to
                           // bottom.
 
-    //std::cout << "* x = " << x << "\tz = " << z << '\n';
-
     // Convert from object space to image space.
     this->geometric_correction_->object_to_image(z, x);
 
-    // x and z are both positive if the point at the given latitude
-    // and longitude is in the image.
-    return x >= 0 && z >= 0;
+    return true;
 }
 
 std::vector<bool>
