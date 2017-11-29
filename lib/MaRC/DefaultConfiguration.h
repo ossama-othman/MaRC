@@ -83,8 +83,7 @@ namespace MaRC
          *
          * @note This value should never be greater than 360.
          */
-        constexpr double longitude_high  = 360;
-
+        constexpr double longitude_high  = longitude_low + 360;
 
         /**
          * @brief Maximum longitude range in degrees to be potentially
