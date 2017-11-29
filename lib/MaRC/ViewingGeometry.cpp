@@ -32,6 +32,7 @@
 #include <limits>
 #include <stdexcept>
 #include <iostream>
+#include <cassert>
 
 #ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
 # define MARC_DEFAULT_GEOM_CORR_STRATEGY MaRC::NullGeometricCorrection
@@ -832,12 +833,66 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     return true;
 }
 
+bool
+MaRC::ViewingGeometry::pix2latlon(double sample,
+                                  double line,
+                                  double & lat,
+                                  double & lon) const
+{
+    // Convert from image space to object space.
+    this->geometric_correction_->image_to_object(sample, line);
+
+    sample -= this->sample_center_;
+    line   -= this->line_center_;
+
+    // ---------------------------------------------
+
+    // Convert from observer coordinates to body coordinates
+    DVector coord;
+    coord[0] =  sample;
+    coord[1] =  0;
+    coord[2] = -line; // Negative since line numbers increase top to
+                      // bottom (?)
+
+    // Do the transformation
+    DVector rotated(this->observ2body_ * coord);
+    rotated *= this->km_per_pixel_;
+
+    // ---------------------------------------------
+
+    // Vector from observer to point on image
+    DVector const dVec(rotated - this->range_b_);
+
+    int const success =
+        this->body_->ellipse_intersection(this->range_b_,
+                                          dVec,
+                                          lat,
+                                          lon);
+
+    assert(success != -1);  // -1 == bad parameters
+
+    if (success == 0) {
+        /**
+         * @todo Verify!
+         */
+        if (this->body_->prograde())
+            lon  = this->sub_observ_lon_ - lon;
+        else
+            lon -= this->sub_observ_lon_;
+    }
+
+    return success == 0;
+}
+
 std::vector<bool>
 MaRC::ViewingGeometry::body_mask(std::size_t samples,
                                  std::size_t lines) const
 {
     /**
      * @todo This routine is currently oblate spheroid specific.
+     *
+     * @todo Find a way to make the scan more efficient, or avoid it
+     *       entirely.
      */
 
     std::vector<bool> mask(samples * lines, false);
@@ -846,40 +901,9 @@ MaRC::ViewingGeometry::body_mask(std::size_t samples,
         std::size_t const offset = k * samples;
 
         for (std::size_t i = 0; i < samples; ++i) {
-            double z = k;  // Reset "z" prior to geometric
-                           // correction. Do not move to outer loop!
-            double x = i;
-
-            // Convert from image space to object space.
-            this->geometric_correction_->image_to_object(z, x);
-
-            z -= this->line_center_;
-            x -= this->sample_center_;
-
-            // ---------------------------------------------
-
-            // Convert from observer coordinates to body coordinates
-            DVector coord;
-            coord[0] =  x;
-            coord[1] =  0;
-            coord[2] = -z; // Negative since line numbers increase top to
-                           // bottom (?)
-
-            // Do the transformation
-            DVector rotated(this->observ2body_ * coord);
-            rotated *= this->km_per_pixel_;
-
-            // ---------------------------------------------
-
-            // Vector from observer to point on image
-            DVector const dVec(rotated - this->range_b_);
-
             double lat, lon;
 
-            if (this->body_->ellipse_intersection(this->range_b_,
-                                                  dVec,
-                                                  lat,
-                                                  lon) == 0) {
+            if (this->pix2latlon(i, k, lat, lon)) {
                 // On body
                 std::size_t const index = offset + i;
                 mask[index] = true;

@@ -282,7 +282,7 @@ namespace MaRC
 	 */
         bool is_visible(double lat, double lon) const;
 
-        /// Convert (latitude, longitude) to (sample, line)
+        /// Convert (latitude, longitude) to (sample, line).
         /**
          * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
          *                 in radians.
@@ -307,6 +307,22 @@ namespace MaRC
                         double lon,
                         double & x,
                         double & z) const;
+
+        /// Convert (sample, line) to (latitude, longitude).
+        /**
+         * @param[in]  sample Sample at given latitude and longitude.
+         * @param[in]  line   Line at given latitude and longitude.
+         * @param[out] lat    Bodycentric (e.g. planetocentric)
+         *                    latitude in radians.
+         * @param[out] lon    Longitude in radians.
+         *
+         * @retval true  Conversion succeeded.
+         * @retval false Conversion failed.
+         */
+        bool pix2latlon(double sample,
+                        double line,
+                        double & lat,
+                        double & lon) const;
 
         /**
          * @brief Mask that marks where the observed body is in the

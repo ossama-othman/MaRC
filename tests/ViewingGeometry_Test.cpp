@@ -44,7 +44,7 @@ namespace
     // Viewing geometry parameters.
     constexpr double sample_center = 2807.61;  // pixels
     constexpr double line_center   = 1200.67;
-    constexpr double sub_obs_lat   = -0.06;    // degrees
+    constexpr double sub_obs_lat   = -0.63;    // degrees
     constexpr double sub_obs_lon   = 144.37;
     constexpr double pos_angle     = 179.175;
     constexpr double sub_sol_lat   = 0.22;
@@ -73,7 +73,7 @@ bool test_initialization(MaRC::ViewingGeometry & vg)
     return true;
 }
 
-bool test_visibility(MaRC::ViewingGeometry & vg)
+bool test_visibility(MaRC::ViewingGeometry &)
 {
     /**
      * @todo Test visibility of illuminated point on the body.
@@ -91,28 +91,27 @@ bool test_visibility(MaRC::ViewingGeometry & vg)
 
 bool test_conversion(MaRC::ViewingGeometry & vg)
 {
-    // The sub-observation latitude and longitude should correspond to
-    // the optical axis in the image.
-
-    constexpr double oa_s = image_samples / 2.0;  // Optical axis sample
-    constexpr double oa_l = image_lines / 2.0;    // Optical axis line
-
     double sample, line;
+    double lat, lon;
 
     /**
      * @attention @c latlon2pix() (and is_visible()) return @c true
-     *            the case 
+     *            when the point on the surface of the body is on the
+     *            near side of the body rather than the far side.
      */
     bool const visible =
         vg.latlon2pix(sub_obs_lat * C::degree,
                       sub_obs_lon * C::degree,
                       sample,
-                      line);
+                      line)
+        && vg.pix2latlon(sample, line, lat, lon);
 
     return
         visible
         && MaRC::almost_equal(sample_center, sample, ulps)
-        && MaRC::almost_equal(line_center, line, ulps);
+        && MaRC::almost_equal(line_center, line, ulps)
+        && MaRC::almost_equal(sub_obs_lat, lat / C::degree, ulps)
+        && MaRC::almost_equal(sub_obs_lon, lon / C::degree, ulps);
 }
 
 
