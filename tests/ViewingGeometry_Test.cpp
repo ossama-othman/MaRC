@@ -44,9 +44,9 @@ namespace
     // Viewing geometry parameters.
     constexpr double sample_center = 2807.61;  // pixels
     constexpr double line_center   = 1200.67;
-    constexpr double sub_obs_lat   = -0.63;    // degrees
+    constexpr double sub_obs_lat   = -5.63;    // degrees
     constexpr double sub_obs_lon   = 144.37;
-    constexpr double pos_angle     = 179.175;
+    constexpr double pos_angle     = 27.175;
     constexpr double sub_sol_lat   = 0.22;
     constexpr double sub_sol_lon   = 75.33;
     constexpr double range         = 1211230;  // kilometers
