@@ -273,12 +273,12 @@ namespace MaRC
          *
          * @note The point on the surface at the given @a lat and
          *       @a lon may still be considered "visible" even if it
-         *       is off-image since is on the same side of the body as
-         *       the observer.  For example, the point on the surface
-         *       may be on the side of the body facing a spacecraft,
-         *       but the spacecraft camera may be directed far enough
-         *       away that the point on the surface doesn't show up
-         *       in the image.
+         *       is off-image since it is on the same side of the body
+         *       as the observer.  For example, the point on the
+         *       surface may be on the side of the body facing a
+         *       spacecraft, but the spacecraft camera may be directed
+         *       far enough away that the point on the surface doesn't
+         *       show up in the image.
 	 */
         bool is_visible(double lat, double lon) const;
 
