@@ -27,7 +27,7 @@ namespace
 {
     // "Units in the last place" for floating point equality
     // comparison.
-    constexpr int ulps = 5;
+    constexpr int ulps = 4;
 
     // Jupiter
     constexpr bool   prograde   = true;
@@ -44,8 +44,8 @@ namespace
     // Viewing geometry parameters.
     constexpr double sample_center = 2807.61;  // pixels
     constexpr double line_center   = 1200.67;
-    constexpr double sub_obs_lat   = -5.63;    // degrees
-    constexpr double sub_obs_lon   = 144.37;
+    constexpr double sub_obs_lat   = -15.63;   // degrees
+    constexpr double sub_obs_lon   = -144.37;
     constexpr double pos_angle     = 27.175;
     constexpr double sub_sol_lat   = 0.22;
     constexpr double sub_sol_lon   = 75.33;
@@ -73,8 +73,16 @@ bool test_initialization(MaRC::ViewingGeometry & vg)
     return true;
 }
 
-bool test_visibility(MaRC::ViewingGeometry &)
+bool test_visibility(MaRC::ViewingGeometry & vg)
 {
+    // Point on the far side of the planet.  Not visible to the
+    // observer.  This is suitable for bodies modelled as oblate
+    // spheroids.
+    constexpr double far_lat = -sub_obs_lat * C::degree;
+    constexpr double far_lon = (sub_obs_lon + 180) * C::degree;
+
+    double sample, line;
+
     /**
      * @todo Test visibility of illuminated point on the body.
      *
@@ -86,7 +94,7 @@ bool test_visibility(MaRC::ViewingGeometry &)
      *       of the body through which the optical axis intersects.
      */
 
-    return true;
+    return !vg.latlon2pix(far_lat, far_lon, sample, line);
 }
 
 bool test_conversion(MaRC::ViewingGeometry & vg)
