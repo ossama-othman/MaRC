@@ -221,22 +221,21 @@ MaRC::OblateSpheroid::mu(double sub_observ_lat,
     // Compute mu, the cosine of local normal-observer (emission)
     // angle.
 
-  double const latg = this->graphic_latitude(lat);
-  double const ellipse_radius = this->centric_radius(lat);
+    double const latg = this->graphic_latitude(lat);
+    double const ellipse_radius = this->centric_radius(lat);
 
-  return
-      ((range * std::sin(sub_observ_lat) * std::sin(latg)
-        - ellipse_radius * std::cos(lat - latg))
-       + range * std::cos(sub_observ_lat) *
-       std::cos(latg) * std::cos(sub_observ_lon - lon)) /
-      // dot product (above)
-      // divided by the magnitude of vector
-      // from observer to point on body
-      std::sqrt(range * range + ellipse_radius * ellipse_radius -
-                2 * range * ellipse_radius *
-                (std::sin(sub_observ_lat) * std::sin(lat) +
-                 std::cos(sub_observ_lat) *
-                 std::cos(lat) * std::cos(sub_observ_lon - lon)));
+    return
+        ((range * std::sin(sub_observ_lat) * std::sin(latg)
+          - ellipse_radius * std::cos(lat - latg))
+         + range * std::cos(sub_observ_lat) *
+         std::cos(latg) * std::cos(sub_observ_lon - lon)) /
+        // Dot product (above) divided by the magnitude of vector from
+        // observer (e.g. spacecraft camera) to point on body.
+        std::sqrt(range * range + ellipse_radius * ellipse_radius -
+                  2 * range * ellipse_radius *
+                  (std::sin(sub_observ_lat) * std::sin(lat) +
+                   std::cos(sub_observ_lat) *
+                   std::cos(lat) * std::cos(sub_observ_lon - lon)));
 }
 
 double
@@ -270,24 +269,23 @@ MaRC::OblateSpheroid::cos_phase(double sub_observ_lat,
     // Compute the cosine of the Sun-point on surface of body-Observer
     // angle, i.e cosine of the phase angle Phi.
 
-  double const ellipse_radius = this->centric_radius(lat);
+    double const ellipse_radius = this->centric_radius(lat);
 
-  return
-      (range * (std::cos(sub_observ_lat) * std::cos(sub_solar_lat) *
-                std::cos(sub_observ_lon - sub_solar_lon) +
-                std::sin(sub_observ_lat) * std::sin(sub_solar_lat)) -
-       ellipse_radius * (std::cos(lat) * std::cos (sub_solar_lat) *
-                         std::cos(lon - sub_solar_lon) +
-                         std::sin(lat) * std::sin(sub_solar_lat))) /
-      // dot product (above)
-      // divided by the magnitude of vector
-      // from observer to point on body
-      // Defining unit vector for vector to sun (infinite distance away)
-      std::sqrt(range * range + ellipse_radius * ellipse_radius
-                - 2 * range * ellipse_radius *
-                (std::sin(sub_observ_lat) * std::sin(lat)
-                 + std::cos(sub_observ_lat) *
-                 std::cos(lat) * std::cos(sub_observ_lon - lon)));
+    return
+        (range * (std::cos(sub_observ_lat) * std::cos(sub_solar_lat) *
+                  std::cos(sub_observ_lon - sub_solar_lon) +
+                  std::sin(sub_observ_lat) * std::sin(sub_solar_lat)) -
+         ellipse_radius * (std::cos(lat) * std::cos (sub_solar_lat) *
+                           std::cos(lon - sub_solar_lon) +
+                           std::sin(lat) * std::sin(sub_solar_lat))) /
+        // Dot product (above) divided by the magnitude of vector from
+        // observer to point on body, defining unit vector for vector
+        // to sun (infinite distance away).
+        std::sqrt(range * range + ellipse_radius * ellipse_radius
+                  - 2 * range * ellipse_radius *
+                  (std::sin(sub_observ_lat) * std::sin(lat)
+                   + std::cos(sub_observ_lat) *
+                   std::cos(lat) * std::cos(sub_observ_lon - lon)));
 }
 
 double
