@@ -52,5 +52,11 @@ MaRC::LatitudeImage::read_data_i(double lat,
 
     data /= C::degree;  // Convert radians to degrees.
 
+    /**
+     * @todo Should we instead return the following?
+     *       @code
+     *          data >= latitude_low && data <= latitude_high
+     *       @endcode
+     */
     return true;
 }
