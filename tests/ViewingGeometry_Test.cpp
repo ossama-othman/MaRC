@@ -27,7 +27,7 @@ namespace
 {
     // "Units in the last place" for floating point equality
     // comparison.
-    constexpr int ulps = 4;
+    constexpr int ulps = 5;
 
     // Jupiter
     constexpr bool   prograde   = true;
