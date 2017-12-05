@@ -2,7 +2,7 @@
 /**
  * @file marc_matrix.hpp
  *
- * MaRC matrix class and operations.
+ * Eigen linear algebra library based mathematical matrix operations.
  *
  * Copyright (C) 2004, 2017  Ossama Othman
  *
@@ -41,7 +41,7 @@ namespace MaRC
     // ---------------------------------------------------------
 
     /// Matrix transpose.
-    DMatrix transpose(DMatrix const & m)
+    inline DMatrix transpose(DMatrix const & m)
     {
         return m.transpose();
     }

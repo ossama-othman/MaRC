@@ -1,7 +1,7 @@
 /**
  * @file eigen3_vector.hpp
  *
- * Eigen 3.x based mathematical vector class and operations.
+ * Eigen linear algebra library based mathematical vector operations.
  *
  * Copyright (C) 2017  Ossama Othman
  *
@@ -45,7 +45,7 @@ namespace MaRC
      *
      * @return Magnitude of vector @a v.
      */
-    auto magnitude(DVector const & v)
+    inline auto magnitude(DVector const & v)
     {
         return v.norm();
     }
@@ -58,7 +58,7 @@ namespace MaRC
      *            floating point values since it is not possible to
      *            store fractional values in an integer.
      */
-    void to_unit_vector(DVector & v)
+    inline void to_unit_vector(DVector & v)
     {
         auto const mag = MaRC::magnitude(v);
 
@@ -74,8 +74,8 @@ namespace MaRC
      *
      * @return Dot product of vectors @a a and @a b.
      */
-    auto dot_product(DVector const & a,
-                     DVector const & b)
+    inline auto dot_product(DVector const & a,
+                            DVector const & b)
     {
         return a.dot(b);
     }

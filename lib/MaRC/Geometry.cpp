@@ -81,7 +81,14 @@ MaRC::Geometry::RotZ(double angle,
 MaRC::DMatrix
 MaRC::Geometry::RotXMatrix(double angle)
 {
+    /**
+     * @todo Get rid of the preprocessor conditional!
+     */
+#ifdef MARC_HAS_EIGEN3
+    MaRC::DMatrix matrix{MaRC::DMatrix::Zero()};
+#else
     MaRC::DMatrix matrix;
+#endif
 
     double const cosine = std::cos(angle);
     double const sine   = std::sin(angle);
@@ -102,7 +109,14 @@ MaRC::Geometry::RotXMatrix(double angle)
 MaRC::DMatrix
 MaRC::Geometry::RotYMatrix(double angle)
 {
+    /**
+     * @todo Get rid of the preprocessor conditional!
+     */
+#ifdef MARC_HAS_EIGEN3
+    MaRC::DMatrix matrix{MaRC::DMatrix::Zero()};
+#else
     MaRC::DMatrix matrix;
+#endif
 
     double const cosine = std::cos(angle);
     double const sine   = std::sin(angle);
@@ -123,7 +137,15 @@ MaRC::Geometry::RotYMatrix(double angle)
 MaRC::DMatrix
 MaRC::Geometry::RotZMatrix(double angle)
 {
+    /**
+     * @todo Get rid of the preprocessor conditional!
+     */
+#ifdef MARC_HAS_EIGEN3
+    MaRC::DMatrix matrix{MaRC::DMatrix::Zero()};
+#else
     MaRC::DMatrix matrix;
+#endif
+
 
     double const cosine = std::cos(angle);
     double const sine   = std::sin(angle);

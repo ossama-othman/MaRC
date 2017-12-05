@@ -62,9 +62,9 @@ MaRC::ViewingGeometry::ViewingGeometry(
     , normal_range_  (not_a_number)
     , OA_s_          (not_a_number)
     , OA_l_          (not_a_number)
-    , range_b_       ()
-    , observ2body_   ()
-    , body2observ_   ()
+    , range_b_       (MaRC::DVector::Zero())
+    , observ2body_   (MaRC::DMatrix::Zero())
+    , body2observ_   (MaRC::DMatrix::Zero())
     , sample_center_ (not_a_number)
     , line_center_   (not_a_number)
     , lat_at_center_ (not_a_number)
@@ -415,7 +415,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     DVector test;
     test[2] = 1; // Unit vector along z-axis
     DVector result(body2observ * test); // Test vector in camera
-                                            // coordinates.
+                                        // coordinates.
 
     std::cout
         << "Computed NORAZ = "

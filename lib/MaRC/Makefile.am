@@ -21,8 +21,6 @@ AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 lib_LTLIBRARIES = libMaRC.la
 
-libMaRC_la_CXXFLAGS = $(EIGEN3_CFLAGS)
-libMaRC_la_LIBADD   = $(EIGEN3_LIBS)
 libMaRC_la_SOURCES  = \
   Geometry.cpp \
   \
@@ -54,6 +52,9 @@ libMaRC_la_SOURCES  = \
   MosaicImage.cpp \
   \
   Version.cpp
+
+libMaRC_la_CXXFLAGS = $(EIGEN3_CFLAGS)
+libMaRC_la_LIBADD   = $(EIGEN3_LIBS)
 
 pkginclude_HEADERS = \
   DefaultConfiguration.h \
@@ -108,6 +109,8 @@ pkginclude_HEADERS = \
   \
   Constants.h \
   \
-  Version.h
+  Version.h \
+  \
+  details
 
 # noinst_HEADERS =

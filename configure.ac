@@ -27,6 +27,13 @@ dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
 AX_CHECK_ENABLE_DEBUG([yes])
 
+AC_ARG_WITH([eigen],
+  [AS_HELP_STRING([--with-eigen],
+     [use Eigen linear algebra library instead of MaRC implementation @<:@default=check@:>@])],
+  [],
+  [with_eigen=check])
+
+
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.14.1 foreign silent-rules -Wall -Werror -Wno-portability])
@@ -99,7 +106,16 @@ dnl Checks for libraries.
 dnl We're of course going to need the C math library.
 AC_SEARCH_LIBS([cos],[m])
 
-PKG_CHECK_MODULES([EIGEN3], [eigen3], [AC_DEFINE([MARC_HAS_EIGEN3])])
+AS_IF([test "x$with_eigen" != xno],
+  [PKG_CHECK_MODULES([EIGEN3],
+     [eigen3],
+     [AC_DEFINE([MARC_HAS_EIGEN3])],
+     [AS_IF([test "x$with_eigen" != xcheck],
+        [AC_MSG_FAILURE(
+           [--with-eigen was given, but Eigen library was not found])])
+     ])
+  ])
+
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 
 dnl Check for C++17 three-parameter std::hypot() function.
