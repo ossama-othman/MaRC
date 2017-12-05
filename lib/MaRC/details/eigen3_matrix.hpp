@@ -1,10 +1,10 @@
 // -*- C++ -*-
 /**
- * @file Vector.h
+ * @file marc_matrix.hpp
  *
- * MaRC mathematical vector class and operations.
+ * MaRC matrix class and operations.
  *
- * Copyright (C) 2017  Ossama Othman
+ * Copyright (C) 2004, 2017  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,15 +24,27 @@
  * @author Ossama Othman
  */
 
-#ifndef MARC_VECTOR_H
-#define MARC_VECTOR_H
+#ifndef MARC_DETAILS_EIGEN3_MATRIX_HPP
+#define MARC_DETAILS_EIGEN3_MATRIX_HPP
 
-#include "MaRC/config.h"
+#include <Eigen/Dense>
 
-#ifdef MARC_HAS_EIGEN3
-# include "MaRC/details/eigen3_vector.hpp"
-#else
-# include "MaRC/details/marc_vector.hpp"
-#endif  // MARC_HAS_EIGEN3
+namespace MaRC
+{
+    /**
+     * @typedef Convenience matrix type
+     *
+     * @c Matrix type used heavily through out the MaRC library.
+     */
+    using DMatrix = Eigen::Matrix3d;
 
-#endif  /* MARC_VECTOR_H */
+    // ---------------------------------------------------------
+
+    /// Matrix transpose.
+    DMatrix transpose(DMatrix const & m)
+    {
+        return m.transpose();
+    }
+}
+
+#endif  /* MARC_DETAILS_EIGEN3_MATRIX_HPP */

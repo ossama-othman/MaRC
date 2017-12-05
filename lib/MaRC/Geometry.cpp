@@ -22,7 +22,6 @@
  */
 
 #include "Geometry.h"
-#include "Matrix.h"
 #include "Mathematics.h"
 
 #include <cmath>

@@ -28,10 +28,13 @@
 #include <MaRC/BodyData.h>
 #include <MaRC/Vector.h>
 
-
 namespace MaRC
 {
-    typedef Vector<double, 3> DVector;
+#ifdef MARC_HAS_EIGEN3
+    using DVector = Eigen::Vector3d;
+#else
+    using DVector = Vector<double, 3>;
+#endif
 
     /**
      * @class OblateSpheroid

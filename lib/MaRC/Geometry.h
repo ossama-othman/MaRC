@@ -28,24 +28,13 @@
 #define MARC_GEOMETRY_H
 
 #include <MaRC/Matrix.h>
+#include <MaRC/Vector.h>
 
 #include <cstddef>
 
 
 namespace MaRC
 {
-
-    /**
-     * @name Convenience Vector and Matrix Types
-     *
-     * @c Vector and @c Matrix types used heavily through out the MaRC
-     * library.
-     */
-    //@{
-    typedef Vector<double, 3> DVector;
-    typedef Matrix<double, 3, 3> DMatrix;
-    //@}
-
     /**
      * @namespace Geometry
      *
@@ -137,7 +126,6 @@ namespace MaRC
          */
         DMatrix RotZMatrix(double angle);
         //@}
-
     }
 }
 

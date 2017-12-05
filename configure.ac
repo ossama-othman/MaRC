@@ -91,8 +91,7 @@ AH_BOTTOM([
 
 
 AH_TEMPLATE([NDEBUG],[Disable all debugging code.])
-
-
+AH_TEMPLATE([MARC_HAS_EIGEN3],[Use Eigen 3 library.])
 AH_TEMPLATE([MARC_HAS_3_PARAM_STD_HYPOT],[C++ compiler supports C++17 three-parameter std::hypot().])
 
 dnl Checks for libraries.
@@ -100,9 +99,8 @@ dnl Checks for libraries.
 dnl We're of course going to need the C math library.
 AC_SEARCH_LIBS([cos],[m])
 
+PKG_CHECK_MODULES([EIGEN3], [eigen3], [AC_DEFINE([MARC_HAS_EIGEN3])])
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
-AC_SUBST([CFITSIO_LIBS])
-AC_SUBST([CFITSIO_CFLAGS])
 
 dnl Check for C++17 three-parameter std::hypot() function.
 AC_CACHE_CHECK([if $CXX supports C++17 three-parameter std::hypot()],

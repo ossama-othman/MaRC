@@ -21,7 +21,9 @@ AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
 
 lib_LTLIBRARIES = libMaRC.la
 
-libMaRC_la_SOURCES = \
+libMaRC_la_CXXFLAGS = $(EIGEN3_CFLAGS)
+libMaRC_la_LIBADD   = $(EIGEN3_LIBS)
+libMaRC_la_SOURCES  = \
   Geometry.cpp \
   \
   BodyData.cpp \
