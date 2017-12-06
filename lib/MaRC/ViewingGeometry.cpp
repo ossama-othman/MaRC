@@ -215,8 +215,8 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
         - y-axis increasing away from observer (toward far side of the
           body), aligned with the plane containing the sub-observation
           longitude and polar axis.  For example, "y" at
-          sub-observation longitude on near side   of a body modeled
-          as an oblate spheroid would be -(equatorial radius).
+          sub-observation longitude on near side of a body modeled as
+          an oblate spheroid would be -(equatorial radius).
         - z-axis increasing toward the North pole.
     */
     this->range_b_[0] =  0;
@@ -403,10 +403,10 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
             << tolerance << "%.\n";
     }
 
-    // Get reverse transformation by taking transpose since
-    // transformation matrices are orthogonal
-    body2observ = MaRC::transpose(observ2body);
     // Body to observer transformation
+    // Get reverse transformation by taking transpose since
+    // transformation matrices are orthogonal.
+    body2observ = MaRC::transpose(observ2body);
 
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)

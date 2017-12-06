@@ -146,12 +146,17 @@ MaRC::OblateSpheroid::centric_radius(double lat) const
           y = r * cos(lat) * sin(lon)
           z = r * sin(lat)
 
-      Assume longitude zero is along the observer optical axis, we
-      have:
+      Assuming we're at longitude zero, we have:
 
           x = r * cos(lat)
           y = 0
           z = r * sin(lat)
+
+      The following also works when the longitude isn't zero since
+      the longitude terms drop out due to the property:
+
+             2           2
+          sin (lon) + cos (lon) = 1
 
       The Cartesian equation for an oblate spheroid is:
 
@@ -175,7 +180,6 @@ MaRC::OblateSpheroid::centric_radius(double lat) const
         r = -----------------------------------
                              2               2
             sqrt((cos(lat)/a)  + (sin(lat)/c) )
-
     */
     return 1 / std::hypot(std::cos(lat) / this->eq_rad_,
                           std::sin(lat) / this->pol_rad_);
