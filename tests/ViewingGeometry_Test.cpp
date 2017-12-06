@@ -25,10 +25,6 @@
 
 namespace
 {
-    // "Units in the last place" for floating point equality
-    // comparison.
-    constexpr int ulps = 4;
-
     // Jupiter
     constexpr bool   prograde   = true;
     constexpr double eq_rad     = 71492;
@@ -84,10 +80,11 @@ bool test_visibility(MaRC::ViewingGeometry & vg)
     double sample, line;
 
     /**
-     * @todo Test visibility of illuminated point on the body.
+     * @todo Test visibility of points on the near side of the body.
      *
      * @todo Test lack of visibility in points on the body that reside
-     *       beyond the terminator, i.e. in unlit regions.
+     *       beyond the terminator, i.e. in the dark side of the
+     *       body.
      *
      * @note The sub-observation point does not necessarily correspond
      *       to the latitude and longitude of the point on the surface
@@ -114,12 +111,23 @@ bool test_conversion(MaRC::ViewingGeometry & vg)
                       line)
         && vg.pix2latlon(sample, line, lat, lon);
 
+    /*
+      The ulp values below vary greatly due to the magnitudes of
+      values being compared.  Some of the ulp values may seem huge but
+      the actual floating point values being compared are well within
+      the desired margin of error, e.g.: -15.630000000000001 vs
+      -15.629999999999912 for the sub-observation latitude conversion
+      check.
+    */
     return
         visible
-        && MaRC::almost_equal(sample_center, sample, ulps)
-        && MaRC::almost_equal(line_center, line, ulps)
-        && MaRC::almost_equal(sub_obs_lat, lat / C::degree, ulps)
-        && MaRC::almost_equal(sub_obs_lon, lon / C::degree, ulps);
+        && MaRC::almost_equal(sample_center, sample, 4)
+        && MaRC::almost_equal(line_center, line, 12)
+        && MaRC::almost_equal(sub_obs_lat, lat / C::degree, 13)
+        && MaRC::almost_equal(sub_obs_lon < 0
+                              ? sub_obs_lon + 360
+                              : sub_obs_lon,
+                              lon / C::degree, 4);
 }
 
 
