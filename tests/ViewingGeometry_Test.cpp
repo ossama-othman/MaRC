@@ -89,6 +89,8 @@ bool test_visibility(MaRC::ViewingGeometry & vg)
      * @note The sub-observation point does not necessarily correspond
      *       to the latitude and longitude of the point on the surface
      *       of the body through which the optical axis intersects.
+     *       The camera, for example, may be pointed away from the
+     *       sub-observation point.
      */
 
     return !vg.latlon2pix(far_lat, far_lon, sample, line);
