@@ -401,7 +401,7 @@ namespace MaRC
 
     /// Obtain dot product of two vectors.
     /**
-     * Given two vector @a and @a b, calculate their dot product.
+     * Given two vectors @a a and @a b, calculate their dot product.
      *
      * @param[in] a First  vector operand.
      * @param[in] b Second vector operand.

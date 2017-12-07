@@ -264,16 +264,25 @@ namespace MaRC
          */
         void use_terminator(bool u);
 
-        /// Is given latitude and longitude visible?
+        /// Is given latitude and longitude visible to the observer?
         /**
-	 * @param[in] lat Latitude
-	 * @param[in] lon Longitude
+	 * @param[in] lat Latitude in radians
+	 * @param[in] lon Longitude in radians
 	 *
 	 * @return @c true if latitude and longitude are visible.
+         *
+         * @note The point on the surface at the given @a lat and
+         *       @a lon may still be considered "visible" even if it
+         *       is off-image since it is on the same side of the body
+         *       as the observer.  For example, the point on the
+         *       surface may be on the side of the body facing a
+         *       spacecraft, but the spacecraft camera may be directed
+         *       far enough away that the point on the surface doesn't
+         *       show up in the image.
 	 */
         bool is_visible(double lat, double lon) const;
 
-        /// Convert (latitude, longitude) to (sample, line)
+        /// Convert (latitude, longitude) to (sample, line).
         /**
          * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
          *                 in radians.
@@ -284,14 +293,36 @@ namespace MaRC
          * @retval true  Conversion succeeded.
          * @retval false Conversion failed.
          *
+         * @bug @a x and @a z may be outside the bounds of the image
+         *      even if they are visible, i.e. on the side of the body
+         *      facing the observer.  Verify that they fall within
+         *      image bounds.
+         *
          * @note Since @a x and @a z potentially include fractional
          *       pixel components, they are more accurate than their
          *       integer counterparts.
+         *
          */
         bool latlon2pix(double lat,
                         double lon,
                         double & x,
                         double & z) const;
+
+        /// Convert (sample, line) to (latitude, longitude).
+        /**
+         * @param[in]  sample Sample at given latitude and longitude.
+         * @param[in]  line   Line at given latitude and longitude.
+         * @param[out] lat    Bodycentric (e.g. planetocentric)
+         *                    latitude in radians.
+         * @param[out] lon    Longitude in radians.
+         *
+         * @retval true  Conversion succeeded.
+         * @retval false Conversion failed.
+         */
+        bool pix2latlon(double sample,
+                        double line,
+                        double & lat,
+                        double & lon) const;
 
         /**
          * @brief Mask that marks where the observed body is in the

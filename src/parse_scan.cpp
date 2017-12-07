@@ -67,7 +67,7 @@ MaRC::ParseParameter::push_command(std::unique_ptr<MapCommand> c)
 //     {
 //     case NUM:
 //       // Numbers will be handled in double precision
-//       lvalp->val = ::strtod (lexer.YYText (), 0);
+//       lvalp->val = std::strtod(lexer.YYText (), 0);
 //       break;
 
 //     case VAR:

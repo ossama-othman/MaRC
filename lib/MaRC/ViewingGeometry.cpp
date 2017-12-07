@@ -32,6 +32,7 @@
 #include <limits>
 #include <stdexcept>
 #include <iostream>
+#include <cassert>
 
 #ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
 # define MARC_DEFAULT_GEOM_CORR_STRATEGY MaRC::NullGeometricCorrection
@@ -205,7 +206,19 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
 
     // Set Body center to observer vectors.
 
-    // Range vector in body coordinates.
+    /*
+      Range vector in body coordinates.
+
+      "Looking" at the near side of the body:
+        - Origin at center of the body.
+        - x-axis increasing from left-to-right.
+        - y-axis increasing away from observer (toward far side of the
+          body), aligned with the plane containing the sub-observation
+          longitude and polar axis.  For example, "y" at
+          sub-observation longitude on near side of a body modeled as
+          an oblate spheroid would be -(equatorial radius).
+        - z-axis increasing toward the North pole.
+    */
     this->range_b_[0] =  0;
     this->range_b_[1] = -this->range_ * std::cos(this->sub_observ_lat_);
     this->range_b_[2] =  this->range_ * std::sin(this->sub_observ_lat_);
@@ -216,22 +229,32 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
          * @todo Verify that these values are consistent with the
          *       coordinate system, including directions of all axes.
          */
-        DVector range_O;  // range_ vector in observer coordinates
+        /*
+          Range vector in observer (camera) coordinates.
+
+          With the camera pointed at the body:
+            - Origin at center of the body.
+            - x-axis increasing from left-to-right.
+            - y-axis increasing away from observer (in to the image
+              plane), parallel to the optical axis.
+            - z-axis increasing toward the top of the image.
+         */
+        DVector range_O;
 
         range_O[0] =
             (this->OA_s_ - this->sample_center_) * this->km_per_pixel_;
 
-        // range_O[1] is default initialized to zero.  Set below.
+        // range_O[1] will be calculated below.
 
         range_O[2] =
             (this->line_center_ - this->OA_l_) * this->km_per_pixel_;
         // Since line numbers increase top to bottom (e.g. VICAR images)
 
-        double const magRo = MaRC::magnitude(range_O);
+        double const mag = MaRC::magnitude(range_O);
 
         // Perpendicular distance from observer to image plane.
         this->normal_range_ =
-            std::sqrt(this->range_ * this->range_ - magRo * magRo);
+            std::sqrt(this->range_ * this->range_ - mag * mag);
 
         // In case focal length and scale are not set or used.
         range_O[1] = -this->normal_range_;
@@ -291,12 +314,9 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
                                     DMatrix & body2observ)
 {
     DVector r_o(range_o);
-
-    // ----------- TRY THE MOST POSITIVE ROOT ----------
-
-    // Compute transformation matrices
     MaRC::to_unit_vector(r_o);
 
+    // Compute transformation matrices
     DVector rotated;
     Geometry::RotY(-this->position_angle_, r_o, rotated);
     r_o = rotated;
@@ -383,10 +403,10 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
             << tolerance << "%.\n";
     }
 
-    // Get reverse transformation by taking transpose since
-    // transformation matrices are orthogonal
-    body2observ = MaRC::transpose(observ2body);
     // Body to observer transformation
+    // Get reverse transformation by taking transpose since
+    // transformation matrices are orthogonal.
+    body2observ = MaRC::transpose(observ2body);
 
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)
@@ -787,15 +807,6 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     // Vector from center of the body to a point at the given latitude
     // and longitude on the surface of the body in the body coordinate
     // system.
-    /**
-     * @todo Confirm that Coord[0] and Coord[1] are not swapped,
-     *       i.e. 90 degrees off in the x-y plane!
-     *       @par
-     *       Swapping the two prevents the below @c assert() from
-     *       being triggered, but it's not yet clear if the
-     *       @c normal_range_ value is incorrect or if the @c Coord
-     *       vector is incorrect.
-     */
     DVector Coord;
     Coord[0] =  radius * std::cos(lat) * std::sin(lon);
     Coord[1] = -radius * std::cos(lat) * std::cos(lon);
@@ -813,25 +824,80 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
      *       here.  If that is a correct assumption figure out what is
      *       triggering the vector in observer coordinates to have a
      *       y-component that is larger than the @c normal_range_.
+     *       Remember that the optical axis may not coincide with
+     *       sub-observation point.
+     *       @par
+     *       UPDATE: This isn't necessarily true.  Depending the
+     *       viewing angle, a point on the surface of the body could
+     *       indeed be visible to the observer, and still be "behind"
+     *       the image plane.  Confirm.
      */
-    if (Rotated[1] > this->normal_range_)
-        return false;  // On other side of image plane / body.
+    // if (Rotated[1] > this->normal_range_)
+    //     return false;  // On other side of image plane / body.
 
+    // Drop the "y" component since it is zero in the image plane.
     x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
     z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
-
-    x += this->OA_s_;
-    z  = this->OA_l_ - z; // Assumes line numbers increase top to
-                          // bottom.
-
-    //std::cout << "* x = " << x << "\tz = " << z << '\n';
 
     // Convert from object space to image space.
     this->geometric_correction_->object_to_image(z, x);
 
-    // x and z are both positive if the point at the given latitude
-    // and longitude is in the image.
-    return x >= 0 && z >= 0;
+    x += this->OA_s_;
+    z  = this->OA_l_ - z; // Assumes line numbers increase top to
+                          // bottom.
+    return true;
+}
+
+bool
+MaRC::ViewingGeometry::pix2latlon(double sample,
+                                  double line,
+                                  double & lat,
+                                  double & lon) const
+{
+    sample -= this->sample_center_;
+    line    = this->line_center_ - line; // Negative since line
+                                         // numbers increase top to
+                                         // bottom (?)
+
+    // Convert from image space to object space.
+    this->geometric_correction_->image_to_object(sample, line);
+
+    // ---------------------------------------------
+
+    // Convert from observer coordinates to body coordinates
+    DVector coord;
+    coord[0] = sample;
+    coord[1] = 0;
+    coord[2] = line;
+
+    // Do the transformation
+    DVector rotated(this->observ2body_ * coord);
+    rotated *= this->km_per_pixel_;
+
+    // ---------------------------------------------
+
+    // Vector from observer to point on image
+    DVector const dVec(rotated - this->range_b_);
+
+    int const success =
+        this->body_->ellipse_intersection(this->range_b_,
+                                          dVec,
+                                          lat,
+                                          lon);
+
+    assert(success != -1);  // -1 == bad parameters
+
+    if (success == 0) {
+        /**
+         * @todo Verify!
+         */
+        if (this->body_->prograde())
+            lon  = this->sub_observ_lon_ - lon;
+        else
+            lon -= this->sub_observ_lon_;
+    }
+
+    return success == 0;
 }
 
 std::vector<bool>
@@ -840,6 +906,9 @@ MaRC::ViewingGeometry::body_mask(std::size_t samples,
 {
     /**
      * @todo This routine is currently oblate spheroid specific.
+     *
+     * @todo Find a way to make the scan more efficient, or avoid it
+     *       entirely.
      */
 
     std::vector<bool> mask(samples * lines, false);
@@ -848,40 +917,9 @@ MaRC::ViewingGeometry::body_mask(std::size_t samples,
         std::size_t const offset = k * samples;
 
         for (std::size_t i = 0; i < samples; ++i) {
-            double z = k;  // Reset "z" prior to geometric
-                           // correction. Do not move to outer loop!
-            double x = i;
-
-            // Convert from image space to object space.
-            this->geometric_correction_->image_to_object(z, x);
-
-            z -= this->line_center_;
-            x -= this->sample_center_;
-
-            // ---------------------------------------------
-
-            // Convert from observer coordinates to body coordinates
-            DVector coord;
-            coord[0] =  x;
-            coord[1] =  0;
-            coord[2] = -z; // Negative since line numbers increase top to
-                           // bottom (?)
-
-            // Do the transformation
-            DVector rotated(this->observ2body_ * coord);
-            rotated *= this->km_per_pixel_;
-
-            // ---------------------------------------------
-
-            // Vector from observer to point on image
-            DVector const dVec(rotated - this->range_b_);
-
             double lat, lon;
 
-            if (this->body_->ellipse_intersection(this->range_b_,
-                                                  dVec,
-                                                  lat,
-                                                  lon) == 0) {
+            if (this->pix2latlon(i, k, lat, lon)) {
                 // On body
                 std::size_t const index = offset + i;
                 mask[index] = true;

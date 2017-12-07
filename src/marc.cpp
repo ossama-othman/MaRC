@@ -95,9 +95,9 @@ main(int argc, char *argv[])
                     fclose (map_input);
 
                     // Successful parse
-                    std::cout << "MaRC input file "
+                    std::cout << "MaRC input file '"
                               << argv[i]
-                              << " parsed.\n";
+                              << "' parsed.\n";
                 } else {
                     fclose(map_input);
 

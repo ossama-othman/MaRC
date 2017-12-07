@@ -22,6 +22,13 @@
 #include <MaRC/Mathematics.h>
 
 
+namespace
+{
+    // "Units in the last place" for floating point equality
+    // comparison.
+    constexpr int ulps = 4;
+}
+
 /**
  * @todo The built-in @c operator<=() and operator>=() for floating
  *       point may not be suitable to check for equality due to
@@ -37,7 +44,8 @@ bool test_latitude_configuration()
 
     return latitude_low   >= -90
         && latitude_high  <=  90
-        && latitude_range <=  180;
+        && latitude_range <=  180
+        && MaRC::almost_equal(latitude_range, latitude_high - latitude_low, ulps);
 }
 
 bool test_longitude_configuration()
@@ -46,10 +54,13 @@ bool test_longitude_configuration()
 
     // Largest longitude ranges that are valid are [-180, 180] and
     // [0, 360].
-
-    return longitude_low   >= -180
-        && longitude_high  <=  360
-        && longitude_range <=  360;
+    return longitude_low  >= -180
+        && longitude_low  <  longitude_high
+        && longitude_high <= longitude_low + 360
+        && longitude_range <= 360
+        && MaRC::almost_equal(longitude_range,
+                              longitude_high - longitude_low,
+                              ulps);
 }
 
 bool test_cosine_configuration()
@@ -61,8 +72,8 @@ bool test_cosine_configuration()
     return mu_low   >= -1
         && mu_high  <=  1
 
-        && mu0_low   >= -1
-        && mu0_high  <=  1
+        && mu0_low  >= -1
+        && mu0_high <=  1
 
         && cos_phase_low   >= -1
         && cos_phase_high  <=  1;

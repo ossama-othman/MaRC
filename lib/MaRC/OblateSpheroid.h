@@ -151,8 +151,9 @@ namespace MaRC
          * @param[in]  vec  Vector from ellipsoid center to observer
          * @param[in]  dvec Vector along line
          * @param[out] lat  Bodycentric (e.g. planetocentric) latitude
+         *                  in radians
          * @param[out] lon  Bodycentric (e.g. planetocentric) east
-         *                  longitude
+         *                  longitude in radians
          *
          * @retval  0 ellipse intersection was found
          * @retval  1 no ellipse intersection was found

@@ -97,6 +97,9 @@ namespace MaRC
      *       zero.  For that it is probably better to compare against
      *       a multiple of @c std::numeric_limits<T>::epsilon().
      *
+     * @note This function generally isn't suitable for comparison of
+     *       two values close to zero.
+     *
      * @param[in] x   First  of two floating operands being compared.
      * @param[in] y   Second of two floating operands being compared.
      * @param[in] ulp Units in the last place.  A measure of the
