@@ -49,6 +49,7 @@ tests/OblateSpheroid_Test
 tests/Scale_Offset_Test
 tests/LatitudeImage_Test
 tests/LongitudeImage_Test
+tests/ViewingGeometry_Test
 tests/test-suite.log
 tests/test_map.fits
 tests/test_map_ortho.fits

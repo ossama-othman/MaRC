@@ -68,6 +68,22 @@ bool test_initialization()
                                                c,
                                                f);
 
+
+    // Insufficient number of radii or flattening provided.
+    try {
+        auto const o4 =
+            std::make_unique<MaRC::OblateSpheroid>(prograde,
+                                                   -1,  // equatorial radius
+                                                   -1,  // polar radius
+                                                   f);
+
+        // The OblateSpheroid constructor should have thrown an
+        // exception!
+        return false;
+    } catch(std::invalid_argument &) {
+        // Expected exception thrown.
+    }
+
     return
         prograde == o1->prograde()
 

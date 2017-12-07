@@ -129,10 +129,8 @@ MaRC::PhotoImage::read_data(double lat,
 
     double x = 0, z = 0;
 
-    if (!this->geometry_->latlon2pix(lat, lon, x, z))
+    if (!this->geometry_->latlon2pix(lat, lon, x, z) || x < 0 || z < 0)
         return false;
-
-    assert(x >= 0 && z >= 0);
 
     // x and z are 'pixel coordinates'.  In 'pixel coordinates', the
     // half-open interval [0,1) is inside pixel 0, [1,2) is inside

@@ -29,7 +29,8 @@ check_PROGRAMS =            \
   OblateSpheroid_Test       \
   Scale_Offset_Test         \
   LatitudeImage_Test        \
-  LongitudeImage_Test
+  LongitudeImage_Test       \
+  ViewingGeometry_Test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
@@ -58,6 +59,9 @@ LatitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 LongitudeImage_Test_SOURCES = LongitudeImage_Test.cpp
 LongitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
+ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
+ViewingGeometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 TESTS = \
   $(check_PROGRAMS) \
