@@ -52,7 +52,7 @@ namespace MaRC
             GeometricCorrection const &) = delete;
 
         /// Destructor.
-        virtual ~GeometricCorrection();
+        virtual ~GeometricCorrection() = default;
 
         /// Convert from image space to object space.
         /**

@@ -41,7 +41,11 @@ namespace MaRC
      * @brief Simple cylindrical concrete map factory.
      *
      * A Simple cylindrical map contains data mapped to a rectangular
-     * latitude/longitude array.
+     * latitude/longitude array, where the spacing the between a given
+     * number of degrees of latitude and longitude is equal.  This
+     * projection is more formally known as the Plate Carrée
+     * projection, as well as rectangular, equirectangular and
+     * equidistant cylindrical.
      */
     template <typename T>
     class SimpleCylindrical : public MapFactory<T>
@@ -77,7 +81,7 @@ namespace MaRC
                           bool graphic_lat);
 
         /// Destructor
-        virtual ~SimpleCylindrical();
+        virtual ~SimpleCylindrical() = default;
 
         /**
          * @name @c MapFactory Methods

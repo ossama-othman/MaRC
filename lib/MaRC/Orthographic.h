@@ -81,6 +81,9 @@ namespace MaRC
                      double km_per_pixel,
                      OrthographicCenter const & center);
 
+        /// Destructor
+        virtual ~Orthographic() = default;
+
         /**
          * @name @c MapFactory Methods
          *

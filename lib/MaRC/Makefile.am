@@ -29,14 +29,11 @@ libMaRC_la_SOURCES = \
   \
   ViewingGeometry.cpp \
   \
-  GeometricCorrection.cpp \
   GLLGeometricCorrection.cpp \
   NullGeometricCorrection.cpp \
   \
-  PhotometricCorrection.cpp \
   NullPhotometricCorrection.cpp \
   \
-  InterpolationStrategy.cpp \
   BilinearInterpolation.cpp \
   NullInterpolation.cpp \
   \

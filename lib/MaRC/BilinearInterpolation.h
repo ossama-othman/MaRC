@@ -63,7 +63,7 @@ namespace MaRC
                             std::size_t nibble_bottom);
 
       /// Destructor.
-      virtual ~BilinearInterpolation();
+      virtual ~BilinearInterpolation() = default;
 
       /// Perform bilinear interpolation over a 2x2 area of pixels on
       /// the given pixel.

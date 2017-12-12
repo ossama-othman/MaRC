@@ -36,11 +36,6 @@ MaRC::MapFactory<T>::MapFactory()
 }
 
 template <typename T>
-MaRC::MapFactory<T>::~MapFactory()
-{
-}
-
-template <typename T>
 typename MaRC::MapFactory<T>::map_type
 MaRC::MapFactory<T>::make_map(SourceImage const & source,
                               std::size_t samples,

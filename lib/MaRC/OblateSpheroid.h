@@ -68,7 +68,7 @@ namespace MaRC
         OblateSpheroid & operator=(OblateSpheroid const &) = delete;
 
         /// Destructor
-        virtual ~OblateSpheroid();
+        virtual ~OblateSpheroid() = default;
 
         /// Get the equatorial radius of the body.
         double eq_rad() const

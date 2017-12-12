@@ -152,7 +152,7 @@ namespace MaRC
         MapFactory & operator=(MapFactory const &) = delete;
 
         /// Destructor.
-        virtual ~MapFactory();
+        virtual ~MapFactory() = default;
 
         /// Return the name of the map projection.
         virtual char const * projection_name() const = 0;

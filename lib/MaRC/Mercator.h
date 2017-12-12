@@ -65,7 +65,7 @@ namespace MaRC
         Mercator(std::shared_ptr<OblateSpheroid> body);
 
         /// Destructor
-        virtual ~Mercator();
+        virtual ~Mercator() = default;
 
         /**
          * @name @c MapFactory Methods

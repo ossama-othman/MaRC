@@ -51,7 +51,7 @@ namespace MaRC
             InterpolationStrategy const &) = delete;
 
         /// Destructor.
-        virtual ~InterpolationStrategy();
+        virtual ~InterpolationStrategy() = default;
 
         /// Perform interpolation on given pixel.
         /**

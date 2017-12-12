@@ -102,10 +102,6 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     this->config_->validate_parameters(samples, lines);
 }
 
-MaRC::PhotoImage::~PhotoImage()
-{
-}
-
 bool
 MaRC::PhotoImage::read_data(double lat, double lon, double & data) const
 {

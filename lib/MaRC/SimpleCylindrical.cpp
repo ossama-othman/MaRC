@@ -61,11 +61,6 @@ MaRC::SimpleCylindrical<T>::SimpleCylindrical(
 }
 
 template <typename T>
-MaRC::SimpleCylindrical<T>::~SimpleCylindrical()
-{
-}
-
-template <typename T>
 char const *
 MaRC::SimpleCylindrical<T>::projection_name() const
 {

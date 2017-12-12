@@ -45,7 +45,7 @@ namespace MaRC
     public:
 
         /// Destructor
-        virtual ~NullPhotometricCorrection();
+        virtual ~NullPhotometricCorrection() = default;
 
         /**
          * @name PhotometricCorrection Methods

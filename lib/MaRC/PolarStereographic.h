@@ -69,7 +69,7 @@ namespace MaRC
                            bool north_pole);
 
         /// Destructor
-        virtual ~PolarStereographic();
+        virtual ~PolarStereographic() = default;
 
         /**
          * @name @c MapFactory Methods

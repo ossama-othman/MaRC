@@ -24,10 +24,6 @@
 #include "NullPhotometricCorrection.h"
 
 
-MaRC::NullPhotometricCorrection::~NullPhotometricCorrection()
-{
-}
-
 bool
 MaRC::NullPhotometricCorrection::correct(ViewingGeometry const &,
                                          double & /* data */)

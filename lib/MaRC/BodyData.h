@@ -61,7 +61,7 @@ namespace MaRC
         BodyData & operator=(BodyData const &) = delete;
 
         /// Destructor
-        virtual ~BodyData();
+        virtual ~BodyData() = default;
 
         /// Return the direction of rotation.
         /**

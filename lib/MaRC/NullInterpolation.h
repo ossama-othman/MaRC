@@ -45,7 +45,7 @@ namespace MaRC
     public:
 
         /// Destructor.
-        virtual ~NullInterpolation();
+        virtual ~NullInterpolation() = default;
 
         /// Performs no interpolation.
         virtual bool interpolate(double const *,
