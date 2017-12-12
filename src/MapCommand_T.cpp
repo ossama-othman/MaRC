@@ -131,6 +131,10 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
         // descriptions.push_back();
 
 
+        /**
+         * @todo Refactor this call so that it isn't specific to
+         *       @c VirtualImage subclasses.
+         */
         // Add description specific to the VirtualImage, if we have
         // one, in the map FITS file.
         this->write_virtual_image_facts(fptr,
