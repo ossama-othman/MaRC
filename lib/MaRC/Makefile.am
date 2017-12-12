@@ -51,6 +51,8 @@ libMaRC_la_SOURCES = \
   PhotoImage.cpp \
   MosaicImage.cpp \
   \
+  root_find.cpp \
+  \
   Version.cpp
 
 pkginclude_HEADERS = \

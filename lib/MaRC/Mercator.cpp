@@ -28,6 +28,7 @@
 #include "MaRC/Mathematics.h"
 #include "MaRC/root_find.h"
 
+#include <functional>
 #include <limits>
 #include <cmath>
 #include <memory>
@@ -48,11 +49,6 @@ MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body)
     if (!MaRC::almost_equal(longitude_range, expected_lon_range, ulps))
         throw std::out_of_range("Mercator projection requires 360 "
                                 "longitude range.");
-}
-
-template <typename T>
-MaRC::Mercator<T>::~Mercator()
-{
 }
 
 template <typename T>
@@ -77,18 +73,28 @@ MaRC::Mercator<T>::plot_map(std::size_t samples,
     // No need to take absolute value.  Always positive.
     double const xmax = static_cast<double>(lines) / samples * C::pi;
 
+    using namespace std::placeholders;
+    auto const map_equation =
+        std::bind(&MaRC::Mercator<T>::mercator_x, this, _1);
+
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
 
-        double const old_lat = -C::pi_2 + 2 * std::atan(std::exp(x));
-        double const old_x = this->mercator_x(old_lat);
+        // Obtain initial guess from inverse Mercator equation for a
+        // sphere.
+        double const latg_guess = -C::pi_2 + 2 * std::atan(std::exp(x));
 
+        /**
+         * @todo Pass in a function that directly computes the first
+         *       derivative of the Mercator equation, without relying
+         *       on numerical differentation techniques, to speed up
+         *       root finding and improve accuracy.
+         */
         double const latg =
-            MaRC::root_find(x,
-                            old_x,
-                            old_lat,
-                            &MaRC::Mercator<T>::mercator_x,
-                            this); // bodyGRAPHIC latitude
+            MaRC::root_find(
+                x,
+                latg_guess,   // bodyGRAPHIC latitude
+                map_equation);
 
         // Convert to bodyCENTRIC latitude
         double const lat = this->body_->centric_latitude(latg);
@@ -186,19 +192,27 @@ template <typename T>
 double
 MaRC::Mercator<T>::mercator_x(double latg) const
 {
-    double const x =
-        std::log(std::tan(C::pi_4 + latg / 2) *
-              std::pow((1 - this->body_->first_eccentricity() * std::sin(latg))
-                    / (1 + this->body_->first_eccentricity() * std::sin(latg)),
-                    this->body_->first_eccentricity() / 2));
+    double const t = this->body_->first_eccentricity() * std::sin(latg);
 
-    return x;
+    return
+        std::log(std::tan(C::pi_4 + latg / 2)
+                 * std::pow((1 - t) / (1 + t),
+                            this->body_->first_eccentricity() / 2));
 }
 
 template <typename T>
 double
 MaRC::Mercator<T>::distortion(double latg) const
 {
+    /**
+     * @todo A graphic latitude is required as the argument which is
+     *       converted a centric latitude before being passed to the
+     *       @c N() method below, which in turn converts back to a
+     *       graphic latitude before performing any calculations.
+     *       Tweak the method parameters to avoid the redundant
+     *       graphic/centric latitude conversions.
+     */
+
     // Note that latitude is bodyGRAPHIC.
     return
         this->body_->eq_rad()
