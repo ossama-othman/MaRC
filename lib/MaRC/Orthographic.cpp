@@ -100,8 +100,7 @@ MaRC::Orthographic<T>::Orthographic (
     if (km_per_pixel > 0)
         this->km_per_pixel_ = km_per_pixel;
 
-    if (center.geometry == CENTER_GIVEN)
-    {
+    if (center.geometry == CENTER_GIVEN) {
       this->sample_center_ = center.sample_lat_center;
       this->line_center_   = center.line_lon_center;
     } else if (center.geometry == LAT_LON_GIVEN) {
