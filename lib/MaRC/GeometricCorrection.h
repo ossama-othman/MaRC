@@ -25,6 +25,8 @@
 #ifndef MARC_GEOMETRIC_CORRECTION_H
 #define MARC_GEOMETRIC_CORRECTION_H
 
+#include <MaRC/Export.h>
+
 
 namespace MaRC
 {
@@ -38,7 +40,7 @@ namespace MaRC
      * Concrete geometric correction classes must implement the interface
      * required by this abstract base class.
      */
-    class GeometricCorrection
+    class MARC_API GeometricCorrection
     {
     public:
 

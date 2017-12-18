@@ -25,6 +25,8 @@
 #ifndef MARC_INTERPOLATION_STRATEGY_H
 #define MARC_INTERPOLATION_STRATEGY_H
 
+#include <MaRC/Export.h>
+
 
 namespace MaRC
 {
@@ -37,7 +39,7 @@ namespace MaRC
      * Concrete interpolation classes must implement the interface
      * required by this abstract base class.
      */
-    class InterpolationStrategy
+    class MARC_API InterpolationStrategy
     {
     public:
 

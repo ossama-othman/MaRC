@@ -30,6 +30,7 @@
 #define MARC_GLL_GEOMETRIC_CORRECTION_H
 
 #include <MaRC/GeometricCorrection.h>
+#include <MaRC/Export.h>
 
 #include <cstddef>
 
@@ -49,7 +50,7 @@ namespace MaRC
      *
      * Galileo specific concrete geometric correction strategy.
      */
-    class GLLGeometricCorrection : public GeometricCorrection
+    class MARC_API GLLGeometricCorrection : public GeometricCorrection
     {
     public:
 

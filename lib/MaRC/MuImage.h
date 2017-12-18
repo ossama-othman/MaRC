@@ -26,6 +26,7 @@
 #define MARC_MU_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
+#include "MaRC/Export.h"
 
 #include <memory>
 
@@ -43,7 +44,7 @@ namespace MaRC
      * emission angle on the body being mapped.  The observer range is
      * taken into account.
      */
-    class MuImage : public VirtualImage
+    class MARC_API MuImage : public VirtualImage
     {
     public:
 

@@ -25,6 +25,8 @@
 #ifndef MARC_BODY_DATA_H
 #define MARC_BODY_DATA_H
 
+#include <MaRC/Export.h>
+
 
 namespace MaRC
 {
@@ -43,7 +45,7 @@ namespace MaRC
      *       symmetrical about their polar axis can be implemented as
      *       subclasses.
      */
-    class BodyData
+    class MARC_API BodyData
     {
     public:
 

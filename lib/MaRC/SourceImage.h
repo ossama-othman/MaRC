@@ -26,6 +26,8 @@
 #ifndef MARC_SOURCE_IMAGE_H
 #define MARC_SOURCE_IMAGE_H
 
+#include <MaRC/Export.h>
+
 #include <cstddef>
 
 
@@ -39,7 +41,7 @@ namespace MaRC
      * Concrete source image classes must implement the interface
      * required by this abstract base class.
      */
-    class SourceImage
+    class MARC_API SourceImage
     {
     public:
 
