@@ -26,6 +26,7 @@
 #define MARC_VIRTUAL_IMAGE_H
 
 #include "MaRC/SourceImage.h"
+#include <MaRC/Export.h>
 
 #include <limits>
 #include <cmath>
@@ -246,7 +247,7 @@ namespace MaRC
      * retrieved from static sources such as images stored on a
      * filesystem.
      */
-    class VirtualImage : public SourceImage
+    class MARC_API VirtualImage : public SourceImage
     {
     public:
 

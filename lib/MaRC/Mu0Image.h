@@ -26,6 +26,7 @@
 #define MARC_MU0_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
+#include "MaRC/Export.h"
 
 #include <memory>
 
@@ -45,7 +46,7 @@ namespace MaRC
      * body being mapped.  The sun is assumed to be an infinite
      * distance away.
      */
-    class Mu0Image : public VirtualImage
+    class MARC_API Mu0Image : public VirtualImage
     {
     public:
 

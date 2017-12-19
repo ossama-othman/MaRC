@@ -27,6 +27,8 @@
 
 #include <MaRC/BodyData.h>
 #include <MaRC/Vector.h>
+#include <MaRC/Export.h>
+
 
 
 namespace MaRC
@@ -41,7 +43,7 @@ namespace MaRC
      * An oblate spheroid is an ellipsoidal body with potentially
      * different equatorial and polar radii.
      */
-    class OblateSpheroid : public BodyData
+    class MARC_API OblateSpheroid : public BodyData
     {
     public:
 

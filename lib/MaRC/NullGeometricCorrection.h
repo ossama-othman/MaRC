@@ -26,6 +26,7 @@
 #define MARC_NULL_GEOMETRIC_CORRECTION_H
 
 #include <MaRC/GeometricCorrection.h>
+#include <MaRC/Export.h>
 
 
 namespace MaRC
@@ -38,7 +39,7 @@ namespace MaRC
      * This geometric correction strategy is a no-op.  It performs no
      * geometric correction.
      */
-    class NullGeometricCorrection : public GeometricCorrection
+    class MARC_API NullGeometricCorrection : public GeometricCorrection
     {
     public:
 

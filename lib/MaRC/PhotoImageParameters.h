@@ -27,6 +27,8 @@
 
 #include "MaRC/PhotometricCorrection.h"
 #include "MaRC/InterpolationStrategy.h"
+#include "MaRC/Export.h"
+
 
 #include <memory>
 
@@ -39,7 +41,7 @@ namespace MaRC
      *
      * @brief Configuration parameters specific to @c PhotoImage.
      */
-    class PhotoImageParameters
+    class MARC_API PhotoImageParameters
     {
     public:
 

@@ -26,6 +26,7 @@
 #define MARC_LATITUDE_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
+#include "MaRC/Export.h"
 
 #include <memory>
 
@@ -43,7 +44,7 @@ namespace MaRC
      * degrees.  This class may be configured to return bodygraphic
      * latitudes instead of bodycentric latitudes.
      */
-    class LatitudeImage : public VirtualImage
+    class MARC_API LatitudeImage : public VirtualImage
     {
     public:
 

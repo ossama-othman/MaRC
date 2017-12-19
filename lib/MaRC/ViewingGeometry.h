@@ -27,6 +27,7 @@
 
 #include "MaRC/Geometry.h"
 #include "MaRC/GeometricCorrection.h"
+#include "MaRC/Export.h"
 
 #include <vector>
 #include <cstddef>
@@ -52,7 +53,7 @@ namespace MaRC
      *       an oblate spheroid due to the way the rotation matrices
      *       are generated.
      */
-    class ViewingGeometry
+    class MARC_API ViewingGeometry
     {
     public:
 

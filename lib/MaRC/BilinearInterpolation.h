@@ -26,6 +26,7 @@
 #define MARC_BILINEAR_INTERPOLATION_H
 
 #include "MaRC/InterpolationStrategy.h"
+#include "MaRC/Export.h"
 
 #include <cstddef>
 
@@ -41,7 +42,7 @@ namespace MaRC
    * This strategy performs bilinear interpolation over 2x2 block of
    * data.
    */
-  class BilinearInterpolation : public InterpolationStrategy
+  class MARC_API BilinearInterpolation : public InterpolationStrategy
   {
   public:
 

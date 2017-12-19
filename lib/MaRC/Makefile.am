@@ -106,6 +106,8 @@ pkginclude_HEADERS = \
   \
   Constants.h \
   \
-  Version.h
+  Version.h \
+  \
+  Export.h
 
 # noinst_HEADERS =
