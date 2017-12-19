@@ -26,6 +26,7 @@
 #define MARC_NULL_INTERPOLATION_H
 
 #include "MaRC/InterpolationStrategy.h"
+#include "MaRC/Export.h"
 
 
 namespace MaRC
@@ -39,7 +40,7 @@ namespace MaRC
      * This interpolation strategy is a no-op.  It performs no
      * interpolation.
      */
-    class NullInterpolation : public InterpolationStrategy
+    class MARC_API NullInterpolation : public InterpolationStrategy
     {
     public:
 

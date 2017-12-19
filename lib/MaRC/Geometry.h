@@ -28,6 +28,7 @@
 #define MARC_GEOMETRY_H
 
 #include <MaRC/Matrix.h>
+#include <MaRC/Export.h>
 
 #include <cstddef>
 
@@ -79,7 +80,7 @@ namespace MaRC
          *                   system.
          * @param[out] r     Vector in the rotated coordinate system.
          */
-        void RotX(double angle, DVector const & v, DVector & r);
+        MARC_API void RotX(double angle, DVector const & v, DVector & r);
 
         /// Rotate about y-axis.
         /**
@@ -89,7 +90,7 @@ namespace MaRC
          *                   system.
          * @param[out] r     Vector in the rotated coordinate system.
          */
-        void RotY(double angle, DVector const & v, DVector & r);
+        MARC_API void RotY(double angle, DVector const & v, DVector & r);
 
         /// Rotate about z-axis.
         /**
@@ -99,7 +100,7 @@ namespace MaRC
          *                   system.
          * @param[out] r     Vector in the rotated coordinate system.
          */
-        void RotZ(double angle, DVector const & v, DVector & r);
+        MARC_API void RotZ(double angle, DVector const & v, DVector & r);
 
         /// Return a transformation matrix that rotates a coordinate
         /// system about the x-axis.
@@ -111,7 +112,7 @@ namespace MaRC
          * @return Matrix that will rotate a coordinate system
          *         @a angle radians about the x-axis.
          */
-        DMatrix RotXMatrix(double angle);
+        MARC_API DMatrix RotXMatrix(double angle);
 
         /// Return a transformation matrix that rotates a coordinate
         /// system about the y-axis.
@@ -123,7 +124,7 @@ namespace MaRC
          * @return Matrix that will rotate a coordinate system
          *         @a angle radians about the y-axis.
          */
-        DMatrix RotYMatrix(double angle);
+        MARC_API DMatrix RotYMatrix(double angle);
 
         /// Return a transformation matrix that rotates a coordinate
         /// system about the z-axis.
@@ -135,7 +136,7 @@ namespace MaRC
          * @return Matrix that will rotate a coordinate system
          *         @a angle radians about the z-axis.
          */
-        DMatrix RotZMatrix(double angle);
+        MARC_API DMatrix RotZMatrix(double angle);
         //@}
 
     }

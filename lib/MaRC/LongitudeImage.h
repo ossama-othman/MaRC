@@ -26,6 +26,7 @@
 #define MARC_LONGITUDE_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
+#include "MaRC/Export.h"
 
 
 namespace MaRC
@@ -39,7 +40,7 @@ namespace MaRC
      * This concrete VirtualImage returns the given longitude in
      * degrees.
      */
-    class LongitudeImage : public VirtualImage
+    class MARC_API LongitudeImage : public VirtualImage
     {
     public:
 

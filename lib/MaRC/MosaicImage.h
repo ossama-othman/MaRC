@@ -26,6 +26,7 @@
 #define MARC_MOSAIC_IMAGE_H
 
 #include <MaRC/SourceImage.h>
+#include <MaRC/Export.h>
 
 #include <memory>
 #include <vector>
@@ -41,7 +42,7 @@ namespace MaRC
      * Mosaics may be comprised of multiple photographs, each taken at
      * different viewing geometries.
      */
-    class MosaicImage : public SourceImage
+    class MARC_API MosaicImage : public SourceImage
     {
     public:
 

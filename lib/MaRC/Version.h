@@ -27,6 +27,8 @@
 #ifndef MARC_LIB_VERSION_H
 #define MARC_LIB_VERSION_H
 
+#include "MaRC/Export.h"
+
 
 namespace MaRC
 {
@@ -35,7 +37,7 @@ namespace MaRC
      *
      * @return String containing the MaRC library version.
      */
-    char const * library_version();
+    MARC_API char const * library_version();
 }
 
 

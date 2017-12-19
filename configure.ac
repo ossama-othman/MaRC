@@ -140,6 +140,8 @@ AS_IF([test "x$GXX" = "xyes"],
       [XCXXFLAGS="$XCXXFLAGS -Wextra -Wformat=2 -pedantic"],
       [])
 
+AX_APPEND_COMPILE_FLAGS([-fvisibility=hidden -fvisibility-inlines-hidden])
+
 dnl Combine package set flags with user's flags.
 dnl User's flags go after package flags to allow user to override
 dnl package defaults.
