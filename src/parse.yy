@@ -252,7 +252,7 @@
 %token _IDENTITY
 
 // Reserved input file keywords
-%token _MAP AUTHOR ORIGIN _COMMENT XCOMMENT
+%token _MAP AUTHOR ORIGIN EQUINOX _COMMENT XCOMMENT
 %token _DATA_TYPE DATA_OFFSET DATA_SCALE DATA_BLANK
 %token GRID GRID_INTERVAL LAT_GRID_INTERVAL LON_GRID_INTERVAL
 %token MAP_TYPE SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
@@ -473,6 +473,10 @@ author:
 
 origin:
         | ORIGIN ':' _STRING { auto_free<char> str($3); map_origin = $3; }
+;
+
+equinox:
+        | EQUINOX ':' _STRING { auto_free<char> str($3); map_equinox = $3; }
 ;
 
 comments:

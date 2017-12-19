@@ -153,6 +153,7 @@ int yycolumn = 1;
 "MAP"           { BEGIN(string); return _MAP; }
 "AUTHOR"        { BEGIN(comment_init); return AUTHOR; }
 "ORIGIN"        { BEGIN(comment_init); return ORIGIN; }
+"EQUINOX"       { BEGIN(comment_init); return EQUINOX; }
 "COMMENT"       { BEGIN(comment_init); return _COMMENT; }
 "XCOMMENT"      { BEGIN(comment_init); return XCOMMENT; }
 "DATA_OFFSET"   { return DATA_OFFSET; }
