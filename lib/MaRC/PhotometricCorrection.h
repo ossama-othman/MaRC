@@ -25,6 +25,8 @@
 #ifndef MARC_PHOTOMETRIC_CORRECTION_H
 #define MARC_PHOTOMETRIC_CORRECTION_H
 
+#include <MaRC/Export.h>
+
 
 namespace MaRC
 {
@@ -41,7 +43,7 @@ namespace MaRC
      * darkening).  All such photometric metric correction strategies
      * should inherit from this base class.
      */
-    class PhotometricCorrection
+    class MARC_API PhotometricCorrection
     {
     public:
 

@@ -26,6 +26,7 @@
 #define MARC_PHOTO_IMAGE_H
 
 #include <MaRC/SourceImage.h>
+#include <MaRC/Export.h>
 
 #include <memory>
 #include <vector>
@@ -46,7 +47,7 @@ namespace MaRC
      * photos of the same body being mapped.  For example, photos from
      * telescope observations fit into this category.
      */
-    class PhotoImage : public SourceImage
+    class MARC_API PhotoImage : public SourceImage
     {
     public:
 

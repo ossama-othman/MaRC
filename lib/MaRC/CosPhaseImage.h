@@ -26,6 +26,7 @@
 #define MARC_COS_PHASE_IMAGE_H
 
 #include "MaRC/VirtualImage.h"
+#include "MaRC/Export.h"
 
 #include <memory>
 
@@ -44,7 +45,7 @@ namespace MaRC
      * on surface of body-Observer (phase) angle, &phi;, on the body
      * being mapped.  The observer range is taken into account.
      */
-    class CosPhaseImage : public VirtualImage
+    class MARC_API CosPhaseImage : public VirtualImage
     {
     public:
 

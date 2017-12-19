@@ -39,7 +39,8 @@ namespace MaRC
      * This photometric correction strategy is a no-op.  It performs
      * no photometric correction.
      */
-    class NullPhotometricCorrection : public PhotometricCorrection
+    class MARC_API NullPhotometricCorrection
+        : public PhotometricCorrection
     {
     public:
 
