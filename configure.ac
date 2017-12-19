@@ -27,6 +27,12 @@ dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
 AX_CHECK_ENABLE_DEBUG([yes])
 
+AC_ARG_ENABLE([arch-detect],
+     [AS_HELP_STRING([--enable-arch-detect],
+                     [enable detection of GCC CPU architecture tuning flags (also see related "--with-gcc-arch" option)])],
+     [],
+     [enable_arch_detect=no])
+
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.14.1 foreign silent-rules -Wall -Werror -Wno-portability])
@@ -126,14 +132,22 @@ double h = std::hypot(3, 4, 5);
 AS_IF([test "x$ac_cv_cxx_3_param_std_hypot_supported" = "xyes"],
       [AC_DEFINE([MARC_HAS_3_PARAM_STD_HYPOT])])
 
-
 dnl Checks for header files.
 AC_HEADER_STDC
 
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],
-      [AS_IF([test "x$GXX" = "xyes"], [XCXXFLAGS="$XCXXFLAGS -O2"])
-       AX_GCC_ARCHFLAG([yes], [XCXXFLAGS="$XCXXFLAGS $ax_cv_gcc_archflag"])])
+      [marc_optimization_flag="-O2"
+       AX_CHECK_COMPILE_FLAG([$marc_optimization_flag],
+                             [AX_APPEND_FLAG([$marc_optimization_flag],
+                                             [XCXXFLAGS])])
+      ])
+
+AS_IF([test "x$enable_arch_detect" = "xyes"],
+      [AX_GCC_ARCHFLAG([yes],
+                        [AX_APPEND_FLAG([$ax_cv_gcc_archflag],
+                                        [XCXXFLAGS])])
+      ])
 
 AX_CXXFLAGS_WARN_ALL([CXXFLAGS])
 AS_IF([test "x$GXX" = "xyes"],
