@@ -70,6 +70,7 @@ MaRC::ViewingGeometry::ViewingGeometry(
     , lat_at_center_ (not_a_number)
     , lon_at_center_ (not_a_number)
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
+    , use_terminator_(false)
     , geometric_correction_(
         std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
 {
