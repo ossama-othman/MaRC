@@ -43,23 +43,41 @@ bool test_read_data(
     double const data_scale  = longitude_image->scale();
     double const data_offset = longitude_image->offset();
 
+    bool const visible =
+        longitude_image->read_data(latitude, test_lon, data);
+
+    // Do not blindly use operator*=() here!
+    if (visible)
+        data = data * data_scale + data_offset;
+
     return
-        longitude_image->read_data(latitude, test_lon, data)
-        && (MaRC::almost_equal(expected_lon,
-                               data * data_scale + data_offset,
-                               ulps)
+        visible
+        && (MaRC::almost_equal(expected_lon, data, ulps)
 
             // Case where expected longitude is 360 and longitude
             // returned from LongitudeImage is 0.  Both are
             // equivalent.
             || (MaRC::almost_equal(expected_lon, 360.0, ulps)
                 && MaRC::almost_equal(expected_lon,
-                                      (data * data_scale + data_offset)
-                                      + 360,
-                                      ulps)));
+                                      data + 360,
+                                      ulps))
+
+            // Case where longitude is essentially zero may fail the
+            // above equality test due to limitations in
+            // MaRC::almost_equal().  Check if both values are almost
+            // zero instead.
+            || (MaRC::almost_zero(expected_lon, ulps)
+                /**
+                 * @note 2 ulps isn't enough on some 32 bit
+                 *       platforms.  For example, this test fails on a
+                 *       32 bit virtual machine since the data value
+                 *       is about 3.747e-15 but the epsilon() is about
+                 *       2.2204e-16.  Use an ulps value that allows
+                 *       this test to pass since 3.747e-15 is
+                 *       essentially zero for this use case.
+                 */
+                && MaRC::almost_zero(data, 17)));
 }
-
-
 
 template <typename T>
 bool test_longitude_image()
