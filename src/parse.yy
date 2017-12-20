@@ -1748,15 +1748,11 @@ one_std_lat:
             MapEntry->setStdLat($3);
           }
           else {
-            cerr << "ERROR: Standard latitude must be greater than zero for"
-                 << endl
-                 << "       north polar projections and negative for south"
-                 << endl
-                 << "       polar projections.  Absolute value of standard"
-                 << endl
-                 << "       latitude must also be less than 90 degrees."
-                 << endl;
-            cerr << "       STD_LAT: " << $3 << endl;
+            cerr << "ERROR: Standard latitude must be greater than zero for\n"
+                    "       north polar projections and negative for south\n"
+                    "       polar projections.  Absolute value of standard\n"
+                    "       latitude must also be less than 90 degrees.\n"
+                    "       STD_LAT: " << $3 << '\n';
             YYERROR;
           }
         }
@@ -1771,21 +1767,15 @@ two_std_lats:
               MapEntry->setStdLat($3, $6);
             }
             else {
-              cerr << "ERROR: Absolute value of first standard latitude must"
-                   << endl
-                   << "       be greater than absolute value of second"
-                   << endl
-                   << "       standard latitude.  First standard latitude must"
-                   << endl
-                   << "       also be greater than zero for north polar"
-                   << endl
-                   << "       projections and negative for south polar" << endl
-                   << "       projections.  The absolute value of either"
-                   << endl
-                   << "       standard latitude cannot be zero or 90 degrees."
-                   << endl;
-              cerr << "       STD_LAT_1: " << $3 << endl
-                   << "       STD_LAT_2: " << $6 << endl;
+              cerr << "ERROR: Absolute value of first standard latitude must\n"
+                      "       be greater than absolute value of second\n"
+                      "       standard latitude.  First standard latitude must\n"
+                      "       also be greater than zero for north polar\n"
+                      "       projections and negative for south polar\n"
+                      "       projections.  The absolute value of either\n"
+                      "       standard latitude cannot be zero or 90 degrees.\n"
+                      "       STD_LAT_1: " << $3 << "\n"
+                      "       STD_LAT_2: " << $6 << '\n';
               YYERROR;
             }
         }

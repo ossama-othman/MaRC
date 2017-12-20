@@ -37,27 +37,22 @@ extern void yyrestart(FILE * input_file);
 int
 main(int argc, char *argv[])
 {
-    std::cout
-        << std::endl <<  "MaRC -- "
-        << "Built on " << __DATE__ << " at " << __TIME__ << std::endl
-        << "        MaRC Binary  Version " PACKAGE_VERSION  << std::endl
-        << "        MaRC Library Version " << MaRC::library_version()
-        << std::endl << std::endl
-        << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman"
-        << std::endl
-        << "All Rights Reserved" << std::endl << std::endl
-        << "MaRC comes with ABSOLUTELY NO WARRANTY." << std::endl
-        << "This is free software, and you are welcome to redistribute it"
-        << std::endl
-        << "under certain conditions." << std::endl << std::endl;
-
     if (argc < 2) {
-        std::cerr << std::endl
-                  << "USAGE:   marc inputfile1 [inputfile2 ...]"
-                  << std::endl << std::endl;
+        std::cerr << "USAGE:   marc inputfile1 [inputfile2 ...]\n\n";
 
         return 1;  // Failure
     }
+
+    std::cout
+        << "MaRC -- Built on " << __DATE__ << " at " << __TIME__"\n"
+        << "        MaRC Binary  Version " PACKAGE_VERSION  "\n"
+        << "        MaRC Library Version " << MaRC::library_version()
+        << "\n\n"
+        << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman\n"
+        << "All Rights Reserved\n\n"
+        << "MaRC comes with ABSOLUTELY NO WARRANTY.\n"
+        << "This is free software, and you are welcome to redistribute it\n"
+        << "under certain conditions.\n\n";
 
     try {
         MaRC::ParseParameter parse_parameters;
@@ -76,9 +71,7 @@ main(int argc, char *argv[])
             } else {
                 fclose (defaults);
 
-                std::cerr << "\n"
-                             "Parse error occurred during user "
-                             "defaults file read.\n";
+                std::cerr << "\nError parsing '" << user_defaults << "'.\n";
 
               return 1;  // Failure
             }
@@ -120,12 +113,12 @@ main(int argc, char *argv[])
 
         // Create the map(s).
         MaRC::ParseParameter::command_list const & commands =
-            parse_parameters.commands ();
+            parse_parameters.commands();
 
         for (auto & p : commands)
             (void) p->execute();
-    } catch (std::exception const & e) {
-        std::cerr << "MaRC: " << e.what() << std::endl;
+    } catch (const std::exception & e) {
+        std::cerr << "MaRC: " << e.what() << '\n';
         return -1;
     }
 
