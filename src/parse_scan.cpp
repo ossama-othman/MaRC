@@ -41,7 +41,6 @@ MaRC::ParseParameter::ParseParameter (void)
     , nibble_bottom(0)
     , commands_()
     , sym_table_()
-      // , lexer_()
 {
 }
 
@@ -106,60 +105,6 @@ MaRC::Radii::validate()
 }
 
 // -------------------------------------------------------------------
-
-// This is a wrapper function for the yyFlexLexer (the lexical
-// analyzer) class.
-// int
-// yylex (YYSTYPE * lvalp, YYLTYPE * /* llocp */, MaRC::ParseParameter & pp)
-// {
-//   FlexLexer & lexer = pp.lexer ();
-
-//   int const token = lexer.yylex ();
-
-//   char const * symbuf = nullptr;
-//   MaRC::sym_entry *s = nullptr;
-
-//   switch (token)
-//     {
-//     case NUM:
-//       // Numbers will be handled in double precision
-//       lvalp->val = std::strtod(lexer.YYText (), 0);
-//       break;
-
-//     case VAR:
-//       symbuf = lexer.YYText ();
-//       s = pp.sym_table ().getsym (symbuf);
-
-//       if (s == nullptr)
-//         {
-//           /*
-//             This forces parsing of variables to be shut off.
-//             Functions may still be used.  Until the inability of the
-//             parser to handle two or more seperate expressions in a row
-//             is resolved the "return UNMATCHED" should remain.
-//             e.g.: m = 2  m+2
-//           */
-
-//           return UNMATCHED;
-
-//           // s = pp.symrec ()->putsym (symbuf, VAR);
-//         }
-
-//       lvalp->tptr = s;
-
-//       // return s->type;  // This returns either FNCT or VAR
-//       return FNCT;
-
-//     case _STRING:
-//       lvalp->sval = strdup (lexer.YYText ());
-//       break;
-
-//     default:
-//       return token;  /* Any other character is a token by itself. */
-//     }
-
-//   return token;
-// }
 
 void
 yyerror(YYLTYPE * /* locp */,
