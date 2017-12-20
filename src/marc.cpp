@@ -134,8 +134,8 @@ main(int argc, char *argv[])
 
         for (auto & p : commands)
             (void) p->execute();
-    } catch (std::exception const & e) {
-        std::cerr << "MaRC: " << e.what() << std::endl;
+    } catch (const std::exception & e) {
+        std::cerr << "MaRC: " << e.what() << '\n';
         return -1;
     }
 
