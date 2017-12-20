@@ -27,6 +27,8 @@
 #ifndef MARC_ROOT_FIND_H
 #define MARC_ROOT_FIND_H
 
+#include <MaRC/Export.h>
+
 #include <functional>
 
 
@@ -43,9 +45,9 @@ namespace MaRC
      * @param[in] f  Function @a f(x) for which @c x will be
      *               computed.
      */
-    double root_find(double y,
-                     double x0,
-                     std::function<double(double)> f);
+    MARC_API double root_find(double y,
+                              double x0,
+                              std::function<double(double)> f);
 }
 
 
