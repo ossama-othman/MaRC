@@ -65,13 +65,21 @@ main(int argc, char *argv[])
             ::yyrestart(defaults);
 
             // Parse user defaults/MaRC initialization file.
-            if (::yyparse(parse_parameters) == 0) {
+            int const parsed = ::yyparse(parse_parameters);
+
+            /**
+             * @bug The "defaults" @c FILE stream is explicitly closed
+             *      if an exception is thrown when parsing the
+             *      initialization file.  Make exception-safe.
+             */
+            fclose(defaults);
+
+            if (parsed == 0) {
                 // Successful parse
                 std::cout << "MaRC user defaults file parsed.\n";
             } else {
-                fclose (defaults);
-
-                std::cerr << "\nError parsing '" << user_defaults << "'.\n";
+                std::cerr << "\nError parsing '" << user_defaults
+                          << "'.\n";
 
               return 1;  // Failure
             }
@@ -84,28 +92,34 @@ main(int argc, char *argv[])
                 ::yyrestart(map_input);
 
                 // Parse user defaults/MaRC initialization file.
-                if (::yyparse(parse_parameters) == 0) {
-                    fclose (map_input);
+                int const parsed = ::yyparse(parse_parameters);
 
+                /**
+                 * @bug The "map_input" @c FILE stream is explicitly
+                 *      closed if an exception is thrown when parsing
+                 *      the initialization file.  Make
+                 *      exception-safe.
+                 */
+                fclose(map_input);
+
+                if (parsed == 0) {
                     // Successful parse
                     std::cout << "MaRC input file '"
                               << argv[i]
                               << "' parsed.\n";
                 } else {
-                    fclose(map_input);
-
                     std::cerr
                         << "\n"
                            "Parse error occurred while processing "
-                           "MaRC input file \""
-                        << argv[i] << "\".\n";
+                           "MaRC input file '"
+                        << argv[i] << "'.\n";
 
                   return 1;  // Failure
                 }
             } else {
-                std::cerr << "Unable to open MaRC input file \""
+                std::cerr << "Unable to open MaRC input file '"
                           << argv[i]
-                          << "\".\n";
+                          << "'.\n";
 
                 return 1;
             }
