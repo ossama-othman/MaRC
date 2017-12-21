@@ -249,7 +249,7 @@ MaRC::PhotoImageFactory::invert_v(std::vector<double> & image,
     std::size_t const middle = lines / 2;
 
     for (std::size_t line = 0; line < middle; ++line) {
-        // Line from the one end.
+        // Line from one end.
         auto const top_begin = image.begin() + line * samples;
         auto const top_end   = top_begin + samples;
 
