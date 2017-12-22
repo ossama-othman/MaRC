@@ -778,7 +778,7 @@ MaRC::ViewingGeometry::emi_ang_limit(double angle)
 {
     // Any emission angle beyond 90 degrees isn't visible.
     if (angle < -90 || angle > 90)
-        throw std::range_error("invalid emission angle limit");
+        throw std::domain_error("invalid emission angle limit");
 
     this->mu_limit_ = std::cos(angle * C::degree);
 }

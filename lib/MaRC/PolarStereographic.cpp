@@ -58,7 +58,7 @@ MaRC::PolarStereographic<T>::PolarStereographic(
         s << "Maximum polar stereographic latitude ("
           << max_lat << ") >= 90.";
 
-        throw std::out_of_range(s.str());
+        throw std::invalid_argument(s.str());
     }
 }
 
@@ -66,9 +66,9 @@ template <typename T>
 const char *
 MaRC::PolarStereographic<T>::projection_name() const
 {
-  static char const name[] = "Polar Stereographic (Conformal)";
+    static char const name[] = "Polar Stereographic (Conformal)";
 
-  return name;
+    return name;
 }
 
 template <typename T>

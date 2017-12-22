@@ -47,7 +47,7 @@ MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body)
     static constexpr double expected_lon_range = 360;
 
     if (!MaRC::almost_equal(longitude_range, expected_lon_range, ulps))
-        throw std::out_of_range("Mercator projection requires 360 "
+        throw std::domain_error("Mercator projection requires 360 "
                                 "longitude range.");
 }
 

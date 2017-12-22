@@ -128,7 +128,7 @@ MaRC::Orthographic<T>::Orthographic (
             s << "Desired LATITUDE (" << this->lat_at_center_ / C::degree
               << ") at center of image is not visible.";
 
-            throw std::out_of_range(s.str());
+            throw std::invalid_argument(s.str());
         }
 
         double lower = this->sub_observ_lon_ - C::pi;
@@ -154,7 +154,7 @@ MaRC::Orthographic<T>::Orthographic (
             s << "Desired LONGITUDE (" << this->lon_at_center_ / C::degree
               << ") at center of image is not visible.";
 
-            throw std::out_of_range(s.str());
+            throw std::invalid_argument(s.str());
         }
 
         double const shift = this->sub_observ_lon_ - this->lon_at_center_;

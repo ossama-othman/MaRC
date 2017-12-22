@@ -580,7 +580,7 @@ grid_interval:
               s << "Grid interval value (" << $3 << ") "
                 << "less than or equal to zero";
 
-              throw std::out_of_range (s.str ());
+              throw std::invalid_argument(s.str ());
             }
           else
             {
@@ -598,7 +598,7 @@ lat_grid_interval:
               s << "Latitude grid interval value (" << $3 << ") "
                 << "less than or equal to zero";
 
-              throw std::out_of_range (s.str ());
+              throw std::invalid_argument(s.str ());
             }
           else
             lat_interval = $3;
@@ -613,7 +613,7 @@ lon_grid_interval:
               s << "Longitude grid interval value (" << $3 << ") "
                 << "less than or equal to zero";
 
-              throw std::out_of_range (s.str ());
+              throw std::invalid_argument(s.str ());
             }
           else
             lon_interval = $3;
