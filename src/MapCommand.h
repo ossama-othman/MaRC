@@ -73,7 +73,7 @@ namespace MaRC
         MapCommand & operator=(MapCommand const &) = delete;
 
         /// Destructor.
-        virtual ~MapCommand();
+        virtual ~MapCommand() = default;
 
         /// Execute the command.
         int execute();

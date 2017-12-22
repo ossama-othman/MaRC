@@ -123,10 +123,6 @@ MaRC::MapCommand::MapCommand(std::string filename,
         "Underlying types do not satisfy FITS data type requirements.");
 }
 
-MaRC::MapCommand::~MapCommand()
-{
-}
-
 int
 MaRC::MapCommand::execute()
 {
