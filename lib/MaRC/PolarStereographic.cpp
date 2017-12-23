@@ -23,12 +23,12 @@
 
 #include "MaRC/PolarStereographic.h"
 #include "MaRC/Constants.h"
-#include "MaRC/OblateSpheroid.h"
 #include "MaRC/root_find.h"
 
 #include <functional>
 #include <limits>
 #include <cmath>
+#include <sstream>
 
 
 template <typename T>
@@ -55,7 +55,7 @@ MaRC::PolarStereographic<T>::PolarStereographic(
 {
     if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
         std::ostringstream s;
-        s << "Maximum polar stereographic latitude ("
+        s << "Maximum Polar Stereographic projection latitude ("
           << max_lat << ") >= 90.";
 
         throw std::invalid_argument(s.str());

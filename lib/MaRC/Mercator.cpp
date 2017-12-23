@@ -23,7 +23,6 @@
 
 #include "MaRC/Mercator.h"
 #include "MaRC/Constants.h"
-#include "MaRC/OblateSpheroid.h"
 #include "MaRC/DefaultConfiguration.h"
 #include "MaRC/Mathematics.h"
 #include "MaRC/root_find.h"
@@ -31,13 +30,17 @@
 #include <functional>
 #include <limits>
 #include <cmath>
-#include <memory>
+#include <sstream>
 
 
 template <typename T>
-MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body)
+MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body,
+                            double max_lat)
     : MapFactory<T>()
     , body_(body)
+    , max_lat_((std::isnan(max_lat)
+                ? default_max_lat
+                : max_lat) * C::degree)
 {
     using namespace MaRC::default_configuration;
 
@@ -49,15 +52,26 @@ MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body)
     if (!MaRC::almost_equal(longitude_range, expected_lon_range, ulps))
         throw std::domain_error("Mercator projection requires 360 "
                                 "longitude range.");
+
+    static_assert(default_max_lat < 90,
+                  "Default maximum latitude must be less than 90.");
+
+    if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
+        std::ostringstream s;
+        s << "Maximum Mercator projection latitude ("
+          << max_lat << ") >= 90.";
+
+        throw std::invalid_argument(s.str());
+    }
 }
 
 template <typename T>
 char const *
 MaRC::Mercator<T>::projection_name() const
 {
-  static char const name[] = "Transverse Mercator (Conformal)";
+    static char const name[] = "Transverse Mercator (Conformal)";
 
-  return name;
+    return name;
 }
 
 template <typename T>

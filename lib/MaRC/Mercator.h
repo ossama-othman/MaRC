@@ -57,12 +57,27 @@ namespace MaRC
         /// @typedef Type of functor passed to @c plot_map() method.
         using typename MapFactory<T>::plot_type;
 
+        /**
+         * @brief Default maximum latitude to map.
+         *
+         * If no maximum latitude is supplied this will be maximum
+         * latitude in degrees to map.  For example, maximum latitude
+         * of 84 will result in a map projection containing latitudes
+         * between -84 and 84, inclusive.  The maximum latitude must
+         * be less than 90 since it is not possible to map the poles
+         * in this map projection.
+         */
+        static constexpr double default_max_lat = 84;
+
         /// Constructor.
         /**
-         * @param[in] body Pointer to BodyData object representing
-         *                 body being mapped.
+         * @param[in] body    Pointer to BodyData object representing
+         *                    body being mapped.
+         * @param[in] max_lat Maximum bodyCENTRIC latitude to map in
+         *                    degrees.
          */
-        Mercator(std::shared_ptr<OblateSpheroid> body);
+        Mercator(std::shared_ptr<OblateSpheroid> body,
+                 double max_lat);
 
         /// Destructor
         virtual ~Mercator() = default;
@@ -131,6 +146,9 @@ namespace MaRC
 
         /// BodyData object representing the body being mapped.
         std::shared_ptr<OblateSpheroid> const body_;
+
+        /// Maximum bodyCENTRIC latitude to map in radians.
+        double const max_lat_;
 
     };
 

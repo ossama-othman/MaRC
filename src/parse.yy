@@ -1356,36 +1356,49 @@ lampoleq_options:
 
 /* ------------------------- Mercator Projection ------------------------ */
 mercator:
-        MAP_TYPE ':' _MERCATOR  {
+        MAP_TYPE ':' _MERCATOR
+        max_latitude {
           switch (map_data_type) {
           case BYTE:
               map_factory_byte =
-                  std::make_unique<MaRC::Mercator<FITS::byte_type>>(oblate_spheroid);
+                  std::make_unique<MaRC::Mercator<FITS::byte_type>>(
+                      oblate_spheroid,
+                      max_lat);
               break;
 
               case SHORT:
                 map_factory_short =
-                    std::make_unique<MaRC::Mercator<FITS::short_type>>(oblate_spheroid);
+                    std::make_unique<MaRC::Mercator<FITS::short_type>>(
+                        oblate_spheroid,
+                        max_lat);
                 break;
 
               case LONG:
                 map_factory_long =
-                    std::make_unique<MaRC::Mercator<FITS::long_type>>(oblate_spheroid);
+                    std::make_unique<MaRC::Mercator<FITS::long_type>>(
+                        oblate_spheroid,
+                        max_lat);
                 break;
 
               case _LONGLONG:
                 map_factory_longlong =
-                    std::make_unique<MaRC::Mercator<FITS::longlong_type>>(oblate_spheroid);
+                    std::make_unique<MaRC::Mercator<FITS::longlong_type>>(
+                        oblate_spheroid,
+                        max_lat);
                 break;
 
               case FLOAT:
                 map_factory_float =
-                    std::make_unique<MaRC::Mercator<FITS::float_type>>(oblate_spheroid);
+                    std::make_unique<MaRC::Mercator<FITS::float_type>>(
+                        oblate_spheroid,
+                        max_lat);
                 break;
 
               case DOUBLE:
                 map_factory_double =
-                    std::make_unique<MaRC::Mercator<FITS::double_type>>(oblate_spheroid);
+                    std::make_unique<MaRC::Mercator<FITS::double_type>>(
+                        oblate_spheroid,
+                        max_lat);
                 break;
 
               default:
