@@ -160,7 +160,7 @@ namespace MaRC
      *              check.  It should be greater than zero.
      *
      * @return @c true @a x is essentially zero.  @c false otherwise.
-
+     *
      * @see The blog post "Comparing Floating Point Numbers, 2012
      *      Edition" for an additional discussion on floating point
      *      comparison:
