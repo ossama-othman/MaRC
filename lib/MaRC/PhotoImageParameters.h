@@ -29,7 +29,6 @@
 #include "MaRC/InterpolationStrategy.h"
 #include "MaRC/Export.h"
 
-
 #include <memory>
 
 
