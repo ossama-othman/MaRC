@@ -44,6 +44,8 @@ namespace MaRC
      * @param[in] x0 Initial guess of the root @c x.
      * @param[in] f  Function @a f(x) for which @c x will be
      *               computed.
+     *
+     * @return The root @c x where @a f(x) is equal to @a y.
      */
     MARC_API double root_find(double y,
                               double x0,
