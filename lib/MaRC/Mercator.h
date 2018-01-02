@@ -60,12 +60,12 @@ namespace MaRC
         /**
          * @brief Default maximum latitude to map.
          *
-         * If no maximum latitude is supplied this will be maximum
-         * latitude in degrees to map.  For example, maximum latitude
-         * of 84 will result in a map projection containing latitudes
-         * between -84 and 84, inclusive.  The maximum latitude must
-         * be less than 90 since it is not possible to map the poles
-         * in this map projection.
+         * If no maximum latitude is supplied this will be the maximum
+         * latitude in degrees to map.  For example, a maximum
+         * latitude of 84 will result in a map projection containing
+         * latitudes between -84 and 84, inclusive.  The maximum
+         * latitude must be less than 90 since it is not possible to
+         * map the poles in this map projection.
          */
         static constexpr double default_max_lat = 84;
 
@@ -147,8 +147,20 @@ namespace MaRC
         /// BodyData object representing the body being mapped.
         std::shared_ptr<OblateSpheroid> const body_;
 
-        /// Maximum bodyCENTRIC latitude to map in radians.
-        double const max_lat_;
+        /**
+         * @brief Range of bodyCENTRIC latitudes to map in radians.
+         *
+         * The latitude range is currently defined as the difference
+         * between the highest and lowest latitude to be mapped.  For
+         * example, given a maximum latitude of 84 degrees, the
+         * latitude range will be 168 degrees:
+         * @code
+         *     84 - (-84) = 84 * 2 = 168
+         * @endcode
+         *
+         * This is value is in radians.
+         */
+        double const lat_range_;
 
     };
 

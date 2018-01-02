@@ -38,9 +38,9 @@ MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body,
                             double max_lat)
     : MapFactory<T>()
     , body_(body)
-    , max_lat_((std::isnan(max_lat)
-                ? default_max_lat
-                : max_lat) * C::degree)
+    , lat_range_((std::isnan(max_lat)
+                  ? default_max_lat
+                  : max_lat) * C::degree * 2)
 {
     using namespace MaRC::default_configuration;
 
@@ -84,8 +84,16 @@ MaRC::Mercator<T>::plot_map(std::size_t samples,
 
     std::size_t offset = 0;
 
+    /**
+     * @bug This calculation doesn't appear to be correct.  Shouldn't
+     *      twice the @c this->mercator_x(max_lat) be used to
+     *      determine the @c xmax value?
+     *
+     * @see MaRC::PolarStereographic::plot_map()
+     */
     // No need to take absolute value.  Always positive.
-    double const xmax = static_cast<double>(lines) / samples * C::pi;
+    double const xmax =
+        static_cast<double>(lines) / samples * this->lat_range_;
 
     using namespace std::placeholders;
     auto const map_equation =
@@ -132,8 +140,16 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
                              float lon_interval,
                              grid_type & grid) const
 {
+    /**
+     * @bug This calculation doesn't appear to be correct.  Shouldn't
+     *      twice the @c this->mercator_x(max_lat) be used to
+     *      determine the @c xmax value?
+     *
+     * @see MaRC::PolarStereographic::plot_grid()
+     */
     // No need to take absolute value.  Always positive.
-    double const xmax = static_cast<double>(lines) / samples * C::pi;
+    double const xmax =
+        static_cast<double>(lines) / samples * this->lat_range_;
 
     double const pix_conv_val = xmax / lines * 2;
 
@@ -161,12 +177,10 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
 
     // Draw longitude lines.
     for (float m = 360; m > 0; m -= lon_interval) {
-        int i;
+        int i = static_cast<int>(std::round(m * samples / 360.0));
 
         if (this->body_->prograde())
-            i = samples - static_cast<int>(std::round(m * samples / 360.0));
-        else
-            i = static_cast<int>(std::round(m * samples / 360.0));
+            i = samples - i;
 
         if (i >= 0 && static_cast<std::size_t>(i) < samples) {
             for (std::size_t k = 0; k < lines; ++k)
@@ -220,8 +234,8 @@ MaRC::Mercator<T>::distortion(double latg) const
 {
     /**
      * @todo A graphic latitude is required as the argument which is
-     *       converted a centric latitude before being passed to the
-     *       @c N() method below, which in turn converts back to a
+     *       converted to a centric latitude before being passed to
+     *       the @c N() method below, which in turn converts back to a
      *       graphic latitude before performing any calculations.
      *       Tweak the method parameters to avoid the redundant
      *       graphic/centric latitude conversions.
