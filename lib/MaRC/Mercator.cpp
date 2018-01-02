@@ -97,7 +97,7 @@ MaRC::Mercator<T>::plot_map(std::size_t samples,
 
     using namespace std::placeholders;
     auto const map_equation =
-        std::bind(&MaRC::Mercator<T>::mercator_x, this, _1);
+        std::bind(&Mercator<T>::mercator_x, this, _1);
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
