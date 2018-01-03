@@ -41,6 +41,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <memory>
+#include <type_traits>
 #include <cmath>
 #include <cassert>
 
@@ -132,8 +133,12 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     // For integer typed FITS images with a BLANK value, set the
     // "blank" value in our floating point converted copy of the image
     // to NaN.
-    double nulval = std::numeric_limits<double>::signaling_NaN();
+    auto nulval = std::numeric_limits<double>::signaling_NaN();
     int anynul = 0;  // Unused
+
+    static_assert(std::is_same<decltype(img)::value_type,
+                               decltype(nulval)>(),
+                  "Nul value type doesn't match photo container type.");
 
     (void) fits_read_pix(fptr,
                          TDOUBLE, // Array of type "double".
