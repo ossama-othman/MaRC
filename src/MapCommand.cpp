@@ -59,9 +59,11 @@ namespace
 MaRC::MapCommand::MapCommand(std::string filename,
                              std::string body_name,
                              long samples,
-                             long lines)
+                             long lines,
+                             std::unique_ptr<MapFactory> factory)
     : samples_(samples)
     , lines_(lines)
+    , factory_(std::move(factory))
     , image_factories_()
     , blank_set_(false)
     , blank_(0)
@@ -271,6 +273,24 @@ MaRC::MapCommand::execute()
     fits_report_error(stderr, status);
 
     return status;
+}
+
+char const *
+MaRC::MapCommand::projection_name() const
+{
+    return this->factory_->projection_name();
+}
+
+MaRC::MapCommand::grid_type
+MaRC::MapCommand::make_grid(long samples,
+                            long lines,
+                            float lat_interval,
+                            float lon_interval)
+{
+    return this->factory_->make_grid(samples,
+                                     lines,
+                                     lat_interval,
+                                     lon_interval);
 }
 
 void

@@ -35,15 +35,14 @@
 #include <memory>
 
 
-template <typename T>
-MaRC::Orthographic<T>::Orthographic (
+MaRC::Orthographic::Orthographic (
     std::shared_ptr<OblateSpheroid> body,
     double sub_observ_lat,
     double sub_observ_lon,
     double PA,
     double km_per_pixel,
     OrthographicCenter const & center)
-    : MapFactory<T>()
+    : MapFactory()
     , body_(body)
     , sub_observ_lat_(0)
     , sub_observ_lon_(0)
@@ -195,20 +194,16 @@ MaRC::Orthographic<T>::Orthographic (
     }
 }
 
-template <typename T>
 char const *
-MaRC::Orthographic<T>::projection_name() const
+MaRC::Orthographic::projection_name() const
 {
-    static char const name[] = "Orthographic";
-
-    return name;
+    return "Orthographic";
 }
 
-template <typename T>
 void
-MaRC::Orthographic<T>::plot_map(std::size_t samples,
-                                std::size_t lines,
-                                plot_type plot) const
+MaRC::Orthographic::plot_map(std::size_t samples,
+                             std::size_t lines,
+                             plot_type plot) const
 {
     double km_per_pixel  = std::numeric_limits<double>::signaling_NaN();
     double sample_center = std::numeric_limits<double>::signaling_NaN();
@@ -314,13 +309,12 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
         << ")\n";
 }
 
-template <typename T>
 void
-MaRC::Orthographic<T>::plot_grid(std::size_t samples,
-                                 std::size_t lines,
-                                 float lat_interval,
-                                 float lon_interval,
-                                 grid_type & grid) const
+MaRC::Orthographic::plot_grid(std::size_t samples,
+                              std::size_t lines,
+                              float lat_interval,
+                              float lon_interval,
+                              grid_type & grid) const
 {
     int i, k, imax = 2000;
     double low_bound, high_bound, x, z;
@@ -481,13 +475,12 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
     } // End draw longitude lines
 }
 
-template <typename T>
 void
-MaRC::Orthographic<T>::map_parameters(std::size_t samples,
-                                      std::size_t lines,
-                                      double & km_per_pixel,
-                                      double & sample_center,
-                                      double & line_center) const
+MaRC::Orthographic::map_parameters(std::size_t samples,
+                                   std::size_t lines,
+                                   double & km_per_pixel,
+                                   double & sample_center,
+                                   double & line_center) const
 {
     if (this->km_per_pixel_ <= 0) {
         static constexpr double MAP_FRACTION = 0.9;

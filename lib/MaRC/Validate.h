@@ -48,7 +48,7 @@ namespace MaRC
      *
      * @throw std::invalid_argument Invalid @a lat.
      */
-    double validate_latitude(double lat)
+    inline double validate_latitude(double lat)
     {
         if (lat < -90 || lat > 90)
             throw std::invalid_argument("invalid latitude");
@@ -68,7 +68,7 @@ namespace MaRC
      *
      * @throw std::invalid_argument Invalid @a lon.
      */
-    double validate_longitude(double lon)
+    inline double validate_longitude(double lon)
     {
         if (lon < -360 || lon > 360)
             throw std::invalid_argument("invalid longitude");
@@ -93,7 +93,7 @@ namespace MaRC
      *
      * @throw std::invalid_argument Invalid @a north.
      */
-    double validate_position_angle(double north)
+    inline double validate_position_angle(double north)
     {
         if (north < -360 || north > 360)
             throw std::invalid_argument("invalid position angle");

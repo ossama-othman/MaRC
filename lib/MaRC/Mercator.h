@@ -26,12 +26,13 @@
 #define MARC_MERCATOR_H
 
 #include <MaRC/MapFactory.h>
-#include <MaRC/OblateSpheroid.h>
+
+#include <memory>
 
 
 namespace MaRC
 {
-    class BodyData;
+    class OblateSpheroid;
 
     /**
      * @class Mercator
@@ -46,16 +47,15 @@ namespace MaRC
      * @note This implementation can only map oblate spheroids or
      *       spheres.
      */
-    template <typename T>
-    class Mercator : public MapFactory<T>
+    class MARC_API Mercator : public MapFactory
     {
     public:
 
         /// @typedef Type returned from @c make_grid() method.
-        using typename MapFactory<T>::grid_type;
+        using typename MapFactory::grid_type;
 
         /// @typedef Type of functor passed to @c plot_map() method.
-        using typename MapFactory<T>::plot_type;
+        using typename MapFactory::plot_type;
 
         /**
          * @brief Default maximum latitude to map.
@@ -71,8 +71,8 @@ namespace MaRC
 
         /// Constructor.
         /**
-         * @param[in] body    Pointer to BodyData object representing
-         *                    body being mapped.
+         * @param[in] body    Pointer to @c OblateSpheroid object
+         *                    representing body being mapped.
          * @param[in] max_lat Maximum bodyCENTRIC latitude to map in
          *                    degrees.
          */
@@ -99,7 +99,7 @@ namespace MaRC
         /**
          * Create the Mercator map projection.
          *
-         * @see @c MaRC::MapFactory<T>::plot_map().
+         * @see @c MaRC::MapFactory::plot_map().
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
@@ -108,7 +108,7 @@ namespace MaRC
         /**
          * Create the Mercator map latitude/longitude grid.
          *
-         * @see @c MaRC::MapFactoryBase::plot_grid().
+         * @see @c MaRC::MapFactory::plot_grid().
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
@@ -144,7 +144,8 @@ namespace MaRC
 
     private:
 
-        /// BodyData object representing the body being mapped.
+        /// @c OblateSpheroid object representing the body being
+        /// mapped.
         std::shared_ptr<OblateSpheroid> const body_;
 
         /**
@@ -166,7 +167,5 @@ namespace MaRC
 
 }
 
-
-#include "MaRC/Mercator.cpp"
 
 #endif

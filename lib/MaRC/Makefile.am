@@ -48,6 +48,12 @@ libMaRC_la_SOURCES = \
   PhotoImage.cpp \
   MosaicImage.cpp \
   \
+  MapFactory.cpp \
+  Mercator.cpp \
+  Orthographic.cpp \
+  PolarStereographic.cpp \
+  SimpleCylindrical.cpp \
+  \
   root_find.cpp \
   \
   Version.cpp
@@ -91,15 +97,11 @@ pkginclude_HEADERS = \
   \
   Map_traits.h \
   MapFactory.h \
-  MapFactory.cpp \
+  MapFactory_t.cpp \
   Mercator.h \
-  Mercator.cpp \
   Orthographic.h \
-  Orthographic.cpp \
   PolarStereographic.h \
-  PolarStereographic.cpp \
   SimpleCylindrical.h \
-  SimpleCylindrical.cpp \
   Validate.h \
   root_find.h \
   \

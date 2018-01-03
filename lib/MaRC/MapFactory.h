@@ -25,6 +25,8 @@
 #ifndef MARC_MAP_FACTORY_H
 #define MARC_MAP_FACTORY_H
 
+#include <MaRC/Export.h>
+
 #include <vector>
 #include <limits>
 #include <functional>
@@ -35,78 +37,6 @@ namespace MaRC
 {
     class SourceImage;
 
-    class MapFactoryBase
-    {
-    public:
-
-        /// @typedef Type returned from @c make_grid() method.
-        using grid_type = std::vector<uint8_t>;
-
-        /// Create the latitude/longitude grid for the desired map
-        /// projection.
-        /**
-         * This method takes care of allocating and initializing the
-         * underlying grid array, and delegates actual grid generation
-         * to the subclass implementation of @c plot_grid().
-         *
-         * Blank grid elements will contain a value of zero, otherwise
-         * they will contain the maximum 8 bit unsigned integer value,
-         * i.e. 255.
-         *
-         * @param[in] samples      Number of samples in grid.
-         * @param[in] lines        Number of lines   in grid.
-         * @param[in] lat_interval Number of degrees between each
-         *                         latitude grid line.
-         * @param[in] lon_interval Number of degrees between each
-         *                         longitude grid line.
-         *
-         * @return The generated grid image.
-         *
-         * @note We rely on C++11 move semantics to avoid deep copying
-         *       the returned grid.
-         */
-        grid_type make_grid(std::size_t samples,
-                            std::size_t lines,
-                            float lat_interval,
-                            float lon_interval)
-        {
-            grid_type grid(samples * lines,
-                           grid_type::value_type());
-
-            this->plot_grid(samples,
-                            lines,
-                            lat_interval,
-                            lon_interval,
-                            grid);
-
-            return grid;
-        }
-
-    private:
-
-        /// Create the latitude/longitude grid for the desired map
-        /// projection.
-        /**
-         * @param[in]     samples      Number of samples in grid.
-         * @param[in]     lines        Number of lines   in grid.
-         * @param[in]     lat_interval Number of degrees between each
-         *                             latitude grid line.
-         * @param[in]     lon_interval Number of degrees between each
-         *                             longitude grid line.
-         * @param[in,out] grid         Grid container to be populated
-         *                             with grid data.  The caller
-         *                             owns the storage.  Subclass
-         *                             implementations should only
-         *                             populate the grid with data.
-         */
-        virtual void plot_grid(std::size_t samples,
-                               std::size_t lines,
-                               float lat_interval,
-                               float lon_interval,
-                               grid_type & grid) const = 0;
-
-    };
-
     /**
      * @class MapFactory
      *
@@ -114,20 +44,16 @@ namespace MaRC
      *
      * Abstract Factory class for map projections supported by MaRC.
      */
-    template <typename T>
-    class MapFactory : private MapFactoryBase
+    class MARC_API MapFactory
     {
     public:
 
-        /// @typedef Type of data to be stored in map.
-        typedef T        data_type;
-
         /// @typedef Type returned from @c make_map() method.
+        template <typename T>
         using map_type = std::vector<T>;
 
-        // Bring @c MapFactoryBase::make_grid() in this public scope.
-        using MapFactoryBase::grid_type;
-        using MapFactoryBase::make_grid;
+        /// @typedef Type returned from @c make_grid() method.
+        using grid_type = std::vector<uint8_t>;
 
         /**
          * Map plot functor type.
@@ -178,11 +104,40 @@ namespace MaRC
          * @note We rely on C++11 move semantics to avoid deep copying
          *       the returned map.
          */
-        map_type make_map(SourceImage const & source,
-                          std::size_t samples,
-                          std::size_t lines,
-                          double minimum,
-                          double maximum);
+        template <typename T>
+        map_type<T> make_map(SourceImage const & source,
+                             std::size_t samples,
+                             std::size_t lines,
+                             double minimum,
+                             double maximum);
+
+        /// Create the latitude/longitude grid for the desired map
+        /// projection.
+        /**
+         * This method takes care of allocating and initializing the
+         * underlying grid array, and delegates actual grid generation
+         * to the subclass implementation of @c plot_grid().
+         *
+         * Blank grid elements will contain a value of zero, otherwise
+         * they will contain the maximum 8 bit unsigned integer value,
+         * i.e. 255.
+         *
+         * @param[in] samples      Number of samples in grid.
+         * @param[in] lines        Number of lines   in grid.
+         * @param[in] lat_interval Number of degrees between each
+         *                         latitude grid line.
+         * @param[in] lon_interval Number of degrees between each
+         *                         longitude grid line.
+         *
+         * @return The generated grid image.
+         *
+         * @note We rely on C++11 move semantics to avoid deep copying
+         *       the returned grid.
+         */
+        grid_type make_grid(std::size_t samples,
+                            std::size_t lines,
+                            float lat_interval,
+                            float lon_interval);
 
     private:
 
@@ -235,6 +190,7 @@ namespace MaRC
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
          */
+        template <typename T>
         void plot(SourceImage const & source,
                   double minimum,
                   double maximum,
@@ -242,7 +198,28 @@ namespace MaRC
                   double lon,
                   unsigned char percent_complete,
                   std::size_t offset,
-                  map_type & map);
+                  map_type<T> & map);
+
+        /// Create the latitude/longitude grid for the desired map
+        /// projection.
+        /**
+         * @param[in]     samples      Number of samples in grid.
+         * @param[in]     lines        Number of lines   in grid.
+         * @param[in]     lat_interval Number of degrees between each
+         *                             latitude grid line.
+         * @param[in]     lon_interval Number of degrees between each
+         *                             longitude grid line.
+         * @param[in,out] grid         Grid container to be populated
+         *                             with grid data.  The caller
+         *                             owns the storage.  Subclass
+         *                             implementations should only
+         *                             populate the grid with data.
+         */
+        virtual void plot_grid(std::size_t samples,
+                               std::size_t lines,
+                               float lat_interval,
+                               float lon_interval,
+                               grid_type & grid) const = 0;
 
     private:
 
@@ -259,6 +236,6 @@ namespace MaRC
 }
 
 
-#include "MaRC/MapFactory.cpp"
+#include "MaRC/MapFactory_t.cpp"
 
 #endif

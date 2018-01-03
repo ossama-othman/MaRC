@@ -27,13 +27,13 @@
 #define MARC_SIMPLE_CYLINDRICAL_H
 
 #include <MaRC/MapFactory.h>
+#include <MaRC/BodyData.h>
 
 #include <memory>
 
 
 namespace MaRC
 {
-    class BodyData;
 
     /**
      * @class SimpleCylindrical
@@ -47,20 +47,19 @@ namespace MaRC
      * projection, as well as rectangular, equirectangular and
      * equidistant cylindrical.
      */
-    template <typename T>
-    class SimpleCylindrical : public MapFactory<T>
+    class MARC_API SimpleCylindrical : public MapFactory
     {
     public:
 
         /// @typedef Type of grid passed to @c plot_grid() method.
-        using typename MapFactory<T>::grid_type;
+        using typename MapFactory::grid_type;
 
         /// @typedef Type of functor passed to @c plot_map() method.
-        using typename MapFactory<T>::plot_type;
+        using typename MapFactory::plot_type;
 
         /// Constructor.
         /**
-         * @param[in] body        Pointer to BodyData object
+         * @param[in] body        Pointer to @c BodyData object
          *                        representing body being mapped.
          * @param[in] lo_lat      Bodycentric lower latitude in
          *                        degrees in simple cylindrical map.
@@ -99,7 +98,7 @@ namespace MaRC
         /**
          * Create the Simple Cylindrical map projection.
          *
-         * @see @c MaRC::MapFactory<T>::plot_map().
+         * @see @c MaRC::MapFactory::plot_map().
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
@@ -108,7 +107,7 @@ namespace MaRC
         /**
          * Create the Simple Cylindrical map latitude/longitude grid.
          *
-         * @see @c MaRC::MapFactoryBase::plot_grid().
+         * @see @c MaRC::MapFactory::plot_grid().
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
@@ -123,11 +122,27 @@ namespace MaRC
          * @param[in] samples Number of samples in image.
          */
         inline double get_longitude(std::size_t i,
-                                    std::size_t samples) const;
+                                    std::size_t samples) const
+        {
+            // Compute longitude at center of pixel.
+
+            double lon =
+                (i + 0.5) / samples * (this->hi_lon_ - this->lo_lon_);
+
+            // PROGRADE ----> longitudes increase to the left
+            // RETROGRADE --> longitudes increase to the right
+
+            if (this->body_->prograde ())
+                lon = this->hi_lon_ - lon;
+            else
+                lon += this->lo_lon_;
+
+            return lon;
+        }
 
     private:
 
-        /// BodyData object representing the body being mapped.
+        /// @c BodyData object representing the body being mapped.
         std::shared_ptr<BodyData> const body_;
 
         /// Lower latitude in simple cylindrical map.
@@ -150,7 +165,5 @@ namespace MaRC
 
 }
 
-
-#include "MaRC/SimpleCylindrical.cpp"
 
 #endif

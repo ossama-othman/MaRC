@@ -22,6 +22,7 @@
  */
 
 #include "MaRC/PolarStereographic.h"
+#include "MaRC/OblateSpheroid.h"
 #include "MaRC/Constants.h"
 #include "MaRC/root_find.h"
 
@@ -31,12 +32,11 @@
 #include <sstream>
 
 
-template <typename T>
-MaRC::PolarStereographic<T>::PolarStereographic(
+MaRC::PolarStereographic::PolarStereographic(
     std::shared_ptr<OblateSpheroid> body,
     double max_lat,
     bool north_pole)
-    : MapFactory<T>()
+    : MapFactory()
     , body_(std::move(body))
     , max_lat_(std::isnan(max_lat)
                ? 0
@@ -62,20 +62,16 @@ MaRC::PolarStereographic<T>::PolarStereographic(
     }
 }
 
-template <typename T>
 const char *
-MaRC::PolarStereographic<T>::projection_name() const
+MaRC::PolarStereographic::projection_name() const
 {
-    static char const name[] = "Polar Stereographic (Conformal)";
-
-    return name;
+    return "Polar Stereographic (Conformal)";
 }
 
-template <typename T>
 void
-MaRC::PolarStereographic<T>::plot_map(std::size_t samples,
-                                      std::size_t lines,
-                                      plot_type plot) const
+MaRC::PolarStereographic::plot_map(std::size_t samples,
+                                   std::size_t lines,
+                                   plot_type plot) const
 {
     std::size_t const nelem = samples * lines;
 
@@ -93,7 +89,7 @@ MaRC::PolarStereographic<T>::plot_map(std::size_t samples,
 
     using namespace std::placeholders;
     auto const map_equation =
-        std::bind(&PolarStereographic<T>::stereo_rho,
+        std::bind(&PolarStereographic::stereo_rho,
                   this,
                   _1);
 
@@ -138,13 +134,12 @@ MaRC::PolarStereographic<T>::plot_map(std::size_t samples,
     }
 }
 
-template <typename T>
 void
-MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
-                                       std::size_t lines,
-                                       float lat_interval,
-                                       float lon_interval,
-                                       grid_type & grid) const
+MaRC::PolarStereographic::plot_grid(std::size_t samples,
+                                    std::size_t lines,
+                                    float lat_interval,
+                                    float lon_interval,
+                                    grid_type & grid) const
 {
     static constexpr std::size_t imax = 2000;
 
@@ -212,9 +207,8 @@ MaRC::PolarStereographic<T>::plot_grid(std::size_t samples,
     }
 }
 
-template <typename T>
 double
-MaRC::PolarStereographic<T>::stereo_rho(double latg) const
+MaRC::PolarStereographic::stereo_rho(double latg) const
 {
     double const t = this->body_->first_eccentricity() * std::sin(latg);
 
@@ -224,9 +218,8 @@ MaRC::PolarStereographic<T>::stereo_rho(double latg) const
                    this->body_->first_eccentricity() / 2);
 }
 
-template <typename T>
 double
-MaRC::PolarStereographic<T>::distortion(double latg) const
+MaRC::PolarStereographic::distortion(double latg) const
 {
     // Note that latitude is bodyGRAPHIC.
     return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2);

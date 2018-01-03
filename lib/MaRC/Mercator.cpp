@@ -26,6 +26,7 @@
 #include "MaRC/DefaultConfiguration.h"
 #include "MaRC/Mathematics.h"
 #include "MaRC/root_find.h"
+#include "MaRC/OblateSpheroid.h"
 
 #include <functional>
 #include <limits>
@@ -33,10 +34,9 @@
 #include <sstream>
 
 
-template <typename T>
-MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body,
-                            double max_lat)
-    : MapFactory<T>()
+MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body,
+                         double max_lat)
+    : MapFactory()
     , body_(body)
     , lat_range_((std::isnan(max_lat)
                   ? default_max_lat
@@ -65,20 +65,16 @@ MaRC::Mercator<T>::Mercator(std::shared_ptr<OblateSpheroid> body,
     }
 }
 
-template <typename T>
 char const *
-MaRC::Mercator<T>::projection_name() const
+MaRC::Mercator::projection_name() const
 {
-    static char const name[] = "Transverse Mercator (Conformal)";
-
-    return name;
+    return "Transverse Mercator (Conformal)";
 }
 
-template <typename T>
 void
-MaRC::Mercator<T>::plot_map(std::size_t samples,
-                            std::size_t lines,
-                            plot_type plot) const
+MaRC::Mercator::plot_map(std::size_t samples,
+                         std::size_t lines,
+                         plot_type plot) const
 {
     std::size_t const nelem = samples * lines;
 
@@ -97,7 +93,7 @@ MaRC::Mercator<T>::plot_map(std::size_t samples,
 
     using namespace std::placeholders;
     auto const map_equation =
-        std::bind(&Mercator<T>::mercator_x, this, _1);
+        std::bind(&Mercator::mercator_x, this, _1);
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
@@ -132,13 +128,12 @@ MaRC::Mercator<T>::plot_map(std::size_t samples,
     }
 }
 
-template <typename T>
 void
-MaRC::Mercator<T>::plot_grid(std::size_t samples,
-                             std::size_t lines,
-                             float lat_interval,
-                             float lon_interval,
-                             grid_type & grid) const
+MaRC::Mercator::plot_grid(std::size_t samples,
+                          std::size_t lines,
+                          float lat_interval,
+                          float lon_interval,
+                          grid_type & grid) const
 {
     /**
      * @bug This calculation doesn't appear to be correct.  Shouldn't
@@ -189,10 +184,8 @@ MaRC::Mercator<T>::plot_grid(std::size_t samples,
     }
 }
 
-template <typename T>
 double
-MaRC::Mercator<T>::get_longitude(std::size_t i,
-                                 std::size_t samples) const
+MaRC::Mercator::get_longitude(std::size_t i, std::size_t samples) const
 {
     using namespace MaRC::default_configuration;
 
@@ -216,9 +209,8 @@ MaRC::Mercator<T>::get_longitude(std::size_t i,
     return lon;
 }
 
-template <typename T>
 double
-MaRC::Mercator<T>::mercator_x(double latg) const
+MaRC::Mercator::mercator_x(double latg) const
 {
     double const t = this->body_->first_eccentricity() * std::sin(latg);
 
@@ -228,9 +220,8 @@ MaRC::Mercator<T>::mercator_x(double latg) const
                             this->body_->first_eccentricity() / 2));
 }
 
-template <typename T>
 double
-MaRC::Mercator<T>::distortion(double latg) const
+MaRC::Mercator::distortion(double latg) const
 {
     /**
      * @todo A graphic latitude is required as the argument which is

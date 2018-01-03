@@ -26,11 +26,13 @@
 #define MARC_POLAR_STEREOGRAPHIC_H
 
 #include <MaRC/MapFactory.h>
-#include <MaRC/OblateSpheroid.h>
+
+#include <memory>
 
 
 namespace MaRC
 {
+    class OblateSpheroid;
 
     /**
      * @class PolarStereographic
@@ -44,20 +46,19 @@ namespace MaRC
      * @note This implementation can only map oblate spheroids or
      *       spheres.
      */
-    template <typename T>
-    class PolarStereographic : public MapFactory<T>
+    class MARC_API PolarStereographic : public MapFactory
     {
     public:
 
         /// @typedef Type returned from @c make_grid() method.
-        typedef typename MapFactory<T>::grid_type grid_type;
+        typedef typename MapFactory::grid_type grid_type;
 
         /// @typedef Type of functor passed to @c plot_map() method.
-        using typename MapFactory<T>::plot_type;
+        using typename MapFactory::plot_type;
 
         /// Constructor.
         /**
-         * @param[in] body       Pointer to BodyData object
+         * @param[in] body       Pointer to @c OblateSpheroid object
          *                       representing body being mapped.
          * @param[in] max_lat    Maximum bodyCENTRIC latitude to map
          *                       in degrees.
@@ -88,7 +89,7 @@ namespace MaRC
         /**
          * Create the Polar Stereographic map projection.
          *
-         * @see @c MaRC::MapFactory<T>::plot_map().
+         * @see @c MaRC::MapFactory::plot_map().
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
@@ -98,7 +99,7 @@ namespace MaRC
          * Create the Polar Stereographic map latitude/longitude
          * grid.
          *
-         * @see @c MaRC::MapFactoryBase::plot_grid().
+         * @see @c MaRC::MapFactory::plot_grid().
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
@@ -124,7 +125,8 @@ namespace MaRC
 
     private:
 
-        /// BodyData object representing the body being mapped.
+        /// @c OblateSpheroid object representing the body being
+        /// mapped.
         std::shared_ptr<OblateSpheroid> const body_;
 
         /// Maximum bodyCENTRIC latitude to map in radians.
@@ -144,7 +146,5 @@ namespace MaRC
 
 }
 
-
-#include "MaRC/PolarStereographic.cpp"
 
 #endif
