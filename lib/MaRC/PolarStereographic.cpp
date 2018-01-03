@@ -216,14 +216,12 @@ template <typename T>
 double
 MaRC::PolarStereographic<T>::stereo_rho(double latg) const
 {
-    double const rho =
-        this->rho_coeff_ * std::tan(C::pi_4 - latg / 2)
-        * std::pow((1 + this->body_->first_eccentricity () * std::sin(latg))
-                   / (1 - this->body_->first_eccentricity ()
-                          * std::sin(latg)),
-                   this->body_->first_eccentricity() / 2);
+    double const t = this->body_->first_eccentricity() * std::sin(latg);
 
-    return rho;
+    return
+        this->rho_coeff_ * std::tan(C::pi_4 - latg / 2)
+        * std::pow((1 + t) / (1 - t),
+                   this->body_->first_eccentricity() / 2);
 }
 
 template <typename T>
