@@ -25,7 +25,6 @@
 #include "Map_traits.h"
 #include "SourceImage.h"
 
-#include <stdexcept>
 #include <iostream>
 
 
