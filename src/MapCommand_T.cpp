@@ -64,14 +64,12 @@ MaRC::MapCommand_T<T>::initialize_FITS_image(fitsfile * fptr,
     long naxes[] = { this->samples_, this->lines_, planes };
 
     // Create the primary array.
-    /**
-     * @todo Check return value!
-     */
-    fits_create_img(fptr,
-                    FITS::traits<T>::bitpix,
-                    naxis,
-                    naxes,
-                    &status);
+    if (fits_create_img(fptr,
+                        FITS::traits<T>::bitpix,
+                        naxis,
+                        naxes,
+                        &status) != 0)
+        return;
 
     // Write the BLANK keyword and value into the map FITS file.
     if (FITS::traits<T>::supports_blank_keyword && this->blank_set_) {
