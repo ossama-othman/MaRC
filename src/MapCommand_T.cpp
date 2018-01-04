@@ -145,11 +145,11 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
          *       @c make_map() so that the map may be initialized with
          *       that value in the integer data typed map case.
          */
-        auto map(this->factory_->make_map<T>(*image,
-                                             this->samples_,
-                                             this->lines_,
-                                             i->minimum(),
-                                             i->maximum()));
+        auto map(this->factory_->template make_map<T>(*image,
+                                                      this->samples_,
+                                                      this->lines_,
+                                                      i->minimum(),
+                                                      i->maximum()));
 
         // Sanity check.
         assert(map.size()
