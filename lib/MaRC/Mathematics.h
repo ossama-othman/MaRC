@@ -29,6 +29,11 @@
 #ifndef MARC_MATHEMATICS_H
 #define MARC_MATHEMATICS_H
 
+/**
+ * @bug We really shouldn't be exposing <MaRC/config.h> to the user
+ *      since it contains preprocessor symbols that pollute the global
+ *      namespace.
+ */
 #include "MaRC/config.h"  // For MARC_HAS_3_PARAM_STD_HYPOT
 
 #include <limits>
