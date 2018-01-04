@@ -1,7 +1,7 @@
 /**
  * @file Orthographic.cpp
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
