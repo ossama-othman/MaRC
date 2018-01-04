@@ -81,22 +81,16 @@ AH_TOP([
 #define MARC_CONFIG_H
 
 // MaRC configuration header file
-
-
 ])
 
 dnl Text to be placed at the bottom of the `MaRC/config.h' header.
 AH_BOTTOM([
-
 #endif   /* MARC_CONFIG_H */
 
 // Local] [Variables:
 // mode:C++
 // End:
 ])
-
-
-AH_TEMPLATE([NDEBUG],[Disable all debugging code.])
 
 
 AH_TEMPLATE([MARC_HAS_3_PARAM_STD_HYPOT],[C++ compiler supports C++17 three-parameter std::hypot().])
