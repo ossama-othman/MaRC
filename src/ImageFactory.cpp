@@ -30,7 +30,3 @@ MaRC::ImageFactory::ImageFactory()
     , maximum_(std::numeric_limits<double>::max())
 {
 }
-
-MaRC::ImageFactory::~ImageFactory()
-{
-}

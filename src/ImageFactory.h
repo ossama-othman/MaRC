@@ -62,7 +62,7 @@ namespace MaRC
         ImageFactory & operator=(ImageFactory const &) = delete;
 
         /// Destructor.
-        virtual ~ImageFactory();
+        virtual ~ImageFactory() = default;
 
         /// Create a @c SourceImage for a map of given data type.
         /**

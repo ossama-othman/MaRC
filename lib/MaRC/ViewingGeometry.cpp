@@ -70,6 +70,7 @@ MaRC::ViewingGeometry::ViewingGeometry(
     , lat_at_center_ (not_a_number)
     , lon_at_center_ (not_a_number)
     , mu_limit_      (0) // cos(90 * C::degree) emission angle limit
+    , use_terminator_(false)
     , geometric_correction_(
         std::make_unique<MARC_DEFAULT_GEOM_CORR_STRATEGY>())
 {
@@ -777,7 +778,7 @@ MaRC::ViewingGeometry::emi_ang_limit(double angle)
 {
     // Any emission angle beyond 90 degrees isn't visible.
     if (angle < -90 || angle > 90)
-        throw std::range_error("invalid emission angle limit");
+        throw std::domain_error("invalid emission angle limit");
 
     this->mu_limit_ = std::cos(angle * C::degree);
 }

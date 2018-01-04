@@ -24,10 +24,6 @@
 #include "NullInterpolation.h"
 
 
-MaRC::NullInterpolation::~NullInterpolation()
-{
-}
-
 bool
 MaRC::NullInterpolation::interpolate(double const *,
                                      double,

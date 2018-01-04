@@ -55,14 +55,31 @@ namespace MaRC
                         double & scale,
                         double & offset) const
         {
-            constexpr double T_lowest = std::numeric_limits<T>::lowest();
-            constexpr double T_max    = std::numeric_limits<T>::max();
-            constexpr double type_range = T_max - T_lowest;
+            constexpr auto T_lowest = std::numeric_limits<T>::lowest();
+            constexpr auto T_max    = std::numeric_limits<T>::max();
+
+            static_assert(
+                T_lowest >= std::numeric_limits<double>::lowest() / 2
+                && T_max <= std::numeric_limits<double>::max() / 2,
+                "Integer type is too large for scale/offset calculation");
+
+            /*
+              Avoid integer overflow by performing a floating point
+              subtraction.  No overflow will occur since we already
+              know:
+                T_max - T_lowest < std::numeric_limits<double>::max()
+            */
+            constexpr double type_range =
+                static_cast<double>(T_max) - T_lowest;
 
             double const data_range = max - min;
 
-            if (data_range < 0 || data_range > type_range) {
-                // min > max or can't fit all data into desired type T.
+            if (!std::isfinite(data_range)
+                || data_range < 0
+                || data_range > type_range) {
+                // data_range is not a finite value (e.g. overflowed)
+                // or min > max
+                // or can't fit all data into desired type T
                 return false;
             }
 

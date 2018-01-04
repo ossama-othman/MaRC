@@ -2,7 +2,7 @@
 /**
  * @file MapFactory.h
  *
- * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,8 @@
 #ifndef MARC_MAP_FACTORY_H
 #define MARC_MAP_FACTORY_H
 
+#include <MaRC/Export.h>
+
 #include <vector>
 #include <limits>
 #include <functional>
@@ -35,12 +37,79 @@ namespace MaRC
 {
     class SourceImage;
 
-    class MapFactoryBase
+    /**
+     * @class MapFactory
+     *
+     * @brief Map Abstract Factory
+     *
+     * Abstract Factory class for map projections supported by MaRC.
+     */
+    class MARC_API MapFactory
     {
     public:
 
+        /// @typedef Type returned from @c make_map() method.
+        template <typename T>
+        using map_type = std::vector<T>;
+
         /// @typedef Type returned from @c make_grid() method.
         using grid_type = std::vector<uint8_t>;
+
+        /**
+         * Map plot functor type.
+         *
+         * Concrete map factories will call a function of this type in
+         * their @c plot_map() implementation.
+         *
+         * @see @c plot() for parameter details.
+         *
+         */
+        using plot_type =
+            std::function<void(double lat,
+                               double lon,
+                               unsigned char percent_complete,
+                               std::size_t offset)>;
+
+        /// Constructor.
+        MapFactory();
+
+        // Disallow copying.
+        MapFactory(MapFactory const &) = delete;
+        MapFactory & operator=(MapFactory const &) = delete;
+
+        /// Destructor.
+        virtual ~MapFactory() = default;
+
+        /// Return the name of the map projection.
+        virtual char const * projection_name() const = 0;
+
+        /// Create the desired map projection.
+        /**
+         * This method takes care of allocating and initializing the
+         * underlying map array, and delegates actual mapping to the
+         * subclass implementation of @c plot_map().
+         *
+         * @param[in] source  SourceImage object containing the data
+         *                    to be mapped.
+         * @param[in] samples Number of samples in map.
+         * @param[in] lines   Number of lines   in map.
+         * @param[in] minimum Minimum allowed value on map, i.e. all
+         *                    data greater than or equal to
+         *                    @a minimum.
+         * @param[in] maximum Maximum allowed value on map, i.e. all
+         *                    data less than or equal to @a maximum.
+         *
+         * @return The generated map image.
+         *
+         * @note We rely on C++11 move semantics to avoid deep copying
+         *       the returned map.
+         */
+        template <typename T>
+        map_type<T> make_map(SourceImage const & source,
+                             std::size_t samples,
+                             std::size_t lines,
+                             double minimum,
+                             double maximum);
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.
@@ -68,121 +137,7 @@ namespace MaRC
         grid_type make_grid(std::size_t samples,
                             std::size_t lines,
                             float lat_interval,
-                            float lon_interval)
-        {
-            grid_type grid(samples * lines,
-                           grid_type::value_type());
-
-            this->plot_grid(samples,
-                            lines,
-                            lat_interval,
-                            lon_interval,
-                            grid);
-
-            return grid;
-        }
-
-    private:
-
-        /// Create the latitude/longitude grid for the desired map
-        /// projection.
-        /**
-         * @param[in]     samples      Number of samples in grid.
-         * @param[in]     lines        Number of lines   in grid.
-         * @param[in]     lat_interval Number of degrees between each
-         *                             latitude grid line.
-         * @param[in]     lon_interval Number of degrees between each
-         *                             longitude grid line.
-         * @param[in,out] grid         Grid container to be populated
-         *                             with grid data.  The caller
-         *                             owns the storage.  Subclass
-         *                             implementations should only
-         *                             populate the grid with data.
-         */
-        virtual void plot_grid(std::size_t samples,
-                               std::size_t lines,
-                               float lat_interval,
-                               float lon_interval,
-                               grid_type & grid) const = 0;
-
-    };
-
-    /**
-     * @class MapFactory
-     *
-     * @brief Map Abstract Factory
-     *
-     * Abstract Factory class for map projections supported by MaRC.
-     */
-    template <typename T>
-    class MapFactory : private MapFactoryBase
-    {
-    public:
-
-        /// @typedef Type of data to be stored in map.
-        typedef T        data_type;
-
-        /// @typedef Type returned from @c make_map() method.
-        using map_type = std::vector<T>;
-
-        // Bring @c MapFactoryBase::make_grid() in this public scope.
-        using MapFactoryBase::grid_type;
-        using MapFactoryBase::make_grid;
-
-        /**
-         * Map plot functor type.
-         *
-         * Concrete map factories will call a function of this type in
-         * their @c plot_map() implementation.
-         *
-         * @see @c plot() for parameter details.
-         *
-         */
-        using plot_type =
-            std::function<void(double lat,
-                               double lon,
-                               unsigned char percent_complete,
-                               std::size_t offset)>;
-
-        /// Constructor.
-        MapFactory();
-
-        // Disallow copying.
-        MapFactory(MapFactory const &) = delete;
-        MapFactory & operator=(MapFactory const &) = delete;
-
-        /// Destructor.
-        virtual ~MapFactory();
-
-        /// Return the name of the map projection.
-        virtual char const * projection_name() const = 0;
-
-        /// Create the desired map projection.
-        /**
-         * This method takes care of allocating and initializing the
-         * underlying map array, and delegates actual mapping to the
-         * subclass implementation of @c plot_map().
-         *
-         * @param[in] source  SourceImage object containing the data
-         *                    to be mapped.
-         * @param[in] samples Number of samples in map.
-         * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed value on map, i.e. all
-         *                    data greater than or equal to
-         *                    @a minimum.
-         * @param[in] maximum Maximum allowed value on map, i.e. all
-         *                    data less than or equal to @a maximum.
-         *
-         * @return The generated map image.
-         *
-         * @note We rely on C++11 move semantics to avoid deep copying
-         *       the returned map.
-         */
-        map_type make_map(SourceImage const & source,
-                          std::size_t samples,
-                          std::size_t lines,
-                          double minimum,
-                          double maximum);
+                            float lon_interval);
 
     private:
 
@@ -235,6 +190,7 @@ namespace MaRC
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
          */
+        template <typename T>
         void plot(SourceImage const & source,
                   double minimum,
                   double maximum,
@@ -242,7 +198,28 @@ namespace MaRC
                   double lon,
                   unsigned char percent_complete,
                   std::size_t offset,
-                  map_type & map);
+                  map_type<T> & map);
+
+        /// Create the latitude/longitude grid for the desired map
+        /// projection.
+        /**
+         * @param[in]     samples      Number of samples in grid.
+         * @param[in]     lines        Number of lines   in grid.
+         * @param[in]     lat_interval Number of degrees between each
+         *                             latitude grid line.
+         * @param[in]     lon_interval Number of degrees between each
+         *                             longitude grid line.
+         * @param[in,out] grid         Grid container to be populated
+         *                             with grid data.  The caller
+         *                             owns the storage.  Subclass
+         *                             implementations should only
+         *                             populate the grid with data.
+         */
+        virtual void plot_grid(std::size_t samples,
+                               std::size_t lines,
+                               float lat_interval,
+                               float lon_interval,
+                               grid_type & grid) const = 0;
 
     private:
 
@@ -259,6 +236,6 @@ namespace MaRC
 }
 
 
-#include "MaRC/MapFactory.cpp"
+#include "MaRC/MapFactory_t.cpp"
 
 #endif

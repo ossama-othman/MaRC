@@ -73,7 +73,7 @@ namespace MaRC
                    std::unique_ptr<ViewingGeometry> geometry);
 
         /// Destructor.
-        virtual ~PhotoImage();
+        virtual ~PhotoImage() = default;
 
         /// Retrieve data from source image.
         /**

@@ -1,7 +1,7 @@
 /**
  * @file Orthographic.cpp
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,15 +35,14 @@
 #include <memory>
 
 
-template <typename T>
-MaRC::Orthographic<T>::Orthographic (
+MaRC::Orthographic::Orthographic (
     std::shared_ptr<OblateSpheroid> body,
     double sub_observ_lat,
     double sub_observ_lon,
     double PA,
     double km_per_pixel,
     OrthographicCenter const & center)
-    : MapFactory<T>()
+    : MapFactory()
     , body_(body)
     , sub_observ_lat_(0)
     , sub_observ_lon_(0)
@@ -100,8 +99,7 @@ MaRC::Orthographic<T>::Orthographic (
     if (km_per_pixel > 0)
         this->km_per_pixel_ = km_per_pixel;
 
-    if (center.geometry == CENTER_GIVEN)
-    {
+    if (center.geometry == CENTER_GIVEN) {
       this->sample_center_ = center.sample_lat_center;
       this->line_center_   = center.line_lon_center;
     } else if (center.geometry == LAT_LON_GIVEN) {
@@ -129,7 +127,7 @@ MaRC::Orthographic<T>::Orthographic (
             s << "Desired LATITUDE (" << this->lat_at_center_ / C::degree
               << ") at center of image is not visible.";
 
-            throw std::out_of_range(s.str());
+            throw std::invalid_argument(s.str());
         }
 
         double lower = this->sub_observ_lon_ - C::pi;
@@ -155,7 +153,7 @@ MaRC::Orthographic<T>::Orthographic (
             s << "Desired LONGITUDE (" << this->lon_at_center_ / C::degree
               << ") at center of image is not visible.";
 
-            throw std::out_of_range(s.str());
+            throw std::invalid_argument(s.str());
         }
 
         double const shift = this->sub_observ_lon_ - this->lon_at_center_;
@@ -196,20 +194,16 @@ MaRC::Orthographic<T>::Orthographic (
     }
 }
 
-template <typename T>
 char const *
-MaRC::Orthographic<T>::projection_name() const
+MaRC::Orthographic::projection_name() const
 {
-    static char const name[] = "Orthographic";
-
-    return name;
+    return "Orthographic";
 }
 
-template <typename T>
 void
-MaRC::Orthographic<T>::plot_map(std::size_t samples,
-                                std::size_t lines,
-                                plot_type plot) const
+MaRC::Orthographic::plot_map(std::size_t samples,
+                             std::size_t lines,
+                             plot_type plot) const
 {
     double km_per_pixel  = std::numeric_limits<double>::signaling_NaN();
     double sample_center = std::numeric_limits<double>::signaling_NaN();
@@ -315,13 +309,12 @@ MaRC::Orthographic<T>::plot_map(std::size_t samples,
         << ")\n";
 }
 
-template <typename T>
 void
-MaRC::Orthographic<T>::plot_grid(std::size_t samples,
-                                 std::size_t lines,
-                                 float lat_interval,
-                                 float lon_interval,
-                                 grid_type & grid) const
+MaRC::Orthographic::plot_grid(std::size_t samples,
+                              std::size_t lines,
+                              float lat_interval,
+                              float lon_interval,
+                              grid_type & grid) const
 {
     int i, k, imax = 2000;
     double low_bound, high_bound, x, z;
@@ -482,13 +475,12 @@ MaRC::Orthographic<T>::plot_grid(std::size_t samples,
     } // End draw longitude lines
 }
 
-template <typename T>
 void
-MaRC::Orthographic<T>::map_parameters(std::size_t samples,
-                                      std::size_t lines,
-                                      double & km_per_pixel,
-                                      double & sample_center,
-                                      double & line_center) const
+MaRC::Orthographic::map_parameters(std::size_t samples,
+                                   std::size_t lines,
+                                   double & km_per_pixel,
+                                   double & sample_center,
+                                   double & line_center) const
 {
     if (this->km_per_pixel_ <= 0) {
         static constexpr double MAP_FRACTION = 0.9;

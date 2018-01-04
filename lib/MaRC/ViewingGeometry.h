@@ -90,7 +90,7 @@ namespace MaRC
          * @param[in] lat Sub-observation latitude  (degrees)
          * @param[in] lon Sub-observation longitude (degrees)
 	 *
-         * @throw std::range_error Invalid @a lat or @a lon.
+         * @throw std::invalid_argument Invalid @a lat or @a lon.
          */
         void sub_observ(double lat, double lon);
 
@@ -98,7 +98,7 @@ namespace MaRC
         /**
          * @param[in] lat Sub-observation latitude  (degrees)
 	 *
-         * @throw std::range_error Invalid @a lat.
+         * @throw std::invalid_argument Invalid @a lat.
          */
         void sub_observ_lat(double lat);
 
@@ -106,7 +106,7 @@ namespace MaRC
         /**
          * @param[in] lon Sub-observation longitude (degrees)
 	 *
-         * @throw std::range_error Invalid @a lon.
+         * @throw std::invalid_argument Invalid @a lon.
          */
         void sub_observ_lon(double lon);
 
@@ -115,7 +115,7 @@ namespace MaRC
          * @param[in] lat Sub-solar latitude  (degrees)
          * @param[in] lon Sub-solar longitude (degrees)
 	 *
-         * @throw std::range_error Invalid @a lat or @a lon.
+         * @throw std::invalid_argument Invalid @a lat or @a lon.
          */
         void sub_solar(double lat, double lon);
 
@@ -123,7 +123,7 @@ namespace MaRC
         /**
          * @param[in] lat Sub-solar latitude  (degrees)
 	 *
-         * @throw std::range_error Invalid @a lat.
+         * @throw std::invalid_argument Invalid @a lat.
          */
         void sub_solar_lat(double lat);
 
@@ -131,7 +131,7 @@ namespace MaRC
         /**
          * @param[in] lon Sub-solar longitude (degrees)
 	 *
-         * @throw std::range_error Invalid @a lon.
+         * @throw std::invalid_argument Invalid @a lon.
          */
         void sub_solar_lon(double lon);
 
@@ -164,7 +164,7 @@ namespace MaRC
         /**
          * @param[in] north Position angle (degrees).
          *
-         * @throw std::range_error Invalid @a north.
+         * @throw std::invalid_argument Invalid @a north.
          */
         void position_angle(double north);
 
@@ -204,7 +204,7 @@ namespace MaRC
          * @param[in] lat Latitude in degrees at center of image.
          * @param[in] lon Longitude in degrees at center of image.
          *
-         * @throw std::range_error Invalid @a lat or @a lon.
+         * @throw std::invalid_argument Invalid @a lat or @a lon.
          */
         void lat_lon_center(double lat, double lon);
 
@@ -212,7 +212,7 @@ namespace MaRC
         /**
          * @param[in] lat Latitude in degrees at center of image.
          *
-         * @throw std::range_error Invalid @a lat.
+         * @throw std::invalid_argument Invalid @a lat.
          */
         void lat_at_center(double lat);
 
@@ -220,7 +220,7 @@ namespace MaRC
         /**
          * @param[in] lon Longitude in degrees at center of image.
          *
-         * @throw std::range_error Invalid @a lon.
+         * @throw std::invalid_argument Invalid @a lon.
          */
         void lon_at_center(double lon);
 
@@ -254,7 +254,7 @@ namespace MaRC
         /**
          * @param[in] angle Emission angle in degrees.
          *
-         * @throw std::range_error Invalid @a angle.
+         * @throw std::invalid_argument Invalid @a angle.
          */
         void emi_ang_limit(double angle);
 

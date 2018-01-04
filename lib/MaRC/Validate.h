@@ -2,7 +2,7 @@
 /**
  * @file Validate.h
  *
- * Copyright (C) 2017  Ossama Othman
+ * Copyright (C) 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -46,12 +46,12 @@ namespace MaRC
      *
      * @return Latitude in radians.
      *
-     * @throw std::range_error Invalid @a lat.
+     * @throw std::invalid_argument Invalid @a lat.
      */
-    double validate_latitude(double lat)
+    inline double validate_latitude(double lat)
     {
         if (lat < -90 || lat > 90)
-            throw std::range_error("invalid latitude.");
+            throw std::invalid_argument("invalid latitude");
 
         return lat * C::degree;
     }
@@ -66,12 +66,12 @@ namespace MaRC
      *
      * @return Longitude in radians.
      *
-     * @throw std::range_error Invalid @a lon.
+     * @throw std::invalid_argument Invalid @a lon.
      */
-    double validate_longitude(double lon)
+    inline double validate_longitude(double lon)
     {
         if (lon < -360 || lon > 360)
-            throw std::range_error("invalid longitude.");
+            throw std::invalid_argument("invalid longitude");
 
         // We don't shift negative longitudes to the equivalent
         // positive longitude (i.e. [0, 360]) here since there are
@@ -91,12 +91,12 @@ namespace MaRC
      *
      * @return Position angle in radians.
      *
-     * @throw std::range_error Invalid @a north.
+     * @throw std::invalid_argument Invalid @a north.
      */
-    double validate_position_angle(double north)
+    inline double validate_position_angle(double north)
     {
         if (north < -360 || north > 360)
-            throw std::range_error("invalid position angle.");
+            throw std::invalid_argument("invalid position angle");
 
         return north * C::degree;
     }

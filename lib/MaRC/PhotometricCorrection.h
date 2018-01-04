@@ -55,7 +55,7 @@ namespace MaRC
             PhotometricCorrection const &) = delete;
 
         /// Destructor
-        virtual ~PhotometricCorrection();
+        virtual ~PhotometricCorrection() = default;
 
         /// Perform photometric correction.
         /**

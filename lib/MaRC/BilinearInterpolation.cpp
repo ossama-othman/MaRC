@@ -42,10 +42,6 @@ MaRC::BilinearInterpolation::BilinearInterpolation(
 {
 }
 
-MaRC::BilinearInterpolation::~BilinearInterpolation()
-{
-}
-
 bool
 MaRC::BilinearInterpolation::interpolate(double const * data,
                                          double x,

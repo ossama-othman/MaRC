@@ -4,7 +4,7 @@
  *
  * Parser for MaRC input files.  Requires GNU Bison 1.35 or greater.
  *
- * Copyright (C) 1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 1999, 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,6 +59,7 @@
 #include <memory>
 #include <cstring>
 #include <cmath>
+#include <sstream>
 
 
     namespace
@@ -84,12 +85,7 @@
 
     using namespace MaRC;
 
-    std::unique_ptr<MapFactory<FITS::byte_type>>     map_factory_byte;
-    std::unique_ptr<MapFactory<FITS::short_type>>    map_factory_short;
-    std::unique_ptr<MapFactory<FITS::long_type>>     map_factory_long;
-    std::unique_ptr<MapFactory<FITS::longlong_type>> map_factory_longlong;
-    std::unique_ptr<MapFactory<FITS::float_type>>    map_factory_float;
-    std::unique_ptr<MapFactory<FITS::double_type>>   map_factory_double;
+    std::unique_ptr<MapFactory> map_factory;
 
     // CFITSIO's "naxes" parameter is an array of long values.
     long map_samples = 0;
@@ -356,7 +352,7 @@ map_setup:
                         std::make_unique<MaRC::MapCommand_T<FITS::byte_type>>(
                             std::move(map_filename),
                             std::move(body_name),
-                            std::move(map_factory_byte),
+                            std::move(map_factory),
                             map_samples,
                             map_lines);
                     break;
@@ -366,7 +362,7 @@ map_setup:
                         std::make_unique<MaRC::MapCommand_T<FITS::short_type>>(
                             std::move(map_filename),
                             std::move(body_name),
-                            std::move(map_factory_short),
+                            std::move(map_factory),
                             map_samples,
                             map_lines);
                     break;
@@ -376,7 +372,7 @@ map_setup:
                         std::make_unique<MaRC::MapCommand_T<FITS::long_type>>(
                             std::move(map_filename),
                             std::move(body_name),
-                            std::move(map_factory_long),
+                            std::move(map_factory),
                             map_samples,
                             map_lines);
                     break;
@@ -386,7 +382,7 @@ map_setup:
                         std::make_unique<MaRC::MapCommand_T<FITS::longlong_type>>(
                             std::move(map_filename),
                             std::move(body_name),
-                            std::move(map_factory_longlong),
+                            std::move(map_factory),
                             map_samples,
                             map_lines);
                     break;
@@ -396,7 +392,7 @@ map_setup:
                         std::make_unique<MaRC::MapCommand_T<FITS::float_type>>(
                             std::move(map_filename),
                             std::move(body_name),
-                            std::move(map_factory_float),
+                            std::move(map_factory),
                             map_samples,
                             map_lines);
                     break;
@@ -406,7 +402,7 @@ map_setup:
                         std::make_unique<MaRC::MapCommand_T<FITS::double_type>>(
                             std::move(map_filename),
                             std::move(body_name),
-                            std::move(map_factory_double),
+                            std::move(map_factory),
                             map_samples,
                             map_lines);
                     break;
@@ -576,7 +572,7 @@ grid_interval:
               s << "Grid interval value (" << $3 << ") "
                 << "less than or equal to zero";
 
-              throw std::out_of_range (s.str ());
+              throw std::invalid_argument(s.str ());
             }
           else
             {
@@ -594,7 +590,7 @@ lat_grid_interval:
               s << "Latitude grid interval value (" << $3 << ") "
                 << "less than or equal to zero";
 
-              throw std::out_of_range (s.str ());
+              throw std::invalid_argument(s.str ());
             }
           else
             lat_interval = $3;
@@ -609,7 +605,7 @@ lon_grid_interval:
               s << "Longitude grid interval value (" << $3 << ") "
                 << "less than or equal to zero";
 
-              throw std::out_of_range (s.str ());
+              throw std::invalid_argument(s.str ());
             }
           else
             lon_interval = $3;
@@ -1352,127 +1348,33 @@ lampoleq_options:
 
 /* ------------------------- Mercator Projection ------------------------ */
 mercator:
-        MAP_TYPE ':' _MERCATOR  {
-          switch (map_data_type) {
-          case BYTE:
-              map_factory_byte =
-                  std::make_unique<MaRC::Mercator<FITS::byte_type>>(oblate_spheroid);
-              break;
-
-              case SHORT:
-                map_factory_short =
-                    std::make_unique<MaRC::Mercator<FITS::short_type>>(oblate_spheroid);
-                break;
-
-              case LONG:
-                map_factory_long =
-                    std::make_unique<MaRC::Mercator<FITS::long_type>>(oblate_spheroid);
-                break;
-
-              case _LONGLONG:
-                map_factory_longlong =
-                    std::make_unique<MaRC::Mercator<FITS::longlong_type>>(oblate_spheroid);
-                break;
-
-              case FLOAT:
-                map_factory_float =
-                    std::make_unique<MaRC::Mercator<FITS::float_type>>(oblate_spheroid);
-                break;
-
-              case DOUBLE:
-                map_factory_double =
-                    std::make_unique<MaRC::Mercator<FITS::double_type>>(oblate_spheroid);
-                break;
-
-              default:
-                throw std::invalid_argument("Unrecognized map data type");
-                break;
-            }
+        MAP_TYPE ':' _MERCATOR
+        max_latitude {
+            map_factory =
+                std::make_unique<MaRC::Mercator>(
+                    oblate_spheroid,
+                    max_lat);
         }
 ;
 
 /* ----------------------- Orthographic Projection ------------------------- */
 ortho:  MAP_TYPE ':' _ORTHO
         ortho_options {
-          switch (map_data_type)
-            {
-              case BYTE:
-                map_factory_byte =
-                    std::make_unique<MaRC::Orthographic<FITS::byte_type>>(
-                        oblate_spheroid,
-                        sub_observation_data.lat,
-                        sub_observation_data.lon,
-                        position_angle_val,
-                        km_per_pixel_val,
-                        ortho_center);
-                break;
+            map_factory =
+                std::make_unique<MaRC::Orthographic>(
+                    oblate_spheroid,
+                    sub_observation_data.lat,
+                    sub_observation_data.lon,
+                    position_angle_val,
+                    km_per_pixel_val,
+                    ortho_center);
 
-              case SHORT:
-                map_factory_short =
-                    std::make_unique<MaRC::Orthographic<FITS::short_type>>(
-                        oblate_spheroid,
-                        sub_observation_data.lat,
-                        sub_observation_data.lon,
-                        position_angle_val,
-                        km_per_pixel_val,
-                        ortho_center);
-                break;
-
-              case LONG:
-                map_factory_long =
-                    std::make_unique<MaRC::Orthographic<FITS::long_type>>(
-                        oblate_spheroid,
-                        sub_observation_data.lat,
-                        sub_observation_data.lon,
-                        position_angle_val,
-                        km_per_pixel_val,
-                        ortho_center);
-                break;
-
-              case _LONGLONG:
-                map_factory_longlong =
-                    std::make_unique<MaRC::Orthographic<FITS::longlong_type>>(
-                        oblate_spheroid,
-                        sub_observation_data.lat,
-                        sub_observation_data.lon,
-                        position_angle_val,
-                        km_per_pixel_val,
-                        ortho_center);
-                break;
-
-              case FLOAT:
-                map_factory_float =
-                    std::make_unique<MaRC::Orthographic<FITS::float_type>>(
-                        oblate_spheroid,
-                        sub_observation_data.lat,
-                        sub_observation_data.lon,
-                        position_angle_val,
-                        km_per_pixel_val,
-                        ortho_center);
-                break;
-
-              case DOUBLE:
-                map_factory_double =
-                    std::make_unique<MaRC::Orthographic<FITS::double_type>>(
-                        oblate_spheroid,
-                        sub_observation_data.lat,
-                        sub_observation_data.lon,
-                        position_angle_val,
-                        km_per_pixel_val,
-                        ortho_center);
-                break;
-
-              default:
-                throw std::invalid_argument("Unrecognized map data type");
-                break;
-            }
-
-          // Reset options
-          sub_observation_data.lat = 0;
-          sub_observation_data.lon = 0;
-          km_per_pixel_val = -1;
-          position_angle_val = not_a_number;
-          ortho_center.geometry = MaRC::DEFAULT;
+            // Reset options
+            sub_observation_data.lat = 0;
+            sub_observation_data.lon = 0;
+            km_per_pixel_val = -1;
+            position_angle_val = not_a_number;
+            ortho_center.geometry = MaRC::DEFAULT;
         }
 ;
 
@@ -1690,64 +1592,15 @@ perspective_optsub:
 p_stereo:
         MAP_TYPE ':' _P_STEREO
         p_stereo_options {
-          switch (map_data_type)
-            {
-              case BYTE:
-                map_factory_byte =
-                    std::make_unique<MaRC::PolarStereographic<FITS::byte_type>>(
-                        oblate_spheroid,
-                        max_lat,
-                        north_pole);
-                break;
+            map_factory =
+                std::make_unique<MaRC::PolarStereographic>(
+                    oblate_spheroid,
+                    max_lat,
+                    north_pole);
 
-              case SHORT:
-                map_factory_short =
-                    std::make_unique<MaRC::PolarStereographic<FITS::short_type>>(
-                        oblate_spheroid,
-                        max_lat,
-                        north_pole);
-                break;
-
-              case LONG:
-                map_factory_long =
-                    std::make_unique<MaRC::PolarStereographic<FITS::long_type>>(
-                        oblate_spheroid,
-                        max_lat,
-                        north_pole);
-                break;
-
-              case _LONGLONG:
-                map_factory_longlong =
-                    std::make_unique<MaRC::PolarStereographic<FITS::longlong_type>>(
-                        oblate_spheroid,
-                        max_lat,
-                        north_pole);
-                break;
-
-              case FLOAT:
-                map_factory_float =
-                    std::make_unique<MaRC::PolarStereographic<FITS::float_type>>(
-                        oblate_spheroid,
-                        max_lat,
-                        north_pole);
-                break;
-
-              case DOUBLE:
-                map_factory_double =
-                    std::make_unique<MaRC::PolarStereographic<FITS::double_type>>(
-                         oblate_spheroid,
-                         max_lat,
-                         north_pole);
-                break;
-
-              default:
-                throw std::invalid_argument("Unrecognized map data type");
-                break;
-            }
-
-          // Reset options
-          max_lat = not_a_number;
-          north_pole = true;
+            // Reset options
+            max_lat = not_a_number;
+            north_pole = true;
         }
 ;
 
@@ -1762,78 +1615,14 @@ p_stereo_options:
 simple_c:
         MAP_TYPE ':' _SIMPLE_C
         simple_c_options {
-          switch (map_data_type)
-            {
-              case BYTE:
-                map_factory_byte =
-                    std::make_unique<MaRC::SimpleCylindrical<FITS::byte_type>>(
-                        oblate_spheroid,
-                        lo_lat,
-                        hi_lat,
-                        lo_lon,
-                        hi_lon,
-                        graphic_lat);
-                break;
-
-              case SHORT:
-                map_factory_short =
-                    std::make_unique<MaRC::SimpleCylindrical<FITS::short_type>>(
-                        oblate_spheroid,
-                        lo_lat,
-                        hi_lat,
-                        lo_lon,
-                        hi_lon,
-                        graphic_lat);
-                break;
-
-              case LONG:
-                map_factory_long =
-                    std::make_unique<MaRC::SimpleCylindrical<FITS::long_type>>(
-                        oblate_spheroid,
-                        lo_lat,
-                        hi_lat,
-                        lo_lon,
-                        hi_lon,
-                        graphic_lat);
-                break;
-
-              case _LONGLONG:
-                map_factory_longlong =
-                    std::make_unique<MaRC::SimpleCylindrical<FITS::longlong_type>>(
-                        oblate_spheroid,
-                        lo_lat,
-                        hi_lat,
-                        lo_lon,
-                        hi_lon,
-                        graphic_lat);
-                break;
-
-              case FLOAT:
-                map_factory_float =
-                    std::make_unique<MaRC::SimpleCylindrical<FITS::float_type>>(
-                        oblate_spheroid,
-                        lo_lat,
-                        hi_lat,
-                        lo_lon,
-                        hi_lon,
-                        graphic_lat);
-                break;
-
-              case DOUBLE:
-                map_factory_double =
-                    std::make_unique<MaRC::SimpleCylindrical<FITS::double_type>>(
-                        oblate_spheroid,
-                        lo_lat,
-                        hi_lat,
-                        lo_lon,
-                        hi_lon,
-                        graphic_lat);
-                break;
-
-              default:
-                throw std::invalid_argument("Unrecognized map data type");
-                break;
-            }
+            map_factory =
+                std::make_unique<MaRC::SimpleCylindrical>(
+                    oblate_spheroid,
+                    lo_lat,
+                    hi_lat,
+                    lo_lon,
+                    hi_lon,
+                    graphic_lat);
 
             // Reset options
             lo_lat = -90;

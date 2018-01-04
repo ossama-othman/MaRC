@@ -1,4 +1,4 @@
-## Copyright (C) 1996-1999, 2017  Ossama Othman
+## Copyright (C) 1996-1999, 2017-2018  Ossama Othman
 ##
 ## This library is free software; you can redistribute it and/or
 ## modify it under the terms of the GNU Lesser General Public
@@ -29,14 +29,11 @@ libMaRC_la_SOURCES = \
   \
   ViewingGeometry.cpp \
   \
-  GeometricCorrection.cpp \
   GLLGeometricCorrection.cpp \
   NullGeometricCorrection.cpp \
   \
-  PhotometricCorrection.cpp \
   NullPhotometricCorrection.cpp \
   \
-  InterpolationStrategy.cpp \
   BilinearInterpolation.cpp \
   NullInterpolation.cpp \
   \
@@ -50,6 +47,14 @@ libMaRC_la_SOURCES = \
   PhotoImageParameters.cpp \
   PhotoImage.cpp \
   MosaicImage.cpp \
+  \
+  MapFactory.cpp \
+  Mercator.cpp \
+  Orthographic.cpp \
+  PolarStereographic.cpp \
+  SimpleCylindrical.cpp \
+  \
+  root_find.cpp \
   \
   Version.cpp
 
@@ -92,15 +97,11 @@ pkginclude_HEADERS = \
   \
   Map_traits.h \
   MapFactory.h \
-  MapFactory.cpp \
+  MapFactory_t.cpp \
   Mercator.h \
-  Mercator.cpp \
   Orthographic.h \
-  Orthographic.cpp \
   PolarStereographic.h \
-  PolarStereographic.cpp \
   SimpleCylindrical.h \
-  SimpleCylindrical.cpp \
   Validate.h \
   root_find.h \
   \

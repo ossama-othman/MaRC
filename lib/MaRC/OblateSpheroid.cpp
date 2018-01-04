@@ -45,10 +45,6 @@ MaRC::OblateSpheroid::OblateSpheroid(bool prograde,
     this->initialize_radii(eq_rad, pol_rad, flattening);
 }
 
-MaRC::OblateSpheroid::~OblateSpheroid()
-{
-}
-
 void
 MaRC::OblateSpheroid::initialize_radii(double eq_rad,
                                        double pol_rad,

@@ -52,7 +52,7 @@ namespace MaRC
         SourceImage & operator=(SourceImage const &) = delete;
 
         /// Destructor.
-        virtual ~SourceImage();
+        virtual ~SourceImage() = default;
 
         /// Retrieve data from source image.
         /**

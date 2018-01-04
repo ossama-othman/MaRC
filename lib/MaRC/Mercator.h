@@ -2,7 +2,7 @@
 /**
  * @file Mercator.h
  *
- * Copyright (C) 1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 1999, 2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,12 +26,13 @@
 #define MARC_MERCATOR_H
 
 #include <MaRC/MapFactory.h>
-#include <MaRC/OblateSpheroid.h>
+
+#include <memory>
 
 
 namespace MaRC
 {
-    class BodyData;
+    class OblateSpheroid;
 
     /**
      * @class Mercator
@@ -46,26 +47,40 @@ namespace MaRC
      * @note This implementation can only map oblate spheroids or
      *       spheres.
      */
-    template <typename T>
-    class Mercator : public MapFactory<T>
+    class MARC_API Mercator : public MapFactory
     {
     public:
 
         /// @typedef Type returned from @c make_grid() method.
-        using typename MapFactory<T>::grid_type;
+        using typename MapFactory::grid_type;
 
         /// @typedef Type of functor passed to @c plot_map() method.
-        using typename MapFactory<T>::plot_type;
+        using typename MapFactory::plot_type;
+
+        /**
+         * @brief Default maximum latitude to map.
+         *
+         * If no maximum latitude is supplied this will be the maximum
+         * latitude in degrees to map.  For example, a maximum
+         * latitude of 84 will result in a map projection containing
+         * latitudes between -84 and 84, inclusive.  The maximum
+         * latitude must be less than 90 since it is not possible to
+         * map the poles in this map projection.
+         */
+        static constexpr double default_max_lat = 84;
 
         /// Constructor.
         /**
-         * @param[in] body Pointer to BodyData object representing
-         *                 body being mapped.
+         * @param[in] body    Pointer to @c OblateSpheroid object
+         *                    representing body being mapped.
+         * @param[in] max_lat Maximum bodyCENTRIC latitude to map in
+         *                    degrees.
          */
-        Mercator(std::shared_ptr<OblateSpheroid> body);
+        Mercator(std::shared_ptr<OblateSpheroid> body,
+                 double max_lat);
 
         /// Destructor
-        virtual ~Mercator();
+        virtual ~Mercator() = default;
 
         /**
          * @name @c MapFactory Methods
@@ -84,7 +99,7 @@ namespace MaRC
         /**
          * Create the Mercator map projection.
          *
-         * @see @c MaRC::MapFactory<T>::plot_map().
+         * @see @c MaRC::MapFactory::plot_map().
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
@@ -93,7 +108,7 @@ namespace MaRC
         /**
          * Create the Mercator map latitude/longitude grid.
          *
-         * @see @c MaRC::MapFactoryBase::plot_grid().
+         * @see @c MaRC::MapFactory::plot_grid().
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
@@ -111,15 +126,6 @@ namespace MaRC
          */
         double get_longitude(std::size_t i, std::size_t samples) const;
 
-        /// The underlying Transverse Mercator projection equation.
-        /**
-         * @param[in] latg Bodygraphic latitude.
-         *
-         * @return Value of point on projection along a vertical axis
-         *         (e.g. along a longitude line).
-         */
-        double mercator_x(double latg) const;
-
         /// Scale distortion at given bodygraphic latitude @a latg on
         /// map.
         /**
@@ -129,14 +135,28 @@ namespace MaRC
 
     private:
 
-        /// BodyData object representing the body being mapped.
+        /// @c OblateSpheroid object representing the body being
+        /// mapped.
         std::shared_ptr<OblateSpheroid> const body_;
+
+        /**
+         * @brief Range of bodyCENTRIC latitudes to map in radians.
+         *
+         * The latitude range is currently defined as the difference
+         * between the highest and lowest latitude to be mapped.  For
+         * example, given a maximum latitude of 84 degrees, the
+         * latitude range will be 168 degrees:
+         * @code
+         *     84 - (-84) = 84 * 2 = 168
+         * @endcode
+         *
+         * This is value is in radians.
+         */
+        double const lat_range_;
 
     };
 
 }
 
-
-#include "MaRC/Mercator.cpp"
 
 #endif

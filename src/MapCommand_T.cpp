@@ -1,7 +1,7 @@
 /**
  * @file MapCommand_T.cpp
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 #include "MapCommand_T.h"
 #include "FITS_traits.h"
 
+#include <MaRC/MapFactory.h>
 #include <MaRC/VirtualImage.h>  // For scale_and_offset()
-#include <MaRC/config.h>        // For NDEBUG
 
 #include <cassert>
 
@@ -35,22 +35,15 @@ template <typename T>
 MaRC::MapCommand_T<T>::MapCommand_T(
     std::string filename,
     std::string body_name,
-    std::unique_ptr<MapFactory<T>> factory,
+    std::unique_ptr<MapFactory> factory,
     long samples,
     long lines)
     : MapCommand(std::move(filename),
                  std::move(body_name),
                  samples,
-                 lines)
-    , factory_(std::move(factory))
+                 lines,
+                 std::move(factory))
 {
-}
-
-template <typename T>
-char const *
-MaRC::MapCommand_T<T>::projection_name() const
-{
-    return this->factory_->projection_name();
 }
 
 template <typename T>
@@ -131,6 +124,10 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
         // descriptions.push_back();
 
 
+        /**
+         * @todo Refactor this call so that it isn't specific to
+         *       @c VirtualImage subclasses.
+         */
         // Add description specific to the VirtualImage, if we have
         // one, in the map FITS file.
         this->write_virtual_image_facts(fptr,
@@ -147,11 +144,11 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
          *       @c make_map() so that the map may be initialized with
          *       that value in the integer data typed map case.
          */
-        auto map(this->factory_->make_map(*image,
-                                          this->samples_,
-                                          this->lines_,
-                                          i->minimum(),
-                                          i->maximum()));
+        auto map(this->factory_->template make_map<T>(*image,
+                                                      this->samples_,
+                                                      this->lines_,
+                                                      i->minimum(),
+                                                      i->maximum()));
 
         // Sanity check.
         assert(map.size()
@@ -174,23 +171,4 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
 
         ++plane_count;
     }
-}
-
-template <typename T>
-typename MaRC::MapCommand_T<T>::grid_type
-MaRC::MapCommand_T<T>::make_grid(long samples,
-                                 long lines,
-                                 float lat_interval,
-                                 float lon_interval)
-{
-    /**
-     * @todo This method isn't data type specific.  It should be moved
-     *       to the @c MapCommand base class if
-     *       @c Map_Factory<>::make_grid() is no longer class template
-     *       method.
-     */
-    return this->factory_->make_grid(samples,
-                                     lines,
-                                     lat_interval,
-                                     lon_interval);
 }

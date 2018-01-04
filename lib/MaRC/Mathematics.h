@@ -29,6 +29,11 @@
 #ifndef MARC_MATHEMATICS_H
 #define MARC_MATHEMATICS_H
 
+/**
+ * @bug We really shouldn't be exposing <MaRC/config.h> to the user
+ *      since it contains preprocessor symbols that pollute the global
+ *      namespace.
+ */
 #include "MaRC/config.h"  // For MARC_HAS_3_PARAM_STD_HYPOT
 
 #include <limits>
@@ -160,7 +165,7 @@ namespace MaRC
      *              check.  It should be greater than zero.
      *
      * @return @c true @a x is essentially zero.  @c false otherwise.
-
+     *
      * @see The blog post "Comparing Floating Point Numbers, 2012
      *      Edition" for an additional discussion on floating point
      *      comparison:

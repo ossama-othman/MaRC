@@ -2,7 +2,7 @@
 /**
  * @file MapCommand_T.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@
 
 #include "MapCommand.h"
 
-#include <MaRC/MapFactory.h>
-
-#include <memory>
-
 
 namespace MaRC
 {
+
     /**
      * @class MapCommand_T
      *
@@ -54,18 +51,9 @@ namespace MaRC
         /// Constructor.
         MapCommand_T(std::string filename,
                      std::string body_name,
-                     std::unique_ptr<MapFactory<T>> factory,
+                     std::unique_ptr<MapFactory> factory,
                      long samples,
                      long lines);
-
-        /**
-         * @name Public @c MapCommand Methods.
-         *
-         * Public methods required by the @c MapCommand interface.
-         */
-        //@{
-        virtual char const * projection_name() const;
-        //@}
 
     private:
 
@@ -79,17 +67,7 @@ namespace MaRC
         //@{
         virtual void initialize_FITS_image(fitsfile * fptr, int & status);
         virtual void make_map_planes(fitsfile * fptr, int & status);
-        virtual grid_type make_grid(long samples,
-                                    long lines,
-                                    float lat_interval,
-                                    float lon_interval);
         //@}
-
-    private:
-
-        /// @c MapFactory object responsible for creating maps and
-        /// grids.
-        std::unique_ptr<MapFactory<T>> const factory_;
 
     };
 

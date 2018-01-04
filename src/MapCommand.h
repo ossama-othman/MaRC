@@ -2,7 +2,7 @@
 /**
  * @file MapCommand.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ namespace MaRC
     {
     public:
 
-        using grid_type = MaRC::MapFactoryBase::grid_type;
+        using grid_type = MaRC::MapFactory::grid_type;
         using comment_list_type = std::list<std::string>;
         using image_factories_type =
             std::list<std::unique_ptr<MaRC::ImageFactory>>;
@@ -62,24 +62,27 @@ namespace MaRC
          * @param[in,out] body_name Name of body being mapped.
          * @param[in]     samples   Number of samples in map.
          * @param[in]     lines     Number of lines in map.
+         * @param[in,out] factory   @c MapFactory object responsible
+         *                          for creating maps and grids.
          */
         MapCommand(std::string filename,
                    std::string body_name,
                    long samples,
-                   long lines);
+                   long lines,
+                   std::unique_ptr<MapFactory> factory);
 
         // Disallow copying.
         MapCommand(MapCommand const &) = delete;
         MapCommand & operator=(MapCommand const &) = delete;
 
         /// Destructor.
-        virtual ~MapCommand();
+        virtual ~MapCommand() = default;
 
         /// Execute the command.
         int execute();
 
         /// Get name of projection.
-        virtual char const * projection_name() const = 0;
+        char const * projection_name() const;
 
         /// Set map author.
         void author(std::string author);
@@ -208,10 +211,10 @@ namespace MaRC
          *
          * @return @c Grid object containing grid image.
          */
-        virtual grid_type make_grid(long samples,
-                                    long lines,
-                                    float lat_interval,
-                                    float lon_interval) = 0;
+        grid_type make_grid(long samples,
+                            long lines,
+                            float lat_interval,
+                            float lon_interval);
 
         /**
          * @brief Write map grid to the map FITS file.
@@ -228,6 +231,10 @@ namespace MaRC
 
         /// Number of lines in map.
         long const lines_;
+
+        /// @c MapFactory object responsible for creating maps and
+        /// grids.
+        std::unique_ptr<MapFactory> const factory_;
 
         /// List of @c ImageFactorys that create the @c SourceImage to
         /// be mapped on each map plane.
@@ -259,7 +266,7 @@ namespace MaRC
         std::list<std::string> xcomments_;
 
         /// Name of body to be mapped.
-        std::string body_name_;
+        std::string const body_name_;
 
         /// Latitude grid line interval.
         float lat_interval_;

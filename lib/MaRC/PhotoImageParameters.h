@@ -29,7 +29,6 @@
 #include "MaRC/InterpolationStrategy.h"
 #include "MaRC/Export.h"
 
-
 #include <memory>
 
 
@@ -181,4 +180,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_PHOTO_IMAGE_H */
+#endif  /* MARC_PHOTO_IMAGE_PARAMETERS_H */

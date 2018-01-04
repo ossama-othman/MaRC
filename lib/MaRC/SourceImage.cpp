@@ -24,10 +24,6 @@
 #include "SourceImage.h"
 
 
-MaRC::SourceImage::~SourceImage()
-{
-}
-
 bool
 MaRC::SourceImage::read_data(double lat,
                              double lon,

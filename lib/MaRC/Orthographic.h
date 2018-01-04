@@ -2,7 +2,7 @@
 /**
  * @file Orthographic.h
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,8 @@
 
 #include <MaRC/MapFactory.h>
 
+#include <memory>
+
 
 namespace MaRC
 {
@@ -47,16 +49,15 @@ namespace MaRC
      * @note Only bodies modeled as oblate spheroids are supported by
      *       this implementation.
      */
-    template <typename T>
-    class Orthographic : public MapFactory<T>
+    class MARC_API Orthographic : public MapFactory
     {
     public:
 
         /// @typedef Type of grid passed to @c plot_grid() method.
-        using typename MapFactory<T>::grid_type;
+        using typename MapFactory::grid_type;
 
         /// @typedef Type of functor passed to @c plot_map() method.
-        using typename MapFactory<T>::plot_type;
+        using typename MapFactory::plot_type;
 
         /// Constructor.
         /**
@@ -80,6 +81,9 @@ namespace MaRC
                      double position_angle,
                      double km_per_pixel,
                      OrthographicCenter const & center);
+
+        /// Destructor
+        virtual ~Orthographic() = default;
 
         /**
          * @name @c MapFactory Methods
@@ -119,7 +123,7 @@ namespace MaRC
         /**
          * Create the Orthographic map projection.
          *
-         * @see @c MaRC::MapFactory<T>::plot_map().
+         * @see @c MaRC::MapFactory::plot_map().
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
@@ -128,7 +132,7 @@ namespace MaRC
         /**
          * Create the Orthographic map latitude/longitude grid.
          *
-         * @see @c MaRC::MapFactoryBase::plot_grid().
+         * @see @c MaRC::MapFactory::plot_grid().
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
@@ -182,7 +186,7 @@ namespace MaRC
      * These values dictate where the center of the body being mapped
      * will be placed in the orthographic projection.
      */
-    struct OrthographicCenter
+    struct MARC_API OrthographicCenter
     {
         OrthographicCenter();
 
@@ -199,7 +203,5 @@ namespace MaRC
 
 }
 
-
-#include "MaRC/Orthographic.cpp"
 
 #endif  /* MARC_ORTHOGRAPHIC_H */

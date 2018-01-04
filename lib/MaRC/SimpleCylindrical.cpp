@@ -1,7 +1,7 @@
 /**
  * @file SimpleCylindrical.cpp
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,6 @@
 
 #include "MaRC/SimpleCylindrical.h"
 #include "MaRC/Constants.h"
-#include "MaRC/BodyData.h"
 #include "MaRC/Validate.h"
 
 #include <limits>
@@ -31,15 +30,14 @@
 #include <algorithm>
 
 
-template <typename T>
-MaRC::SimpleCylindrical<T>::SimpleCylindrical(
+MaRC::SimpleCylindrical::SimpleCylindrical(
     std::shared_ptr<BodyData> body,
     double lo_lat,
     double hi_lat,
     double lo_lon,
     double hi_lon,
     bool graphic_lat)
-    : MapFactory<T>()
+    : MapFactory()
     , body_(body)
     , lo_lat_(MaRC::validate_latitude(lo_lat))
     , hi_lat_(MaRC::validate_latitude(hi_lat))
@@ -60,25 +58,16 @@ MaRC::SimpleCylindrical<T>::SimpleCylindrical(
         this->lo_lon_ -= C::_2pi;
 }
 
-template <typename T>
-MaRC::SimpleCylindrical<T>::~SimpleCylindrical()
-{
-}
-
-template <typename T>
 char const *
-MaRC::SimpleCylindrical<T>::projection_name() const
+MaRC::SimpleCylindrical::projection_name() const
 {
-    static const char name[] = "Simple Cylindrical";
-
-    return name;
+    return "Simple Cylindrical";
 }
 
-template <typename T>
 void
-MaRC::SimpleCylindrical<T>::plot_map(std::size_t samples,
-                                     std::size_t lines,
-                                     plot_type plot) const
+MaRC::SimpleCylindrical::plot_map(std::size_t samples,
+                                  std::size_t lines,
+                                  plot_type plot) const
 {
     // Conversion factor -- latitudes per line
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
@@ -106,13 +95,12 @@ MaRC::SimpleCylindrical<T>::plot_map(std::size_t samples,
     }
 }
 
-template <typename T>
 void
-MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
-                                      std::size_t lines,
-                                      float lat_interval,
-                                      float lon_interval,
-                                      grid_type & grid) const
+MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
+                                   std::size_t lines,
+                                   float lat_interval,
+                                   float lon_interval,
+                                   grid_type & grid) const
 {
     // Convert back to degrees
     double const lo_lat = this->lo_lat_ / C::degree;
@@ -166,24 +154,4 @@ MaRC::SimpleCylindrical<T>::plot_grid(std::size_t samples,
                 grid[k * samples + static_cast<std::size_t>(i)] = white;
         }
     }
-}
-
-template <typename T>
-inline double
-MaRC::SimpleCylindrical<T>::get_longitude(std::size_t i,
-                                          std::size_t samples) const
-{
-    double lon;
-
-    // PROGRADE ----> longitudes increase to the left
-    // RETROGRADE --> longitudes increase to the right
-
-    // Compute longitude at center of pixel.
-
-    if (this->body_->prograde ())
-        lon = (i + 0.5) / samples * (lo_lon_ - hi_lon_) + hi_lon_;
-    else
-        lon = (i + 0.5) / samples * (hi_lon_ - lo_lon_) + lo_lon_;
-
-    return lon;
 }

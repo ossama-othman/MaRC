@@ -22,6 +22,7 @@
 #include <MaRC/DefaultConfiguration.h>
 
 #include <limits>
+#include <type_traits>
 #include <cstdint>
 #include <cassert>
 
@@ -41,6 +42,28 @@ bool test_scaling(double minimum, double maximum)
         MaRC::scale_and_offset<T>(minimum, maximum, scale, offset)
         && (minimum * scale + offset >= T_lowest)
         && (maximum * scale + offset <= T_max);
+}
+
+template <typename T>
+bool test_extreme_value_scaling()
+{
+    /*
+      These minimum and maximum values scaling will only work when
+      T = double.  Technically the test will succeed when T is a
+      floating point type with the number of bits greater than or
+      equal to the size of double (e.g. long double) but MaRC
+      currently doesn't support such floating point types.
+    */
+    constexpr auto minimum = std::numeric_limits<double>::lowest();
+    constexpr auto maximum = std::numeric_limits<double>::max();
+
+    return
+        // T = double
+        (std::is_same<T, std::remove_const<decltype(minimum)>::type>()
+         && test_scaling<T>(minimum, maximum))
+
+        // T = type other than double
+        || !test_scaling<T>(minimum, maximum);
 }
 
 template <typename T>
@@ -82,7 +105,7 @@ bool test_longitude_scaling()
                 e.g. UCHAR_WIDTH = 8.
         */
         (sizeof(T) == 1
-         && !test_scaling<T>(longitude_low, longitude_high))
+         && !test_scaling<T>(0, 360)) // Force full longitude range.
 
         // Integer types larger than 8 bits.
         || test_scaling<T>(longitude_low, longitude_high);
@@ -95,7 +118,14 @@ int main()
     // integer data types specified in the FITS standard.
 
     return
-        test_cosine_scaling<uint8_t>()
+        test_extreme_value_scaling<uint8_t>()
+        && test_extreme_value_scaling<int16_t>()
+        && test_extreme_value_scaling<int32_t>()
+        && test_extreme_value_scaling<int64_t>()
+        && test_extreme_value_scaling<float>()
+        && test_extreme_value_scaling<double>()
+        
+        && test_cosine_scaling<uint8_t>()
         && test_cosine_scaling<int16_t>()
         && test_cosine_scaling<int32_t>()
         && test_cosine_scaling<int64_t>()
