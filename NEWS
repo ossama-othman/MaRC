@@ -1,3 +1,9 @@
+- Reduced footprint of the MaRC program (`marc') and library
+  (`libMaRC').  For example, including both the MaRC library and
+  program, the static footprint was reduced by 28% for a 64-bit Linux
+  build with g++ 7.2 when comparing total sizes returned by the `size'
+  command.
+
 - Data scaling values, i.e. BSCALE and BZERO, as well as the physical
   data unit (BUNIT) are now automatically written to the map FITS
   header when possible.  This allows FITS reading and viewing software
@@ -18,6 +24,8 @@
   convert from the map longitude value to the physical longitude
   value.  See the generated map FITS header to obtain the offset
   (BZERO) value.
+
+- Further expanded the MaRC test suite (try "make check").
 
 - The MU, MU0 and PHASE virtual images may now contain all cosine
   values i.e. the interval [-1, 1], and are no longer limited to
