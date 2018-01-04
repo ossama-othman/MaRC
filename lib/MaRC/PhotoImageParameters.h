@@ -180,4 +180,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_PHOTO_IMAGE_H */
+#endif  /* MARC_PHOTO_IMAGE_PARAMETERS_H */
