@@ -25,7 +25,6 @@
 
 #include <MaRC/MapFactory.h>
 #include <MaRC/VirtualImage.h>  // For scale_and_offset()
-#include <MaRC/config.h>        // For NDEBUG
 
 #include <cassert>
 
