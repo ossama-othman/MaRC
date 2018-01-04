@@ -21,9 +21,15 @@
  * @author Ossama Othman
  */
 
-#include "MapFactory.h"
-#include "Map_traits.h"
-#include "SourceImage.h"
+#include "MaRC/MapFactory.h"
+#include "MaRC/Map_traits.h"
+#include "MaRC/SourceImage.h"
+
+/**
+ * @bug Exposing <MaRC/config.h> to the user pollutes the global
+ *      namespace.
+ */
+#include "MaRC/config.h"      // For NDEBUG
 
 #include <iostream>
 
@@ -73,10 +79,10 @@ MaRC::MapFactory::plot(SourceImage const & source,
                        map_type<T> & map)
 {
     T & data =
-#ifndef NDEBUG
-        map.at(offset);  // Perform bounds check.
+#ifdef NDEBUG
+        map[offset];     // No bounds check.
 #else
-        map[offset];
+        map.at(offset);  // Perform bounds check.
 #endif
 
     // Clip minimum, maximum and datum to fit within map data type
