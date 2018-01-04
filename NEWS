@@ -1,6 +1,20 @@
+- Data scaling values, i.e. BSCALE and BZERO, as well as the physical
+  data unit (BUNIT) are now automatically written to the map FITS
+  header when possible.  This allows FITS reading and viewing software
+  to automatically provide the actual physical value to the user,
+  instead of forcing the user to manually scale the map data.
+  Currently this only applies to single plane maps containing one of
+  the MaRC virtual images (MU, MU0, PHASE, LATITUDE or LONGITUDE).
+
+  Maps with multiple planes currently write the scaling values as
+  free-form text across several HISTORY cards in the FITS header
+  instead of standalone BSCALE, BZERO and BUNIT cards.  In this case,
+  data scaling of map values to physical values must generally be
+  performed manually.
+
 - Corrected automatic offset calculation for LONGITUDE map planes when
-  creating integer typed maps.  Longitude values closer 360 degrees
-  are no longer cutoff.  Beware that an offset must be applied to
+  creating integer typed maps.  Longitude values closer to 360 degrees
+  are no longer cutoff.  Be aware that an offset must be applied to
   convert from the map longitude value to the physical longitude
   value.  See the generated map FITS header to obtain the offset
   (BZERO) value.

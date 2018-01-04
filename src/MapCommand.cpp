@@ -201,7 +201,7 @@ MaRC::MapCommand::execute()
 
     std::string const history =
         std::string(this->projection_name())
-        + " projection created using MaRC " PACKAGE_VERSION ".";
+        + " projection created by MaRC " PACKAGE_VERSION ".";
 
     // Write some MaRC-specific HISTORY comments.
     fits_write_history(fptr,
@@ -211,6 +211,11 @@ MaRC::MapCommand::execute()
     // Write the BSCALE and BZERO keywords and value into the map FITS
     // file.
     if (this->transform_data_) {
+        /**
+         * @todo Should we disable CFITSIO automatic scaling via
+         *       @c fits_set_bscale() as we do for @c VirtualImage map
+         *       planes?
+         */
         fits_update_key(fptr,
                         TDOUBLE,
                         "BSCALE",
@@ -465,7 +470,7 @@ MaRC::MapCommand::image_factories(image_factories_type factories)
 void
 MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
                                             std::size_t plane,
-                                            std::size_t /* num_planes */,
+                                            std::size_t num_planes,
                                             int bitpix,
                                             SourceImage const * image,
                                             int & status)
@@ -505,31 +510,65 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
      *       map is comprised entirely of the unit of data
      *       (e.g. cosines, degrees, etc).  No need to limit that to
      *       single plane maps in that case.
-     *
-     * @bug CFITSIO will handle scaling if we set BSCALE and/or
-     *      BZERO.  Do not set scaling factors.  Otherwise CFITSIO
-     *      issues a numerical overflow error.
      */
-    // if (num_planes == 1) {
-    //     // We're the sole plane in the map meaning we can update
-    //     // actual FITS cards instead of writing freeform text in a
-    //     // FITS COMMENT or HISTORY card.
+    if (num_planes == 1) {
+        // We're the sole plane in the map meaning we can update
+        // actual FITS cards instead of writing freeform text in a
+        // FITS COMMENT or HISTORY card.
 
-    //     fits_update_key(fptr,
-    //                     TDOUBLE,
-    //                     "BSCALE",
-    //                     &scale,
-    //                     "linear data scaling coefficient",
-    //                     &status);
+        // -------------------
+        // Set scaling factors
+        // -------------------
+        /*
+          The MaRC library already scales the VirtualImage values.
+          Set the CFITSIO internal scaling factors to force raw values
+          to be written by effectively disable automatic data
+          scaling.  Otherwise CFITSIO issues a numerical overflow
+          error when writing the array (data) values to the FITS
+          file.
+        */
+        constexpr double internal_scale  = 1;
+        constexpr double internal_offset = 0;
 
-    //     fits_update_key(fptr,
-    //                     TDOUBLE,
-    //                     "BZERO",
-    //                     &offset,
-    //                     "physical value corresponding to zero in the map",
-    //                     &status);
-    // } else
-    {
+        if (fits_update_key(fptr,
+                            TDOUBLE,
+                            "BSCALE",
+                            &scale,
+                            "linear data scaling coefficient",
+                            &status) != 0
+            || fits_update_key(fptr,
+                               TDOUBLE,
+                               "BZERO",
+                               &offset,
+                               "physical value corresponding "
+                               "to zero in the map",
+                               &status) != 0
+
+            /*
+              Set CFITSIO internal scaling factors for the current
+              primary array of image extension.  They are independent
+              of the FITS BSCALE and BZERO values set above.
+            */
+            || fits_set_bscale(fptr,
+                               internal_scale,
+                               internal_offset,
+                               &status) != 0) {
+            return;
+        }
+
+        // -------------------------------------------
+        // Set physical value unit of the array values
+        // ----------------------------------------
+        if (!unit.empty()
+            && fits_update_key(fptr,
+                               TSTRING,
+                               "BUNIT",
+                               const_cast<char *>(unit.c_str()),
+                               "physical unit of the array values",
+                               &status) != 0) {
+            return;
+        }
+    } else {
         comment_list_type facts;
 
         /**
