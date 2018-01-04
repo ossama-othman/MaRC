@@ -89,12 +89,3 @@ namespace MaRC
   indent-tabs-mode: nil
   End:
 */
-
-
-/*
-  Local Variables:
-  mode: c++
-  c-basic-offset: 4
-  indent-tabs-mode: nil
-  End:
-*/
