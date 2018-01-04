@@ -107,6 +107,15 @@ namespace MaRC
                                float lon_interval,
                                grid_type & grid) const;
 
+        /// Scale distortion at given bodygraphic latitude @a latg on
+        /// map.
+        /**
+         * @param[in] latg Bodygraphic latitude.
+         */
+        double distortion(double latg) const;
+
+    private:
+
         /// The underlying Polar Stereographic projection equation.
         /**
          * @param[in] latg Bodygraphic latitude.
@@ -115,13 +124,6 @@ namespace MaRC
          *         (e.g. along a longitude line).
          */
         double stereo_rho(double latg) const;
-
-        /// Scale distortion at given bodygraphic latitude @a latg on
-        /// map.
-        /**
-         * @param[in] latg Bodygraphic latitude.
-         */
-        double distortion(double latg) const;
 
     private:
 

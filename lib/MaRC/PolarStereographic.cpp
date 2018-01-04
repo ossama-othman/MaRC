@@ -32,6 +32,37 @@
 #include <sstream>
 
 
+namespace
+{
+    /// The underlying Polar Stereographic projection equation.
+    /**
+     * @param[in] body  Reference to @c OblateSpheroid object
+     *                  representing body being mapped.
+     * @param[in] coeff Coefficient used in the Polar Stereographic
+     *                  radius 'rho'.
+     * @param[in] latg  Bodygraphic latitude.
+     *
+     * @return Value of point on projection along a radial line
+     *         (e.g. along a longitude line).
+     *
+     * @note This function is placed in an anonymous namespace rather
+     *        than in the @c MaRC::PolarStereographic class to work
+     *        around buggy implementations of @c std::bind().
+     */
+    double
+    stereo_rho_impl(MaRC::OblateSpheroid const & body,
+                    double coeff,
+                    double latg)
+    {
+        double const t = body.first_eccentricity() * std::sin(latg);
+
+        return
+            coeff * std::tan(C::pi_4 - latg / 2)
+            * std::pow((1 + t) / (1 - t),
+                       body.first_eccentricity() / 2);
+    }
+}
+
 MaRC::PolarStereographic::PolarStereographic(
     std::shared_ptr<OblateSpheroid> body,
     double max_lat,
@@ -89,8 +120,9 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
 
     using namespace std::placeholders;
     auto const map_equation =
-        std::bind(&PolarStereographic::stereo_rho,
-                  this,
+        std::bind(stereo_rho_impl,
+                  std::cref(*this->body_),
+                  this->rho_coeff_,
                   _1);
 
     for (std::size_t k = 0; k < lines; ++k) {
@@ -156,12 +188,14 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
         // Convert to bodygraphic latitude
         double const nn = this->body_->graphic_latitude(n * C::degree);
 
+        double const rho = this->stereo_rho(nn);
+
         for (std::size_t m = 0; m < imax; ++m) {
             double const mm =
                 static_cast<double>(m) / imax * C::degree * 360;
 
-            double const z = this->stereo_rho(nn) * std::cos(mm);
-            double const x = this->stereo_rho(nn) * std::sin(mm);
+            double const z = rho * std::cos(mm);
+            double const x = rho * std::sin(mm);
 
 //           if (z > rho_max || x > rho_max)
 //             continue;
@@ -187,8 +221,10 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
             double const nn =
                 static_cast<double>(n) / imax * C::degree * 360;
 
-            double const z = this->stereo_rho(nn) * std::cos(mm);
-            double const x = this->stereo_rho(nn) * std::sin(mm);
+            double const rho = this->stereo_rho(nn);
+
+            double const z = rho * std::cos(mm);
+            double const x = rho * std::sin(mm);
 
 //           if (z > rho_max || x > rho_max)
 //             continue;
@@ -208,19 +244,14 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
 }
 
 double
-MaRC::PolarStereographic::stereo_rho(double latg) const
-{
-    double const t = this->body_->first_eccentricity() * std::sin(latg);
-
-    return
-        this->rho_coeff_ * std::tan(C::pi_4 - latg / 2)
-        * std::pow((1 + t) / (1 - t),
-                   this->body_->first_eccentricity() / 2);
-}
-
-double
 MaRC::PolarStereographic::distortion(double latg) const
 {
     // Note that latitude is bodyGRAPHIC.
     return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2);
+}
+
+double
+MaRC::PolarStereographic::stereo_rho(double latg) const
+{
+    return stereo_rho_impl(*this->body_, this->rho_coeff_, latg);
 }

@@ -126,15 +126,6 @@ namespace MaRC
          */
         double get_longitude(std::size_t i, std::size_t samples) const;
 
-        /// The underlying Transverse Mercator projection equation.
-        /**
-         * @param[in] latg Bodygraphic latitude.
-         *
-         * @return Value of point on projection along a vertical axis
-         *         (e.g. along a longitude line).
-         */
-        double mercator_x(double latg) const;
-
         /// Scale distortion at given bodygraphic latitude @a latg on
         /// map.
         /**

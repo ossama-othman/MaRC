@@ -21,18 +21,45 @@
  * @author Ossama Othman
  */
 
-#include "MaRC/Mercator.h"
-#include "MaRC/Constants.h"
-#include "MaRC/DefaultConfiguration.h"
-#include "MaRC/Mathematics.h"
-#include "MaRC/root_find.h"
-#include "MaRC/OblateSpheroid.h"
+#include "Mercator.h"
+#include "Constants.h"
+#include "DefaultConfiguration.h"
+#include "Mathematics.h"
+#include "root_find.h"
+#include "OblateSpheroid.h"
 
 #include <functional>
 #include <limits>
 #include <cmath>
 #include <sstream>
 
+namespace
+{
+    /// The underlying Transverse Mercator projection equation.
+    /**
+     * @param[in] body Reference to @c OblateSpheroid object
+     *                 representing body being mapped.
+     * @param[in] latg Bodygraphic latitude.
+     *
+     * @return Value of point on projection along a vertical axis
+     *         (e.g. along a longitude line).
+     *
+     * @note This function is placed in an anonymous namespace rather
+     *        than in the @c MaRC::Mercator class to work around buggy
+     *        implementations of @c std::bind().
+     */
+    double
+    mercator_x(MaRC::OblateSpheroid const & body, double latg)
+    {
+        double const t =
+            body.first_eccentricity() * std::sin(latg);
+
+        return
+            std::log(std::tan(C::pi_4 + latg / 2)
+                     * std::pow((1 - t) / (1 + t),
+                                body.first_eccentricity() / 2));
+    }
+}
 
 MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body,
                          double max_lat)
@@ -82,7 +109,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
 
     /**
      * @bug This calculation doesn't appear to be correct.  Shouldn't
-     *      twice the @c this->mercator_x(max_lat) be used to
+     *      twice the @c mercator_x(*this->body_, max_lat) be used to
      *      determine the @c xmax value?
      *
      * @see MaRC::PolarStereographic::plot_map()
@@ -93,7 +120,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
 
     using namespace std::placeholders;
     auto const map_equation =
-        std::bind(&Mercator::mercator_x, this, _1);
+        std::bind(mercator_x, std::cref(*this->body_), _1);
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
@@ -137,7 +164,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
 {
     /**
      * @bug This calculation doesn't appear to be correct.  Shouldn't
-     *      twice the @c this->mercator_x(max_lat) be used to
+     *      twice the @c mercator_x(*this->body_, max_lat) be used to
      *      determine the @c xmax value?
      *
      * @see MaRC::PolarStereographic::plot_grid()
@@ -157,7 +184,8 @@ MaRC::Mercator::plot_grid(std::size_t samples,
         double const nn = this->body_->graphic_latitude(n * C::degree);
 
         double const k =
-            std::round(this->mercator_x(nn) / pix_conv_val + lines / 2.0);
+            std::round(mercator_x(*this->body_, nn) / pix_conv_val
+                       + lines / 2.0);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
             auto const first =
@@ -207,17 +235,6 @@ MaRC::Mercator::get_longitude(std::size_t i, std::size_t samples) const
         lon = C::_2pi - lon;
 
     return lon;
-}
-
-double
-MaRC::Mercator::mercator_x(double latg) const
-{
-    double const t = this->body_->first_eccentricity() * std::sin(latg);
-
-    return
-        std::log(std::tan(C::pi_4 + latg / 2)
-                 * std::pow((1 - t) / (1 + t),
-                            this->body_->first_eccentricity() / 2));
 }
 
 double
