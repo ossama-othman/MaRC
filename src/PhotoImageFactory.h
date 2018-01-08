@@ -80,26 +80,6 @@ namespace MaRC
         /// Set the image inversion flags.
         void invert(bool vertical, bool horizontal);
 
-        /// Invert image from left to right.
-        /**
-         * @param[in,out] img     Image to be inverted.
-         * @param[in]     samples Number of samples in image.
-         * @param[in]     lines   Number of lines   in image.
-         */
-        static void invert_h(std::vector<double> & image,
-                             std::size_t samples,
-                             std::size_t lines);
-
-        /// Invert image from top to bottom.
-        /**
-         * @param[in,out] img     Image to be inverted.
-         * @param[in]     samples Number of samples in image.
-         * @param[in]     lines   Number of lines   in image.
-         */
-        static void invert_v(std::vector<double> & image,
-                             std::size_t samples,
-                             std::size_t lines);
-
         /// Set @c PhotoImage configuration parameters.
         void photo_config(std::unique_ptr<PhotoImageParameters> config);
 

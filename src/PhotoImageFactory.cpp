@@ -34,10 +34,11 @@
 // Interpolation strategies
 #include "MaRC/BilinearInterpolation.h"
 
+#include "MaRC/utility.h"
+
 #include <fitsio.h>
 
 #include <limits>
-#include <algorithm>
 #include <stdexcept>
 #include <sstream>
 #include <memory>
@@ -167,10 +168,10 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
 
     // Invert image if desired.
     if (this->invert_h_)
-        this->invert_h(img, samples, lines);
+        MaRC::invert_samples(img, samples, lines);
 
     if (this->invert_v_)
-        this->invert_v(img, samples, lines);
+        MaRC::invert_lines(img, samples, lines);
 
     if (this->geometric_correction_) {
         this->geometry_->geometric_correction(
@@ -225,46 +226,6 @@ MaRC::PhotoImageFactory::invert(bool vertical, bool horizontal)
 {
     this->invert_v_ = vertical;
     this->invert_h_ = horizontal;
-}
-
-void
-MaRC::PhotoImageFactory::invert_h(std::vector<double> & image,
-                                  std::size_t samples,
-                                  std::size_t lines)
-{
-    assert(image.size() == samples * lines);
-
-    // Invert image from left to right.
-    auto begin = image.begin();
-    for (std::size_t line = 0; line < lines; ++line) {
-        auto const end = begin + samples;
-        std::reverse(begin, end);
-        begin = end;
-    }
-}
-
-void
-MaRC::PhotoImageFactory::invert_v(std::vector<double> & image,
-                                  std::size_t samples,
-                                  std::size_t lines)
-{
-    assert(image.size() == samples * lines);
-
-    // Invert image from top to bottom.
-    std::size_t const middle = lines / 2;
-
-    for (std::size_t line = 0; line < middle; ++line) {
-        // Line from one end.
-        auto const top_begin = image.begin() + line * samples;
-        auto const top_end   = top_begin + samples;
-
-        // Line from the other end.
-        std::size_t const offset = (lines - line - 1) * samples;
-        auto const bottom_begin = image.begin() + offset;
-
-        // Swap the lines.
-        std::swap_ranges(top_begin, top_end, bottom_begin);
-    }
 }
 
 void

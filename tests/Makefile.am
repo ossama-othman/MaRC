@@ -31,7 +31,8 @@ check_PROGRAMS =            \
   LatitudeImage_Test        \
   LongitudeImage_Test       \
   ViewingGeometry_Test      \
-  root_find_test
+  root_find_test            \
+  utility_test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
@@ -66,6 +67,8 @@ ViewingGeometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
 root_find_test_SOURCES = root_find_test.cpp
 root_find_test_LDADD   = $(top_builddir)/lib/MaRC/libMaRC.la
+
+utility_test_SOURCES = utility_test.cpp
 
 TESTS = \
   $(check_PROGRAMS) \

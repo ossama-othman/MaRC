@@ -104,6 +104,7 @@ pkginclude_HEADERS = \
   SimpleCylindrical.h \
   Validate.h \
   root_find.h \
+  utility.h \
   \
   Constants.h \
   \
