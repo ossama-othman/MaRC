@@ -32,49 +32,18 @@
 #include <sstream>
 
 
-namespace
-{
-    /// The underlying Polar Stereographic projection equation.
-    /**
-     * @param[in] body  Reference to @c OblateSpheroid object
-     *                  representing body being mapped.
-     * @param[in] coeff Coefficient used in the Polar Stereographic
-     *                  radius 'rho'.
-     * @param[in] latg  Bodygraphic latitude.
-     *
-     * @return Value of point on projection along a radial line
-     *         (e.g. along a longitude line).
-     *
-     * @note This function is placed in an anonymous namespace rather
-     *        than in the @c MaRC::PolarStereographic class to work
-     *        around buggy implementations of @c std::bind().
-     */
-    double
-    stereo_rho_impl(MaRC::OblateSpheroid const & body,
-                    double coeff,
-                    double latg)
-    {
-        double const t = body.first_eccentricity() * std::sin(latg);
-
-        return
-            coeff * std::tan(C::pi_4 - latg / 2)
-            * std::pow((1 + t) / (1 - t),
-                       body.first_eccentricity() / 2);
-    }
-}
-
 MaRC::PolarStereographic::PolarStereographic(
     std::shared_ptr<OblateSpheroid> body,
     double max_lat,
     bool north_pole)
     : MapFactory()
-    , body_(std::move(body))
+    , body_(body)
     , max_lat_(std::isnan(max_lat)
                ? 0
                : (north_pole ? max_lat : -max_lat) * C::degree)
-    , rho_coeff_(2 * body->eq_rad() *
-                 std::pow(1 + body->first_eccentricity(),
-                          -0.5 * (1 - body->first_eccentricity()))
+    , rho_coeff_(2 * body->eq_rad()
+                 * std::pow(1 + body->first_eccentricity(),
+                            -0.5 * (1 - body->first_eccentricity()))
                  * std::pow(1 - body->first_eccentricity(),
                             -0.5 * (1 + body->first_eccentricity())))
     , distortion_coeff_(std::pow((1 + body->first_eccentricity()),
@@ -110,7 +79,7 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
 
     double const rho_max =
         this->stereo_rho(this->body_->graphic_latitude(this->max_lat_));
-    double const min_dim = std::min(samples, lines);
+    auto const min_dim = std::min(samples, lines);
     double const pix_conv_val = 2 * rho_max / min_dim;
 
     // Whether longitudes increase counter-clockwise in map.
@@ -132,8 +101,10 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             double const Y   = i + 0.5 - samples / 2.0;
             double const rho = pix_conv_val * std::hypot(Y, X);
 
-//           if (rho > rho_max)
-//             continue;
+            // Make sure we're not mapping beyond the maximum
+            // latitude.
+            if (rho > rho_max)
+                continue;
 
             double const latg_guess =
                 C::pi_2 - 2 * std::atan(rho / 2 / this->body_->eq_rad());
@@ -185,6 +156,11 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
 
     // Draw latitude lines
     for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
+        /**
+         * @bug Shouldn't we take into account the pole at the center
+         *      and maximum latitude of the projection here?
+         */
+
         // Convert to bodygraphic latitude
         double const nn = this->body_->graphic_latitude(n * C::degree);
 
@@ -221,6 +197,12 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
             double const nn =
                 static_cast<double>(n) / imax * C::degree * 360;
 
+            /**
+             * @bug Shouldn't we take into account the pole at the
+             *      center and maximum latitude of the projection
+             *      here?
+             */
+
             double const rho = this->stereo_rho(nn);
 
             double const z = rho * std::cos(mm);
@@ -248,6 +230,19 @@ MaRC::PolarStereographic::distortion(double latg) const
 {
     // Note that latitude is bodyGRAPHIC.
     return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2);
+}
+
+double
+MaRC::PolarStereographic::stereo_rho_impl(MaRC::OblateSpheroid const & body,
+                                          double coeff,
+                                          double latg)
+{
+    double const t = body.first_eccentricity() * std::sin(latg);
+
+    return
+        coeff * std::tan(C::pi_4 - latg / 2)
+        * std::pow((1 + t) / (1 - t),
+                   body.first_eccentricity() / 2);
 }
 
 double

@@ -118,6 +118,25 @@ namespace MaRC
 
         /// The underlying Polar Stereographic projection equation.
         /**
+         * @param[in] body  Reference to @c OblateSpheroid object
+         *                  representing body being mapped.
+         * @param[in] coeff Coefficient used in the Polar
+         *                  Stereographic radius 'rho'.
+         * @param[in] latg  Bodygraphic latitude.
+         *
+         * @return Value of point on projection along a radial line
+         *         (e.g. along a longitude line).
+         *
+         * @note This function is static rather than a const member
+         *       function to work around buggy implementations of
+         *       @c std::bind().
+         */
+        static double stereo_rho_impl(MaRC::OblateSpheroid const & body,
+                                      double coeff,
+                                      double latg);
+
+        /// The underlying Polar Stereographic projection equation.
+        /**
          * @param[in] latg Bodygraphic latitude.
          *
          * @return Value of point on projection along a radial line
