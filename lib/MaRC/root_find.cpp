@@ -57,10 +57,10 @@ namespace
 
         // Center divided difference numerical method of computing
         // the first derivative (VERY LOW ERROR).
-        return (-f(x + 2 * h)
+        return (f(x - 2 * h)
                 - 8 * f(x - h) + 8 * f(x + h)
-                + f(x - 2 * h))
-            / 12 / h;
+                - f(x + 2 * h))
+            / (12 * h);
     }
 
     double newton_raphson(double y,
