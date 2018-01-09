@@ -25,6 +25,7 @@
 #include <MaRC/DefaultConfiguration.h>
 
 #include <memory>
+#include <cstring>
 
 
 namespace
@@ -39,11 +40,25 @@ namespace
                                                eq_rad,
                                                pol_rad,
                                                flattening);
+
+    constexpr double max_lat    = 45 * C::degree;
+    constexpr bool   north_pole = false;
+
+    auto projection =
+        std::make_unique<MaRC::PolarStereographic>(body,
+                                                   max_lat,
+                                                   north_pole);
+
+    constexpr std::size_t samples = 50;
+    constexpr std::size_t lines   = 60;
 }
 
 bool test_projection_name()
 {
-    return false;
+    static char const name[] = "Polar Stereographic";
+
+    return std::strcmp(projection->projection_name(),
+                       name) == 0;
 }
 
 bool test_make_map()
@@ -76,19 +91,9 @@ bool test_make_map()
                                               map_scale,
                                               map_offset);
 
-    constexpr double max_lat    = 45 * C::degree;
-    constexpr bool   north_pole = false;
-
-    auto projection =
-        std::make_unique<MaRC::PolarStereographic>(body,
-                                                   max_lat,
-                                                   north_pole);
-
-    constexpr auto samples = 50;
-    constexpr auto lines   = 60;
     constexpr auto minimum = std::numeric_limits<data_type>::lowest();
     constexpr auto maximum = std::numeric_limits<data_type>::max();
-    
+
     auto const map =
         projection->template make_map<data_type>(*image,
                                                  samples,
@@ -101,11 +106,21 @@ bool test_make_map()
 
 bool test_make_grid()
 {
+    constexpr auto lat_interval = 10;
+    constexpr auto lon_interval = 10;
+
+    auto const grid =
+        projection->make_grid(samples, lines, lat_interval, lon_interval);
+
     return false;
 }
 
 bool test_distortion()
 {
+    constexpr auto latg = 45 * C::degree;
+
+    auto const distortion = projection->distortion(latg);
+
     return false;
 }
 
@@ -115,5 +130,6 @@ int main()
         test_projection_name()
         && test_make_map()
         && test_make_grid()
+        && test_distortion()
         ? 0 : -1;
 }
