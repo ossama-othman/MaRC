@@ -50,6 +50,7 @@ tests/Scale_Offset_Test
 tests/LatitudeImage_Test
 tests/LongitudeImage_Test
 tests/ViewingGeometry_Test
+tests/PolarStereographic_Test
 tests/root_find_test
 tests/utility_test
 tests/test-suite.log
