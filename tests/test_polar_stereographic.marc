@@ -1,4 +1,4 @@
-MAP:     test_polar_stereographic.fits             # Output file name
+MAP:     test_map_polar_stereographic.fits         # Output file name
 COMMENT: Test comment.
 XCOMMENT: Test FITS extension comment.
 

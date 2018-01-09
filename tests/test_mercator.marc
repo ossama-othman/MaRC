@@ -1,4 +1,4 @@
-MAP:     test_mercator_map.fits             # Output file name
+MAP:     test_map_mercator.fits             # Output file name
 COMMENT: Test comment.
 XCOMMENT: Test FITS extension comment.
 
