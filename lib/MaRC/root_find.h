@@ -35,10 +35,17 @@
 namespace MaRC
 {
     /**
-     * @brief Find root of a given equation .
+     * @brief Find root of a given equation.
      *
-     * Given function f(x), find the root "x" using the Newton-Raphson
-     * method.
+     * Given a function y=f(x), find the root "x".
+     *
+     * @note The current implementation uses the Newton-Raphson method
+     *       to find roots.
+     *
+     * @note Do not place the equation in the form f(x)=0.  This
+     *       implementation already does that by subtracting the known
+     *       result @a y from f(x), i.e. f(x) - y = 0, when finding
+     *       the root.
      *
      * @param[in] y  Known result of @a f(x).
      * @param[in] x0 Initial guess of the root @c x.

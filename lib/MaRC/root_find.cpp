@@ -74,7 +74,30 @@ namespace
          * @bug Division by zero if first derivative is zero.
          */
         for (int i = 0; i < max_iterations; ++i) {
-            double const x = x0 + (y - f(x0)) / first_derivative(x0, f);
+            /*
+              Finding a root requires an equation of the form f(x)=0.
+              The equation y=f(x) is place in the necessary form by
+              subtracting y, accordingly.  Given:
+
+                  f(x) - y = 0
+
+              and the Newtown-Raphson approximation:
+
+                              f(x )
+                                 n
+                  x    = x  - -------
+                   n+1    n   f'(x )
+                                  n
+
+              we end up with:
+
+                              f(x ) - y
+                                 n
+                  x    = x  - ---------
+                   n+1    n    f'(x )
+                                   n
+             */
+            double const x = x0 - (f(x0) - y) / first_derivative(x0, f);
 
             if (MaRC::almost_equal(x, x0, ulps))
                 return x;
