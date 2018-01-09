@@ -32,6 +32,53 @@
 #include <sstream>
 
 
+namespace
+{
+    /**
+     * @brief Polar Stereographic projection equation coefficient.
+     *
+     * Calculate the Polar Stereographic projection equation
+     * coefficient.  The calculation is done in a separate function
+     * rather than directly in the @c MaRC::PolarSteregraphic
+     * constructor to simply make the code cleaner.
+     *
+     * @return Polar Stereographic projection equation coefficient.
+     */
+    double rho_coefficient(MaRC::OblateSpheroid const & body)
+    {
+        double const a = body.eq_rad();
+        double const e = body.first_eccentricity();
+
+        return
+            2 * a
+            * std::pow(1 + e, (1 - e) / 2)
+            * std::pow(1 - e, (1 + e) / 2);
+    }
+
+    /**
+     * @brief Polar Stereographic projection distortion coefficient.
+     *
+     * Calculate the Polar Stereographic projection distortion
+     * coefficent.  The calculation is done in a separate function
+     * rather than directly in the @c MaRC::PolarSteregraphic
+     * constructor to simply make the code cleaner.
+     *
+     * @return Polar Stereographic projection equation coefficient.
+     */
+    double distortion_coefficient(MaRC::OblateSpheroid const & body)
+    {
+        double const a = body.eq_rad();
+        double const e = body.first_eccentricity();
+
+        return
+              std::pow(1 + e, 1 - 2 * e)
+            * std::pow(1 - e, 1 + 2 * e)
+            / (4 * a * a);
+    }
+}
+
+
+
 MaRC::PolarStereographic::PolarStereographic(
     std::shared_ptr<OblateSpheroid> body,
     double max_lat,
@@ -41,16 +88,8 @@ MaRC::PolarStereographic::PolarStereographic(
     , max_lat_(std::isnan(max_lat)
                ? 0
                : (north_pole ? max_lat : -max_lat) * C::degree)
-    , rho_coeff_(2 * body->eq_rad()
-                 * std::pow(1 + body->first_eccentricity(),
-                            -0.5 * (1 - body->first_eccentricity()))
-                 * std::pow(1 - body->first_eccentricity(),
-                            -0.5 * (1 + body->first_eccentricity())))
-    , distortion_coeff_(std::pow((1 + body->first_eccentricity()),
-                                 (1 - 2 * body->first_eccentricity()))
-                        * std::pow((1 - body->first_eccentricity()),
-                                   (1 + 2 * body->first_eccentricity()))
-                        / 4 / body->eq_rad() / body->eq_rad())
+    , rho_coeff_(rho_coefficient(*body))
+    , distortion_coeff_(distortion_coefficient(*body))
     , north_pole_(north_pole)
 {
     if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
@@ -65,7 +104,7 @@ MaRC::PolarStereographic::PolarStereographic(
 const char *
 MaRC::PolarStereographic::projection_name() const
 {
-    return "Polar Stereographic (Conformal)";
+    return "Polar Stereographic";
 }
 
 void
@@ -140,8 +179,8 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
 void
 MaRC::PolarStereographic::plot_grid(std::size_t samples,
                                     std::size_t lines,
-                                    float lat_interval,
-                                    float lon_interval,
+                                    double lat_interval,
+                                    double lon_interval,
                                     grid_type & grid) const
 {
     static constexpr std::size_t imax = 2000;
@@ -155,7 +194,7 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
         std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
-    for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
+    for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
         /**
          * @bug Shouldn't we take into account the pole at the center
          *      and maximum latitude of the projection here?
@@ -190,7 +229,7 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
     }
 
     // Draw longitude lines.
-    for (float m = 360; m > 0; m -= lon_interval) {
+    for (double m = 360; m > 0; m -= lon_interval) {
         double const mm = m * C::degree;  // Convert to radians
 
         for (std::size_t n = 0; n < imax; ++n) {

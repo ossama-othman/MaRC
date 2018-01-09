@@ -84,6 +84,13 @@ namespace MaRC
         virtual char const * projection_name() const;
         //@}
 
+        /// Scale distortion at given bodygraphic latitude @a latg on
+        /// map.
+        /**
+         * @param[in] latg Bodygraphic latitude.
+         */
+        double distortion(double latg) const;
+
     private:
 
         /**
@@ -103,16 +110,9 @@ namespace MaRC
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
-                               float lat_interval,
-                               float lon_interval,
+                               double lat_interval,
+                               double lon_interval,
                                grid_type & grid) const;
-
-        /// Scale distortion at given bodygraphic latitude @a latg on
-        /// map.
-        /**
-         * @param[in] latg Bodygraphic latitude.
-         */
-        double distortion(double latg) const;
 
     private:
 

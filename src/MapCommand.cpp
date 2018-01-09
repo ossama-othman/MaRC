@@ -289,8 +289,8 @@ MaRC::MapCommand::projection_name() const
 MaRC::MapCommand::grid_type
 MaRC::MapCommand::make_grid(long samples,
                             long lines,
-                            float lat_interval,
-                            float lon_interval)
+                            double lat_interval,
+                            double lon_interval)
 {
     return this->factory_->make_grid(samples,
                                      lines,
@@ -344,8 +344,8 @@ MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
 
     // Write map grid DATAMIN and DATAMAX keywords.  Both are the
     // SAME, since only one valid value exists in the grid image.
-    float minimum = std::numeric_limits<grid_type::value_type>::max();
-    float maximum = minimum;
+    double minimum = std::numeric_limits<grid_type::value_type>::max();
+    double maximum = minimum;
 
     fits_update_key(fptr,
                     TFLOAT,
@@ -429,7 +429,7 @@ MaRC::MapCommand::xcomment_list(comment_list_type comments)
 }
 
 void
-MaRC::MapCommand::grid_intervals(float lat_interval, float lon_interval)
+MaRC::MapCommand::grid_intervals(double lat_interval, double lon_interval)
 {
     /**
      * @todo Verify arguments.

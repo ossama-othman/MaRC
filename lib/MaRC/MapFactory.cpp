@@ -32,8 +32,8 @@ MaRC::MapFactory::MapFactory()
 MaRC::MapFactory::grid_type
 MaRC::MapFactory::make_grid(std::size_t samples,
                             std::size_t lines,
-                            float lat_interval,
-                            float lon_interval)
+                            double lat_interval,
+                            double lon_interval)
 {
     grid_type grid(samples * lines, grid_type::value_type());
 

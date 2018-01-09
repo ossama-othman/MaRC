@@ -102,7 +102,7 @@ namespace MaRC
          *
          * @note Call this method implicitly enables grid creation.
          */
-         void grid_intervals(float lat_interval, float lon_interval);
+         void grid_intervals(double lat_interval, double lon_interval);
 
         /// Set the value for the map FITS @c BZERO keyword.
         /**
@@ -213,8 +213,8 @@ namespace MaRC
          */
         grid_type make_grid(long samples,
                             long lines,
-                            float lat_interval,
-                            float lon_interval);
+                            double lat_interval,
+                            double lon_interval);
 
         /**
          * @brief Write map grid to the map FITS file.
@@ -269,10 +269,10 @@ namespace MaRC
         std::string const body_name_;
 
         /// Latitude grid line interval.
-        float lat_interval_;
+        double lat_interval_;
 
         /// Longitude grid line interval.
-        float lon_interval_;
+        double lon_interval_;
 
         /// Coefficient of linear term in the scaling equation.
         double bscale_;

@@ -68,7 +68,7 @@ MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body,
 char const *
 MaRC::Mercator::projection_name() const
 {
-    return "Transverse Mercator (Conformal)";
+    return "Transverse Mercator";
 }
 
 void
@@ -131,8 +131,8 @@ MaRC::Mercator::plot_map(std::size_t samples,
 void
 MaRC::Mercator::plot_grid(std::size_t samples,
                           std::size_t lines,
-                          float lat_interval,
-                          float lon_interval,
+                          double lat_interval,
+                          double lon_interval,
                           grid_type & grid) const
 {
     /**
@@ -152,7 +152,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
         std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
-    for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
+    for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
         // Convert to bodygraphic latitude
         double const nn = this->body_->graphic_latitude(n * C::degree);
 
@@ -177,7 +177,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
     }
 
     // Draw longitude lines.
-    for (float m = 360; m > 0; m -= lon_interval) {
+    for (double m = 360; m > 0; m -= lon_interval) {
         int i = static_cast<int>(std::round(m * samples / 360.0));
 
         if (this->body_->prograde())
@@ -203,8 +203,7 @@ MaRC::Mercator::get_longitude(std::size_t i, std::size_t samples) const
      */
 
     // Compute longitude at center of pixel.
-    double lon =
-        (i + 0.5) / samples * C::_2pi + lo_lon;
+    double lon = (i + 0.5) / samples * C::_2pi + lo_lon;
 
     // PROGRADE ----> longitudes increase to the left
     // RETROGRADE --> longitudes increase to the right
@@ -237,8 +236,7 @@ MaRC::Mercator::distortion(double latg) const
 double
 MaRC::Mercator::mercator_x(MaRC::OblateSpheroid const & body, double latg)
 {
-    double const t =
-        body.first_eccentricity() * std::sin(latg);
+    double const t = body.first_eccentricity() * std::sin(latg);
 
     return
         std::log(std::tan(C::pi_4 + latg / 2)

@@ -100,8 +100,8 @@
 
     // To create a grid or not to create a grid?  That is the question.
     bool create_grid = false;
-    float lat_interval;
-    float lon_interval;
+    double lat_interval;
+    double lon_interval;
 
     std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
     MaRC::MosaicImageFactory::list_type photo_factories;
