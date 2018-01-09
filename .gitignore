@@ -51,6 +51,7 @@ tests/LatitudeImage_Test
 tests/LongitudeImage_Test
 tests/ViewingGeometry_Test
 tests/root_find_test
+tests/utility_test
 tests/test-suite.log
 tests/test_map.fits
 tests/test_map_ortho.fits
