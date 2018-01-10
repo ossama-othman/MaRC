@@ -72,13 +72,9 @@ bool test_latitude_image()
     constexpr bool   prograde   = false;
     constexpr double eq_rad     = 1234567;
     constexpr double pol_rad    = eq_rad / 2;
-    constexpr double flattening = -1;  // unused
 
     std::shared_ptr<MaRC::BodyData> body =
-        std::make_shared<MaRC::OblateSpheroid>(prograde,
-                                               eq_rad,
-                                               pol_rad,
-                                               flattening);
+        std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
 
     /**
      * @todo Test case when bodygraphic latitudes is requested.

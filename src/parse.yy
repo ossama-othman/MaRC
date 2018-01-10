@@ -682,11 +682,12 @@ body:   BODY ':' _STRING
           auto_free<char> str($3);
           body_name = $3;
 
+          ($4).validate();
+
           oblate_spheroid =
               std::make_shared<MaRC::OblateSpheroid>($5,
                                                      ($4).eq_rad,
-                                                     ($4).pol_rad,
-                                                     ($4).flattening);
+                                                     ($4).pol_rad);
         }
 ;
 
