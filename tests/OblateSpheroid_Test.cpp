@@ -33,9 +33,6 @@ namespace
     constexpr double a      = 71492;       // Equatorial radius
     constexpr double c      = 66854;       // Polar radius
 
-    // First eccentricity
-    constexpr double e      = std::sqrt(1 - std::pow(c / a, 2));
-
     // "Units in the last place" for floating point equality
     // comparison.
     constexpr int ulps = 2;
@@ -49,9 +46,11 @@ namespace
 
 bool test_initialization()
 {
-    // Equatorial and polar radii given.
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
+
+    // Expected first eccentricity
+    double const e = std::sqrt(1 - std::pow(c / a, 2));
 
     return
         prograde == o->prograde()
