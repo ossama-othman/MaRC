@@ -56,5 +56,7 @@ tests/utility_test
 tests/test-suite.log
 tests/test_map.fits
 tests/test_map_ortho.fits
+tests/test_map_mercator.fits
+tests/test_map_polar_stereographic.fits
 ylwrap
 marc-*/

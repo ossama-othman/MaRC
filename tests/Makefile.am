@@ -82,7 +82,11 @@ TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
 
 XFAIL_TESTS = PolarStereographic_Test
 
-CLEANFILES = test_map.fits test_map_ortho.fits
+CLEANFILES = \
+  test_map.fits \
+  test_map_ortho.fits \
+  test_map_mercator.fits \
+  test_map_polar_stereographic.fits
 
 all-local:
 	@if test ! -r test.fits.gz; then \
