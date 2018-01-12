@@ -9,7 +9,7 @@ XCOMMENT: Test FITS extension comment.
 
         DATA_TYPE:              FLOAT
         GRID:                   YES
-        GRID_INTERVAL:          5
+        GRID_INTERVAL:          10
         TYPE:                   MERCATOR
 
 #        OPTIONS:
