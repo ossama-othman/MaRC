@@ -7,13 +7,14 @@ XCOMMENT: Test FITS extension comment.
                 POL_RAD:        66854
                 ROTATION:       PROGRADE
 
-        DATA_TYPE:              LONG
+        DATA_TYPE:              FLOAT
         GRID:                   YES
         GRID_INTERVAL:          5
         TYPE:                   P_STEREO
 
 #        OPTIONS:
-#		MAX_LAT:
+#		POLE: N
+#		MAX_LAT: -45
 
         PLANES:         9
         SAMPLES:        50
