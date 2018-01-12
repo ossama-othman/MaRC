@@ -67,8 +67,8 @@ namespace
                           double x0,
                           std::function<double(double)> f)
     {
-        constexpr int ulps = 8;
-        constexpr int max_iterations = 10;
+        constexpr int ulps = 50;
+        constexpr int max_iterations = 20;
 
         /**
          * @bug Division by zero if first derivative is zero.
@@ -97,12 +97,14 @@ namespace
                    n+1    n    f'(x )
                                    n
              */
-            double const x = x0 - (f(x0) - y) / first_derivative(x0, f);
+            double const y0 = f(x0);
 
-            if (MaRC::almost_equal(x, x0, ulps))
-                return x;
+            if (MaRC::almost_equal(y, y0, ulps)
+                || (MaRC::almost_zero(y, ulps)
+                    && MaRC::almost_zero(y0, ulps)))
+                return x0;
 
-            x0 = x;
+            x0 -= (y0 - y) / first_derivative(x0, f);
         }
 
         return std::numeric_limits<double>::signaling_NaN();
@@ -139,6 +141,10 @@ MaRC::root_find(double y,
      * @todo These look like bad bracket values.  They are equivalent
      *       to (-x0, 3 * x0).  That seems like an awfully large
      *       range.
+     *
+     * @todo Rewrite this loop to take a hybrid Newton-Raphson /
+     *       bisection approach as described in Section 9.4 of
+     *       "Numerical Recipes in C".
      */
     double const begin = x0 - x0 * 2;
     double const end =   x0 + x0 * 2;
@@ -151,6 +157,10 @@ MaRC::root_find(double y,
         if (!std::isnan(x))
             return x;
 
+        /**
+         * @bug This fails miserably for cases where x0 < h.  We need
+         *      a better step value.  See note above.
+         */
         x0 += h;
 
         if (x0 >= end)
