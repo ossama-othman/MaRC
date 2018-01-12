@@ -56,7 +56,7 @@ namespace
         constexpr double h = 1e-3;
 
         // Center divided difference numerical method of computing
-        // the first derivative (VERY LOW ERROR).
+        // the first derivative.
         return (f(x - 2 * h)
                 - 8 * f(x - h) + 8 * f(x + h)
                 - f(x + 2 * h))
@@ -97,14 +97,14 @@ namespace
                    n+1    n    f'(x )
                                    n
              */
-            double const y0 = f(x0);
+            double const x = x0 - (f(x0) - y) / first_derivative(x0, f);
 
-            if (MaRC::almost_equal(y, y0, ulps)
-                || (MaRC::almost_zero(y, ulps)
-                    && MaRC::almost_zero(y0, ulps)))
-                return x0;
+            if (MaRC::almost_equal(x, x0, ulps)
+                || (MaRC::almost_zero(x, ulps)
+                    && MaRC::almost_zero(x0, ulps)))
+                return x;
 
-            x0 -= (y0 - y) / first_derivative(x0, f);
+            x0 = x;
         }
 
         return std::numeric_limits<double>::signaling_NaN();
