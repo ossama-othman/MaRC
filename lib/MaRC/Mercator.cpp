@@ -212,7 +212,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
 
         if (i >= 0 && static_cast<std::size_t>(i) < samples) {
             for (std::size_t k = 0; k < lines; ++k)
-                grid[k * lines + static_cast<std::size_t>(i)] = white;
+                grid[k * samples + static_cast<std::size_t>(i)] = white;
         }
     }
 }
