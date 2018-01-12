@@ -37,7 +37,7 @@ namespace
     std::shared_ptr<MaRC::OblateSpheroid> body =
         std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
 
-    constexpr double max_lat    = 45 * C::degree;
+    constexpr double max_lat    = 45;    // Degrees
     constexpr bool   north_pole = false;
 
     auto projection =
