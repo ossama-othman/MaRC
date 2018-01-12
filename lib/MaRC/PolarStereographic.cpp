@@ -156,6 +156,11 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
     auto const min_dim = std::min(samples, lines);
     double const pix_conv_val = 2 * rho_max / min_dim;
 
+    /**
+     * @todo Confirm that the use of the term "counter-clockwise" is
+     *       correct.  It looks like "clockwise" is what we're
+     *       expecting.
+     */
     // Whether longitudes increase counter-clockwise in map.
     bool const ccw =
         ((this->north_pole_ && this->body_->prograde())
