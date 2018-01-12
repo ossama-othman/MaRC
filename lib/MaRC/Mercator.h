@@ -94,6 +94,13 @@ namespace MaRC
         virtual char const * projection_name() const;
         //@}
 
+        /// Scale distortion at given bodygraphic latitude @a latg on
+        /// map.
+        /**
+         * @param[in] latg Bodygraphic latitude.
+         */
+        double distortion(double latg) const;
+
     private:
 
         /**
@@ -125,29 +132,6 @@ namespace MaRC
          * @return Longitude at given sample @a i.
          */
         double get_longitude(std::size_t i, std::size_t samples) const;
-
-        /// Scale distortion at given bodygraphic latitude @a latg on
-        /// map.
-        /**
-         * @param[in] latg Bodygraphic latitude.
-         */
-        double distortion(double latg) const;
-
-        /// The underlying Transverse Mercator projection equation.
-        /**
-         * @param[in] body Reference to @c OblateSpheroid object
-         *                 representing body being mapped.
-         * @param[in] latg Bodygraphic latitude.
-         *
-         * @return Value of point on projection along a vertical axis
-         *         (e.g. along a longitude line).
-         *
-         * @note This function is static rather than a const member
-         *       function to work around buggy implementations of
-         *       @c std::bind().
-         */
-        static double mercator_x(MaRC::OblateSpheroid const & body,
-                                 double latg);
 
     private:
 

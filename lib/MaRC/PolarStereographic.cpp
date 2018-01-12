@@ -44,7 +44,8 @@ namespace
      *
      * @return Polar Stereographic projection equation coefficient.
      */
-    double rho_coefficient(MaRC::OblateSpheroid const & body)
+    double
+    rho_coefficient(MaRC::OblateSpheroid const & body)
     {
         double const a = body.eq_rad();
         double const e = body.first_eccentricity();
@@ -65,7 +66,8 @@ namespace
      *
      * @return Polar Stereographic projection equation coefficient.
      */
-    double distortion_coefficient(MaRC::OblateSpheroid const & body)
+    double
+    distortion_coefficient(MaRC::OblateSpheroid const & body)
     {
         double const a = body.eq_rad();
         double const e = body.first_eccentricity();
@@ -75,9 +77,36 @@ namespace
             * std::pow(1 - e, 1 + 2 * e)
             / (4 * a * a);
     }
+
+    /// The underlying Polar Stereographic projection equation.
+    /**
+     * @param[in] body  Reference to @c OblateSpheroid object
+     *                  representing body being mapped.
+     * @param[in] coeff Coefficient used in the Polar
+     *                  Stereographic radius 'rho'.
+     * @param[in] latg  Bodygraphic latitude.
+     *
+     * @return Value of point on projection along a radial line
+     *         (e.g. along a longitude line).
+     *
+     * @note This function is a free function rather than a const
+     *       member function to work around buggy implementations of
+     *       @c std::bind().
+     */
+    double
+    stereo_rho_impl(MaRC::OblateSpheroid const & body,
+                    double coeff,
+                    double latg)
+    {
+        double const t = body.first_eccentricity() * std::sin(latg);
+
+        return
+            coeff * std::tan(C::pi_4 - latg / 2)
+            * std::pow((1 + t) / (1 - t),
+                       body.first_eccentricity() / 2);
+    }
+
 }
-
-
 
 MaRC::PolarStereographic::PolarStereographic(
     std::shared_ptr<OblateSpheroid> body,
@@ -116,6 +145,12 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
 
     std::size_t offset = 0;
 
+    /*
+      The maximum "rho" at the smaller of the map dimensions.  For
+      example, given a map with 50 samples and 25 lines, the maximum
+      "rho" will be at the lower edge of line 1 and the upper edge of
+      line 25.
+    */
     double const rho_max =
         this->stereo_rho(this->body_->graphic_latitude(this->max_lat_));
     auto const min_dim = std::min(samples, lines);
@@ -138,13 +173,21 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double const Y   = i + 0.5 - samples / 2.0;
+
+            /**
+             * @note Rho may actually be larger than rho_max when
+             *       mapping pixels along the larger of the map
+             *       dimensions.  That should be okay since rho will
+             *       never correspond to the pole that isn't at the
+             *       center of the map.
+             */
             double const rho = pix_conv_val * std::hypot(Y, X);
 
-            // Make sure we're not mapping beyond the maximum
-            // latitude.
-            if (rho > rho_max)
-                continue;
-
+            /*
+              Obtain an initial guess by solving the polar
+              stereographic projection equation for the latitude for a
+              spherical body (first eccentricity is zero).
+            */
             double const latg_guess =
                 C::pi_2 - 2 * std::atan(rho / 2 / this->body_->eq_rad());
 
@@ -269,19 +312,6 @@ MaRC::PolarStereographic::distortion(double latg) const
 {
     // Note that latitude is bodyGRAPHIC.
     return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2);
-}
-
-double
-MaRC::PolarStereographic::stereo_rho_impl(MaRC::OblateSpheroid const & body,
-                                          double coeff,
-                                          double latg)
-{
-    double const t = body.first_eccentricity() * std::sin(latg);
-
-    return
-        coeff * std::tan(C::pi_4 - latg / 2)
-        * std::pow((1 + t) / (1 - t),
-                   body.first_eccentricity() / 2);
 }
 
 double

@@ -34,6 +34,33 @@
 #include <sstream>
 
 
+namespace
+{
+    /// The underlying Transverse Mercator projection equation.
+    /**
+     * @param[in] body Reference to @c OblateSpheroid object
+     *                 representing body being mapped.
+     * @param[in] latg Bodygraphic latitude.
+     *
+     * @return Value of point on projection along a vertical axis
+     *         (e.g. along a longitude line).
+     *
+     * @note This function is a free function rather than a const
+     *       member function to work around buggy implementations of
+     *       @c std::bind().
+     */
+    double
+    mercator_x(MaRC::OblateSpheroid const & body, double latg)
+    {
+        double const t = body.first_eccentricity() * std::sin(latg);
+
+        return
+            std::log(std::tan(C::pi_4 + latg / 2)
+                     * std::pow((1 - t) / (1 + t),
+                                body.first_eccentricity() / 2));
+    }
+}
+
 MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body,
                          double max_lat)
     : MapFactory()
@@ -231,15 +258,4 @@ MaRC::Mercator::distortion(double latg) const
         this->body_->eq_rad()
         / this->body_->N(this->body_->centric_latitude(latg))
         / std::cos(latg);
-}
-
-double
-MaRC::Mercator::mercator_x(MaRC::OblateSpheroid const & body, double latg)
-{
-    double const t = body.first_eccentricity() * std::sin(latg);
-
-    return
-        std::log(std::tan(C::pi_4 + latg / 2)
-                 * std::pow((1 - t) / (1 + t),
-                            body.first_eccentricity() / 2));
 }

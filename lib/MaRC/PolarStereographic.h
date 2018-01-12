@@ -61,7 +61,11 @@ namespace MaRC
          * @param[in] body       Pointer to @c OblateSpheroid object
          *                       representing body being mapped.
          * @param[in] max_lat    Maximum bodyCENTRIC latitude to map
-         *                       in degrees.
+         *                       in degrees.  For example, given a map
+         *                       with 50 samples and 25 lines,
+         *                       @a max_lat will be at the lower edge
+         *                       of line 1 and the upper edge of line
+         *                       25.
          * @param[in] north_pole Place north_pole if @c true.  South
          *                       pole otherwise.
          */
@@ -115,25 +119,6 @@ namespace MaRC
                                grid_type & grid) const;
 
     private:
-
-        /// The underlying Polar Stereographic projection equation.
-        /**
-         * @param[in] body  Reference to @c OblateSpheroid object
-         *                  representing body being mapped.
-         * @param[in] coeff Coefficient used in the Polar
-         *                  Stereographic radius 'rho'.
-         * @param[in] latg  Bodygraphic latitude.
-         *
-         * @return Value of point on projection along a radial line
-         *         (e.g. along a longitude line).
-         *
-         * @note This function is static rather than a const member
-         *       function to work around buggy implementations of
-         *       @c std::bind().
-         */
-        static double stereo_rho_impl(MaRC::OblateSpheroid const & body,
-                                      double coeff,
-                                      double latg);
 
         /// The underlying Polar Stereographic projection equation.
         /**
