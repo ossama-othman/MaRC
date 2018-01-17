@@ -46,8 +46,8 @@ namespace
      *
      * @return First derivative @c f'(x).
      */
-    inline double first_derivative(double x,
-                                   std::function<double(double)> f)
+    inline double
+    first_derivative(double x, std::function<double(double)> f)
     {
         /**
          * @todo Automate selection of the @c h step value.  See
@@ -63,9 +63,8 @@ namespace
             / (12 * h);
     }
 
-    double newton_raphson(double y,
-                          double x0,
-                          std::function<double(double)> f)
+    double
+    newton_raphson(double y, double x0, std::function<double(double)> f)
     {
         constexpr int ulps = 50;
         constexpr int max_iterations = 20;
@@ -76,7 +75,7 @@ namespace
         for (int i = 0; i < max_iterations; ++i) {
             /*
               Finding a root requires an equation of the form f(x)=0.
-              The equation y=f(x) is place in the necessary form by
+              The equation y=f(x) is placed in the necessary form by
               subtracting y, accordingly.  Given:
 
                   f(x) - y = 0
@@ -112,9 +111,7 @@ namespace
 }
 
 double
-MaRC::root_find(double y,
-                double x0,
-                std::function<double(double)> f)
+MaRC::root_find(double y, double x0, std::function<double(double)> f)
 {
     double x = newton_raphson(y, x0, f);
 
@@ -175,9 +172,7 @@ MaRC::root_find(double y,
 }
 
 double
-MaRC::rtsafe(double y,
-             double x0,
-             std::function<double(double)> f)
+MaRC::rtsafe(double y, double x0, std::function<double(double)> f)
 {
     constexpr double divisor = 2;
     double const fraction = x0 / divisor;
@@ -185,8 +180,8 @@ MaRC::rtsafe(double y,
     double xl = x0 - fraction;
     double xh = x0 + fraction;
 
-    double yl = f(xl);
-    double yh = f(xh);
+    double const yl = f(xl);
+    double const yh = f(xh);
 
     if ((yl > y && yh > y) || (yl < y && yh < y))
         throw
@@ -204,25 +199,25 @@ MaRC::rtsafe(double y,
     //
     // We are looking for the "root" at the given ordinate rather than
     // the x-axis, meaning "y" is not necessarily zero.
-    if (f(xl) > y)
+    if (yl > y)
         std::swap(xl, xh);
 
     // The "step size before last".
-    double dxold = std::abs(xh - hl);
+    double dxold = std::abs(xh - xl);
 
     // The last step.
     double dx = dxold;
 
     double y0 = f(x0);
-    double dy = first_derivative(x0, f);
+    double df = first_derivative(x0, f);
 
-    constexpr int max_iterations = 10;
+    constexpr int max_iterations = 100;
 
     for (int i = 0; i < max_iterations; ++i) {
         // Bisect if Newtown-Raphson is out of range or not
         // decreasing fast enough.
-        if (((x0 - xh) * dy - y0) * ((x0 - xl) * dy - y0) > 0
-            || std::abs(2 * y0) > std::abs(dxold * dy)){
+        if (((x0 - xh) * df - y0) * ((x0 - xl) * df - y0) > 0
+            || std::abs(2 * y0) > std::abs(dxold * df)){
             dxold = dx;
             dx = (xh - xl) / 2;
 
@@ -234,8 +229,9 @@ MaRC::rtsafe(double y,
                 return x0;
             }
         } else {
+            // Perform the Newtown-Raphson iteration.
             dxold = dx;
-            dx = y0 / dy;
+            dx = (y0 - y) / df;
 
             double const temp = x0;
             x0 -= dx;
@@ -249,7 +245,7 @@ MaRC::rtsafe(double y,
             return x0;
 
          y0 = f(x0);
-         dy = first_derivative(x0, f);
+         df = first_derivative(x0, f);
 
          if (y0 > y)
              xl = x0;
@@ -260,5 +256,5 @@ MaRC::rtsafe(double y,
     throw
         std::runtime_error("Root finding process is diverging.");
 
-    return x;
+    return std::numeric_limits<double>::signaling_NaN();
 }
