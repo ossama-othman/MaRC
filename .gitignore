@@ -1,11 +1,37 @@
-*.o
+# Prerequisites
+*.d
+
+# Object Files
+*.slo
 *.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic Libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static Libraries
+*.lai
 *.la
-*.so*
 *.a
+*.lib
+
+# Executables
+*.exe
+*.out
+
+# Emacs Backup Files
 *~
 .#*
 *#*#
+
+# GNU Autotool Files
 config.log
 config.status
 Makefile
@@ -24,19 +50,28 @@ ltmain.sh
 .libs
 stamp*
 config.*
+ylwrap
 *.tar.*
-core*
+marc-*/
+doc/mdate-sh
+doc/texinfo.tex
+doc/version.texi
+
+# Documentation
 doc/*.t2p/
 doc/*.info
 doc/*.pdf
 doc/doxygen/
-doc/mdate-sh
-doc/texinfo.tex
-doc/version.texi
+
+# Scanner (Flex) and Parser (GNU Bison) Files
 src/lexer.cc
 src/parse.cc
 src/parse.h*
+
+# MaRC Program
 src/marc
+
+# Test Files
 test-driver
 tests/*.log
 tests/*.trs
@@ -55,5 +90,13 @@ tests/utility_test
 tests/test-suite.log
 tests/test_map.fits
 tests/test_map_ortho.fits
+<<<<<<< Updated upstream
 ylwrap
 marc-*/
+=======
+tests/test_map_mercator.fits
+tests/test_map_polar_stereographic.fits
+
+# Core Dump Files
+core*
+>>>>>>> Stashed changes
