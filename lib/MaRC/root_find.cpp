@@ -173,3 +173,92 @@ MaRC::root_find(double y,
 
     return x;
 }
+
+double
+MaRC::rtsafe(double y,
+             double x0,
+             std::function<double(double)> f)
+{
+    constexpr double divisor = 2;
+    double const fraction = x0 / divisor;
+
+    double xl = x0 - fraction;
+    double xh = x0 + fraction;
+
+    double yl = f(xl);
+    double yh = f(xh);
+
+    if ((yl > y && yh > y) || (yl < y && yh < y))
+        throw
+            std::runtime_error("Unable to find suitable "
+                               "root finding brackets.");
+
+    constexpr int ulps = 50;
+
+    if (MaRC::almost_equal(yl, y, ulps))
+        return xl;
+    else if (MaRC::almost_equal(yh, y, ulps))
+        return xh;
+
+    // Orient the search so that f(xl) < y.
+    //
+    // We are looking for the "root" at the given ordinate rather than
+    // the x-axis, meaning "y" is not necessarily zero.
+    if (f(xl) > y)
+        std::swap(xl, xh);
+
+    // The "step size before last".
+    double dxold = std::abs(xh - hl);
+
+    // The last step.
+    double dx = dxold;
+
+    double y0 = f(x0);
+    double dy = first_derivative(x0, f);
+
+    constexpr int max_iterations = 10;
+
+    for (int i = 0; i < max_iterations; ++i) {
+        // Bisect if Newtown-Raphson is out of range or not
+        // decreasing fast enough.
+        if (((x0 - xh) * dy - y0) * ((x0 - xl) * dy - y0) > 0
+            || std::abs(2 * y0) > std::abs(dxold * dy)){
+            dxold = dx;
+            dx = (xh - xl) / 2;
+
+            x0 = xl + dx;
+
+            if (MaRC::almost_equal(xl, x0, ulps)) {
+                // Change in root is negligible.  Newton step is
+                // acceptable.  Take it.
+                return x0;
+            }
+        } else {
+            dxold = dx;
+            dx = y0 / dy;
+
+            double const temp = x0;
+            x0 -= dx;
+
+            if (MaRC::almost_equal(temp, x0, ulps))
+                return x0;
+        }
+
+        // Convergence criterion.
+        if (std::abs(dx) < xacc)
+            return x0;
+
+         y0 = f(x0);
+         dy = first_derivative(x0, f);
+
+         if (y0 > y)
+             xl = x0;
+         else
+             xh = x0;
+    }
+
+    throw
+        std::runtime_error("Root finding process is diverging.");
+
+    return x;
+}
