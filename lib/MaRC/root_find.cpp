@@ -31,6 +31,7 @@
 #include <stdexcept>
 
 #include <iostream>
+#include <iomanip>
 
 
 namespace
@@ -73,11 +74,21 @@ namespace
             / (12 * h);
     }
 
+    inline bool
+    is_almost_equal(double lhs, double rhs)
+    {
+        constexpr int ulps = 2;
+
+        return
+            MaRC::almost_equal(lhs, rhs, ulps)
+            || (MaRC::almost_zero(lhs, ulps)
+                && MaRC::almost_zero(rhs, ulps));
+    }
+
 #if 0
     double
     newton_raphson(double y, double x0, std::function<double(double)> f)
     {
-        constexpr int ulps = 50;
         constexpr int max_iterations = 20;
 
         /**
@@ -109,9 +120,7 @@ namespace
              */
             double const x = x0 - (f(x0) - y) / first_derivative(x0, f);
 
-            if (MaRC::almost_equal(x, x0, ulps)
-                || (MaRC::almost_zero(x, ulps)
-                    && MaRC::almost_zero(x0, ulps)))
+            if (is_almost_equal(x, x0))
                 return x;
 
             x0 = x;
@@ -197,7 +206,8 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
     double const yl = f(xl);
     double const yh = f(xh);
 
-    std::cout << "(x0, xl, xh, yl, yh, y) = ("
+    std::cout << std::setprecision(20)
+              << "(x0, xl, xh, yl, yh, y) = ("
               << x0 << ", "
               << xl << ", "
               << xh << ", "
@@ -205,16 +215,14 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
               << yh << ", "
               << y << ")\n";
 
-    // if ((yl > y && yh > y) || (yl < y && yh < y))
-    //     throw
-    //         std::runtime_error("Unable to find suitable "
-    //                            "root finding brackets.");
+    if ((yl > y && yh > y) || (yl < y && yh < y))
+        throw
+            std::runtime_error("Unable to find suitable "
+                               "root finding brackets.");
 
-    constexpr int ulps = 2;
-
-    if (MaRC::almost_equal(yl, y, ulps))
+    if (is_almost_equal(yl, y))
         return xl;
-    else if (MaRC::almost_equal(yh, y, ulps))
+    else if (is_almost_equal(yh, y))
         return xh;
 
     // Orient the search so that f(xl) < y.
@@ -250,9 +258,7 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
                       << xl << ", "
                       << x0 << ")\n";
 
-            if (MaRC::almost_equal(xl, x0, ulps)
-                || (MaRC::almost_zero(xl, ulps)
-                    && MaRC::almost_zero(x0, ulps))) {
+            if (is_almost_equal(xl, x0)) {
                 // Change in root is negligible.  Newton step is
                 // acceptable.  Take it.
                 std::cout << "Eureka!\n";
@@ -274,15 +280,14 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
                       << y0 << ", "
                       << y << ")\n";
 
-            if (MaRC::almost_equal(temp, x0, ulps)
-                || (MaRC::almost_zero(temp, ulps)
-                    && MaRC::almost_zero(x0, ulps)))
+            if (is_almost_equal(temp, x0))
                 return x0;
         }
 
         // Convergence criterion.
-        // if (std::abs(dx) < xacc)
-        //     return x0;
+        constexpr int ulps = 2;
+        if (MaRC::almost_zero(dx, ulps))
+            return x0;
 
         y0 = f(x0);
         df = first_derivative(x0, f);
