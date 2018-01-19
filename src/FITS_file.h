@@ -25,12 +25,18 @@
 #define MARC_FITS_FILE_H
 
 #include "FITS_memory.h"
+#include "FITS_header.h"
 
 
 namespace MaRC
 {
     namespace FITS
     {
+
+        class data
+        {
+        };
+
         /**
          * @brief Encapsulate a FITS file containing an image.
          *
@@ -49,14 +55,21 @@ namespace MaRC
              */
             file(char const * filename);
 
+            /// Destructor
+            ~file() = default;
+
             // Prevent copying.
             file(file const &) = delete;
-            void operator=(file const &) = delete;            
+            void operator=(file const &) = delete;
 
         private:
 
             /// Underlying CFITSIO @c fitsfile object.
             file_unique_ptr fptr_;
+
+            header header_;
+
+            // data   data_;
 
         };
 

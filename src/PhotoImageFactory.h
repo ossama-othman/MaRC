@@ -95,8 +95,9 @@ namespace MaRC
          * corresponding flat-field image elements from the photo
          * image.
          *
-         * @param[in] naxes Photo image dimensions retrieved from its
-         *                  FITS file.
+         * @param[in]     naxes Photo image dimensions retrieved from
+         *                      FITS file.
+         * @param[in,out] img   Image to be flat-field corrected.
          *
          * @return 0 on success.
          */

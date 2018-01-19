@@ -20,7 +20,7 @@
  * @author Ossama Othman
  */
 
-#include "FITS_File.h"
+#include "FITS_file.h"
 
 
 namespace
@@ -61,10 +61,14 @@ namespace
     }
 }
 
+// ----------------------------------------------------------------
+
 using namespace MaRC;
 
 FITS::file::file(char const * filename)
     : fptr_(open_fits_file(filename))
+    , header_(fptr_.get())
+    , data_(fptr_.get())
 {
     int dataok = 0;
     int hduok  = 0;

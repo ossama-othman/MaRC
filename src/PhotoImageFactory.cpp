@@ -21,7 +21,7 @@
  */
 
 #include "PhotoImageFactory.h"
-#include "FITS_memory.h"
+#include "FITS_file.h"
 
 #include "MaRC/PhotoImage.h"
 
@@ -35,8 +35,6 @@
 #include "MaRC/BilinearInterpolation.h"
 
 #include "MaRC/utility.h"
-
-#include <fitsio.h>
 
 #include <limits>
 #include <stdexcept>
@@ -66,28 +64,6 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     if (!this->config_ || !this->geometry_)
         return nullptr;  // not set or make() already called!
 
-    fitsfile * fptr = nullptr;
-    static constexpr int mode = READONLY;
-    int status = 0;  // CFITSIO requires initialization of status
-                     // variable.
-
-    (void) fits_open_image(&fptr,
-                           this->filename_.c_str(),
-                           mode,
-                           &status);
-
-    if (status != 0) {
-        // Report any errors before creating the map since map
-        // creation can be time consuming.
-        fits_report_error(stderr, status);
-
-        std::ostringstream s;
-        s << "Unable to open image \"" << this->filename_ << "\"";
-
-        throw std::invalid_argument(s.str());
-    }
-
-    FITS::file_unique_ptr safe_fptr(fptr);
 
     int naxis = 0;
     int bitpix = 0;
@@ -260,7 +236,7 @@ MaRC::PhotoImageFactory::flat_field_correct(
 
             std::ostringstream s;
             s << "Unable to open flat field image \""
-              << this->filename_ << "\"";
+              << this->flat_field_ << '\"';
 
             throw std::invalid_argument(s.str());
         }
