@@ -30,6 +30,8 @@
 #include <limits>
 #include <stdexcept>
 
+#include <iostream>
+
 
 namespace
 {
@@ -49,11 +51,19 @@ namespace
     inline double
     first_derivative(double x, std::function<double(double)> f)
     {
-        /**
-         * @todo Automate selection of the @c h step value.  See
-         *       Section 5.7 in "Numerical Recipes in C".
+        /*
+          Choose a delta "h" that is at approximately within the scale
+          of "x", being careful not to choose a delta that is less
+          than the machine accuracy "epsilon".
+
+          This is inspired by the discussion for selecting a value of
+          "h" in Section 5.7 - Numerical Derivates of the book
+          "Numerical Recipes in C" by Press, Teukolsky, Vetterling and
+          Flannery.
          */
-        constexpr double h = 1e-3;
+        constexpr int ulps = 2;
+        constexpr auto e = ulps * std::numeric_limits<double>::epsilon();
+        auto const h = (x < 1 ? e : e * x);
 
         // Center divided difference numerical method of computing
         // the first derivative.
@@ -63,6 +73,7 @@ namespace
             / (12 * h);
     }
 
+#if 0
     double
     newton_raphson(double y, double x0, std::function<double(double)> f)
     {
@@ -108,8 +119,10 @@ namespace
 
         return std::numeric_limits<double>::signaling_NaN();
     }
+#endif  // 0
 }
 
+#if 0
 double
 MaRC::root_find(double y, double x0, std::function<double(double)> f)
 {
@@ -170,25 +183,34 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
 
     return x;
 }
+#endif  // 0
 
 double
-MaRC::rtsafe(double y, double x0, std::function<double(double)> f)
+MaRC::root_find(double y, double x0, std::function<double(double)> f)
 {
     constexpr double divisor = 2;
-    double const fraction = x0 / divisor;
+    double const fraction = std::abs(x0) / divisor;
 
-    double xl = x0 - fraction;
-    double xh = x0 + fraction;
+    double xl = x0 - 2 * std::abs(x0); // fraction;
+    double xh = x0 + 2 * std::abs(x0); // fraction;
 
     double const yl = f(xl);
     double const yh = f(xh);
 
-    if ((yl > y && yh > y) || (yl < y && yh < y))
-        throw
-            std::runtime_error("Unable to find suitable "
-                               "root finding brackets.");
+    std::cout << "(x0, xl, xh, yl, yh, y) = ("
+              << x0 << ", "
+              << xl << ", "
+              << xh << ", "
+              << yl << ", "
+              << yh << ", "
+              << y << ")\n";
 
-    constexpr int ulps = 50;
+    // if ((yl > y && yh > y) || (yl < y && yh < y))
+    //     throw
+    //         std::runtime_error("Unable to find suitable "
+    //                            "root finding brackets.");
+
+    constexpr int ulps = 2;
 
     if (MaRC::almost_equal(yl, y, ulps))
         return xl;
@@ -216,16 +238,24 @@ MaRC::rtsafe(double y, double x0, std::function<double(double)> f)
     for (int i = 0; i < max_iterations; ++i) {
         // Bisect if Newtown-Raphson is out of range or not
         // decreasing fast enough.
-        if (((x0 - xh) * df - y0) * ((x0 - xl) * df - y0) > 0
-            || std::abs(2 * y0) > std::abs(dxold * df)){
+        if (((x0 - xh) * df - y0 + y) * ((x0 - xl) * df - y0 + y) > 0
+            || std::abs(2 * (y0 - y)) > std::abs(dxold * df)){
             dxold = dx;
             dx = (xh - xl) / 2;
 
             x0 = xl + dx;
 
-            if (MaRC::almost_equal(xl, x0, ulps)) {
+            std::cout << i << ":\t(dx, xl, x0) = ("
+                      << dx << ", "
+                      << xl << ", "
+                      << x0 << ")\n";
+
+            if (MaRC::almost_equal(xl, x0, ulps)
+                || (MaRC::almost_zero(xl, ulps)
+                    && MaRC::almost_zero(x0, ulps))) {
                 // Change in root is negligible.  Newton step is
                 // acceptable.  Take it.
+                std::cout << "Eureka!\n";
                 return x0;
             }
         } else {
@@ -236,21 +266,31 @@ MaRC::rtsafe(double y, double x0, std::function<double(double)> f)
             double const temp = x0;
             x0 -= dx;
 
-            if (MaRC::almost_equal(temp, x0, ulps))
+            std::cout << i << ":\t(dx, df,  temp, x0, y0, y) = ("
+                      << dx << ", "
+                      << df << ", "
+                      << temp << ", "
+                      << x0 << ", "
+                      << y0 << ", "
+                      << y << ")\n";
+
+            if (MaRC::almost_equal(temp, x0, ulps)
+                || (MaRC::almost_zero(temp, ulps)
+                    && MaRC::almost_zero(x0, ulps)))
                 return x0;
         }
 
         // Convergence criterion.
-        if (std::abs(dx) < xacc)
-            return x0;
+        // if (std::abs(dx) < xacc)
+        //     return x0;
 
-         y0 = f(x0);
-         df = first_derivative(x0, f);
+        y0 = f(x0);
+        df = first_derivative(x0, f);
 
-         if (y0 > y)
-             xl = x0;
-         else
-             xh = x0;
+        if (y0 < y)
+            xl = x0;
+        else
+            xh = x0;
     }
 
     throw
