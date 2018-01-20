@@ -48,14 +48,16 @@ namespace MaRC
      *       the root.
      *
      * @param[in] y  Known result of @a f(x).
-     * @param[in] x0 Initial guess of the root @c x.
+     * @param[in] xl Lower bound of root finding bracket.
+     * @param[in] xh Upper bound of root finding bracket.
      * @param[in] f  Function @a f(x) for which @c x will be
      *               computed.
      *
      * @return The root @c x where @a f(x) is equal to @a y.
      */
     MARC_API double root_find(double y,
-                              double x0,
+                              double xl,
+                              double xh,
                               std::function<double(double)> f);
 }
 

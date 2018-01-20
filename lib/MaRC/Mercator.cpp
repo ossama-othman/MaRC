@@ -129,17 +129,18 @@ MaRC::Mercator::plot_map(std::size_t samples,
         // sphere.
         double const latg_guess = -C::pi_2 + 2 * std::atan(std::exp(x));
 
+        double const ll = latg_guess - 0.5;
+        double const ul = latg_guess + 0.5;
+
         /**
          * @todo Pass in a function that directly computes the first
          *       derivative of the Mercator equation, without relying
          *       on numerical differentation techniques, to speed up
          *       root finding and improve accuracy.
          */
+        // bodyGRAPHIC latitude.
         double const latg =
-            MaRC::root_find(
-                x,
-                latg_guess,   // bodyGRAPHIC latitude
-                map_equation);
+            MaRC::root_find(x, ll, ul, map_equation);
 
         // Convert to bodyCENTRIC latitude
         double const lat = this->body_->centric_latitude(latg);

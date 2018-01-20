@@ -195,13 +195,12 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
 #endif  // 0
 
 double
-MaRC::root_find(double y, double x0, std::function<double(double)> f)
+MaRC::root_find(double y,
+                double xl,
+                double xh,
+                std::function<double(double)> f)
 {
-    constexpr double divisor = 2;
-    double const fraction = std::abs(x0) / divisor;
-
-    double xl = x0 - 2 * std::abs(x0); // fraction;
-    double xh = x0 + 2 * std::abs(x0); // fraction;
+    double x0 = (xl + xh) / 2;
 
     double const yl = f(xl);
     double const yh = f(xh);

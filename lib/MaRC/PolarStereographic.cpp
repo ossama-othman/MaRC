@@ -196,6 +196,9 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             double const latg_guess =
                 C::pi_2 - 2 * std::atan(rho / 2 / this->body_->eq_rad());
 
+            double const ll = -C::pi_2;
+            double const ul =  C::pi_2;
+
             /**
              * @todo Pass in a function that directly computes the
              *       first derivative of the Polar Stereographic
@@ -206,7 +209,11 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
 
             // bodyGRAPHIC latitude.
             double const latg =
-                MaRC::root_find(rho, latg_guess, map_equation);
+                MaRC::root_find(rho, ll, ul, map_equation);
+
+            std::cout << "*** (latg_guess, latg) = ("
+                      << latg_guess << ", "
+                      << latg << ")\n";
 
             // Convert to bodyCENTRIC latitude
             double const lat =
