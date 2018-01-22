@@ -30,8 +30,8 @@
 #include <limits>
 #include <stdexcept>
 
-#include <iostream>
-#include <iomanip>
+// #include <iostream>
+// #include <iomanip>
 
 
 namespace
@@ -85,7 +85,6 @@ namespace
                 && MaRC::almost_zero(rhs, ulps));
     }
 
-#if 0
     double
     newton_raphson(double y, double x0, std::function<double(double)> f)
     {
@@ -128,10 +127,8 @@ namespace
 
         return std::numeric_limits<double>::signaling_NaN();
     }
-#endif  // 0
 }
 
-#if 0
 double
 MaRC::root_find(double y, double x0, std::function<double(double)> f)
 {
@@ -192,7 +189,6 @@ MaRC::root_find(double y, double x0, std::function<double(double)> f)
 
     return x;
 }
-#endif  // 0
 
 double
 MaRC::root_find(double y,
@@ -200,24 +196,30 @@ MaRC::root_find(double y,
                 double xh,
                 std::function<double(double)> f)
 {
+    /*
+      This implementation is based on the rtsafe() function found in
+      Section 9.4 - Newton-Raphson Method Using Derivative of the book
+      "Numerical Recipes in C" by Press, Teukolsky, Vetterling and
+      Flannery.
+    */
     double x0 = (xl + xh) / 2;
 
     double const yl = f(xl);
     double const yh = f(xh);
 
-    std::cout << std::setprecision(20)
-              << "(x0, xl, xh, yl, yh, y) = ("
-              << x0 << ", "
-              << xl << ", "
-              << xh << ", "
-              << yl << ", "
-              << yh << ", "
-              << y << ")\n";
+    // std::cout << std::setprecision(20)
+    //           << "(x0, xl, xh, yl, yh, y) = ("
+    //           << x0 << ", "
+    //           << xl << ", "
+    //           << xh << ", "
+    //           << yl << ", "
+    //           << yh << ", "
+    //           << y << ")\n";
 
     if ((yl > y && yh > y) || (yl < y && yh < y))
         throw
-            std::runtime_error("Unable to find suitable "
-                               "root finding brackets.");
+            std::invalid_argument("Root finding brackets "
+                                  "are not suitable.");
 
     if (is_almost_equal(yl, y))
         return xl;
@@ -252,15 +254,14 @@ MaRC::root_find(double y,
 
             x0 = xl + dx;
 
-            std::cout << i << ":\t(dx, xl, x0) = ("
-                      << dx << ", "
-                      << xl << ", "
-                      << x0 << ")\n";
+            // std::cout << i << ":\t(dx, xl, x0) = ("
+            //           << dx << ", "
+            //           << xl << ", "
+            //           << x0 << ")\n";
 
             if (is_almost_equal(xl, x0)) {
                 // Change in root is negligible.  Newton step is
                 // acceptable.  Take it.
-                std::cout << "Eureka!\n";
                 return x0;
             }
         } else {
@@ -271,13 +272,13 @@ MaRC::root_find(double y,
             double const temp = x0;
             x0 -= dx;
 
-            std::cout << i << ":\t(dx, df,  temp, x0, y0, y) = ("
-                      << dx << ", "
-                      << df << ", "
-                      << temp << ", "
-                      << x0 << ", "
-                      << y0 << ", "
-                      << y << ")\n";
+            // std::cout << i << ":\t(dx, df,  temp, x0, y0, y) = ("
+            //           << dx << ", "
+            //           << df << ", "
+            //           << temp << ", "
+            //           << x0 << ", "
+            //           << y0 << ", "
+            //           << y << ")\n";
 
             if (is_almost_equal(temp, x0))
                 return x0;
