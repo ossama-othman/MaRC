@@ -1349,12 +1349,9 @@ lampoleq_options:
 
 /* ------------------------- Mercator Projection ------------------------ */
 mercator:
-        MAP_TYPE ':' _MERCATOR
-        max_latitude {
+        MAP_TYPE ':' _MERCATOR {
             map_factory =
-                std::make_unique<MaRC::Mercator>(
-                    oblate_spheroid,
-                    max_lat);
+                std::make_unique<MaRC::Mercator>(oblate_spheroid);
         }
 ;
 

@@ -36,7 +36,7 @@
 
 namespace
 {
-    /// The underlying Transverse Mercator projection equation.
+    /// The underlying Mercator projection equation.
     /**
      * @param[in] body Reference to @c OblateSpheroid object
      *                 representing body being mapped.
@@ -61,13 +61,9 @@ namespace
     }
 }
 
-MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body,
-                         double max_lat)
+MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body)
     : MapFactory()
     , body_(body)
-    , lat_range_((std::isnan(max_lat)
-                  ? default_max_lat
-                  : max_lat) * C::degree * 2)
 {
     using namespace MaRC::default_configuration;
 
@@ -80,22 +76,22 @@ MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body,
         throw std::domain_error("Mercator projection requires 360 "
                                 "longitude range.");
 
-    static_assert(default_max_lat < 90,
-                  "Default maximum latitude must be less than 90.");
+    // static_assert(default_max_lat < 90,
+    //               "Default maximum latitude must be less than 90.");
 
-    if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
-        std::ostringstream s;
-        s << "Maximum Mercator projection latitude ("
-          << max_lat << ") >= 90.";
+    // if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
+    //     std::ostringstream s;
+    //     s << "Maximum Mercator projection latitude ("
+    //       << max_lat << ") >= 90.";
 
-        throw std::invalid_argument(s.str());
-    }
+    //     throw std::invalid_argument(s.str());
+    // }
 }
 
 char const *
 MaRC::Mercator::projection_name() const
 {
-    return "Transverse Mercator";
+    return "Mercator";
 }
 
 void
@@ -109,14 +105,14 @@ MaRC::Mercator::plot_map(std::size_t samples,
 
     /**
      * @bug This calculation doesn't appear to be correct.  Shouldn't
-     *      twice the @c mercator_x(*this->body_, max_lat) be used to
-     *      determine the @c xmax value?
+     *      @c xmax should be computed through the appropriate call to
+     *      @c mercator_x()?
      *
      * @see MaRC::PolarStereographic::plot_map()
      */
     // No need to take absolute value.  Always positive.
     double const xmax =
-        static_cast<double>(lines) / samples * this->lat_range_;
+        static_cast<double>(lines) / samples * C::pi;
 
     using namespace std::placeholders;
     auto const map_equation =
@@ -125,12 +121,22 @@ MaRC::Mercator::plot_map(std::size_t samples,
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
 
-        // Obtain initial guess from inverse Mercator equation for a
-        // sphere.
-        double const latg_guess = -C::pi_2 + 2 * std::atan(std::exp(x));
+        /**
+         * @todo We shouldn't have to search from pole-to-pole for
+         *       the latitude that gives us the above value for
+         *       @c rho.  Try to get the root finding code to work
+         *       with the initial guess instead, or at the very least
+         *       reduce the size of the search bracket.
+         */
 
-        double const ll = latg_guess - 0.5;
-        double const ul = latg_guess + 0.5;
+        // Obtain initial guess from inverse Mercator equation for a
+        // sphere (first eccentricity is zero).
+        // double const latg_guess = -C::pi_2 + 2 * std::atan(std::exp(x));
+
+        // double const ll = latg_guess - 0.5;
+        // double const ul = latg_guess + 0.5;
+        double const ll = -C::pi_2;
+        double const ul =  C::pi_2;
 
         /**
          * @todo Pass in a function that directly computes the first
@@ -141,6 +147,14 @@ MaRC::Mercator::plot_map(std::size_t samples,
         // bodyGRAPHIC latitude.
         double const latg =
             MaRC::root_find(x, ll, ul, map_equation);
+
+        // std::cout << "*** (latg_guess, latg) = ("
+        //           << latg_guess << ", "
+        //           << latg << ")\n";
+
+         // std::cout << "*** (line, latg) = ("
+         //           << k << ", "
+         //           << latg / C::degree << ")\n";
 
         // Convert to bodyCENTRIC latitude
         double const lat = this->body_->centric_latitude(latg);
@@ -165,14 +179,14 @@ MaRC::Mercator::plot_grid(std::size_t samples,
 {
     /**
      * @bug This calculation doesn't appear to be correct.  Shouldn't
-     *      twice the @c mercator_x(*this->body_, max_lat) be used to
-     *      determine the @c xmax value?
+     *      @c xmax should be computed through the appropriate call to
+     *      @c mercator_x()?
      *
      * @see MaRC::PolarStereographic::plot_grid()
      */
     // No need to take absolute value.  Always positive.
     double const xmax =
-        static_cast<double>(lines) / samples * this->lat_range_;
+        static_cast<double>(lines) / samples * C::pi;
 
     double const pix_conv_val = xmax / lines * 2;
 

@@ -65,49 +65,11 @@ namespace
     static_assert(is_odd(lines),
                   "Map lines should be odd for this test.");
 
-    /**
-     * @brief Perform linear extrapolation.
-     *
-     * Perform a linear extrapolation given two data points (x1, y1)
-     * and (x2, y2), as well as the "x" corresponding to the "y" being
-     * extrapolated.
-     *
-     * @return The linearly extrapolated value.
-     */
-    double extrapolate(double x1,
-                       double x2,
-                       double y1,
-                       double y2,
-                       double x)
-    {
-        return y1 + (x - x1) / (x2 - x1) * (y2 - y1);
-    }
-
-    template <typename IMAGE, typename MAP>
-    double extrapolate_data(std::size_t i1,
-                            std::size_t i2,
-                            double x1,
-                            double x2,
-                            double x,
-                            IMAGE const & image,
-                            MAP const & map)
-    {
-        double const y1 = map[i1] * image.scale() + image.offset();
-        double const y2 = map[i2] * image.scale() + image.offset();
-
-        return extrapolate(x1, x2, y1, y2, x);
-    }
-
-    double percent_difference(double l, double l0)
-    {
-        // l0 better not be zero!
-        return (l - l0) / l0 * 100;
-    }
 }
 
 bool test_projection_name()
 {
-    static char const name[] = "Transverse Mercator";
+    static char const name[] = "Mercator";
 
     return std::strcmp(projection->projection_name(),
                        name) == 0;
@@ -176,7 +138,10 @@ bool test_make_map()
     auto const     equator_data   =
         map[equator_offset] * image->scale() + image->offset();
 
-    constexpr int ulps = 2;
+    /**
+     * @todo Can we somehow get to smaller ulp value?
+     */
+    constexpr int ulps = 30;
 
     return
         !map.empty()

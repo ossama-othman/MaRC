@@ -37,12 +37,18 @@ namespace MaRC
     /**
      * @class Mercator
      *
-     * @brief Tranverse Mercator concrete map factory.
+     * @brief Mercator concrete map factory.
      *
-     * A Transverse Mercator map contains data mapped in a way that
-     * retains shape, i.e. the projection is conformal.  The
-     * "transverse" basically means that latitudes and longitudes are
-     * vertical and horizontal lines, respectively.
+     * A Mercator map contains data mapped in a way that retains
+     * shape, i.e. the projection is conformal.  It also retains true
+     * direction (unlike its transverse variant).
+     *
+     * @note A maximum latitude is currently not accepted as an option
+     *       since the full 360 longitude range is mapped across the
+     *       entire width of the generated map.  The maximum latitude
+     *       is determined by the number of lines in the map.  The
+     *       greater the number lines in the map, the greater the
+     *       latitude range in the map.
      *
      * @note This implementation can only map oblate spheroids or
      *       spheres.
@@ -57,27 +63,12 @@ namespace MaRC
         /// @typedef Type of functor passed to @c plot_map() method.
         using typename MapFactory::plot_type;
 
-        /**
-         * @brief Default maximum latitude to map.
-         *
-         * If no maximum latitude is supplied this will be the maximum
-         * latitude in degrees to map.  For example, a maximum
-         * latitude of 84 will result in a map projection containing
-         * latitudes between -84 and 84, inclusive.  The maximum
-         * latitude must be less than 90 since it is not possible to
-         * map the poles in this map projection.
-         */
-        static constexpr double default_max_lat = 84;
-
         /// Constructor.
         /**
          * @param[in] body    Pointer to @c OblateSpheroid object
          *                    representing body being mapped.
-         * @param[in] max_lat Maximum bodyCENTRIC latitude to map in
-         *                    degrees.
          */
-        Mercator(std::shared_ptr<OblateSpheroid> body,
-                 double max_lat);
+        Mercator(std::shared_ptr<OblateSpheroid> body);
 
         /// Destructor
         virtual ~Mercator() = default;
@@ -138,21 +129,6 @@ namespace MaRC
         /// @c OblateSpheroid object representing the body being
         /// mapped.
         std::shared_ptr<OblateSpheroid> const body_;
-
-        /**
-         * @brief Range of bodyCENTRIC latitudes to map in radians.
-         *
-         * The latitude range is currently defined as the difference
-         * between the highest and lowest latitude to be mapped.  For
-         * example, given a maximum latitude of 84 degrees, the
-         * latitude range will be 168 degrees:
-         * @code
-         *     84 - (-84) = 84 * 2 = 168
-         * @endcode
-         *
-         * This is value is in radians.
-         */
-        double const lat_range_;
 
     };
 
