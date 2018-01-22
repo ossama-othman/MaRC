@@ -78,13 +78,17 @@ namespace
             / (4 * a * a);
     }
 
-    /// The underlying Polar Stereographic projection equation.
     /**
+     * @brief The underlying Polar Stereographic projection equation.
+     *
      * @param[in] body  Reference to @c OblateSpheroid object
      *                  representing body being mapped.
      * @param[in] coeff Coefficient used in the Polar
      *                  Stereographic radius 'rho'.
      * @param[in] latg  Bodygraphic latitude.
+     *
+     * @return Value of point on projection along a radial line
+     *         (e.g. along a longitude line).
      *
      * @attention This implementation assumes that the North pole is
      *            at the center of the projection.  If the South pole
@@ -92,9 +96,6 @@ namespace
      *            (e.g. latg = -latg) should be passed to this
      *            function instead.  Longitudes will also have to be
      *            adjusted accordingly.
-     *
-     * @return Value of point on projection along a radial line
-     *         (e.g. along a longitude line).
      *
      * @note This function is a free function rather than a const
      *       member function to work around buggy implementations of
@@ -267,8 +268,8 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
     // Draw latitude lines
     for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
         /**
-         * @bug Shouldn't we take into account the pole at the center
-         *      and maximum latitude of the projection here?
+         * @bug Shouldn't we take into account the maximum latitude of
+         *      the projection here?
          */
 
         // Convert to bodygraphic latitude
@@ -283,8 +284,8 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
             double const z = rho * std::cos(mm);
             double const x = rho * std::sin(mm);
 
-//           if (z > rho_max || x > rho_max)
-//             continue;
+            // if (z > rho_max || x > rho_max)
+            //     continue;
 
             double const k = std::round(z / pix_conv_val + lines / 2.0);
             double const i = std::round(x / pix_conv_val + samples / 2.0);
@@ -308,9 +309,8 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
                 static_cast<double>(n) / imax * C::degree * 360;
 
             /**
-             * @bug Shouldn't we take into account the pole at the
-             *      center and maximum latitude of the projection
-             *      here?
+             * @bug Shouldn't we take into account the maximum
+             *      latitude of the projection here?
              */
 
             double const rho = this->stereo_rho(nn);
@@ -318,8 +318,8 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
             double const z = rho * std::cos(mm);
             double const x = rho * std::sin(mm);
 
-//           if (z > rho_max || x > rho_max)
-//             continue;
+            // if (z > rho_max || x > rho_max)
+            //     continue;
 
             double const k = std::round(z / pix_conv_val + lines / 2.0);
             double const i = std::round(x / pix_conv_val + samples / 2.0);

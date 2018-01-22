@@ -53,9 +53,9 @@ namespace
     first_derivative(double x, std::function<double(double)> f)
     {
         /*
-          Choose a delta "h" that is at approximately within the scale
-          of "x", being careful not to choose a delta that is less
-          than the machine accuracy "epsilon".
+          Choose a delta "h" that is approximately within the scale of
+          "x", being careful not to choose a delta that is less than
+          the machine accuracy "epsilon".
 
           This is inspired by the discussion for selecting a value of
           "h" in Section 5.7 - Numerical Derivates of the book
