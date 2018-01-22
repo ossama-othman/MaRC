@@ -198,7 +198,8 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
              * @todo We shouldn't have to search from pole-to-pole for
              *       the latitude that gives us the above value for
              *       @c rho.  Try to get the root finding code to work
-             *       with the initial guess instead.
+             *       with the initial guess instead, or at the very
+             *       least reduce the size of the search bracket.
              */
             /*
               Obtain an initial guess by solving the polar

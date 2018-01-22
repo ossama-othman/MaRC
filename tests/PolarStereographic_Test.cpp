@@ -144,6 +144,12 @@ bool test_make_map()
                                               map_scale,
                                               map_offset);
 
+    /**
+     * @todo Verify that the longitudes are correct by taking into
+     *       account the body rotation and the pole at the center of
+     *       the projection.
+     */
+
     constexpr auto minimum = std::numeric_limits<data_type>::lowest();
     constexpr auto maximum = std::numeric_limits<data_type>::max();
 
