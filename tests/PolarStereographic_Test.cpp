@@ -65,6 +65,45 @@ namespace
 
     static_assert(is_odd(samples) && is_odd(lines),
                   "Map dimensions should be odd for this test.");
+
+    /**
+     * @brief Perform linear extrapolation.
+     *
+     * Perform a linear extrapolation given two data points (x1, y1)
+     * and (x2, y2), as well as the "x" corresponding to the "y" being
+     * extrapolated.
+     *
+     * @return The linearly extrapolated value.
+     */
+    double extrapolate(double x1,
+                       double x2,
+                       double y1,
+                       double y2,
+                       double x)
+    {
+        return y1 + (x - x1) / (x2 - x1) * (y2 - y1);
+    }
+
+    template <typename IMAGE, typename MAP>
+    double extrapolate_data(std::size_t i1,
+                            std::size_t i2,
+                            double x1,
+                            double x2,
+                            double x,
+                            IMAGE const & image,
+                            MAP const & map)
+    {
+        double const y1 = map[i1] * image.scale() + image.offset();
+        double const y2 = map[i2] * image.scale() + image.offset();
+
+        return extrapolate(x1, x2, y1, y2, x);
+    }
+
+    double percent_difference(double l, double l0)
+    {
+        // l0 better not be zero!
+        return (l - l0) / l0 * 100;
+    }
 }
 
 bool test_projection_name()
@@ -130,6 +169,13 @@ bool test_make_map()
       Since a "latitude image" map was created, the data at the
       smaller of the map dimensions should be equal to the maximum
       configured latitude.
+
+      Approximate that latitude by linearly extrapolating from the two
+      pixels closest to each of the edges along the smaller map
+      dimension.  We could also reproduce the pixel conversion
+      algorithm in the projection but this approach gives us a more
+      independent way of confirming the integrity of the generated
+      map.
     */
     double max_lat_data[2];
 
@@ -139,14 +185,32 @@ bool test_make_map()
           center line (as well as points on the circle with that
           diameter).
         */
-        constexpr auto line = (lines / 2) * samples;
-        constexpr std::size_t left  = line;
-        constexpr std::size_t right = line + samples - 1;
+        constexpr std::size_t line = (lines / 2) * samples;
 
-        max_lat_data[0] = map[left]  * image->scale() + image->offset();
-        max_lat_data[1] = map[right] * image->scale() + image->offset();
+        // Left-most pair of pixels.
+        constexpr std::size_t l1 = line;
+        constexpr std::size_t l2 = line + 1;
+        constexpr std::size_t xl = 0;  // Left edge of the projection.
+        constexpr double xl1 = xl + 0.5;
+        constexpr double xl2 = xl + 1.5;
 
-        // ...
+        // Extrapolate the latitude at the left edge of the
+        // projection.
+        max_lat_data[0] =
+            extrapolate_data(l1, l2, xl1, xl2, xl, *image, map);
+
+        // Right-most pair of pixels.
+        constexpr std::size_t r1 = line + samples - 1;
+        constexpr std::size_t r2 = line + samples - 2;
+        constexpr std::size_t xr = samples;  // Right edge of the
+                                             // projection.
+        constexpr double xr1 = xr - 0.5;
+        constexpr double xr2 = xr - 1.5;
+
+        // Extrapolate the latitude at the right edge of the
+        // projection.
+        max_lat_data[1] =
+            extrapolate_data(r1, r2, xr1, xr2, xr, *image, map);
 
     } else {
         /*
@@ -154,22 +218,51 @@ bool test_make_map()
           center sample (as well as points on the circle with that
           diameter).
         */
-        constexpr auto sample = samples / 2;
-        constexpr std::size_t top    = sample;
-        constexpr std::size_t bottom = (lines - 1) * samples + sample;
+        constexpr std::size_t sample = samples / 2;
 
-        max_lat_data[0] = map[top]    * image->scale() + image->offset();
-        max_lat_data[1] = map[bottom] * image->scale() + image->offset();
+        // Top-most pair of pixels
+        constexpr std::size_t t1 = sample;             // Line 0
+        constexpr std::size_t t2 = samples + sample;   // Line 1
+        constexpr std::size_t xt = 0;  // Top edge of the projection.
+        constexpr double xt1 = xt + 0.5;
+        constexpr double xt2 = xt + 1.5;
 
-        // ...
+        // Extrapolate the latitude at the top edge of the
+        // projection.
+        max_lat_data[0] =
+            extrapolate_data(t1, t2, xt1, xt2, xt, *image, map);
+
+        // Bottom-most pair of pixels.
+        constexpr std::size_t b1 = (lines - 1) * samples + sample;
+        constexpr std::size_t b2 = (lines - 2) * samples + sample;
+        constexpr std::size_t xb = lines;  // Bottom edge of the
+                                           // projection.
+        constexpr double xb1 = xb - 0.5;
+        constexpr double xb2 = xb - 1.5;
+
+        // Extrapolate the latitude at the right edge of the
+        // projection.
+        max_lat_data[1] =
+            extrapolate_data(b1, b2, xb1, xb2, xb, *image, map);
     }
 
     constexpr int ulps = 2;
+    constexpr double pdmax = 0.08; // Maximum allowed difference in
+                                   // percent.
 
     return
         !map.empty()
-        && MaRC::almost_equal(center_data, expected_center_data, ulps);
+        && MaRC::almost_equal(center_data, expected_center_data, ulps)
 
+        /*
+          The linearly extrapolated maximum latitudes won't be close
+          enough to max_lat to get a good result from
+          MaRC::almost_equal() unless we greatly increase the ulps
+          argument.  Just check if the difference between the two
+          values falls within a small percentage instead.
+        */
+        && (percent_difference(max_lat_data[0], max_lat) < pdmax)
+        && (percent_difference(max_lat_data[1], max_lat) < pdmax);
 }
 
 bool test_make_grid()
@@ -198,19 +291,23 @@ bool test_make_grid()
 bool test_distortion()
 {
     // Latitude at the center of the map.
-    constexpr auto latg = -90 * C::degree;
+    constexpr double pole    = (north_pole ? 90 : -90) * C::degree;
+    constexpr double equator = 0;
 
     // Scale distortion at the center of the Polar Stereogrpahic
-    // projection shouble 1.
-    constexpr double expected_distortion = 1;
+    // projection should be 1.
+    constexpr double map_center_distortion = 1;
 
     constexpr int ulps = 2;
 
-    auto const distortion = projection->distortion(latg);
+    auto const distortion = projection->distortion(pole);
 
-    return MaRC::almost_equal(expected_distortion,
-                              distortion,
-                              ulps);
+    return
+        MaRC::almost_equal(map_center_distortion, distortion, ulps)
+
+        // Distortion away from the pole at the center of the
+        // projection should always be greater than one.
+        && projection->distortion(equator) > map_center_distortion;
 }
 
 int main()
