@@ -31,6 +31,7 @@ check_PROGRAMS =            \
   LatitudeImage_Test        \
   LongitudeImage_Test       \
   ViewingGeometry_Test      \
+  Mercator_Test             \
   PolarStereographic_Test   \
   root_find_test            \
   utility_test
@@ -66,6 +67,9 @@ LongitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
 ViewingGeometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
+Mercator_Test_SOURCES = Mercator_Test.cpp
+Mercator_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
@@ -81,7 +85,7 @@ TESTS = \
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
 
 ## Tests known to fail.
-XFAIL_TESTS =
+XFAIL_TESTS = Mercator_Test
 
 CLEANFILES = \
   test_map.fits \
