@@ -52,8 +52,8 @@ namespace
 
         return
             2 * a
-            * std::pow(1 + e, (1 - e) / 2)
-            * std::pow(1 - e, (1 + e) / 2);
+            * std::pow(1 + e, -(1 - e) / 2)
+            * std::pow(1 - e, -(1 + e) / 2);
     }
 
     /**
@@ -86,6 +86,13 @@ namespace
      *                  Stereographic radius 'rho'.
      * @param[in] latg  Bodygraphic latitude.
      *
+     * @attention This implementation assumes that the North pole is
+     *            at the center of the projection.  If the South pole
+     *            is at the center, a negated latitude @a latg
+     *            (e.g. latg = -latg) should be passed to this
+     *            function instead.  Longitudes will also have to be
+     *            adjusted accordingly.
+     *
      * @return Value of point on projection along a radial line
      *         (e.g. along a longitude line).
      *
@@ -114,9 +121,7 @@ MaRC::PolarStereographic::PolarStereographic(
     bool north_pole)
     : MapFactory()
     , body_(body)
-    , max_lat_(std::isnan(max_lat)
-               ? 0
-               : (north_pole ? max_lat : -max_lat) * C::degree)
+    , max_lat_(std::isnan(max_lat) ? 0 : max_lat * C::degree)
     , rho_coeff_(rho_coefficient(*body))
     , distortion_coeff_(distortion_coefficient(*body))
     , north_pole_(north_pole)
@@ -188,14 +193,24 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
              */
             double const rho = pix_conv_val * std::hypot(Y, X);
 
+            /**
+             * @todo We shouldn't have to search from pole-to-pole for
+             *       the latitude that gives us the above value for
+             *       @c rho.  Try to get the root finding code to work
+             *       with the initial guess instead.
+             */
             /*
               Obtain an initial guess by solving the polar
               stereographic projection equation for the latitude for a
               spherical body (first eccentricity is zero).
             */
-            double const latg_guess =
-                C::pi_2 - 2 * std::atan(rho / 2 / this->body_->eq_rad());
+            // double const latg_guess =
+            //     C::pi_2 - 2 * std::atan(rho / 2 / this->body_->eq_rad());
 
+            // l + (l * 0.1) = l * (1 + 0.1) = 1.1 * l
+            //     l - (l * 0.1) = l * (1 - 0.1) = 0.9 * l
+            // double const ll = std::max(latg_guess * 1.1, -89.9 * C::degree);
+            // double const ul = std::min(latg_guess * 0.9,  89.9 * C::degree);
             double const ll = -C::pi_2;
             double const ul =  C::pi_2;
 
@@ -211,14 +226,15 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             double const latg =
                 MaRC::root_find(rho, ll, ul, map_equation);
 
-            std::cout << "*** (latg_guess, latg) = ("
-                      << latg_guess << ", "
-                      << latg << ")\n";
+            // std::cout << "*** (latg_guess, latg) = ("
+            //           << latg_guess << ", "
+            //           << latg << ")\n";
 
             // Convert to bodyCENTRIC latitude
             double const lat =
                 this->body_->centric_latitude(this->north_pole_
-                                              ? latg : -latg);
+                                              ? latg
+                                              : -latg);
 
             double const lon =
                 std::atan2((ccw ? Y : -Y), X);
@@ -329,5 +345,8 @@ MaRC::PolarStereographic::distortion(double latg) const
 double
 MaRC::PolarStereographic::stereo_rho(double latg) const
 {
+    if (!this->north_pole_)
+        latg = -latg;  // South pole at center.
+
     return stereo_rho_impl(*this->body_, this->rho_coeff_, latg);
 }
