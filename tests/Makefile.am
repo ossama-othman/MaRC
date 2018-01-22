@@ -80,7 +80,8 @@ TESTS = \
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
 
-XFAIL_TESTS = PolarStereographic_Test
+## Tests known to fail.
+XFAIL_TESTS =
 
 CLEANFILES = \
   test_map.fits \

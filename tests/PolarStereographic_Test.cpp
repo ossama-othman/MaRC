@@ -26,6 +26,7 @@
 
 #include <memory>
 #include <cstring>
+#include <algorithm>
 
 
 namespace
@@ -45,8 +46,25 @@ namespace
                                                    max_lat,
                                                    north_pole);
 
-    constexpr std::size_t samples = 50;
-    constexpr std::size_t lines   = 60;
+    /*
+      Choose odd values for the map dimensions so that the center of
+      the map falls on the center of a pixel.  This allows us to
+      accurately locate the body's pole in the Polar Stereographic
+      projection since MaRC maps data at the center of map pixel.  For
+      example, the pixel (line, sample) = (0, 0) MaRC maps data at
+      pixel coordinate (0.5, 0.5), i.e. the center of the pixel.
+     */
+    constexpr std::size_t samples = 51;
+    constexpr std::size_t lines   = 61;
+
+    template <typename T>
+    constexpr bool is_odd(T n)
+    {
+        return n % 2;
+    }
+
+    static_assert(is_odd(samples) && is_odd(lines),
+                  "Map dimensions should be odd for this test.");
 }
 
 bool test_projection_name()
@@ -97,7 +115,61 @@ bool test_make_map()
                                                  minimum,
                                                  maximum);
 
-    return true;
+    if (map.empty())
+        return false;
+
+    constexpr auto center_sample = samples / 2;
+    constexpr auto center_line   = lines / 2;
+    constexpr auto center_offset = center_line * samples + center_sample;
+    constexpr double expected_center_data = (north_pole ? 90 : -90);
+
+    auto const center_data =
+        map[center_offset] * image->scale() + image->offset();
+
+    /*
+      Since a "latitude image" map was created, the data at the
+      smaller of the map dimensions should be equal to the maximum
+      configured latitude.
+    */
+    double max_lat_data[2];
+
+    if (samples < lines) {
+        /*
+          Maximum latitude will be on the left and right side on the
+          center line (as well as points on the circle with that
+          diameter).
+        */
+        constexpr auto line = (lines / 2) * samples;
+        constexpr std::size_t left  = line;
+        constexpr std::size_t right = line + samples - 1;
+
+        max_lat_data[0] = map[left]  * image->scale() + image->offset();
+        max_lat_data[1] = map[right] * image->scale() + image->offset();
+
+        // ...
+
+    } else {
+        /*
+          Maximum latitude will be on the top and bottom side on the
+          center sample (as well as points on the circle with that
+          diameter).
+        */
+        constexpr auto sample = samples / 2;
+        constexpr std::size_t top    = sample;
+        constexpr std::size_t bottom = (lines - 1) * samples + sample;
+
+        max_lat_data[0] = map[top]    * image->scale() + image->offset();
+        max_lat_data[1] = map[bottom] * image->scale() + image->offset();
+
+        // ...
+    }
+
+    constexpr int ulps = 2;
+
+    return
+        !map.empty()
+        && MaRC::almost_equal(center_data, expected_center_data, ulps);
+
 }
 
 bool test_make_grid()
@@ -108,16 +180,37 @@ bool test_make_grid()
     auto const grid =
         projection->make_grid(samples, lines, lat_interval, lon_interval);
 
-    return false;
+    auto const minmax =
+        std::minmax_element(grid.begin(), grid.end());
+
+    static constexpr auto black =
+        std::numeric_limits<decltype(grid)::value_type>::lowest();
+
+    static constexpr auto white =
+        std::numeric_limits<decltype(grid)::value_type>::max();
+
+    return
+        minmax.first != minmax.second
+        && *minmax.first  == black
+        && *minmax.second == white;
 }
 
 bool test_distortion()
 {
-    constexpr auto latg = 45 * C::degree;
+    // Latitude at the center of the map.
+    constexpr auto latg = -90 * C::degree;
+
+    // Scale distortion at the center of the Polar Stereogrpahic
+    // projection shouble 1.
+    constexpr double expected_distortion = 1;
+
+    constexpr int ulps = 2;
 
     auto const distortion = projection->distortion(latg);
 
-    return false;
+    return MaRC::almost_equal(expected_distortion,
+                              distortion,
+                              ulps);
 }
 
 int main()
