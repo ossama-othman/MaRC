@@ -526,7 +526,7 @@ keyword.
 * Std and Max Lats::    Notes about standard and maximum latitudes
 * Lambert Con 1::       Conformal with one standard parallel
 * Lambert Con 2::       Conformal with two standard parallels
-* Mercator::            Conformal transverse
+* Mercator::            Conformal cylindrical
 * Polar Stereo::        Conformal polar stereographic
 * Albers Eqv 1::        Equivalent with one standard parallel
 * Albers Eqv 2::        Equivalent with two standard parallels
@@ -561,7 +561,7 @@ Normal Conformal Conical Lambert Projection -- One Standard Parallel
 @item
 Normal Conformal Conical Lambert Projection -- Two Standard Parallels
 @item
-Transverse Mercator Projection
+Mercator Projection
 @item
 Polar Stereographic Projection
 @end itemize
@@ -739,16 +739,17 @@ second standard parallel cannot be 90 @code{N} or 90 @code{S}.
 Furthermore, the absolute values of the first and second standard
 parallels cannot be equal.
 
-The conformal maps allow the user to set a maximum latitude at the
-smallest dimension of the map since conformal maps theoretically extend
-on to infinity as latitudes move from the pole at the center of the map
-to the other pole at the extremities of the map (yes, the pole is no
-longer a point at the extremities of the map!).  For example, on a map
-with 800 samples, 400 lines and a maximum latitude at 45 degrees North,
-the 45 degree maximum latitude will be placed at the lower edge of
-line 1 and upper edge of line 400 since there are less lines than
-there are samples.  Maximum latitudes are set with the @code{MAX_LAT}
-keyword, as follows:
+Most of the conformal maps allow the user to set a maximum latitude at
+the smallest dimension of the map since conformal maps theoretically
+extend on to infinity as latitudes move from the pole at the center of
+the map to the other pole at the extremities of the map (yes, the pole
+is no longer a point at the extremities of the map!).  For example, on
+a map with 800 samples, 400 lines and a maximum latitude at 45 degrees
+North, the 45 degree maximum latitude will be placed at the lower edge
+of line 1 and upper edge of line 400 since there are less lines than
+there are samples.  This allows the full 360 degree longitude range at
+the desired maximum latitude to be mapped.  Maximum latitudes are set
+with the @code{MAX_LAT} keyword, as follows:
 
 @example
 MAX_LAT:  30 N
@@ -758,8 +759,8 @@ MAX_LAT:  30 N
 Note that a negative (south) maximum latitude on a map with the North
 pole at the center of the map will be ``greater'' than the northern
 latitudes since the southern latitudes lie further out radially.  The
-same goes for maps with the South pole at the center: northern latitudes
-lie further out radially than the southern latitudes.
+same goes for polar maps with the South pole at the center: northern
+latitudes lie further out radially than the southern latitudes.
 
 @node    Lambert Con 1,  Lambert Con 2,  Std and Max Lats,  Projections
 @comment node-name,     next,           previous, up
@@ -810,7 +811,7 @@ example.
 
 @node    Mercator,  Polar Stereo,  Lambert Con 2,  Projections
 @comment node-name,     next,           previous, up
-@subsection The Transverse Mercator Projection
+@subsection The Mercator Projection
 @cindex Mercator
 The Mercator projection is selected using the @code{MERCATOR} keyword
 token.  Currently there are no options available for this projection.
