@@ -117,7 +117,7 @@ bool test_make_map()
 {
     /**
      * @todo Test conformal properties of Polar Stereographic
-     * projection.
+     *       projection.
      */
 
     using namespace MaRC::default_configuration;

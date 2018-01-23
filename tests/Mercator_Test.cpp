@@ -77,8 +77,7 @@ bool test_projection_name()
 bool test_make_map()
 {
     /**
-     * @todo Test conformal properties of Polar Stereographic
-     * projection.
+     * @todo Test conformal properties of Mercator projection.
      */
 
     using namespace MaRC::default_configuration;
@@ -130,7 +129,7 @@ bool test_make_map()
     std::mt19937 generator(std::time(nullptr));
     std::uniform_int_distribution<std::size_t> distribution(0,
                                                             samples - 1);
-    
+
     auto const     sample         = distribution(generator);
     constexpr auto equator_line   = lines / 2;
     auto const     equator_offset = equator_line * samples + sample;
