@@ -47,7 +47,7 @@ namespace MaRC
      *       since the full 360 longitude range is mapped across the
      *       entire width of the generated map.  The maximum latitude
      *       is determined by the number of lines in the map.  The
-     *       greater the number lines in the map, the greater the
+     *       greater the number of lines in the map, the greater the
      *       latitude range in the map.
      *
      * @note This implementation can only map oblate spheroids or

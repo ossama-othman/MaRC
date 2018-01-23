@@ -104,11 +104,21 @@ MaRC::Mercator::plot_map(std::size_t samples,
     std::size_t offset = 0;
 
     /**
-     * @bug This calculation doesn't appear to be correct.  Shouldn't
-     *      @c xmax should be computed through the appropriate call to
-     *      @c mercator_x()?
-     *
-     * @see MaRC::PolarStereographic::plot_map()
+     * @todo Confirm that the following calculation is correct.
+     */
+    /*
+      Calculate the largest value of "X" along the axis perpendicular
+      to the longitude axis can be plotted on this map, X=0 on the
+      equator.  The greater the height of the map, the greater the
+      latitude that can be plotted.
+
+       lines    2 * xmax
+      ------- = --------
+      samples    2 * pi
+
+              lines
+      xmax = ------- * pi
+             samples
      */
     // No need to take absolute value.  Always positive.
     double const xmax =
@@ -178,11 +188,8 @@ MaRC::Mercator::plot_grid(std::size_t samples,
                           grid_type & grid) const
 {
     /**
-     * @bug This calculation doesn't appear to be correct.  Shouldn't
-     *      @c xmax should be computed through the appropriate call to
-     *      @c mercator_x()?
-     *
-     * @see MaRC::PolarStereographic::plot_grid()
+     * @see MaRC::Mercator::plot_map() to see how this value is
+     *      derived.
      */
     // No need to take absolute value.  Always positive.
     double const xmax =
@@ -197,12 +204,6 @@ MaRC::Mercator::plot_grid(std::size_t samples,
     for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
         // Convert to bodygraphic latitude
         double const nn = this->body_->graphic_latitude(n * C::degree);
-
-        /**
-         * @bug Shouldn't we take into account the maximum latitude of
-         *      the projection here?
-         */
-
         double const k =
             std::round(mercator_x(*this->body_, nn) / pix_conv_val
                        + lines / 2.0);
