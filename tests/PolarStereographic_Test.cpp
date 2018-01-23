@@ -110,8 +110,7 @@ bool test_projection_name()
 {
     static char const name[] = "Polar Stereographic";
 
-    return std::strcmp(projection->projection_name(),
-                       name) == 0;
+    return std::strcmp(projection->projection_name(), name) == 0;
 }
 
 bool test_make_map()

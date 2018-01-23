@@ -71,8 +71,7 @@ bool test_projection_name()
 {
     static char const name[] = "Mercator";
 
-    return std::strcmp(projection->projection_name(),
-                       name) == 0;
+    return std::strcmp(projection->projection_name(), name) == 0;
 }
 
 bool test_make_map()
@@ -139,7 +138,9 @@ bool test_make_map()
         map[equator_offset] * image->scale() + image->offset();
 
     /**
-     * @todo Can we somehow get to smaller ulp value?
+     * @todo @c equator_data is close to zero as expected (on the
+     *       order of 1e-15.  Can we somehow get even closer to zero
+     *       so that we can reduce this @c ulps value?
      */
     constexpr int ulps = 30;
 
@@ -175,6 +176,8 @@ bool test_distortion()
 {
     // Latitude at the center of the map.
     constexpr double equator     = 0;
+
+    // Arbitrary planetographic latitude that is not the equator.
     constexpr double not_equator = 30 * C::degree;
 
     // Scale distortion at along the equator in the Transverse
