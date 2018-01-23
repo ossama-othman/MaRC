@@ -45,12 +45,18 @@
 - Improved speed of MU, MU0 and PHASE virtual image generation by up
   to 100% by dropping a redundant data "visibility" check.
 
-- Addressed memory violation in Polar Stereographic projection.
+- Corrected problem in conformal (Mercator and Polar Stereographic)
+  maps that prevented calculation of latitudes for the entire map from
+  completing in some cases.
 
-- Add initial support for "maximum latitude" option in Mercator
-  projection.
+- Dropped references to "transverse" in documentation related to the
+  Mercator projection.  MaRC's Mercator projection is the regular
+  variant not the transverse one.
 
-- Fixed memory violation in Mercator projection grid generation.
+- Improved accuracy of conformal maps through root finding
+  improvements.
+
+- Fixed memory violations conformal maps.
 
 
 20 August 2017 - MaRC 0.9.9
