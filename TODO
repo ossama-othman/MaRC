@@ -16,7 +16,7 @@
 	to use new perspective routines.
 24.	Create ".el" lisp module for Emacs/XEmacs MaRC input file mode.
 
--------- Following from Joe Harrington <jh@astrosun.tn.cornell.edu> -------
+-------- Following from Joe Harrington -------
 27.
 Minnaert and IR Minnaert (no incident contribution) -- see Helfenstein
 automatic limb centering -- see jh
