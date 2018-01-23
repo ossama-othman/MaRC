@@ -85,7 +85,7 @@ TESTS = \
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
 
 ## Tests known to fail.
-XFAIL_TESTS = Mercator_Test
+XFAIL_TESTS =
 
 CLEANFILES = \
   test_map.fits \
