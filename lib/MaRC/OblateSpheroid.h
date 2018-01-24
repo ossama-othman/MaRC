@@ -78,6 +78,12 @@ namespace MaRC
             return this->pol_rad_;
         }
 
+        /// Get the flattening.
+        double flattening() const
+        {
+            return (this->eq_rad_ - this->pol_rad_) / this->eq_rad_;
+        }
+
         /// Get the first eccentricity.
         double first_eccentricity() const
         {
