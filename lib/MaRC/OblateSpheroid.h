@@ -53,15 +53,11 @@ namespace MaRC
          *                       rotation is prograde or retrograde.
          * @param[in] eq_rad     Equatorial radius in kilometers.
          * @param[in] pol_rad    Polar radius in kilometers.
-         * @param[in] flattening Flattening ((eq_rad-pol_rad)/eq_rad).
          *
-         * @note Two of three parameters @a eq_rad, @a pol_rad and
-         *       @a flattening must be valid.
+         * @note @a eq_rad must be greater than or equal to
+         *       @a pol_rad.
          */
-        OblateSpheroid(bool prograde,
-                       double eq_rad,
-                       double pol_rad,
-                       double flattening);
+        OblateSpheroid(bool prograde, double eq_rad, double pol_rad);
 
         // Disallow copying.
         OblateSpheroid(OblateSpheroid const &) = delete;
@@ -80,12 +76,6 @@ namespace MaRC
         double pol_rad() const
         {
             return this->pol_rad_;
-        }
-
-        /// Get the flattening.
-        double flattening() const
-        {
-            return this->flattening_;
         }
 
         /// Get the first eccentricity.
@@ -172,43 +162,24 @@ namespace MaRC
 
     private:
 
-        /// Initialize equatorial radius, polar radius and flattening
-        /// using at least two of the given parameters.
-        /**
-         * @param[in] eq_rad     Equatorial radius in kilometers.
-         * @param[in] pol_rad    Polar radius in kilometers.
-         * @param[in] flattening Flattening ((eq_rad-pol_rad)/eq_rad).
-         */
-        void initialize_radii(double eq_rad,
-                              double pol_rad,
-                              double flattening);
-
-    private:
-
         /// Equatorial radius (kilometers).
-        double eq_rad_;
+        double const eq_rad_;
 
         /// Polar radius (kilometers).
-        double pol_rad_;
-
-        /// Flattening.
-        /**
-         * flattening = (eq_rad - pol_rad) / eq_rad
-         *
-         *     flattening == 0 : Sphere
-         * 0 < flattening <  1 : Oblate Spheroid
-         *
-         *     flattening <  0 : eq_rad < pol_rad : INVALID
-         * 1 < flattening      : pol_rad < 0      : INVALID
-         *     flattening == 1 : Disc             : INVALID
-         */
-        double flattening_;
+        double const pol_rad_;
 
         /// First eccentricity.
         /**
-         * (1 - (1 - flattening) ^ 2)
+         * A measure of the oblate spheroid's deviation from being
+         * spherical.
+         *
+         * e = sqrt(1 - (pol_rad / eq_rad) ^ 2)
+         *
+         * or:
+         *
+         * e = sqrt(1 - (1 - flattening) ^ 2)
          */
-        double first_eccentricity_;
+        double const first_eccentricity_;
 
   };
 

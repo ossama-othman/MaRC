@@ -31,6 +31,8 @@ check_PROGRAMS =            \
   LatitudeImage_Test        \
   LongitudeImage_Test       \
   ViewingGeometry_Test      \
+  Mercator_Test             \
+  PolarStereographic_Test   \
   root_find_test            \
   utility_test
 
@@ -65,6 +67,12 @@ LongitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
 ViewingGeometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
 
+Mercator_Test_SOURCES = Mercator_Test.cpp
+Mercator_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
+PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
+PolarStereographic_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+
 root_find_test_SOURCES = root_find_test.cpp
 root_find_test_LDADD   = $(top_builddir)/lib/MaRC/libMaRC.la
 
@@ -76,7 +84,14 @@ TESTS = \
 
 TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
 
-CLEANFILES = test_map.fits test_map_ortho.fits
+## Tests known to fail.
+XFAIL_TESTS =
+
+CLEANFILES = \
+  test_map.fits \
+  test_map_ortho.fits \
+  test_map_mercator.fits \
+  test_map_polar_stereographic.fits
 
 all-local:
 	@if test ! -r test.fits.gz; then \

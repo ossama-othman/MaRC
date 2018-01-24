@@ -136,8 +136,8 @@ namespace MaRC
          */
         grid_type make_grid(std::size_t samples,
                             std::size_t lines,
-                            float lat_interval,
-                            float lon_interval);
+                            double lat_interval,
+                            double lon_interval);
 
     private:
 
@@ -217,8 +217,8 @@ namespace MaRC
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
-                               float lat_interval,
-                               float lon_interval,
+                               double lat_interval,
+                               double lon_interval,
                                grid_type & grid) const = 0;
 
     private:

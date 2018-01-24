@@ -29,13 +29,9 @@ namespace
     constexpr bool   prograde   = true;
     constexpr double eq_rad     = 71492;
     constexpr double pol_rad    = 66854;
-    constexpr double flattening = -1;  // unused
 
     std::shared_ptr<MaRC::OblateSpheroid> body =
-        std::make_shared<MaRC::OblateSpheroid>(prograde,
-                                               eq_rad,
-                                               pol_rad,
-                                               flattening);
+        std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
 
     // Viewing geometry parameters.
     constexpr double sample_center = 2807.61;  // pixels

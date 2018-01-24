@@ -32,103 +32,30 @@
 #include <cassert>
 
 
-MaRC::OblateSpheroid::OblateSpheroid(bool prograde,
-                                     double eq_rad,
-                                     double pol_rad,
-                                     double flattening)
-    : BodyData(prograde)
-    , eq_rad_(-1)
-    , pol_rad_(-1)
-    , flattening_(-1)
-    , first_eccentricity_(-1)
+namespace
 {
-    this->initialize_radii(eq_rad, pol_rad, flattening);
+    double validate_radius(double r)
+    {
+        if (std::isnan(r) || r <= 0)
+            throw std::invalid_argument(
+                "Invalid oblate spheroid radius.");
+
+        return r;
+    }
 }
 
-void
-MaRC::OblateSpheroid::initialize_radii(double eq_rad,
-                                       double pol_rad,
-                                       double flattening)
+MaRC::OblateSpheroid::OblateSpheroid(bool prograde,
+                                     double eq_rad,
+                                     double pol_rad)
+    : BodyData(prograde)
+    , eq_rad_(validate_radius(eq_rad))
+    , pol_rad_(validate_radius(pol_rad))
+    , first_eccentricity_(std::sqrt(1 - std::pow(pol_rad / eq_rad, 2)))
 {
-    unsigned int count = 0;
-
-    // ----------------------------------------------
-    // Set equatorial radius.
-    // ----------------------------------------------
-    if (eq_rad > 0
-        && eq_rad < std::sqrt(std::numeric_limits<double>::max()) - 1) {
-        if (eq_rad < this->pol_rad_) {
-            std::ostringstream s;
-            s << "Equatorial radius (" << eq_rad
-              << ") is less than polar radius (" << this->pol_rad_ << ")";
-
-            throw std::invalid_argument(s.str());
-        } else {
-            this->eq_rad_ = eq_rad;
-
-            ++count;
-        }
-    }
-
-    // ----------------------------------------------
-    // Set polar radius.
-    // ----------------------------------------------
-    if (pol_rad > 0
-        && pol_rad < std::sqrt(std::numeric_limits<double>::max()) - 1) {
-        if (this->eq_rad_ > 0 && this->eq_rad_ < pol_rad) {
-            std::ostringstream s;
-            s << "Polar radius (" << pol_rad
-              << ") is greater than equatorial radius ("
-              << this->eq_rad_ << ")";
-
-            throw std::invalid_argument(s.str());
-        } else {
-            this->pol_rad_ = pol_rad;
-
-            ++count;
-        }
-    }
-
-    // ----------------------------------------------
-    // Set flattening.
-    // ----------------------------------------------
-
-    // flattening <  0 ----> Prolate Spheroid <----- Not valid
-    // flattening > 0 < 1 -> Oblate Spheroid
-    // flattening == 0 ----> Sphere
-    // flattening == 1 ----> Disc!!  <--- Not valid
-
-    if (flattening >= 0 && flattening < 1) {
-        this->flattening_ = flattening;
-        this->first_eccentricity_ =
-            std::sqrt(1 - std::pow(1 - flattening, 2));
-
-        ++count;
-    }
-
-    if (count < 2) {
-        std::ostringstream s;
-        s << "< " << count << " > valid oblate spheroid "
-          << "characteristic(s) specified:"
-          << "\n  Equatorial radius: " << eq_rad
-          << "\n  Polar radius:      " << pol_rad
-          << "\n  Flattening:        " << flattening
-          << "\nTwo are required.";
-
-        throw std::invalid_argument(s.str());
-    }
-
-    // At least two components have been set.  Set the third.
-
-    if (this->eq_rad_ < 0)
-        this->eq_rad_ = this->pol_rad_ / (1 - this->flattening_);
-    else if (this->pol_rad_ < 0)
-        this->pol_rad_ = this->eq_rad_ * (1 - this->flattening_);
-    else if (this->flattening_ < 0) {
-        this->flattening_ = 1 - this->pol_rad_ / this->eq_rad_;
-        this->first_eccentricity_ =
-            std::sqrt(1 - std::pow(1 - this->flattening_, 2));
-    }
+    // a >= c for oblate spheroid.
+    if (eq_rad < pol_rad)
+        throw std::invalid_argument("Equatorial radius is less than "
+                                    "polar radius.");
 }
 
 double

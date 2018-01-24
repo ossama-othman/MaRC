@@ -149,7 +149,7 @@ namespace MaRC
      * @brief Structure containing oblate spheroid radii.
      *
      * Parsed radii will be stored in an instance of this structure.
-     * Only two of the three fields are required..
+     * Only two of the three fields are required.
      */
     struct Radii
     {
@@ -161,6 +161,13 @@ namespace MaRC
 
         /// Flattening (a-c/a)
         double flattening;
+
+        /**
+         * Make sure at least two of the three fields are set, and
+         * verify that the values are suitable for use by MaRC.
+         */
+        void validate();
+
     };
 
 }

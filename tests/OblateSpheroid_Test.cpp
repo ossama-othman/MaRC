@@ -32,7 +32,6 @@ namespace
     constexpr bool prograde = true;        // Prograde rotation
     constexpr double a      = 71492;       // Equatorial radius
     constexpr double c      = 66854;       // Polar radius
-    constexpr double f      = (a - c) / a; // Flattening
 
     // "Units in the last place" for floating point equality
     // comparison.
@@ -47,66 +46,24 @@ namespace
 
 bool test_initialization()
 {
-    // Equatorial and polar radii given.
-    auto const o1 =
-        std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                               a,
-                                               c,
-                                               -1 /* flattening*/);
+    auto const o =
+        std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
-    // Equatorial radius and flattening given.
-    auto const o2 =
-        std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                               a,
-                                               -1,  // polar radius
-                                               f);
-
-    // Polar radius and flattening given.
-    auto const o3 =
-        std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                               -1,  // equatorial radius
-                                               c,
-                                               f);
-
-
-    // Insufficient number of radii or flattening provided.
-    try {
-        auto const o4 =
-            std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                                   -1,  // equatorial radius
-                                                   -1,  // polar radius
-                                                   f);
-
-        // The OblateSpheroid constructor should have thrown an
-        // exception!
-        return false;
-    } catch(std::invalid_argument &) {
-        // Expected exception thrown.
-    }
+    // Expected first eccentricity
+    double const e = std::sqrt(1 - std::pow(c / a, 2));
 
     return
-        prograde == o1->prograde()
+        prograde == o->prograde()
 
-        && MaRC::almost_equal(a, o1->eq_rad(),     ulps)
-        && MaRC::almost_equal(c, o1->pol_rad(),    ulps)
-        && MaRC::almost_equal(f, o1->flattening(), ulps)
-
-        && MaRC::almost_equal(a, o2->eq_rad(),     ulps)
-        && MaRC::almost_equal(c, o2->pol_rad(),    ulps)
-        && MaRC::almost_equal(f, o2->flattening(), ulps)
-
-        && MaRC::almost_equal(a, o3->eq_rad(),     ulps)
-        && MaRC::almost_equal(c, o3->pol_rad(),    ulps)
-        && MaRC::almost_equal(f, o3->flattening(), ulps);
+        && MaRC::almost_equal(a, o->eq_rad(),  ulps)
+        && MaRC::almost_equal(c, o->pol_rad(), ulps)
+        && MaRC::almost_equal(e, o->first_eccentricity(), ulps);
 }
 
 bool test_centric_radius()
 {
     auto const o =
-        std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                               a,
-                                               c,
-                                               -1 /* flattening*/);
+        std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
     constexpr double equator    =  0;               // radians
     constexpr double north_pole =  90 * C::degree;  //  pi/2
@@ -144,10 +101,7 @@ bool test_centric_radius()
 bool test_latitudes()
 {
     auto const o =
-        std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                               a,
-                                               c,
-                                               -1 /* flattening*/);
+        std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
     // Arbitrary latitude that isn't the equator or a pole.
     constexpr double latc = 27 * C::degree;
@@ -180,10 +134,7 @@ bool test_mu()
      */
 #if 0
     auto const o =
-        std::make_unique<MaRC::OblateSpheroid>(prograde,
-                                               a,
-                                               c,
-                                               -1 /* flattening*/);
+        std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
     constexpr double sub_observ_lat = 42  * C::degree;
     constexpr double sub_observ_lon = 247 * C::degree;

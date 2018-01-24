@@ -100,8 +100,8 @@
 
     // To create a grid or not to create a grid?  That is the question.
     bool create_grid = false;
-    float lat_interval;
-    float lon_interval;
+    double lat_interval;
+    double lon_interval;
 
     std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
     MaRC::MosaicImageFactory::list_type photo_factories;
@@ -682,11 +682,12 @@ body:   BODY ':' _STRING
           auto_free<char> str($3);
           body_name = $3;
 
+          ($4).validate();
+
           oblate_spheroid =
               std::make_shared<MaRC::OblateSpheroid>($5,
                                                      ($4).eq_rad,
-                                                     ($4).pol_rad,
-                                                     ($4).flattening);
+                                                     ($4).pol_rad);
         }
 ;
 
@@ -1348,12 +1349,9 @@ lampoleq_options:
 
 /* ------------------------- Mercator Projection ------------------------ */
 mercator:
-        MAP_TYPE ':' _MERCATOR
-        max_latitude {
+        MAP_TYPE ':' _MERCATOR {
             map_factory =
-                std::make_unique<MaRC::Mercator>(
-                    oblate_spheroid,
-                    max_lat);
+                std::make_unique<MaRC::Mercator>(oblate_spheroid);
         }
 ;
 

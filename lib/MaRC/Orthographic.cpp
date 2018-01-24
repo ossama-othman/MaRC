@@ -312,14 +312,14 @@ MaRC::Orthographic::plot_map(std::size_t samples,
 void
 MaRC::Orthographic::plot_grid(std::size_t samples,
                               std::size_t lines,
-                              float lat_interval,
-                              float lon_interval,
+                              double lat_interval,
+                              double lon_interval,
                               grid_type & grid) const
 {
     int i, k, imax = 2000;
     double low_bound, high_bound, x, z;
     DVector Coord, T_Coord;
-    float m, mm, mm2, n, nn;
+    double m, mm, mm2, n, nn;
 
     // Tranformation matrix to rotate about x than new y
     DMatrix const body2obs(Geometry::RotYMatrix(-this->PA_) *

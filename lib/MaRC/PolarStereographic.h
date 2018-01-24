@@ -61,7 +61,11 @@ namespace MaRC
          * @param[in] body       Pointer to @c OblateSpheroid object
          *                       representing body being mapped.
          * @param[in] max_lat    Maximum bodyCENTRIC latitude to map
-         *                       in degrees.
+         *                       in degrees.  For example, given a map
+         *                       with 50 samples and 25 lines,
+         *                       @a max_lat will be at the lower edge
+         *                       of line 1 and the upper edge of line
+         *                       25.
          * @param[in] north_pole Place north_pole if @c true.  South
          *                       pole otherwise.
          */
@@ -84,6 +88,13 @@ namespace MaRC
         virtual char const * projection_name() const;
         //@}
 
+        /// Scale distortion at given bodygraphic latitude @a latg on
+        /// map.
+        /**
+         * @param[in] latg Bodygraphic latitude.
+         */
+        double distortion(double latg) const;
+
     private:
 
         /**
@@ -103,16 +114,9 @@ namespace MaRC
          */
         virtual void plot_grid(std::size_t samples,
                                std::size_t lines,
-                               float lat_interval,
-                               float lon_interval,
+                               double lat_interval,
+                               double lon_interval,
                                grid_type & grid) const;
-
-        /// Scale distortion at given bodygraphic latitude @a latg on
-        /// map.
-        /**
-         * @param[in] latg Bodygraphic latitude.
-         */
-        double distortion(double latg) const;
 
     private:
 

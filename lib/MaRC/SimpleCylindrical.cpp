@@ -98,8 +98,8 @@ MaRC::SimpleCylindrical::plot_map(std::size_t samples,
 void
 MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
                                    std::size_t lines,
-                                   float lat_interval,
-                                   float lon_interval,
+                                   double lat_interval,
+                                   double lon_interval,
                                    grid_type & grid) const
 {
     // Convert back to degrees
@@ -115,7 +115,7 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
         std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
-    for (float n = -90 + lat_interval; n < 90; n += lat_interval) {
+    for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
         double const k = std::round((n - lo_lat) * lr);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
@@ -133,7 +133,7 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
     double const sr = samples / (hi_lon - lo_lon);
 
     // Draw longitude lines.
-    for (float m = 360; m > 0; m -= lon_interval) {
+    for (double m = 360; m > 0; m -= lon_interval) {
         // lo_lon_2 is a work-around for lo_lon_ > hi_lon_ problems
         double lo_lon_2;
 

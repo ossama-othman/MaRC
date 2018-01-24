@@ -54,8 +54,8 @@ MaRC::MosaicImage::read_data(double lat,
 
     for (auto const & i : this->images_) {
         /**
-         * @todo Find a more elegant way to peform averaging than this
-         *       switch statement.
+         * @todo Find a more elegant way to perform averaging than
+         *       this switch statement.
          */
         switch (this->average_type_) {
         case AVG_WEIGHTED:  // Weighted averaging.
