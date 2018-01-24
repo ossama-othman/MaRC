@@ -56,8 +56,7 @@
 - Improved accuracy of conformal maps through root finding
   improvements.
 
-- Fixed memory violations conformal maps.
-
+- Fixed memory violations in conformal maps.
 
 20 August 2017 - MaRC 0.9.9
 

@@ -133,10 +133,10 @@ MaRC::Mercator::plot_map(std::size_t samples,
 
         /**
          * @todo We shouldn't have to search from pole-to-pole for
-         *       the latitude that gives us the above value for
-         *       @c rho.  Try to get the root finding code to work
-         *       with the initial guess instead, or at the very least
-         *       reduce the size of the search bracket.
+         *       the latitude that gives us the above value for @c x.
+         *       Try to get the root finding code to work with the
+         *       initial guess instead, or at the very least reduce
+         *       the size of the search bracket.
          */
 
         // Obtain initial guess from inverse Mercator equation for a
