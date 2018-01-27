@@ -31,7 +31,6 @@
 #include "PhotometricCorrection.h"
 
 #include <stdexcept>
-#include <iostream>
 #include <sstream>
 #include <cassert>
 

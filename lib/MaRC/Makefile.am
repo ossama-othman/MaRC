@@ -22,6 +22,7 @@ include $(top_srcdir)/aminclude_static.am
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
+  -I$(top_srcdir)/external \
   $(CODE_COVERAGE_CPPFLAGS)
 
 lib_LTLIBRARIES = libMaRC.la
@@ -30,6 +31,8 @@ libMaRC_la_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
 libMaRC_la_LIBADD   = $(CODE_COVERAGE_LIBS)
 
 libMaRC_la_SOURCES = \
+  Log.cpp \
+  \
   Geometry.cpp \
   \
   BodyData.cpp \
@@ -67,6 +70,7 @@ libMaRC_la_SOURCES = \
   Version.cpp
 
 pkginclude_HEADERS = \
+  Log.h \
   DefaultConfiguration.h \
   config.h \
   \

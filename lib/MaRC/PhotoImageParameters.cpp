@@ -26,8 +26,8 @@
 #include "NullInterpolation.h"
 
 #include <stdexcept>
-#include <iostream>
-#include <sstream>
+// #include <iostream>
+// #include <sstream>
 
 #ifndef MARC_DEFAULT_PHOTO_CORR_STRATEGY
 # define MARC_DEFAULT_PHOTO_CORR_STRATEGY MaRC::NullPhotometricCorrection

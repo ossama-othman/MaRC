@@ -27,11 +27,11 @@
 #include "Mathematics.h"
 #include "Validate.h"
 #include "NullGeometricCorrection.h"
+#include "Log.h"
 
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#include <iostream>
 #include <cassert>
 
 #ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
@@ -333,11 +333,10 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
 
     if (!MaRC::quadratic_roots(a, b, c, SubLatModSin)) {
         // No real roots.
-        std::cerr
-            << "ERROR: Unable to find roots corresponding to\n"
-               "       sub-observation latitudes when calculating\n"
-               "       suitable rotation matrices to go between\n"
-               "       observer and body coordinates.\n";
+        MaRC::log->error("Unable to find roots corresponding to "
+                         "sub-observation latitudes when calculating "
+                         "suitable rotation matrices to go between "
+                         "observer and body coordinates.";
 
         return false;  // Failure
     }
@@ -384,24 +383,20 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude(this->range_b_);
+        diff_magnitude / MaRC::magnitude(this->range_b_) * 100;
 
     static constexpr double tolerance = 1e-8;
-    if (percent_diff * 100 > tolerance) {
+    if (percent_diff > tolerance) {
         // If greater than tolerance, warn.
-        std::cerr
-            << "\n"
-            "WARNING: Results may be incorrect since a\n"
-            "         \"suitable\" transformation matrix was\n"
-            "         not found for the given image.\n"
-            "         There was a "
-            <<  percent_diff * 100 << "%\n"
-            "         difference between the two test vectors."
-            "\n"
-            "         This warning occured since the percent\n"
-            "         difference between the vectors was\n"
-            "         greater than "
-            << tolerance << "%.\n";
+        MaRC::log->warning("Results may be incorrect since a "
+                           "\"suitable\" transformation matrix was "
+                           "not found for the given image.  "
+                           "There was a {}% difference between the "
+                           "two test vectors.  This warning occured "
+                           "since the percent difference between the "
+                           "vectors was greater than {}%.",
+                           percent_diff,
+                           tolerance);
     }
 
     // Body to observer transformation
@@ -411,7 +406,8 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
 
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)
-        std::cout
+        MaRC::log->debug(..
+         std::cout
             << std::abs((this->range_b_[i] - (observ2body * range_o)[i])
                         / (this->range_b_[i] + (observ2body * range_o)[i])
                         * 2)
