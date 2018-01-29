@@ -105,6 +105,12 @@ dnl Checks for libraries.
 dnl We're of course going to need the C math library.
 AC_SEARCH_LIBS([cos],[m])
 
+dnl spdlog requires the POSIX threads support.
+AX_CXX_PTHREAD
+LIBS="$PTHREAD_LIBS $LIBS"
+CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
+CXX="$PTHREAD_CXX"
+
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 AC_SUBST([CFITSIO_LIBS])
 AC_SUBST([CFITSIO_CFLAGS])
