@@ -26,9 +26,25 @@
 #include "config.h"
 
 
-namespace MaRC
-{
-    logger_type const _logger = spdlog::stdout_color_mt(PACKAGE);
+namespace {
+    auto init_marc_logger()
+    {
+        auto logger = spdlog::stdout_color_mt(PACKAGE);
+
+        // No need for a date and time stamp for console logging at
+        // this point in time.
+        // [logger name] [log level] text to log
+        logger->set_pattern("[%n] [%l] %v");
+
+#ifndef NDEBUG
+        logger->set_level(spdlog::level::debug);
+#endif  // NDEBUG
+
+        return logger;
+    }
 }
 
-//_logger->set_level(spdlog::level::debug);
+namespace MaRC
+{
+    logger_type const _logger = init_marc_logger();
+}
