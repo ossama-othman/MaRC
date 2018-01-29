@@ -24,6 +24,12 @@
  * @author Ossama Othman
  */
 
+/**
+ * @todo Ideally we shouldn't have to include this header since the
+ *       underlying MaRC logger instance shouldn't be exposed to the
+ *       user.
+ */
+#include "MaRC/Export.h"  // For MARC_API
 
 /**
  * @bug We really shouldn't be exposing <MaRC/config.h> to the user
@@ -46,6 +52,10 @@
 # define MARC_DEBUG_ARGS(x) x
 #endif  // NDEBUG
 
+/**
+ * @bug MaRC's copy of spdlog could conflict with an installed copy in
+ *      elsewhere in the compiler's include path.
+ */
 #include <spdlog/spdlog.h>
 
 
@@ -57,12 +67,13 @@ namespace MaRC
      * @internal Pointer to the underlying MaRC logger.
      *
      * @todo This isn't a good way to expose the MaRC logger
-     *       instance.
+     *       instance since it isn't meant to be part of the MaRC
+     *       API.
      *
      * @attention Not to be confused with @c std::log()!
      *
      */
-    extern logger_type const _logger;
+    extern MARC_API logger_type const _logger;
 
     template <typename ... Args>
     void
