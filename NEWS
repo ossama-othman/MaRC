@@ -45,6 +45,9 @@
 - Improved speed of MU, MU0 and PHASE virtual image generation by up
   to 100% by dropping a redundant data "visibility" check.
 
+- Slightly improved overall MaRC performance by leveraging link-time
+  optimization on some platforms.
+
 - Corrected problem in conformal (Mercator and Polar Stereographic)
   maps that prevented calculation of latitudes for the entire map from
   completing in some cases.
