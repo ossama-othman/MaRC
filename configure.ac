@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl  Copyright  1996-1999, 2003-2004, 2017  Ossama Othman
+dnl Copyright 1996-1999, 2003-2004, 2017-2018  Ossama Othman
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -154,6 +154,11 @@ AS_IF([test "x$ax_enable_debug" != "xyes"],
        AX_CHECK_COMPILE_FLAG([$marc_lto_flag],
                              [AX_APPEND_FLAG([$marc_lto_flag],
                                              [XCXXFLAGS])])
+
+       dnl NDEBUG is defined in <MaRC/config.h> but also define it on
+       dnl the command line to avoid having to include <MaRC/config.h>
+       dnl in MaRC headers or template code.
+       dnl AX_APPEND_FLAG([-DNDEBUG], [XCPPFLAGS])
       ])
 
 AS_IF([test "x$enable_arch_detect" = "xyes"],
