@@ -2,6 +2,8 @@
 /**
  * @file Log.h
  *
+ * MaRC logging interface.
+ *
  * Copyright (C) 2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
@@ -22,7 +24,27 @@
  * @author Ossama Othman
  */
 
-#include <MaRC/Export.h>
+
+/**
+ * @bug We really shouldn't be exposing <MaRC/config.h> to the user
+ *      since it contains preprocessor symbols that pollute the global
+ *      namespace.
+ */
+#include "MaRC/config.h"  // For NDEBUG
+
+/**
+ * Enable debug and trace level logging in spdlog.
+ *
+ * @note @c NDEBUG should be defined on the command line if debug
+ *       logging should be disabled so that including "MaRC/config.h"
+ *       and exposing as part of the user interface can be avoided.
+ */
+#ifdef NDEBUG
+# define MARC_DEBUG_ARGS(x)
+#else
+# define SPDLOG_DEBUG_ON
+# define MARC_DEBUG_ARGS(x) x
+#endif  // NDEBUG
 
 #include <spdlog/spdlog.h>
 
@@ -32,7 +54,7 @@ namespace MaRC
     using logger_type = std::shared_ptr<spdlog::logger>;
 
     /**
-     * @internal Pointer to the underlying MaRC logger;
+     * @internal Pointer to the underlying MaRC logger.
      *
      * @todo This isn't a good way to expose the MaRC logger
      *       instance.
@@ -44,16 +66,9 @@ namespace MaRC
 
     template <typename ... Args>
     void
-    trace(Args const & ... args)
+    debug(Args const & ... MARC_DEBUG_ARGS(args))
     {
-        _logger->trace(args ...);
-    }
-
-    template <typename ... Args>
-    void
-    debug(Args const & ... args)
-    {
-        _logger->debug(args ...);
+        SPDLOG_DEBUG(_logger, args ...);
     }
 
     template <typename ... Args>
@@ -83,5 +98,4 @@ namespace MaRC
     {
         _logger->critical(args ...);
     }
-
 }
