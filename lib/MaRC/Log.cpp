@@ -28,5 +28,7 @@
 
 namespace MaRC
 {
-    logger_type const log = spdlog::stdout_color_mt(PACKAGE);
+    logger_type const _logger = spdlog::stdout_color_mt(PACKAGE);
 }
+
+//_logger->set_level(spdlog::level::debug);

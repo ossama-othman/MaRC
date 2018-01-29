@@ -32,7 +32,7 @@ namespace MaRC
     using logger_type = std::shared_ptr<spdlog::logger>;
 
     /**
-     * Pointer to the underlying MaRC logger;
+     * @internal Pointer to the underlying MaRC logger;
      *
      * @todo This isn't a good way to expose the MaRC logger
      *       instance.
@@ -40,5 +40,48 @@ namespace MaRC
      * @attention Not to be confused with @c std::log()!
      *
      */
-    extern logger_type const log;
+    extern logger_type const _logger;
+
+    template <typename ... Args>
+    void
+    trace(Args const & ... args)
+    {
+        _logger->trace(args ...);
+    }
+
+    template <typename ... Args>
+    void
+    debug(Args const & ... args)
+    {
+        _logger->debug(args ...);
+    }
+
+    template <typename ... Args>
+    void
+    info(Args const & ... args)
+    {
+        _logger->info(args ...);
+    }
+
+    template <typename ... Args>
+    void
+    warn(Args const & ... args)
+    {
+        _logger->warn(args ...);
+    }
+
+    template <typename ... Args>
+    void
+    error(Args const & ... args)
+    {
+        _logger->error(args ...);
+    }
+
+    template <typename ... Args>
+    void
+    critical(Args const & ... args)
+    {
+        _logger->critical(args ...);
+    }
+
 }
