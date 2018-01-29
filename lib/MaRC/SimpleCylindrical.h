@@ -47,7 +47,7 @@ namespace MaRC
      * projection, as well as rectangular, equirectangular and
      * equidistant cylindrical.
      */
-    class MARC_API SimpleCylindrical : public MapFactory
+    class MARC_API SimpleCylindrical final : public MapFactory
     {
     public:
 

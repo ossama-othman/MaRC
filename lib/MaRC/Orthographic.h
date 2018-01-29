@@ -49,7 +49,7 @@ namespace MaRC
      * @note Only bodies modeled as oblate spheroids are supported by
      *       this implementation.
      */
-    class MARC_API Orthographic : public MapFactory
+    class MARC_API Orthographic final : public MapFactory
     {
     public:
 

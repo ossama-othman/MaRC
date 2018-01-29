@@ -44,7 +44,7 @@ namespace MaRC
      * emission angle on the body being mapped.  The observer range is
      * taken into account.
      */
-    class MARC_API MuImage : public VirtualImage
+    class MARC_API MuImage final : public VirtualImage
     {
     public:
 

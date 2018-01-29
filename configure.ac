@@ -131,9 +131,17 @@ AC_HEADER_STDC
 
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],
-      [marc_optimization_flag="-O2"
+      [
+       dnl Compile-time optimization
+       marc_optimization_flag="-O2"
        AX_CHECK_COMPILE_FLAG([$marc_optimization_flag],
                              [AX_APPEND_FLAG([$marc_optimization_flag],
+                                             [XCXXFLAGS])])
+
+       dnl Link-time optimization
+       marc_lto_flag="-flto"
+       AX_CHECK_COMPILE_FLAG([$marc_lto_flag],
+                             [AX_APPEND_FLAG([$marc_lto_flag],
                                              [XCXXFLAGS])])
       ])
 

@@ -47,7 +47,7 @@ namespace MaRC
      * the MosaicImage to be mapped, which reduces run-time memory
      * requirements.
      */
-    class MosaicImageFactory : public ImageFactory
+    class MosaicImageFactory final : public ImageFactory
     {
     public:
 

@@ -42,7 +42,7 @@ namespace MaRC
      * Mosaics may be comprised of multiple photographs, each taken at
      * different viewing geometries.
      */
-    class MARC_API MosaicImage : public SourceImage
+    class MARC_API MosaicImage final : public SourceImage
     {
     public:
 

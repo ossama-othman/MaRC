@@ -46,7 +46,7 @@ namespace MaRC
      * body being mapped.  The sun is assumed to be an infinite
      * distance away.
      */
-    class MARC_API Mu0Image : public VirtualImage
+    class MARC_API Mu0Image final : public VirtualImage
     {
     public:
 

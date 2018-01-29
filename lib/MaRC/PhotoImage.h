@@ -47,7 +47,7 @@ namespace MaRC
      * photos of the same body being mapped.  For example, photos from
      * telescope observations fit into this category.
      */
-    class MARC_API PhotoImage : public SourceImage
+    class MARC_API PhotoImage final : public SourceImage
     {
     public:
 

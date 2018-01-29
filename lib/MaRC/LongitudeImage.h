@@ -40,7 +40,7 @@ namespace MaRC
      * This concrete VirtualImage returns the given longitude in
      * degrees.
      */
-    class MARC_API LongitudeImage : public VirtualImage
+    class MARC_API LongitudeImage final : public VirtualImage
     {
     public:
 

@@ -44,7 +44,7 @@ namespace MaRC
      * code that executes MapCommands.
      */
     template <typename T>
-    class MapCommand_T : public MapCommand
+    class MapCommand_T final : public MapCommand
     {
     public:
 

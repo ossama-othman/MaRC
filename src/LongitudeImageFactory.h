@@ -37,7 +37,7 @@ namespace MaRC
      *
      * This class creates LongitudeImage objects.
      */
-    class LongitudeImageFactory : public ImageFactory
+    class LongitudeImageFactory final : public ImageFactory
     {
     public:
 

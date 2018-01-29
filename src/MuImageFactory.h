@@ -38,7 +38,7 @@ namespace MaRC
      *
      * This class creates @c MuImage objects.
      */
-    class MuImageFactory : public ImageFactory
+    class MuImageFactory final : public ImageFactory
     {
     public:
 

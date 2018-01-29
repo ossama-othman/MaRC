@@ -45,7 +45,7 @@ namespace MaRC
      * on surface of body-Observer (phase) angle, &phi;, on the body
      * being mapped.  The observer range is taken into account.
      */
-    class MARC_API CosPhaseImage : public VirtualImage
+    class MARC_API CosPhaseImage final : public VirtualImage
     {
     public:
 
