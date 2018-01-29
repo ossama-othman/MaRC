@@ -333,10 +333,10 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
 
     if (!MaRC::quadratic_roots(a, b, c, SubLatModSin)) {
         // No real roots.
-        MaRC::log->error("Unable to find roots corresponding to "
-                         "sub-observation latitudes when calculating "
-                         "suitable rotation matrices to go between "
-                         "observer and body coordinates.";
+        MaRC::error("Unable to find roots corresponding to "
+                    "sub-observation latitudes when calculating "
+                    "suitable rotation matrices to go between "
+                    "observer and body coordinates.");
 
         return false;  // Failure
     }
@@ -388,15 +388,15 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     static constexpr double tolerance = 1e-8;
     if (percent_diff > tolerance) {
         // If greater than tolerance, warn.
-        MaRC::log->warning("Results may be incorrect since a "
-                           "\"suitable\" transformation matrix was "
-                           "not found for the given image.  "
-                           "There was a {}% difference between the "
-                           "two test vectors.  This warning occured "
-                           "since the percent difference between the "
-                           "vectors was greater than {}%.",
-                           percent_diff,
-                           tolerance);
+        MaRC::warn("Results may be incorrect since a "
+                   "\"suitable\" transformation matrix was "
+                   "not found for the given image.  "
+                   "There was a {}% difference between the "
+                   "two test vectors.  This warning occured "
+                   "since the percent difference between the "
+                   "vectors was greater than {}%.",
+                   percent_diff,
+                   tolerance);
     }
 
     // Body to observer transformation
@@ -406,7 +406,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
 
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)
-        MaRC::log->debug(..
+        MaRC::debug(..
          std::cout
             << std::abs((this->range_b_[i] - (observ2body * range_o)[i])
                         / (this->range_b_[i] + (observ2body * range_o)[i])
@@ -543,24 +543,22 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude(UnitOpticalAxis);
+        diff_magnitude / MaRC::magnitude(UnitOpticalAxis) * 100;
 
     static constexpr double tolerance = 1e-8;
 
-    if (percent_diff * 100 > tolerance)
+    if (percent_diff > tolerance)
         // If greater than tolerance, warn.
-        std::cerr
-            << '\n'
-            << "WARNING: Results may be incorrect since a\n"
-            << "         \"suitable\" transformation matrix was\n"
-            << "         not found for the given image.\n"
-            << "         There was a "
-            << percent_diff * 100 << "%"<< '\n'
-            << "         difference between the two test vectors.\n"
-            << "         This warning occured since the percent\n"
-            << "         difference between the vectors was\n"
-            << "         greater than "
-            << tolerance << "%.\n";
+        MaRC::warn("Results may be incorrect since a "
+                   "\"suitable\" transformation matrix was "
+                   "not found for the given image. "
+                   "There was a {}% "
+                   "difference between the two test vectors. "
+                   "This warning occured since the percent "
+                   "difference between the vectors was "
+                   "greater than {}%.",
+                   percent_diff,
+                   tolerance);
 
     // Body to observer transformation
     // Get reverse transformation by taking transpose since
@@ -569,19 +567,22 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 
 #ifdef DEBUG
     for (std::size_t i = 0; i < 3; ++i)
-        std::cout
-            << std::abs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
-                        / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
-                        * 2)
-            << '\n';
+        MaRC::debug(
+            "{}",
+            std::abs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
+                     / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
+                     * 2));
 
-    std::cout
-        << "UnitOpticalAxis = " << UnitOpticalAxis << "\n"
-           "OpticalAxis from transformation = "
-        << observ2body * OA_O << "\n"
-           "OA_O = " << OA_O << "\n"
-           "OA_O from transformation = " << body2observ * UnitOpticalAxis
-        << '\n';
+    MaRC::debug("UnitOpticalAxis = {}\n"
+                "OpticalAxis from transformation = {}\n"
+                <<  << "\n"
+                "OA_O = {}\n" <<  << "\n"
+                "OA_O from transformation = {}\n",
+                UnitOpticalAxis,
+                body2observ * UnitOpticalAxis,
+                OA_O,
+                observ2body * OA_O);
+
 //   output_ << "position_angle_ = " << position_angle_ / C::degree << " degrees (positive is CCW)\n"
 //       << "SubLatModified = " << SubLatModified / C::degree << '\n'
 //       << "Ztwist = " << Ztwist / C::degree << '\n';

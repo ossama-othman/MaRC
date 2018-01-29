@@ -27,6 +27,7 @@
 #include "Mathematics.h"
 #include "root_find.h"
 #include "OblateSpheroid.h"
+#include "Log.h"
 
 #include <functional>
 #include <limits>
@@ -158,13 +159,9 @@ MaRC::Mercator::plot_map(std::size_t samples,
         double const latg =
             MaRC::root_find(x, ll, ul, map_equation);
 
-        // std::cout << "*** (latg_guess, latg) = ("
-        //           << latg_guess << ", "
-        //           << latg << ")\n";
+        // MaRC::debug("latg_guess, latg) = ({}, {})", latg_guess, latg);
 
-         // std::cout << "*** (line, latg) = ("
-         //           << k << ", "
-         //           << latg / C::degree << ")\n";
+        MaRC::debug("(line, latg) = ({}, {})", k, latg / C::degree);
 
         // Convert to planetoCENTRIC latitude
         double const lat = this->body_->centric_latitude(latg);
