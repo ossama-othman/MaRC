@@ -46,7 +46,7 @@ namespace MaRC
      * @note This implementation can only map oblate spheroids or
      *       spheres.
      */
-    class MARC_API PolarStereographic : public MapFactory
+    class MARC_API PolarStereographic final : public MapFactory
     {
     public:
 

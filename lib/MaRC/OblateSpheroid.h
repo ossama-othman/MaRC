@@ -43,7 +43,7 @@ namespace MaRC
      * An oblate spheroid is an ellipsoidal body with potentially
      * different equatorial and polar radii.
      */
-    class MARC_API OblateSpheroid : public BodyData
+    class MARC_API OblateSpheroid final : public BodyData
     {
     public:
 

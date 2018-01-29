@@ -50,7 +50,8 @@ namespace MaRC
      *
      * Galileo specific concrete geometric correction strategy.
      */
-    class MARC_API GLLGeometricCorrection : public GeometricCorrection
+    class MARC_API GLLGeometricCorrection final
+        : public GeometricCorrection
     {
     public:
 

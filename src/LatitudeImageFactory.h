@@ -38,7 +38,7 @@ namespace MaRC
      *
      * This class creates @c LatitudeImage objects.
      */
-    class LatitudeImageFactory : public ImageFactory
+    class LatitudeImageFactory final : public ImageFactory
     {
     public:
 

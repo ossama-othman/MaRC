@@ -53,7 +53,7 @@ namespace MaRC
      * @note This implementation can only map oblate spheroids or
      *       spheres.
      */
-    class MARC_API Mercator : public MapFactory
+    class MARC_API Mercator final : public MapFactory
     {
     public:
 

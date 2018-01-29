@@ -50,7 +50,7 @@ namespace MaRC
      * the PhotoImage to be mapped, which reduces run-time memory
      * requirements.
      */
-    class PhotoImageFactory : public ImageFactory
+    class PhotoImageFactory final : public ImageFactory
     {
     public:
 

@@ -40,7 +40,7 @@ namespace MaRC
      *
      * This class creates CosPhaseImage objects.
      */
-    class CosPhaseImageFactory : public ImageFactory
+    class CosPhaseImageFactory final : public ImageFactory
     {
     public:
 

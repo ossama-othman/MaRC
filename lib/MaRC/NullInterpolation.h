@@ -40,7 +40,7 @@ namespace MaRC
      * This interpolation strategy is a no-op.  It performs no
      * interpolation.
      */
-    class MARC_API NullInterpolation : public InterpolationStrategy
+    class MARC_API NullInterpolation final : public InterpolationStrategy
     {
     public:
 

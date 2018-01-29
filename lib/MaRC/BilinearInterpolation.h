@@ -42,7 +42,8 @@ namespace MaRC
    * This strategy performs bilinear interpolation over 2x2 block of
    * data.
    */
-  class MARC_API BilinearInterpolation : public InterpolationStrategy
+  class MARC_API BilinearInterpolation final
+      : public InterpolationStrategy
   {
   public:
 

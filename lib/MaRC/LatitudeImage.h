@@ -44,7 +44,7 @@ namespace MaRC
      * degrees.  This class may be configured to return bodygraphic
      * latitudes instead of bodycentric latitudes.
      */
-    class MARC_API LatitudeImage : public VirtualImage
+    class MARC_API LatitudeImage final : public VirtualImage
     {
     public:
 
