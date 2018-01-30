@@ -96,7 +96,7 @@ MaRC::MapFactory::plot(SourceImage const & source,
      *       provide output unless desired by the user.
      */
 
-    // Provide some output on the mapping progress.
+    // Inform "observers" of mapping progress.
     if (percent_complete == 100 && this->percent_complete_old_ != 0) {
         std::cout << "100%\n";
         this->percent_complete_old_ = 0;
