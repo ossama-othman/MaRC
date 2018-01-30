@@ -135,7 +135,8 @@ main(int argc, char *argv[])
         for (auto & p : commands)
             (void) p->execute();
     } catch (const std::exception & e) {
-        std::cerr << "MaRC: " << e.what() << '\n';
+        MaRC::error(e.what());
+
         return -1;
     }
 
