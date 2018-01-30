@@ -30,6 +30,9 @@
 #include "Log.h"
 #include "config.h"  // For NDEBUG
 
+/**
+ * @todo Should this be an equivalent MaRC include directive?
+ */
 #include <spdlog/fmt/ostr.h>
 
 #include <cmath>

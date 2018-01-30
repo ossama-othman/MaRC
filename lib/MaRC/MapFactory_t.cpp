@@ -25,12 +25,6 @@
 #include "MaRC/Map_traits.h"
 #include "MaRC/SourceImage.h"
 
-/**
- * @bug Exposing <MaRC/config.h> to the user pollutes the global
- *      namespace.
- */
-#include "MaRC/config.h"      // For NDEBUG
-
 #include <iostream>
 
 

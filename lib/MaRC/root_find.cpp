@@ -23,15 +23,13 @@
  * @author Ossama Othman
  */
 
-#include "MaRC/root_find.h"
-#include "MaRC/Mathematics.h"
+#include "root_find.h"
+#include "Mathematics.h"
+// #include "Log.h"
 
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-
-// #include <iostream>
-// #include <iomanip>
 
 
 namespace
@@ -207,14 +205,9 @@ MaRC::root_find(double y,
     double const yl = f(xl);
     double const yh = f(xh);
 
-    // std::cout << std::setprecision(20)
-    //           << "(x0, xl, xh, yl, yh, y) = ("
-    //           << x0 << ", "
-    //           << xl << ", "
-    //           << xh << ", "
-    //           << yl << ", "
-    //           << yh << ", "
-    //           << y << ")\n";
+    // MaRC::debug ("(x0, xl, xh, yl, yh, y) = "
+    //              "({}, {}, {}, {}, {}, {})",
+    //                x0, xl, xh, yl, yh, y);
 
     if ((yl > y && yh > y) || (yl < y && yh < y))
         throw
@@ -254,10 +247,8 @@ MaRC::root_find(double y,
 
             x0 = xl + dx;
 
-            // std::cout << i << ":\t(dx, xl, x0) = ("
-            //           << dx << ", "
-            //           << xl << ", "
-            //           << x0 << ")\n";
+            // MaRC::debug("{:>8}: (dx, xl, x0) = ({}, {}, {})",
+            //             i, dx, xl, x0);
 
             if (is_almost_equal(xl, x0)) {
                 // Change in root is negligible.  Newton step is
@@ -272,13 +263,9 @@ MaRC::root_find(double y,
             double const temp = x0;
             x0 -= dx;
 
-            // std::cout << i << ":\t(dx, df,  temp, x0, y0, y) = ("
-            //           << dx << ", "
-            //           << df << ", "
-            //           << temp << ", "
-            //           << x0 << ", "
-            //           << y0 << ", "
-            //           << y << ")\n";
+            // MaRC::debug("{:>8}: (dx, df, temp, x0, y0, y) = "
+            //             "({}, {}, {}, {}, {}, {})",
+            //             i, dx, df, temp, x0, y0, y);
 
             if (is_almost_equal(temp, x0))
                 return x0;

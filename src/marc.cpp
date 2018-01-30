@@ -1,7 +1,7 @@
 /**
  * @file marc.cpp
  *
- * Copyright (C) 1996-1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1999, 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,19 @@
 
 #include <MaRC/config.h>
 #include <MaRC/Version.h>
+#include <MaRC/Log.h>
 
+/**
+ * @todo Should this be an equivalent MaRC include directive?
+ */
+#include <spdlog/fmt/ostr.h>
+
+#include <string>
 #include <iostream>
 #include <list>
 #include <cstdio>
 
 #include <unistd.h>
-
 
 extern void yyrestart(FILE * input_file);
 
@@ -44,13 +50,13 @@ main(int argc, char *argv[])
     }
 
     std::cout
-        << "MaRC -- Built on " << __DATE__ << " at " << __TIME__"\n"
-        << "        MaRC Binary  Version " PACKAGE_VERSION  "\n"
-        << "        MaRC Library Version " << MaRC::library_version()
+        << PACKAGE_NAME " -- Built on " << __DATE__ << " at " << __TIME__"\n"
+        << "\t" PACKAGE_NAME " Binary  Version " PACKAGE_VERSION  "\n"
+        << "\t" PACKAGE_NAME " Library Version " << MaRC::library_version()
         << "\n\n"
-        << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman\n"
+        << "Copyright (C) 1996-1998, 2003-2004, 2017-2018  Ossama Othman\n"
         << "All Rights Reserved\n\n"
-        << "MaRC comes with ABSOLUTELY NO WARRANTY.\n"
+        << PACKAGE_NAME " comes with ABSOLUTELY NO WARRANTY.\n"
         << "This is free software, and you are welcome to redistribute it\n"
         << "under certain conditions.\n\n";
 
@@ -78,10 +84,9 @@ main(int argc, char *argv[])
                 // Successful parse
                 std::cout << "MaRC user defaults file parsed.\n";
             } else {
-                std::cerr << "\nError parsing '" << user_defaults
-                          << "'.\n";
+                MaRC::error("Error parsing '{}'.", user_defaults);
 
-              return 1;  // Failure
+                return 1;  // Failure
             }
         }
 
@@ -108,18 +113,16 @@ main(int argc, char *argv[])
                               << argv[i]
                               << "' parsed.\n";
                 } else {
-                    std::cerr
-                        << "\n"
-                           "Parse error occurred while processing "
-                           "MaRC input file '"
-                        << argv[i] << "'.\n";
+                    MaRC::error("Parse error occurred while processing "
+                                PACKAGE_NAME " input file '{}'.",
+                                argv[i]);
 
                   return 1;  // Failure
                 }
             } else {
-                std::cerr << "Unable to open MaRC input file '"
-                          << argv[i]
-                          << "'.\n";
+                MaRC::error("Unable to open " PACKAGE_NAME
+                            " input file '{}'.",
+                            argv[i]);
 
                 return 1;
             }
@@ -132,7 +135,8 @@ main(int argc, char *argv[])
         for (auto & p : commands)
             (void) p->execute();
     } catch (const std::exception & e) {
-        std::cerr << "MaRC: " << e.what() << '\n';
+        MaRC::error(e.what());
+
         return -1;
     }
 

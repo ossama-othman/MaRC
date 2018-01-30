@@ -22,8 +22,9 @@
 
 #include "parse_scan.h"
 
+#include "MaRC/Log.h"
+
 #include <stdexcept>
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <limits>
@@ -114,5 +115,5 @@ yyerror(YYLTYPE * /* locp */,
     /**
      * @todo Pull location from @a locp argument.
      */
-    std::cerr << msg << '\n';
+    MaRC::error(msg);
 }

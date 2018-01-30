@@ -21,10 +21,11 @@
  * @author Ossama Othman
  */
 
-#include "MaRC/PolarStereographic.h"
-#include "MaRC/OblateSpheroid.h"
-#include "MaRC/Constants.h"
-#include "MaRC/root_find.h"
+#include "PolarStereographic.h"
+#include "OblateSpheroid.h"
+#include "Constants.h"
+#include "root_find.h"
+#include "Log.h"
 
 #include <functional>
 #include <limits>
@@ -228,9 +229,9 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             double const latg =
                 MaRC::root_find(rho, ll, ul, map_equation);
 
-            // std::cout << "*** (latg_guess, latg) = ("
-            //           << latg_guess << ", "
-            //           << latg << ")\n";
+            // MaRC::debug("(latg_guess, latg) = ({}, {})",
+            //             latg_guess,
+            //             latg);
 
             // Convert to planetoCENTRIC latitude.
             double const lat =
