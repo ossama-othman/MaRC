@@ -161,7 +161,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
 
         // MaRC::debug("latg_guess, latg) = ({}, {})", latg_guess, latg);
 
-        MaRC::debug("(line, latg) = ({}, {})", k, latg / C::degree);
+        // MaRC::debug("(line, latg) = ({}, {})", k, latg / C::degree);
 
         // Convert to planetoCENTRIC latitude
         double const lat = this->body_->centric_latitude(latg);

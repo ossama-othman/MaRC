@@ -338,11 +338,14 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     std::pair<double, double> SubLatModSin;
 
     if (!MaRC::quadratic_roots(a, b, c, SubLatModSin)) {
-        // No real roots.
-        MaRC::error("Unable to find roots corresponding to "
-                    "sub-observation latitudes when calculating "
-                    "suitable rotation matrices to go between "
-                    "observer and body coordinates.");
+        /*
+          No real roots.
+
+          Unable to find roots corresponding to sub-observation
+          latitudes when calculating suitable rotation matrices to go
+          between observer and body coordinates.
+        */
+        MaRC::error("Unable to calculate suitable rotation matrices.");
 
         return false;  // Failure
     }
@@ -393,16 +396,21 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
 
     static constexpr double tolerance = 1e-8;
     if (percent_diff > tolerance) {
-        // If greater than tolerance, warn.
-        MaRC::warn("Results may be incorrect since a "
-                   "\"suitable\" transformation matrix was "
-                   "not found for the given image.  "
-                   "There was a {}% difference between the "
-                   "two test vectors.  This warning occured "
-                   "since the percent difference between the "
-                   "vectors was greater than {}%.",
-                   percent_diff,
-                   tolerance);
+        /*
+          Warn if greater than tolerance.
+
+          Results may be incorrect since a "suitable" transformation
+          matrix was not found for the given image.  Percent
+          difference between vectors was greater than tolerance.
+        */
+        MaRC::warn("Suitable transformation matrix "
+                   "not found for given image.");
+        MaRC::warn("Results may be incorrect");
+
+        MaRC::debug("Percent difference between test "
+                    "vectors {}% is greater than {}.",
+                    percent_diff,
+                    tolerance);
     }
 
     // Body to observer transformation
@@ -554,18 +562,23 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 
     static constexpr double tolerance = 1e-8;
 
-    if (percent_diff > tolerance)
-        // If greater than tolerance, warn.
-        MaRC::warn("Results may be incorrect since a "
-                   "\"suitable\" transformation matrix was "
-                   "not found for the given image. "
-                   "There was a {}% "
-                   "difference between the two test vectors. "
-                   "This warning occured since the percent "
-                   "difference between the vectors was "
-                   "greater than {}%.",
-                   percent_diff,
-                   tolerance);
+    if (percent_diff > tolerance) {
+        /*
+          Warn if greater than tolerance.
+
+          Results may be incorrect since a "suitable" transformation
+          matrix was not found for the given image.  Percent
+          difference between vectors was greater than tolerance.
+        */
+        MaRC::warn("Suitable transformation matrix "
+                   "not found for given image.");
+        MaRC::warn("Results may be incorrect");
+
+        MaRC::debug("Percent difference between test "
+                    "vectors {}% is greater than {}.",
+                    percent_diff,
+                    tolerance);
+    }
 
     // Body to observer transformation
     // Get reverse transformation by taking transpose since

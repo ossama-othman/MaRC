@@ -113,8 +113,8 @@ main(int argc, char *argv[])
                               << argv[i]
                               << "' parsed.\n";
                 } else {
-                    MaRC::error("Parse error occurred while processing "
-                                PACKAGE_NAME " input file '{}'.",
+                    MaRC::error("Error parsing " PACKAGE_NAME
+                                " input file '{}'.",
                                 argv[i]);
 
                   return 1;  // Failure
