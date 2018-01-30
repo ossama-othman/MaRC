@@ -160,6 +160,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
             MaRC::root_find(x, ll, ul, map_equation);
 
         // MaRC::debug("latg_guess, latg) = ({}, {})", latg_guess, latg);
+
         // MaRC::debug("(line, latg) = ({}, {})", k, latg / C::degree);
 
         // Convert to planetoCENTRIC latitude
