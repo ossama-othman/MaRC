@@ -169,7 +169,7 @@ int yycolumn = 1;
 "LINES"         { return LINES; }
 "BODY"          { BEGIN(string); return BODY; }
 "AVERAGING"     { BEGIN(keyword_token); return AVERAGING; }
-"NONE"          { return NONE; }
+"NONE"          { return _NONE; }
 "WEIGHTED"      { return WEIGHTED; }
 "UNWEIGHTED"    { return UNWEIGHTED; }
 "PLANES"        { return PLANES; }

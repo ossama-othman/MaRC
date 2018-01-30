@@ -47,7 +47,9 @@
 #include <MaRC/SimpleCylindrical.h>
 
 #include <MaRC/Constants.h>
-#include "MaRC/DefaultConfiguration.h"
+#include <MaRC/DefaultConfiguration.h>
+
+#include <MaRC/Log.h>
 
 #include "parse_scan.h"
 #include "calc.h"
@@ -252,7 +254,7 @@
 %token GRID GRID_INTERVAL LAT_GRID_INTERVAL LON_GRID_INTERVAL
 %token MAP_TYPE SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
 %token PROGRADE RETROGRADE FLATTENING
-%token AVERAGING NONE WEIGHTED UNWEIGHTED
+%token AVERAGING _NONE WEIGHTED UNWEIGHTED
 %token OPTIONS EQ_RAD POL_RAD ROTATION _IMAGE _PHOTO _MU _MU0 _PHASE
 %token PLANES LO_LAT HI_LAT LO_LON HI_LON
 %token LATITUDE LONGITUDE
@@ -333,14 +335,11 @@ map_setup:
                  * @todo Call yyerror() here instead, e.g.:
                  *       yyerror(&yylloc, pp, "some error message");
                  */
-                //
-                std::cerr <<
-                    "ERROR: Number of planes in map entry does not\n"
-                    "       match the number of planes stated by \n"
-                    "       the \"PLANES\" keyword.\n"
-                    "           Expected planes: " << num_planes << "\n"
-                    "           Actual planes:   "
-                    << image_factories.size() << '\n';
+                MaRC::error("Number of planes in map entry ({}) does not "
+                            "match the number of planes stated by "
+                            "the \"PLANES\" keyword ({}).",
+                            num_planes,
+                            image_factories.size());
                 YYERROR;
             } else {
                 std::unique_ptr<MaRC::MapCommand> map_command;
@@ -641,11 +640,10 @@ planes: | PLANES ':' size         {
            */
           if ($3 > 0) {
               num_planes = static_cast<std::size_t>($3);
-              // std::cout << "NOTE: Specifying the number of map "
-              //              "planes is no longer necessary.\n";
+              // MaRC::info("Specifying the number of map "
+              //            "planes is no longer necessary.");
           } else {
-              std::cerr << "Incorrect number of planes entered: "
-                        << $3 << '\n';
+              MaRC::error("Incorrect number of planes entered: {}", $3);
               YYERROR;
           }
         }
@@ -656,8 +654,7 @@ samples:
           if ($3 > 0)
               map_samples = static_cast<long>($3);
           else {
-              std::cerr << "Incorrect value for SAMPLES entered: "
-                        << $3 << '\n';
+              MaRC::error("Incorrect value for SAMPLES entered: {}", $3);
               YYERROR;
           }
         }
@@ -667,8 +664,7 @@ lines:  LINES ':' size  {
           if ($3 > 0)
               map_lines = static_cast<long>($3);
           else {
-              std::cerr << "Incorrect value for LINES entered: " << $3
-                        << '\n';
+              MaRC::error("Incorrect value for LINES entered: {}", $3);
               YYERROR;
           }
         }
@@ -1735,7 +1731,7 @@ averaging:
               averaging_type = MaRC::MosaicImage::AVG_UNWEIGHTED; }
         | AVERAGING ':' WEIGHTED {
               averaging_type = MaRC::MosaicImage::AVG_WEIGHTED; }
-        | AVERAGING ':' NONE {
+        | AVERAGING ':' _NONE {
               averaging_type = MaRC::MosaicImage::AVG_NONE; }
 ;
 
