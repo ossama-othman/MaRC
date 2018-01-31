@@ -1,3 +1,5 @@
+31 January 2018 - MaRC 0.9.10
+
 - Reduced footprint of the MaRC program (`marc') and library
   (`libMaRC').  For example, including both the MaRC library and
   program, the static footprint was reduced by 28% for a 64-bit Linux
