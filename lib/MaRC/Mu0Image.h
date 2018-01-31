@@ -2,7 +2,7 @@
 /**
  * @file Mu0Image.h
  *
- * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,8 +54,8 @@ namespace MaRC
         /**
          * @param[in] body          Object representing the body being
          *                          mapped.
-         * @param[in] sub_solar_lat Bodycentric sub-solar latitude in
-         *                          degrees.
+         * @param[in] sub_solar_lat Planetocentric sub-solar latitude
+         *                          in degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
          * @param[in] scale         Linear scaling value by which
          *                          cosines will be multiplied.
@@ -84,7 +84,7 @@ namespace MaRC
         /// Object representing the body being mapped.
         std::shared_ptr<BodyData> const body_;
 
-        /// Bodycentric sub-solar latitude in radians.
+        /// Planetocentric sub-solar latitude in radians.
         const double sub_solar_lat_;
 
         /// Sub-solar longitude in radians.

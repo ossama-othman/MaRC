@@ -85,10 +85,11 @@ namespace MaRC
         virtual char const * projection_name() const;
         //@}
 
-        /// Scale distortion at given bodygraphic latitude @a latg on
-        /// map.
         /**
-         * @param[in] latg Bodygraphic latitude.
+         * @brief Scale distortion at given planetographic latitude
+         *        @a latg on map.
+         *
+         * @param[in] latg Planetographic latitude.
          */
         double distortion(double latg) const;
 

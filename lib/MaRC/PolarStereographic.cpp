@@ -85,7 +85,7 @@ namespace
      *                  representing body being mapped.
      * @param[in] coeff Coefficient used in the Polar
      *                  Stereographic radius 'rho'.
-     * @param[in] latg  Bodygraphic latitude.
+     * @param[in] latg  Planetographic latitude.
      *
      * @return Value of point on projection along a radial line
      *         (e.g. along a longitude line).
@@ -224,7 +224,7 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
              *       finding and improve accuracy.
              */
 
-            // bodyGRAPHIC latitude.
+            // PlanetoGRAPHIC latitude.
             double const latg =
                 MaRC::root_find(rho, ll, ul, map_equation);
 
@@ -232,7 +232,7 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             //           << latg_guess << ", "
             //           << latg << ")\n";
 
-            // Convert to bodyCENTRIC latitude
+            // Convert to planetoCENTRIC latitude.
             double const lat =
                 this->body_->centric_latitude(this->north_pole_
                                               ? latg
@@ -273,7 +273,7 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
          *      the projection here?
          */
 
-        // Convert to bodygraphic latitude
+        // Convert to planetographic latitude.
         double const nn = this->body_->graphic_latitude(n * C::degree);
 
         double const rho = this->stereo_rho(nn);
@@ -339,7 +339,7 @@ MaRC::PolarStereographic::plot_grid(std::size_t samples,
 double
 MaRC::PolarStereographic::distortion(double latg) const
 {
-    // Note that latitude is bodyGRAPHIC.
+    // Note that latitude is planetoGRAPHIC.
     return 1 + distortion_coeff_ * std::pow(this->stereo_rho(latg), 2);
 }
 

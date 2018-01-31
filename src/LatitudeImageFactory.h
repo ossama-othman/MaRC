@@ -2,7 +2,7 @@
 /**
  * @file LatitudeImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,9 @@ namespace MaRC
          * @param[in] body              Pointer to BodyData object
          *                              representing body being
          *                              mapped.
-         * @param[in] graphic_latitudes Return bodygraphic latitudes
-         *                              instead of bodycentric
-         *                              latitudes.
+         * @param[in] graphic_latitudes Return planetographic
+         *                              latitudes instead of
+         *                              planetocentric latitudes.
          */
         LatitudeImageFactory(std::shared_ptr<BodyData> body,
                              bool graphic_latitudes);
@@ -63,8 +63,8 @@ namespace MaRC
         /// Object representing the body being mapped.
         std::shared_ptr<BodyData> const body_;
 
-        /// Flag that determines if bodygraphic latitudes are returned
-        /// instead of bodycentric latitudes.
+        /// Flag that determines if planetographic latitudes are
+        /// returned instead of planetocentric latitudes.
         bool const graphic_latitudes_;
 
     };

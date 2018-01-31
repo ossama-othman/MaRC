@@ -1,7 +1,7 @@
 /**
  * @file LatitudeImage_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017-2018 Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ bool test_latitude_image()
         std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
 
     /**
-     * @todo Test case when bodygraphic latitudes is requested.
+     * @todo Test case when planetographic latitudes is requested.
      */
     constexpr bool graphic_latitudes = false;
 

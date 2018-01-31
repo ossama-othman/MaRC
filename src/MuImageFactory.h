@@ -2,7 +2,7 @@
 /**
  * @file MuImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +45,8 @@ namespace MaRC
         /// Constructor.
         /**
          * @param[in] body           Body being mapped.
-         * @param[in] sub_observ_lat Bodycentric sub-observer latitude
-         *                           in degrees.
+         * @param[in] sub_observ_lat Planetocentric sub-observer
+         *                           latitude in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
          *                           degrees.
          * @param[in] range          Observer to target center
@@ -66,7 +66,7 @@ namespace MaRC
         /// Object representing the body being mapped.
         std::shared_ptr<BodyData> const body_;
 
-        /// Sub-Observer Latitude -- BodyCENTRIC (degrees).
+        /// Sub-Observer Latitude -- PlanetoCENTRIC (degrees).
         double sub_observ_lat_;
 
         /// Sub-Observer Longitude -- Central Meridian (degrees).

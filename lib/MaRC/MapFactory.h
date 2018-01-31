@@ -174,8 +174,8 @@ namespace MaRC
          *                                 map, i.e. all data less
          *                                 than or equal to
          *                                 @a maximum.
-         * @param[in]     lat              Bodycentric latitude
-         * @param[in]     lon              Bodycentric longitude
+         * @param[in]     lat              Planetocentric latitude.
+         * @param[in]     lon              Planetocentric longitude.
          * @param[in]     percent_complete Percent of map completed.
          * @param[in]     offset           Map offset corresponding to
          *                                 the location in the

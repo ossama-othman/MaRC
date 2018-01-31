@@ -40,7 +40,7 @@ namespace
     /**
      * @param[in] body Reference to @c OblateSpheroid object
      *                 representing body being mapped.
-     * @param[in] latg Bodygraphic latitude.
+     * @param[in] latg Planetographic latitude.
      *
      * @return Value of point on projection along a vertical axis
      *         (e.g. along a longitude line).
@@ -154,7 +154,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
          *       on numerical differentation techniques, to speed up
          *       root finding and improve accuracy.
          */
-        // bodyGRAPHIC latitude.
+        // planetoGRAPHIC latitude.
         double const latg =
             MaRC::root_find(x, ll, ul, map_equation);
 
@@ -166,7 +166,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
          //           << k << ", "
          //           << latg / C::degree << ")\n";
 
-        // Convert to bodyCENTRIC latitude
+        // Convert to planetoCENTRIC latitude
         double const lat = this->body_->centric_latitude(latg);
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
@@ -202,7 +202,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
 
     // Draw latitude lines
     for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
-        // Convert to bodygraphic latitude
+        // Convert to planetographic latitude
         double const nn = this->body_->graphic_latitude(n * C::degree);
         double const k =
             std::round(mercator_x(*this->body_, nn) / pix_conv_val
@@ -261,15 +261,16 @@ double
 MaRC::Mercator::distortion(double latg) const
 {
     /**
-     * @todo A graphic latitude is required as the argument which is
-     *       converted to a centric latitude before being passed to
-     *       the @c N() method below, which in turn converts back to a
-     *       graphic latitude before performing any calculations.
-     *       Tweak the method parameters to avoid the redundant
-     *       graphic/centric latitude conversions.
+     * @todo A planetographic latitude is required as the argument
+     *       which is converted to a planetocentric latitude before
+     *       being passed to the @c N() method below, which in turn
+     *       converts back to a planetographic latitude before
+     *       performing any calculations.  Tweak the method parameters
+     *       to avoid the redundant planetographic/centric latitude
+     *       conversions.
      */
 
-    // Note that latitude is bodyGRAPHIC.
+    // Note that latitude is planetoGRAPHIC.
     return
         this->body_->eq_rad()
         / this->body_->N(this->body_->centric_latitude(latg))
