@@ -109,7 +109,7 @@
 - Improved memory management.
   - Better C++ exception safety.
   - Reduced run-time memory requirements.
-  - Slighty improved performance due to less deep copies of large
+  - Slightly improved performance due to less deep copies of large
     arrays.
 
 - Fixed inversion of source photo images from left to right and top to
