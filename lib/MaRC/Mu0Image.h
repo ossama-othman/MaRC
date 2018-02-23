@@ -85,10 +85,10 @@ namespace MaRC
         std::shared_ptr<BodyData> const body_;
 
         /// Planetocentric sub-solar latitude in radians.
-        const double sub_solar_lat_;
+        double const sub_solar_lat_;
 
         /// Sub-solar longitude in radians.
-        const double sub_solar_lon_;
+        double const sub_solar_lon_;
 
     };
 

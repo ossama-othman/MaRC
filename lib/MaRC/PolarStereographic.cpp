@@ -136,7 +136,7 @@ MaRC::PolarStereographic::PolarStereographic(
     }
 }
 
-const char *
+char const *
 MaRC::PolarStereographic::projection_name() const
 {
     return "Polar Stereographic";
