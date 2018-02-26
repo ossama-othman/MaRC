@@ -2,7 +2,7 @@
 /**
  * @file VirtualImage.h
  *
- * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -283,8 +283,7 @@ namespace MaRC
          * transformations, if any.  Raw data is computed/retrieved
          * from the @c read_data_i() template method.
          *
-         * @param[in]  lat  Bodycentric (e.g. planetocentric) latitude
-         *                  in radians.
+         * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
          *
          * @param[out] data Data retrieved from image.
@@ -359,8 +358,7 @@ namespace MaRC
          * This template method is the core implementation of the
          * @c read_data() method.
          *
-         * @param[in]  lat  Bodycentric (e.g. planetocentric) latitude
-         *                  in radians.
+         * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
          *
          * @param[out] data Data retrieved from image.

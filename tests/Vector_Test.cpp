@@ -115,7 +115,7 @@ bool test_vector_multiplication()
 {
     using vector_type = MaRC::Vector<int, 3>;
 
-    vector_type const   v1 {{ 2, 3,  5 }};
+    vector_type const v1 {{ 2, 3,  5 }};
 
     vector_type::value_type s = 2;
 
@@ -131,7 +131,7 @@ bool test_vector_multiplication()
 bool test_vector_magnitude()
 {
     using vector_type = MaRC::Vector<int, 3>;
-    vector_type  const v{ 3, 4, 5 };
+    vector_type const v{ 3, 4, 5 };
 
     double const mag =
         std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);

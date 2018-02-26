@@ -60,9 +60,9 @@ namespace MaRC
         /**
          * @param[in] body       Pointer to @c OblateSpheroid object
          *                       representing body being mapped.
-         * @param[in] max_lat    Maximum bodyCENTRIC latitude to map
-         *                       in degrees.  For example, given a map
-         *                       with 50 samples and 25 lines,
+         * @param[in] max_lat    Maximum planetoCENTRIC latitude to
+         *                       map in degrees.  For example, given a
+         *                       map with 50 samples and 25 lines,
          *                       @a max_lat will be at the lower edge
          *                       of line 1 and the upper edge of line
          *                       25.
@@ -88,10 +88,11 @@ namespace MaRC
         virtual char const * projection_name() const;
         //@}
 
-        /// Scale distortion at given bodygraphic latitude @a latg on
-        /// map.
+        /// 
         /**
-         * @param[in] latg Bodygraphic latitude.
+         * @brief Scale distortion at given planetographic latitude
+         *        @a latg on map.
+         * @param[in] latg Planetographic latitude.
          */
         double distortion(double latg) const;
 
@@ -122,7 +123,7 @@ namespace MaRC
 
         /// The underlying Polar Stereographic projection equation.
         /**
-         * @param[in] latg Bodygraphic latitude.
+         * @param[in] latg Planetographic latitude.
          *
          * @return Value of point on projection along a radial line
          *         (e.g. along a longitude line).
@@ -135,7 +136,7 @@ namespace MaRC
         /// mapped.
         std::shared_ptr<OblateSpheroid> const body_;
 
-        /// Maximum bodyCENTRIC latitude to map in radians.
+        /// Maximum planetoCENTRIC latitude to map in radians.
         double const max_lat_;
 
         /// Coefficient used in map equation.

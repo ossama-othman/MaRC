@@ -2,7 +2,7 @@
 /**
  * @file Mu0ImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,8 @@ namespace MaRC
         /// Constructor.
         /**
          * @param[in] body          Body being mapped.
-         * @param[in] sub_solar_lat Sub-solar latitude in degrees.
+         * @param[in] sub_solar_lat Planetocentric sub-solar latitude
+         *                          in degrees.
          * @param[in] sub_solar_lon Sub-solar longitude in degrees.
          */
         Mu0ImageFactory(std::shared_ptr<BodyData> body,
@@ -61,7 +62,7 @@ namespace MaRC
         /// Object representing the body being mapped.
         std::shared_ptr<BodyData> const body_;
 
-        /// Sub-solar latitude (degrees).
+        /// Planetocentric sub-solar latitude (degrees).
         double sub_solar_lat_;
 
         /// Sub-solar longitude (degrees).

@@ -2,7 +2,7 @@
 /**
  * @file LatitudeImage.h
  *
- * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -41,8 +41,8 @@ namespace MaRC
      * @brief Latitude virtual image.
      *
      * This concrete VirtualImage returns the given latitude in
-     * degrees.  This class may be configured to return bodygraphic
-     * latitudes instead of bodycentric latitudes.
+     * degrees.  This class may be configured to return planetographic
+     * latitudes instead of planetocentric latitudes.
      */
     class MARC_API LatitudeImage final : public VirtualImage
     {
@@ -53,9 +53,9 @@ namespace MaRC
          * @param[in] body              Pointer to BodyData object
          *                              representing body being
          *                              mapped.
-         * @param[in] graphic_latitudes Return bodygraphic latitudes
-         *                              instead of bodycentric
-         *                              latitudes.
+         * @param[in] graphic_latitudes Return planetographic
+         *                              latitudes instead of
+         *                              planetocentric latitudes.
          * @param[in] scale             Linear scaling value by which
          *                              latitudes should be
          *                              multiplied.
@@ -97,8 +97,8 @@ namespace MaRC
         /// Object representing the body being mapped.
         std::shared_ptr<BodyData> body_;
 
-        /// Flag that determines if bodygraphic latitudes are returned
-        /// instead of bodycentric latitudes.
+        /// Flag that determines if planetographic latitudes are
+        /// returned instead of planetocentric latitudes.
         bool const graphic_latitudes_;
 
   };

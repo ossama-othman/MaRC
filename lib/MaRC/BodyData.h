@@ -2,7 +2,7 @@
 /**
  * @file BodyData.h
  *
- * Copyright (C) 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1999, 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,14 +69,13 @@ namespace MaRC
          */
         bool prograde() const { return this->prograde_; }
 
-        /// Find radius as a function of bodycentric latitude.
+        /// Find radius as a function of planetocentric latitude.
         /**
          * Calculate and return the radius, i.e. distance from the
          * center of the body to the point on the surface at given
          * latitude.
          *
-         * @param[in] lat Bodycentric (e.g. planetocentric) latitude
-         *                in radians.
+         * @param[in] lat Planetocentric latitude in radians.
          *
          * @return Radius, i.e. distance from the center of the body
          *         to point on the surface at given latitude.
@@ -87,12 +86,11 @@ namespace MaRC
          */
         virtual double centric_radius(double lat) const = 0;
 
-        /// Convert from GRAPHIC to CENTRIC latitude
+        /// Convert from planeteographic to planetocentric latitude.
         /**
-         * @param[in] latg Graphic (e.g. planetographic) latitude in
-         *                 radians.
+         * @param[in] latg Planetographic latitude in radians.
          *
-         * @return Bodycentric latitude in radians.
+         * @return Planetocentric latitude in radians.
          *
          * @todo We really should add a longitude parameter since not
          *       all bodies are symmetrical about their polar axis.
@@ -100,12 +98,11 @@ namespace MaRC
          */
         virtual double centric_latitude(double latg) const = 0;
 
-        /// Convert from CENTRIC to GRAPHIC latitude
+        /// Convert from planetocentric to planetographic latitude.
         /**
-         * @param[in] lat Centric (e.g. planetocentric) latitude in
-         *                radians.
+         * @param[in] lat Planetocentric latitude in radians.
          *
-         * @return Bodygraphic latitude in radians.
+         * @return Planetographic latitude in radians.
          *
          * @todo We really should add a longitude parameter since not
          *       all bodies are symmetrical about their polar axis.
@@ -114,13 +111,13 @@ namespace MaRC
 
         /// Return cosine of emission angle, i.e. &mu;
         /**
-         * @param[in] sub_observ_lat Bodycentric subobservation
-         *                           latitude
-         * @param[in] sub_observ_lon Subobservation longitude
-         * @param[in] lat            Bodycentric latitude
-         * @param[in] lon            Longitude
-         * @param[in] range          Observer range to subobservation
-         *                           point
+         * @param[in] sub_observ_lat Planetocentric sub-observation
+         *                           latitude.
+         * @param[in] sub_observ_lon Sub-Observation longitude.
+         * @param[in] lat            Planetocentric latitude.
+         * @param[in] lon            Longitude.
+         * @param[in] range          Observer range to sub-observation
+         *                           point.
          *
          * @return Cosine of emission angle, i.e. &mu;.
          */
@@ -132,10 +129,11 @@ namespace MaRC
 
         /// Return cosine of incidence angle, i.e. &mu;<SUB>0</SUB>
         /**
-         * @param[in] sub_solar_lat Bodycentric subsolar latitude
-         * @param[in] sub_solar_lon Subsolar longitude
-         * @param[in] lat           Bodycentric latitude
-         * @param[in] lon           Longitude
+         * @param[in] sub_solar_lat Planetocentric sub-solar
+         *                          latitude.
+         * @param[in] sub_solar_lon Sub-Solar longitude.
+         * @param[in] lat           Planetocentric latitude.
+         * @param[in] lon           Longitude.
          *
          * @return Cosine of incidence angle, i.e. &mu;<SUB>0</SUB>.
          *
@@ -148,15 +146,16 @@ namespace MaRC
 
         /// Return cosine of phase angle, i.e. @c cos(&phi;)
         /**
-         * @param[in] sub_observ_lat Bodycentric subobservation
-         *                           latitude
-         * @param[in] sub_observ_lon Subobservation longitude
-         * @param[in] sub_solar_lat  Bodycentric subsolar latitude
-         * @param[in] sub_solar_lon  Subsolar longitude
-         * @param[in] lat            Bodycentric latitude
-         * @param[in] lon            Longitude
-         * @param[in] range          Observer range to subobservation
-         *                           point
+         * @param[in] sub_observ_lat Planetocentric sub-observation
+         *                           latitude.
+         * @param[in] sub_observ_lon Sub-observation longitude.
+         * @param[in] sub_solar_lat  Planetocentric sub-solar
+         *                           latitude.
+         * @param[in] sub_solar_lon  Sub-solar longitude.
+         * @param[in] lat            Planetocentric latitude.
+         * @param[in] lon            Longitude.
+         * @param[in] range          Observer range to sub-observation.
+         *                           point.
          *
          * @return Cosine of phase angle, i.e. @c cos(&phi;).
          */
@@ -170,9 +169,10 @@ namespace MaRC
 
     private:
 
-        /// Flag that states whether the body rotation is prograde or
-        /// retrograde.
         /**
+         * @brief Flag that states whether the body rotation is
+         *        prograde or retrograde.
+         *
          * prograde == @c true, retrograde == @c false
          */
         bool const prograde_;

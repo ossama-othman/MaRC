@@ -63,7 +63,7 @@ namespace MaRC
         /**
          * @param[in] body           Pointer to @c OblateSpheroid
          *                           object representing body.
-         * @param[in] sub_observ_lat Bodycentric sub-observer latitude
+         * @param[in] sub_observ_lat Planetocentric sub-observer latitude
          *                           in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
          *                           degrees.

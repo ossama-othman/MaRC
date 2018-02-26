@@ -114,9 +114,9 @@ MaRC::Radii::validate()
 // {
 //   FlexLexer & lexer = pp.lexer ();
 
-//   const int token = lexer.yylex ();
+//   int const token = lexer.yylex ();
 
-//   const char * symbuf = nullptr;
+//   char const * symbuf = nullptr;
 //   MaRC::sym_entry *s = nullptr;
 
 //   switch (token)

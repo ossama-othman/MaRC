@@ -2,7 +2,7 @@
 /**
  * @file ViewingGeometry.h
  *
- * Copyright (C) 1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1999, 2003-2005, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -285,8 +285,7 @@ namespace MaRC
 
         /// Convert (latitude, longitude) to (sample, line).
         /**
-         * @param[in]  lat Bodycentric (e.g. planetocentric) latitude
-         *                 in radians.
+         * @param[in]  lat Planetocentric latitude in radians.
          * @param[in]  lon Longitude in radians.
          * @param[out] x   Sample at given latitude and longitude.
          * @param[out] z   Line at given latitude and longitude.
@@ -313,8 +312,7 @@ namespace MaRC
         /**
          * @param[in]  sample Sample at given latitude and longitude.
          * @param[in]  line   Line at given latitude and longitude.
-         * @param[out] lat    Bodycentric (e.g. planetocentric)
-         *                    latitude in radians.
+         * @param[out] lat    Planetocentric latitude in radians.
          * @param[out] lon    Longitude in radians.
          *
          * @retval true  Conversion succeeded.
@@ -391,13 +389,13 @@ namespace MaRC
          */
         std::shared_ptr<OblateSpheroid> const body_;
 
-        /// Sub-Observer Latitude -- BodyCENTRIC (radians).
+        /// Sub-Observer Latitude -- Planetocentric (radians).
         double sub_observ_lat_;
 
         /// Sub-Observer Longitude -- Central Meridian (radians).
         double sub_observ_lon_;
 
-        /// Sub-Solar Latitude -- BodyCENTRIC (radians)
+        /// Sub-Solar Latitude -- Planetocentric (radians)
         double sub_solar_lat_;
 
         /// Sub-Solar Longitude (radians)
@@ -472,7 +470,7 @@ namespace MaRC
         double line_center_;
         //@}
 
-        /// BODYcentric latitude at picture center.
+        /// Planetocentric latitude at picture center.
         double lat_at_center_;
 
         /// Longitude at picture center

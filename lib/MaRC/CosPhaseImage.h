@@ -2,7 +2,7 @@
 /**
  *  @file CosPhaseImage.h
  *
- * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,11 +53,12 @@ namespace MaRC
         /**
          * @param[in] body           Object representing the body
          *                           being mapped.
-         * @param[in] sub_observ_lat Bodycentric sub-observer latitude
-         *                           in degrees.
+         * @param[in] sub_observ_lat Planetocentric sub-observer
+         *                           latitude in degrees.
          * @param[in] sub_observ_lon Sub-observer longitude in
          *                           degrees.
-         * @param[in] sub_solar_lat  Sub-solar latitude in degrees.
+         * @param[in] sub_solar_lat  Planetocentric sub-solar latitude
+         *                           in degrees.
          * @param[in] sub_solar_lon  Sub-solar longitude in degrees.
          * @param[in] range          Observer to target center
          *                           distance.
@@ -91,7 +92,7 @@ namespace MaRC
         /// Object representing the body being mapped.
         std::shared_ptr<BodyData> const body_;
 
-        /// Bodycentric sub-observer latitude in radians.
+        /// Planetocentric sub-observer latitude in radians.
         double const sub_observ_lat_;
 
         /// Sub-observer longitude in radians.

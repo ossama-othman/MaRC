@@ -61,16 +61,16 @@ namespace MaRC
         /**
          * @param[in] body        Pointer to @c BodyData object
          *                        representing body being mapped.
-         * @param[in] lo_lat      Bodycentric lower latitude in
+         * @param[in] lo_lat      Planetocentric lower latitude in
          *                        degrees in simple cylindrical map.
-         * @param[in] hi_lat      Bodycentric upper latitude in
+         * @param[in] hi_lat      Planetocentric upper latitude in
          *                        degrees in simple cylindrical map.
          * @param[in] lo_lon      Lower longitude in degrees in simple
          *                        cylindrical map.
          * @param[in] hi_lon      Upper longitude in degrees in simple
          *                        cylindrical map.
-         * @param[in] graphic_lat Map bodygraphic latitudes instead of
-         *                        bodycentric latitudes.
+         * @param[in] graphic_lat Map planetographic latitudes instead
+         *                        of planetocentric latitudes.
          */
         SimpleCylindrical(std::shared_ptr<BodyData> body,
                           double lo_lat,
@@ -157,8 +157,8 @@ namespace MaRC
         /// Upper longitude in simple cylindrical map.
         double hi_lon_;
 
-        /// Flag that determines if bodygraphic latitudes are mapped
-        /// instead of bodycentric latitudes.
+        /// Flag that determines if planetographic latitudes are
+        /// mapped instead of planetocentric latitudes.
         bool const graphic_lat_;
 
     };

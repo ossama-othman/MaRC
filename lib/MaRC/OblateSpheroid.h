@@ -2,7 +2,7 @@
 /**
  * @file OblateSpheroid.h
  *
- * Copyright (C) 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1999, 2003-2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,6 @@
 #include <MaRC/BodyData.h>
 #include <MaRC/Vector.h>
 #include <MaRC/Export.h>
-
 
 
 namespace MaRC
@@ -125,7 +124,7 @@ namespace MaRC
 
         /// Radius of curvature of the meridian.
         /**
-         * @param[in] lat Bodycentric latitude
+         * @param[in] lat Planetocentric latitude.
          *
          * @return Radius of curvature of the meridian.
          */
@@ -134,7 +133,7 @@ namespace MaRC
         /// Radius of curvature in the direction of the prime vertical
         /// perpendicular to the direction of the meridian.
         /**
-         * @param[in] lat Bodycentric latitude
+         * @param[in] lat Planetocentric latitude.
          *
          * @return Radius of curvature in the direction of the prime
          *         vertical perpendicular to the direction of the
@@ -146,12 +145,10 @@ namespace MaRC
         /**
          * Line = vec + k * dvec, where k will computed.
          *
-         * @param[in]  vec  Vector from ellipsoid center to observer
-         * @param[in]  dvec Vector along line
-         * @param[out] lat  Bodycentric (e.g. planetocentric) latitude
-         *                  in radians
-         * @param[out] lon  Bodycentric (e.g. planetocentric) east
-         *                  longitude in radians
+         * @param[in]  vec  Vector from ellipsoid center to observer.
+         * @param[in]  dvec Vector along line.
+         * @param[out] lat  Planetocentric latitude in radians.
+         * @param[out] lon  Planetocentric east longitude in radians.
          *
          * @retval  0 ellipse intersection was found
          * @retval  1 no ellipse intersection was found

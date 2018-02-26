@@ -15,7 +15,7 @@ last updated @value{UPDATED},
 of @cite{The MaRC Manual},
 for @code{MaRC}, version @value{VERSION}.
 
-Copyright @copyright{} 1997-1999, 2003, 2004, 2017  Ossama Othman
+Copyright @copyright{} 1997-1999, 2003-2004, 2017-2018  Ossama Othman
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -234,16 +234,16 @@ Note that the arguments for the trigonometric functions @code{sin},
 @comment node-name,     next,           previous, up
 @cindex Angle and Range Entries
 @section Angle and Range Entries
-Special cases of keyword entries that expect mathematical expressions as
-their semantic values exists when specifying latitudes, longitudes,
+Special cases of keyword entries that expect mathematical expressions
+as their semantic values exists when specifying latitudes, longitudes,
 position angles and ranges.  Here is an example of a latitude and
 longitude entry, the keywords will be discussed later on:
 
 @cindex @code{SUB_OBSERV_LAT}
 @cindex @code{SUB_OBSERV_LON}
 @example
-SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
-SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+SUB_OBSERV_LAT: 34 N C  # 34 degrees North planetocentric latitude
+SUB_OBSERV_LON: 25.6 W  # 25.6 degrees West longitude
 @end example
 
 @noindent
@@ -253,16 +253,16 @@ north latitude.  Similarly @code{S} denotes south latitude.  If neither
 expression entered for the latitude determines the hemisphere of the
 sub-observation latitude.  A positive value indicates the northern
 hemisphere, where a negative value indicates the southern hemisphere.
-The letter @code{C} after @code{N} in this example denotes a bodycentric
-latitude.  The letter @code{G} may be used to denote a bodygraphic
-latitude.  If neither @code{C} nor @code{G} is used then a bodycentric
-latitude will be assumed.  A space must be placed between the hemisphere
-and latitude type letters.  Longitudes can be denoted by the letters
-@code{E} and @code{W} for east and west longitude, respectively.  If
-neither is specified, then the direction of rotation of the body
-determines whether the longitude is east or west longitude.  Prograde
-rotation causes the longitude to be west by default, whereas a
-retrograde rotation defaults to east longitude.
+The letter @code{C} after @code{N} in this example denotes a
+planetocentric latitude.  The letter @code{G} may be used to denote a
+planetographic latitude.  If neither @code{C} nor @code{G} is used
+then a planetocentric latitude will be assumed.  A space must be
+placed between the hemisphere and latitude type letters.  Longitudes
+can be denoted by the letters @code{E} and @code{W} for east and west
+longitude, respectively.  If neither is specified, then the direction
+of rotation of the body determines whether the longitude is east or
+west longitude.  Prograde rotation causes the longitude to be west by
+default, whereas a retrograde rotation defaults to east longitude.
 
 A similar expression may be entered for the position angle as follows:
 @cindex clockwise
@@ -500,8 +500,8 @@ integer (8 bits) format.  As such, the minimum value is zero and the
 maximum value is 255.  Grid points and lines have an intensity value of
 255.  It is also possible to specify the interval between points of
 constant latitude and of constant longitude.  By default the interval
-between grid points is 10 degrees (bodycentric where applicable
-@c -- see the appendix for a description of bodycentric latitudes
+between grid points is 10 degrees (planetocentric where applicable
+@c -- see the appendix for a description of planetocentric latitudes
 ).  Both are used in the following fashion:
 @cindex @code{GRID}
 @cindex @code{GRID_INTERVAL}
@@ -982,8 +982,8 @@ set by using the @code{SUB_OBSERV_LAT} and @code{SUB_OBSERV_LON}
 keywords as follows:
 
 @example
-SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
-SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+SUB_OBSERV_LAT: 34 N C  # 34 degrees North planetocentric latitude
+SUB_OBSERV_LON: 25.6 W  # 25.6 degrees West longitude
 @end example
 
 The position angle, sometimes referred to as the north angle is
@@ -1153,8 +1153,8 @@ set by using the @code{SUB_OBSERV_LAT} and @code{SUB_OBSERV_LON}
 keywords as follows:
 
 @example
-SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
-SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+SUB_OBSERV_LAT: 34 N C  # 34 degrees North planetocentric latitude
+SUB_OBSERV_LON: 25.6 W  # 25.6 degrees West longitude
 @end example
 
 The position angle, sometimes referred to as the north angle is
@@ -1287,8 +1287,8 @@ The simple cylindrical projection is a projection that simply maps
 latitudes as horizontal lines and longitudes as vertical lines.  Pixel
 distances between latitude lines are uniform throughout the map, and
 similarly for longitudes.  It is possible to map data using either
-bodycentric or bodygraphic latitudes.  Also, latitude and longitude
-ranges to be mapped can also be specified.
+planetocentric or planetographic latitudes.  Also, latitude and
+longitude ranges to be mapped can also be specified.
 @cindex @code{LATITUDE_TYPE}
 @cindex @code{CENTRIC_LAT}
 @cindex @code{GRAPHIC_LAT}
@@ -1297,19 +1297,20 @@ ranges to be mapped can also be specified.
 @cindex @code{LO_LON}
 @cindex @code{HI_LON}
 The latitude type is set using the @code{LATITUDE_TYPE} keyword.  To
-choose a bodycentric latitude map, the keyword token
-@code{@w{CENTRIC_LAT}} is used.  Bodygraphic latitudes are selected by
-using the @code{GRAPHIC_LAT} keyword token. The latitude range is set by
-using the @code{LO_LAT} and @code{HI_LAT} keywords, while the longitude
-range is set by using the @code{LO_LON} and @code{HI_LON} keywords.  The
-latitude and longitude options as described earlier (@pxref{Angle &
-Range}) also hold for these latitude/longitude range keywords.  Both
-latitude range keywords must be used if setting a latitude range and
-similarly for the longitude range.  However, the latitude and longitude
-range keywords need not always be used.  If the latitude range is not
-specified MaRC will then default to the full latitude range, and
-similarly for the longitude range.  The following is an example of how a
-simple cylindrical projection is entered in to a MaRC input file:
+choose a planetocentric latitude map, the keyword token
+@code{@w{CENTRIC_LAT}} is used.  Planetographic latitudes are selected by
+using the @code{GRAPHIC_LAT} keyword token. The latitude range is set
+by using the @code{LO_LAT} and @code{HI_LAT} keywords, while the
+longitude range is set by using the @code{LO_LON} and @code{HI_LON}
+keywords.  The latitude and longitude options as described earlier
+(@pxref{Angle & Range}) also hold for these latitude/longitude range
+keywords.  Both latitude range keywords must be used if setting a
+latitude range and similarly for the longitude range.  However, the
+latitude and longitude range keywords need not always be used.  If the
+latitude range is not specified MaRC will then default to the full
+latitude range, and similarly for the longitude range.  The following
+is an example of how a simple cylindrical projection is entered in to
+a MaRC input file:
 
 @cindex @code{OPTIONS}
 @example
@@ -1324,8 +1325,8 @@ TYPE:   SIMPLE_C
 @end example
 
 @noindent
-Note that it is valid to enter a value for @code{LO_LON} that is greater
-than @code{HI_LON}, if so desired.
+Note that it is valid to enter a value for @code{LO_LON} that is
+greater than @code{HI_LON}, if so desired.
 
 @node    Map Size,  Map Planes, Projections,  Input Files
 @comment node-name,     next,           previous, up
@@ -1334,8 +1335,8 @@ than @code{HI_LON}, if so desired.
 @cindex @code{SAMPLES}
 @cindex @code{LINES}
 In general most maps have only two dimensions: the number of
-@emph{samples} and the number of @emph{lines}.  Each of these dimensions
-are set with the @code{SAMPLES} and @code{LINES} keywords,
+@emph{samples} and the number of @emph{lines}.  Each of these
+dimensions are set with the @code{SAMPLES} and @code{LINES} keywords,
 respectively.  The keyword @code{SAMPLES} refers to the number of
 columns in a map.  The @code{LINES} keyword refers to the number of
 rows in a map.  An example of a map size entry is:
@@ -1349,8 +1350,8 @@ MaRC can also create multi-plane maps.  Such a map or ``map cube''
 would have several planes each with a different set of data.  Both
 single plane maps and multi-plane maps are defined using the same
 keywords, the only difference being more than one @emph{plane}
-(@pxref{Map Planes}) definition in the multi-plane map case.  Note that
-a map must have at least one plane.
+(@pxref{Map Planes}) definition in the multi-plane map case.  Note
+that a map must have at least one plane.
 
 @node    Map Planes,  Sample Input File,  Map Size,  Input Files
 @comment node-name,     next,           previous, up
@@ -1360,8 +1361,8 @@ a map must have at least one plane.
 Multiple planes, each containing a different set of data for the map
 projection, may exist.  This section describes how different type map
 planes may be configured.  A map plane may either contain data
-retrieved from a static source (e.g. an image file) or data
-computed dynamically at run-time.
+retrieved from a static source (e.g. an image file) or data computed
+dynamically at run-time.
 
 @menu
 * Beginning a Plane::     How to begin a plane entry.
@@ -1784,8 +1785,8 @@ set by using the @code{SUB_OBSERV_LAT} and @code{SUB_OBSERV_LON}
 keywords as follows:
 
 @example
-SUB_OBSERV_LAT: 34 N C  # Specifies 34 degrees North bodycentric lat.
-SUB_OBSERV_LON: 25.6 W  # Specifies 25.6 degrees West longitude
+SUB_OBSERV_LAT: 34 N C  # 34 degrees North planetocentric latitude
+SUB_OBSERV_LON: 25.6 W  # 25.6 degrees West longitude
 @end example
 
 @node    Pos. Ang.,  Sub-Solar Pt.,  Sub-Observer Pt.,  Image Geometry
@@ -1826,8 +1827,8 @@ through.  The sub-solar point is set by using the @code{SUB_SOLAR_LAT}
 and @code{SUB_SOLAR_LON} keywords as follows:
 
 @example
-SUB_SOLAR_LAT:  3.2 S C # Specifies 3.2 degrees South bodycentric lat.
-SUB_SOLAR_LON:  15  W   # Specifies 15 degrees West longitude
+SUB_SOLAR_LAT:  3.2 S C # 3.2 degrees South planetocentric latitude.
+SUB_SOLAR_LON:  15  W   # 15 degrees West longitude
 @end example
 
 @node    Range,   ,  Sub-Solar Pt.,  Image Geometry
