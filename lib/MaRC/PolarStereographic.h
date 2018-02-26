@@ -88,7 +88,7 @@ namespace MaRC
         virtual char const * projection_name() const;
         //@}
 
-        /// 
+        ///
         /**
          * @brief Scale distortion at given planetographic latitude
          *        @a latg on map.
