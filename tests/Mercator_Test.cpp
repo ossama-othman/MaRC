@@ -40,8 +40,6 @@ namespace
     std::shared_ptr<MaRC::OblateSpheroid> body =
         std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
 
-    constexpr bool   north_pole = false;
-
     auto projection =
         std::make_unique<MaRC::Mercator>(body);
 
