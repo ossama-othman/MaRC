@@ -2,9 +2,6 @@ MaRC - Map Reprojections and Conversions
 
 Requirements
 ------------
-C compiler   - The C compiler should support the C99 standard or
-               better.
-
 C++ compiler - The C++ compiler should support the C++14 standard or
                better.
 
