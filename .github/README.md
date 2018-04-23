@@ -4,15 +4,16 @@
 
 # MaRC
 
-MaRC - __*Ma*__p __*R*__eprojections and __*C*__onversions - is a
-program and library designed to produce map projections from digital
-images or from computed values of incidence, emission or phase angles,
-and latitudes and longitudes.  Multi-plane maps can be created with
-digital image data in several planes and incidence, emission, phase
-angles, latitudes and longitudes in other planes.  Placement of data
-in a given plane is completely arbitrary.  The user decides in what
-plane to place a given set of data.  Created maps are stored in [FITS](https://fits.gsfc.nasa.gov/fits_standard.html)
-(Flexible Image Transport System) format.
+MaRC - _Map Reprojections and Conversions_ - is a program and library
+designed to produce map projections from digital images or from
+computed values of incidence, emission or phase angles, and latitudes
+and longitudes.  Multi-plane maps can be created with digital image
+data in several planes and incidence, emission, phase angles,
+latitudes and longitudes in other planes.  Placement of data in a
+given plane is completely arbitrary.  The user decides in what plane
+to place a given set of data.  Created maps are stored in
+[FITS](https://fits.gsfc.nasa.gov/fits_standard.html) (Flexible Image
+Transport System) format.
 
 ## Getting Started
 
