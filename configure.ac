@@ -69,6 +69,9 @@ DX_PDF_FEATURE(OFF)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
 
+AC_ARG_VAR([PANDOC],[location of pandoc program])
+AC_PATH_PROG([PANDOC], [pandoc])
+
 AC_LANG([C++])
 
 dnl

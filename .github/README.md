@@ -95,6 +95,7 @@ performing maintainer-like modifications to the MaRC package as a whole:
 * Documentation Generators
   * [Doxygen](http://www.doxygen.org/)
   * [GNU Texinfo](https://www.gnu.org/software/texinfo/)
+  * [Pandoc](https://pandoc.org/)
 
 #### Platform-specific Dependencies
 * macOS

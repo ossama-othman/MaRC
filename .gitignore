@@ -58,6 +58,7 @@ doc/texinfo.tex
 doc/version.texi
 
 # Documentation
+README
 doc/*.t2p/
 doc/*.info
 doc/*.pdf
