@@ -39,3 +39,5 @@ EXTRA_DIST =		\
 	marc.dox	\
 	CODE_OF_CONDUCT.md \
 	README.md
+
+@CODE_COVERAGE_RULES@

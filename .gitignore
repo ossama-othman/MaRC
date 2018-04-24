@@ -22,6 +22,11 @@
 *.a
 *.lib
 
+# Gcov Data Files
+*.gcda
+*.gcno
+MaRC-*-coverage*
+
 # Executables
 *.exe
 *.out

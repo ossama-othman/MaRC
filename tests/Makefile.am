@@ -18,7 +18,9 @@
 
 MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
 
-AM_CPPFLAGS = -I$(top_srcdir)/lib
+AM_CPPFLAGS = -I$(top_srcdir)/lib $(CODE_COVERAGE_CPPFLAGS)
+AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
+AM_LIBS = $(CODE_COVERAGE_LIBS)
 
 check_PROGRAMS =            \
   DefaultConfiguration_Test \
@@ -103,3 +105,5 @@ clean-local:
 	@if test -f link-stamp; then \
 	  $(RM) test.fits.gz link-stamp; \
 	fi
+
+@CODE_COVERAGE_RULES@

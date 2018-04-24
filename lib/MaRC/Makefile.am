@@ -17,9 +17,15 @@
 
 ##  Process this file with automake to create Makefile.in
 
-AM_CPPFLAGS = -I$(top_builddir)/lib -I$(top_srcdir)/lib
+AM_CPPFLAGS =           \
+  -I$(top_builddir)/lib \
+  -I$(top_srcdir)/lib   \
+  $(CODE_COVERAGE_CPPFLAGS)
 
 lib_LTLIBRARIES = libMaRC.la
+
+libMaRC_la_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
+libMaRC_la_LIBS     = $(CODE_COVERAGE_LIBS)
 
 libMaRC_la_SOURCES = \
   Geometry.cpp \
@@ -113,3 +119,5 @@ pkginclude_HEADERS = \
   Export.h
 
 # noinst_HEADERS =
+
+@CODE_COVERAGE_RULES@
