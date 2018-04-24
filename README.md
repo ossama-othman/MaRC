@@ -92,7 +92,7 @@ performing maintainer-like modifications to the MaRC package as a whole:
 * Text Parser and Scanner Generators
   * [GNU Bison](https://www.gnu.org/software/bison/)
   * [Flex](https://github.com/westes/flex)
-* Documentation Generators
+* Documentation Generators and Converters
   * [Doxygen](http://www.doxygen.org/)
   * [GNU Texinfo](https://www.gnu.org/software/texinfo/)
   * [Pandoc](https://pandoc.org/)
@@ -138,7 +138,7 @@ make check
 
 ## Contributing
 
-Please ensure you adhere to [MaRC's code of
+Please ensure you adhere to the [MaRC code of
 conduct](CODE_OF_CONDUCT.md) when contributing to MaRC.
 
 <!--
@@ -154,13 +154,13 @@ issues](https://github.com/ossama-othman/MaRC/issues) page.
 
 MaRC is licensed under several open-source licenses:
 
-* MaRC program: [GPLv2](../COPYING)
-* MaRC library: [LGPLv2.1](../COPYING.LESSER)
-* MaRC documentation: [GFDLv1.3](../COPYING.DOC)
+* MaRC program: [GPLv2](COPYING)
+* MaRC library: [LGPLv2.1](COPYING.LESSER)
+* MaRC documentation: [GFDLv1.3](COPYING.DOC)
 
 ## Acknowledgments
 
-See the [THANKS](../THANKS) file for a list of people who contributed
+See the [THANKS](THANKS) file for a list of people who contributed
 significantly to MaRC.
 
 <!-- Original layout based on Billie Thompson's (PurpleBooth)
