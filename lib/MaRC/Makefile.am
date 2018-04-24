@@ -17,6 +17,8 @@
 
 ##  Process this file with automake to create Makefile.in
 
+include $(top_srcdir)/aminclude_static.am
+
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
@@ -120,4 +122,5 @@ pkginclude_HEADERS = \
 
 # noinst_HEADERS =
 
-@CODE_COVERAGE_RULES@
+clean-local: code-coverage-clean
+dist-clean-local: code-coverage-dist-clean

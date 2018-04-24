@@ -40,4 +40,7 @@ EXTRA_DIST =		\
 	CODE_OF_CONDUCT.md \
 	README.md
 
-@CODE_COVERAGE_RULES@
+include $(top_srcdir)/aminclude_static.am
+
+clean-local: code-coverage-clean
+dist-clean-local: code-coverage-dist-clean

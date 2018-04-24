@@ -16,6 +16,8 @@
 
 ##  Process this file with automake to create Makefile.in
 
+include $(top_srcdir)/aminclude_static.am
+
 MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib $(CODE_COVERAGE_CPPFLAGS)
@@ -101,9 +103,9 @@ all-local:
 	  touch link-stamp; \
 	fi
 
-clean-local:
+clean-local: code-coverage-clean
 	@if test -f link-stamp; then \
 	  $(RM) test.fits.gz link-stamp; \
 	fi
 
-@CODE_COVERAGE_RULES@
+dist-clean-local: code-coverage-dist-clean

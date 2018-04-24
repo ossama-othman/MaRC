@@ -45,6 +45,7 @@ Makefile.in
 INSTALL
 missing
 aclocal.m4
+aminclude_static.am
 autom4te.cache/
 compile
 configure

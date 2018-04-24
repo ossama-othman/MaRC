@@ -21,6 +21,8 @@
 
 #DISTCLEANFILES = stamp-v version.cpp ##lexer.cpp parse.{cc,h}
 
+include $(top_srcdir)/aminclude_static.am
+
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
@@ -80,4 +82,5 @@ BUILT_SOURCES = parse.hh
 #	sed -e 's/delete yy_state_buf/delete [] yy_state_buf/' $@ > $@.new
 #	mv $@.new $@
 
-@CODE_COVERAGE_RULES@
+clean-local: code-coverage-clean
+dist-clean-local: code-coverage-dist-clean
