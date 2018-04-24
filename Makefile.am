@@ -24,4 +24,18 @@ ACLOCAL_AMFLAGS = -I m4
 @DX_RULES@
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
 
-EXTRA_DIST = FAQ BUGS ChangeLog.0 Doxyfile marc.dox
+README: $(top_srcdir)/README.md
+	@test -z "$(PANDOC)" || $(PANDOC) --from markdown_github --to plain --output=$@ --normalize $<
+
+dist-hook: README
+
+MAINTAINERCLEANFILES = README
+
+EXTRA_DIST =		\
+	FAQ		\
+	BUGS		\
+	ChangeLog.0	\
+	Doxyfile	\
+	marc.dox	\
+	CODE_OF_CONDUCT.md \
+	README.md

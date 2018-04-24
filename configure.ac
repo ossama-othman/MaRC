@@ -35,7 +35,7 @@ AC_ARG_ENABLE([arch-detect],
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.14.1 foreign silent-rules -Wall -Werror -Wno-portability])
+AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
@@ -68,6 +68,9 @@ DX_XML_FEATURE(OFF)
 DX_PDF_FEATURE(OFF)
 DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
+
+AC_ARG_VAR([PANDOC],[location of pandoc program])
+AC_PATH_PROG([PANDOC], [pandoc])
 
 AC_LANG([C++])
 
