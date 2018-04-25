@@ -27,7 +27,7 @@ AM_CPPFLAGS =           \
 lib_LTLIBRARIES = libMaRC.la
 
 libMaRC_la_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
-libMaRC_la_LIBS     = $(CODE_COVERAGE_LIBS)
+libMaRC_la_LIBADD   = $(CODE_COVERAGE_LIBS)
 
 libMaRC_la_SOURCES = \
   Geometry.cpp \

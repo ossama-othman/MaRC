@@ -49,8 +49,10 @@ marc_SOURCES = \
   lexer.ll
 
 marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
-marc_LDADD    = $(CFITSIO_LIBS) $(top_builddir)/lib/MaRC/libMaRC.la
-marc_LIBS     = $(CODE_COVERAGE_LIBS)
+marc_LDADD    = \
+  $(CFITSIO_LIBS) \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \
   ImageFactory.h \

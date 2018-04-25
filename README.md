@@ -81,8 +81,9 @@ following build dependencies:
 
 #### Maintenance and Git Based Build Dependencies
 
-Additional dependencies exist when building MaRC from Git or when
-performing maintainer-like modifications to the MaRC package as a whole:
+Additional dependencies exist when building MaRC from Git, when
+performing maintainer-like modifications to the MaRC package as a
+whole, or generating a new source distribution:
 
 * GNU Autotools
   * [Autoconf](https://www.gnu.org/software/autoconf/)

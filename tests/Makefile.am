@@ -47,40 +47,62 @@ dist_check_DATA = \
   test.fits.gz
 
 DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
+DefaultConfiguration_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 Math_Test_SOURCES = Math_Test.cpp
+Math_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 Vector_Test_SOURCES = Vector_Test.cpp
+Vector_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 Matrix_Test_SOURCES = Matrix_Test.cpp
+Matrix_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 Geometry_Test_SOURCES = Geometry_Test.cpp
-Geometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+Geometry_Test_LDADD = \
+   $(top_builddir)/lib/MaRC/libMaRC.la \
+   $(CODE_COVERAGE_LIBS)
 
 OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
-OblateSpheroid_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+OblateSpheroid_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 Scale_Offset_Test_SOURCES = Scale_Offset_Test.cpp
+Scale_Offset_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 LatitudeImage_Test_SOURCES = LatitudeImage_Test.cpp
-LatitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+LatitudeImage_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 LongitudeImage_Test_SOURCES = LongitudeImage_Test.cpp
-LongitudeImage_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+LongitudeImage_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
-ViewingGeometry_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+ViewingGeometry_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 Mercator_Test_SOURCES = Mercator_Test.cpp
-Mercator_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+Mercator_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
-PolarStereographic_Test_LDADD = $(top_builddir)/lib/MaRC/libMaRC.la
+PolarStereographic_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 root_find_test_SOURCES = root_find_test.cpp
-root_find_test_LDADD   = $(top_builddir)/lib/MaRC/libMaRC.la
+root_find_test_LDADD   = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
 
 utility_test_SOURCES = utility_test.cpp
+utility_test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 TESTS = \
   $(check_PROGRAMS) \
