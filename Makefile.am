@@ -39,3 +39,8 @@ EXTRA_DIST =		\
 	marc.dox	\
 	CODE_OF_CONDUCT.md \
 	README.md
+
+include $(top_srcdir)/aminclude_static.am
+
+clean-local: code-coverage-clean
+dist-clean-local: code-coverage-dist-clean
