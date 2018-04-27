@@ -105,8 +105,7 @@
 
     std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
     MaRC::MosaicImageFactory::list_type photo_factories;
-    MaRC::MosaicImage::average_type averaging_type =
-        MaRC::MosaicImage::AVG_WEIGHTED;
+    MaRC::MosaicImage::average_type averaging_type;
 
     std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
     std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
@@ -454,6 +453,8 @@ map_entry:
             blank_set = false;
 
             image_factories.clear();
+
+            averaging_type = MaRC::MosaicImage::AVG_WEIGHTED;
 
             /**
              * @deprecated Remove once deprecated plane number support
@@ -914,6 +915,11 @@ image_setup:
           nibble_top_val    = pp.nibble_top;
           nibble_bottom_val = pp.nibble_bottom;
 
+          viewing_geometry->sub_observ(($13).lat, ($13).lon);
+          viewing_geometry->position_angle($14);
+          viewing_geometry->sub_solar(($15).lat, ($15).lon);
+          viewing_geometry->range($16);
+
           if (km_per_pixel_val > 0) {
               viewing_geometry->km_per_pixel(km_per_pixel_val);
               km_per_pixel_val = -1;  // Reset to "bad" value.
@@ -950,11 +956,6 @@ image_setup:
               lat_at_center = not_a_number;
               lon_at_center = not_a_number;
 	  }
-
-          viewing_geometry->sub_observ(($13).lat, ($13).lon);
-          viewing_geometry->position_angle($14);
-          viewing_geometry->sub_solar(($15).lat, ($15).lon);
-          viewing_geometry->range($16);
 
           photo_factory->photo_config(std::move(photo_parameters));
           photo_factory->viewing_geometry(std::move(viewing_geometry));
@@ -1377,13 +1378,11 @@ ortho:  MAP_TYPE ':' _ORTHO
 ;
 
 ortho_options:
-        |
-        options
-        ortho_optsub
+        | options ortho_optsub
 ;
 
 ortho_optsub:
-        sub_observ {
+        | sub_observ {
           sub_observation_data.lat = ($1).lat;
           sub_observation_data.lon = ($1).lon;
         }
@@ -1639,7 +1638,7 @@ simple_c_options:
 ;
 
 lat_type:
-        LATITUDE_TYPE ':' CENTRIC   { graphic_lat = false; }
+        | LATITUDE_TYPE ':' CENTRIC   { graphic_lat = false; }
         | LATITUDE_TYPE ':' GRAPHIC { graphic_lat = true;  }
         /**
          * @deprecated The following are only for backward
