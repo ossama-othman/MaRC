@@ -1350,10 +1350,15 @@ lampoleq_options:
 
 /* ------------------------- Mercator Projection ------------------------ */
 mercator:
-        MAP_TYPE ':' _MERCATOR {
+        MAP_TYPE ':' _MERCATOR
+        mercator_options {
             map_factory =
                 std::make_unique<MaRC::Mercator>(oblate_spheroid);
         }
+;
+
+mercator_options:
+        | options
 ;
 
 /* ----------------------- Orthographic Projection ------------------------- */

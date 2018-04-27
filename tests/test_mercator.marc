@@ -12,7 +12,8 @@ XCOMMENT: Test FITS extension comment.
         GRID_INTERVAL:          10
         TYPE:                   MERCATOR
 
-#        OPTIONS:
+        OPTIONS:
+		AVERAGING:  UNWEIGHTED
 #		MAX_LAT:
 
         PLANES:         9
