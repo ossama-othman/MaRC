@@ -37,7 +37,7 @@ XCOMMENT: Test FITS extension comment.
                         SAMPLE_CENTER:          2807.61
                         LINE_CENTER:            1200.67
                         GEOM_CORRECT:           YES
-                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LAT:         0.06 S
                         SUB_OBSERV_LON:         215.63 E
                         POSITION_ANGLE:         179.175
                         SUB_SOLAR_LAT:          0.22
@@ -51,6 +51,7 @@ XCOMMENT: Test FITS extension comment.
                         NIBBLE_RIGHT:           8
                         NIBBLE_BOTTOM:          4
                         NIBBLE_TOP:             4
+                        INVERT:                 BOTH
                         REMOVE_SKY:             YES
                         SAMPLE_CENTER:          2456.39
                         LINE_CENTER:            1195.58
@@ -70,7 +71,7 @@ XCOMMENT: Test FITS extension comment.
                         NIBBLE_RIGHT:           8
                         NIBBLE_BOTTOM:          4
                         NIBBLE_TOP:             4
-                        INTERPOLATE:		YES
+                        INTERPOLATE:            YES
                         REMOVE_SKY:             NO
                         SAMPLE_CENTER:          2833.21
                         LINE_CENTER:            1201.89
@@ -114,6 +115,8 @@ XCOMMENT: Test FITS extension comment.
                         SAMPLE_CENTER:          2587.43
                         LINE_CENTER:            842.981
                         GEOM_CORRECT:           YES
+                        EMI_ANG_LIMIT:          75
+                        TERMINATOR:             YES
                         SUB_OBSERV_LAT:         -0.06
                         SUB_OBSERV_LON:         214.03 E
                         POSITION_ANGLE:         179.246
@@ -150,7 +153,7 @@ XCOMMENT: Test FITS extension comment.
                         REMOVE_SKY:             NO
                         SAMPLE_CENTER:          2617.95
                         LINE_CENTER:            843.217
-                        # FLAT_FIELD:             test.fits.gz
+                        FLAT_FIELD:             test.fits.gz
                         GEOM_CORRECT:           YES
                         SUB_OBSERV_LAT:         -0.06
                         SUB_OBSERV_LON:         213.45 E
@@ -162,6 +165,7 @@ XCOMMENT: Test FITS extension comment.
                         PIXEL_SCALE:            32.8084
 
         PLANE:  5
+		DATA_MIN: 0
                 MU:     SUB_OBSERV_LAT:         -0.06 C
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
@@ -187,3 +191,103 @@ XCOMMENT: Test FITS extension comment.
 
         PLANE: 9
                 LONGITUDE
+
+MAP:    test_map2.fits
+        BODY:   Jupiter
+                POL_RAD:        66854
+                FLATTENING:     (71492 - 66854) / 71492
+                ROTATION:       PROGRADE
+
+        DATA_TYPE:              BYTE
+        GRID:                   YES
+        TYPE:                   ORTHO
+                OPTIONS:
+                        AVERAGING:      NONE
+
+        PLANES:         1
+        SAMPLES:        25
+        LINES:          25
+
+        PLANE:
+                IMAGE:  test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2807.61
+                        LINE_CENTER:            1200.67
+                        GEOM_CORRECT:           NO
+                        SUB_OBSERV_LAT:         0.06 S
+                        SUB_OBSERV_LON:         215.63 E
+                        POSITION_ANGLE:         179.175
+                        SUB_SOLAR_LAT:          0.22
+                        SUB_SOLAR_LON:          284.67 E
+                        RANGE:                  0.00809057036933 AU
+                        ARCSEC_PER_PIX:         0.125
+
+                IMAGE: test.fits.gz
+                        NIBBLE:                 5
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2967.82
+                        LINE_CENTER:            848.808
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         213.60 E
+                        POSITION_ANGLE:         179.247
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          282.53 E
+                        RANGE:                  1209552
+                        KM_PER_PIXEL:           31.5
+
+MAP:    test_map3.fits
+        BODY:   Jupiter
+                EQ_RAD:         71492
+                FLATTENING:     (71492 - 66854) / 71492
+                ROTATION:       PROGRADE
+
+        DATA_TYPE:              FLOAT
+        GRID:
+                   YES
+        TYPE:   P_STEREO
+                OPTIONS:
+                        AVERAGING:  UNWEIGHTED
+                        POLE:       NORTH
+                        MAX_LAT:    30 S
+
+        SAMPLES:        25
+        LINES:          25
+
+        PLANE:
+                IMAGE:  test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2807.61
+                        LINE_CENTER:            1200.67
+                        GEOM_CORRECT:           NO
+                        SUB_OBSERV_LAT:         0.06 S
+                        SUB_OBSERV_LON:         215.63 E
+                        POSITION_ANGLE:         179.175
+                        SUB_SOLAR_LAT:          0.22
+                        SUB_SOLAR_LON:          284.67 E
+                        RANGE:                  1211230
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+                IMAGE: test.fits.gz
+                        NIBBLE:                 5
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2967.82
+                        LINE_CENTER:            848.808
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         213.60 E
+                        POSITION_ANGLE:         179.247
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          282.53 E
+                        RANGE:                  1209552
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084

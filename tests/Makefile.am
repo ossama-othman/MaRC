@@ -43,7 +43,7 @@ check_PROGRAMS =            \
 dist_check_SCRIPTS = MaRC_Prog_Test.sh
 
 dist_check_DATA = \
-  test_map.inp \
+  test_map.marc \
   test.fits.gz
 
 DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
@@ -115,6 +115,8 @@ XFAIL_TESTS =
 
 CLEANFILES = \
   test_map.fits \
+  test_map2.fits \
+  test_map3.fits \
   test_map_ortho.fits \
   test_map_mercator.fits \
   test_map_polar_stereographic.fits

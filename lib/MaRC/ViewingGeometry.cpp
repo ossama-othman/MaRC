@@ -602,7 +602,12 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 void
 MaRC::ViewingGeometry::arcsec_per_pixel(double a)
 {
-    // NOTE: range_ should be in units of kilometers at this point.
+    /**
+     * @note @c range_ should be in units of kilometers at this point.
+     *
+     * @todo It should not be necessary to expect the caller to set
+     *       the range prior to calling this function.
+     */
     if (a <= 0)
         throw std::invalid_argument("invalid number of arcseconds");
     else if (std::isnan(this->range_))
