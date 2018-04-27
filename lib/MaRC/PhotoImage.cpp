@@ -182,7 +182,15 @@ MaRC::PhotoImage::data_weight(std::size_t i,
                               std::size_t k,
                               std::size_t & weight) const
 {
-    std::size_t & shortest_distance = weight;
+    /**
+     * @note This method assumes at "i" is in the range
+     *       [nibble_left, samples - nibble_right), "k" is in the
+     *       range [nibble_top, lines - nibble_bottom).
+     *
+     * @todo Reduce redundant code in this method.
+     */
+
+    auto & shortest_distance = weight;
 
     // Give less weight to pixels close to an edge of the image.
     //
@@ -209,64 +217,75 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     if (this->body_mask_.empty())
         return;
 
-    auto const sky_iter = this->body_mask_.cbegin();
+    auto const body_iter = this->body_mask_.cbegin();
 
     auto const & config = this->config_;
 
-    std::size_t const index = k * this->samples_ + i;
+    auto const index = k * this->samples_ + i;
 
     // Scan across samples.
 
     // Search from nibble_left to i.
     //   Beginning of line: index - i
-    auto begin = sky_iter + (index - i + config->nibble_left());
-    auto end   = sky_iter + (index + 1);  // one past "i"
+    auto begin = body_iter + (index - i + config->nibble_left());
+    auto end   = body_iter + (index + 1);  // one past column "i"
 
     auto result = std::find(begin, end, true);
 
-    assert(begin < result);
+    assert(begin <= result);
 
-    shortest_distance =
-        std::min(
-            static_cast<std::size_t>(std::distance(begin, result)),
-            shortest_distance);
+    if (result != end)
+        shortest_distance =
+            std::min(
+                static_cast<
+                std::remove_reference<decltype(shortest_distance)>::type>(
+                    std::distance(begin, result)),
+                shortest_distance);
 
     // Search from i to nibble_right.
     //   "index" offsets to "i".
-    begin = sky_iter + index;
+    begin = body_iter + index;
     end   =
-        sky_iter + (index + (this->samples_ - config->nibble_right()));
+        body_iter + (index + (this->samples_ - config->nibble_right()));
 
     result = std::find(begin, end, true);
 
-    assert(begin < result);
+    assert(begin <= result);
 
-    shortest_distance =
-        std::min(
-            static_cast<std::size_t>(std::distance(begin, result)),
-            shortest_distance);
+    if (result != end)
+        shortest_distance =
+            std::min(
+                static_cast<
+                std::remove_reference<decltype(shortest_distance)>::type>(
+                    std::distance(begin, result)),
+                shortest_distance);
 
     // -----------------------------------------------------
 
     // Scan across lines.  Line numbers increase from top to bottom.
 
-    std::size_t kk;
-
     // Search from nibble_top to k.
-    for (kk = config->nibble_top();
-         kk <= k && this->body_mask_[kk * this->samples_ + i];
-         ++kk)
+    auto first = config->nibble_top();
+    auto last  = k;
+    auto line  = first;
+
+    for (;
+         line < last && this->body_mask_[line * this->samples_ + i];
+         ++line)
         ; // Nothing
 
-    shortest_distance = std::min(kk - k, shortest_distance);
+    if (line != last)
+        shortest_distance = std::min(line - first, shortest_distance);
 
     // Search from k to nibble_bottom.
-    std::size_t const kend = this->lines_ - config->nibble_bottom();
+    first = k;
+    last  = this->lines_ - config->nibble_bottom();
 
-    for (kk = k;
-         kk < kend && this->body_mask_[kk * this->samples_ + i];
-         ++kk)
+    for (line = first;
+         line < last && this->body_mask_[line * this->samples_ + i];
+         ++line)
         ; // Nothing
 
-    shortest_distance = std::min(kk - k, shortest_distance);
+    if (line != last)
+        shortest_distance = std::min(line - first, shortest_distance);
 }
