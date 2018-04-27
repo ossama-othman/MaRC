@@ -31,7 +31,7 @@
 MaRC::MosaicImage::MosaicImage(list_type && images,
                                average_type type)
     : images_(std::move(images))
-    , average_type_(images.size() < 2 ? AVG_NONE : type)
+    , average_type_(images_.size() < 2 ? AVG_NONE : type)
 {
     // Note that we override and disable averaging if only one image
     // exists in the image set.  There is no point in attempting
