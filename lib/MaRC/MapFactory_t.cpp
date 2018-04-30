@@ -110,4 +110,8 @@ MaRC::MapFactory::plot(SourceImage const & source,
 
         this->percent_complete_old_ = percent_complete;
     }
+
+
+    // ------------------- NEW ---------------------
+    progress->notify_observers(offset, map.size());
 }

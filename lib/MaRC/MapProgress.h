@@ -33,6 +33,24 @@
 
 namespace MaRC
 {
+    class MARC_API MapProgressObserver
+    {
+    public:
+
+        /// Constructor.
+        ~MapProgressObserver();
+
+        // Disallow copying.
+        MapProgressObserver(MapProgressObserver const &) = delete;
+        void operator=(MapProgressObserver const &) = delete;
+
+        /// Destructor.
+        virtual ~MapProgressObserver() = default;
+
+        /// Notify observer of progress update.
+        virtual void notify() const;
+
+    };
 
     /**
      * @class MapProgress
@@ -58,25 +76,40 @@ namespace MaRC
         /// Destructor.
         ~MapProgress() = default;
 
+        /**
+         * Subscribe @a observer for map progress notifications.
+         *
+         * @param[in,out] observer Object that will receive map
+         *                         progress notifications.  Ownership
+         *                         will be relinquished from the
+         *                         caller.
+         */
+        void subscribe(observer_type observer);
+
+        /// Inform all subscribed observers of a new progress update.
+        void notify_observers();
+
     private:
 
         std::vector<observer_type> observers_;
 
-    };
+        /// The number of elements in map array.
+        std::size_t map_size_;
 
-    class MARC_API MapProgressObserver
-    {
-    public:
+        /**
+         * @brief Observer notification count.
+         *
+         * The number of times observers have been notified
+         * corresponds the number of elements in a map that have been
+         * plotted, i.e. @c count_ out of map_size_ elements.  Values
+         * are always the range [0, map_size_].
+         *
+         * @todo One parallelization of mapping is supported make this
+         *       an atomic variable to address a potential race
+         *       condition.
+         */
+        std::size_t count_;
 
-        /// Constructor.
-        ~MapProgressObserver();
-
-        // Disallow copying.
-        MapProgressObserver(MapProgressObserver const &) = delete;
-        void operator=(MapProgressObserver const &) = delete;
-
-        /// Destructor.
-        virtual ~MapProgress() = default;
     };
 
 }
