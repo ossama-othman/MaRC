@@ -52,6 +52,10 @@ namespace
                             filename,
                             mode,
                             &status) != 0) {
+            /**
+             * @todo Use MaRC's logging mechanism to display CFITSIO
+             *       error.
+             */
             fits_report_error(stderr, status);
 
             throw std::invalid_argument(s.str());
@@ -74,11 +78,15 @@ FITS::file::file(char const * filename)
     int hduok  = 0;
     int status = 0;
 
-    if (fits_verify_chksum(fptr_, &dataok, &hduok, &status) != 0
-        || dataok == -1  // Incorrect checksum
-        || hduok  == -1) {
-        std::cerr << "WARNING: Checksum for FITS file \""
-                  << filename
-                  << "\" is incorrect.\n";
+    if (fits_verify_chksum(fptr_, &dataok, &hduok, &status) != 0) {
+        if (dataok == -1)  // Incorrect data checksum
+            std::cerr << "WARNING: Data checksum for FITS file \""
+                      << filename
+                      << "\" is incorrect.\n";
+
+        if (hduok  == -1)
+            std::cerr << "WARNING: Header checksum for FITS file \""
+                      << filename
+                      << "\" is incorrect.\n";
     }
 }
