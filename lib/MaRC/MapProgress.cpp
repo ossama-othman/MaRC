@@ -24,14 +24,35 @@
 #include "MapProgress.h"
 
 
-MaRC::MapProgress::MapProgress()
-    : observers_()
-    , percent_complete_old_(0)
+MaRC::MapProgress::MapProgress(std::size_t map_size)
+    : map_size_(map_size)
+    , count_(0)
+    , observers_()
 {
+    assert(map_size > 0);
 }
 
 void
-MaRC::MapProgress::notify()
+MaRC::MapProgress::subscribe(observer_type observer)
 {
-    for (auto const &
+    /**
+     * @todo Access to this container should be synchronized once
+     *       parallelized mapping is supported.
+     */
+    this->observers_.push_back(std::move(observer));
+}
+
+void
+MaRC::MapProgress::notify_observers(std::size_t map_size)
+{
+    assert(this->plot_count_ < map_size);
+
+    ++this->plot_count_;
+
+    /**
+     * @todo Access to the observers container should be synchronized
+     *       once parallelized mapping is supported.
+     */
+    for (auto const & o : observers)
+        o->notify(this->plot_count_, this->map_size_);
 }

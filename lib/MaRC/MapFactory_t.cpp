@@ -36,6 +36,7 @@ MaRC::MapFactory::make_map(SourceImage const & source,
                            double minimum,
                            double maximum)
 {
+    plot_info info(source, minimum, maximum,
     map_type<T> map(samples * lines, Map_traits<T>::empty_value());
 
     using namespace std::placeholders;
@@ -52,8 +53,7 @@ MaRC::MapFactory::make_map(SourceImage const & source,
                           maximum,
                           _1,   // lat
                           _2,   // lon
-                          _3,   // percent_complete
-                          _4,   // map array offset
+                          _3,   // map array offset
                           std::ref(map));
 
     this->plot_map(samples, lines, plot);
@@ -72,15 +72,7 @@ MaRC::MapFactory::plot(SourceImage const & source,
                        std::size_t offset,
                        map_type<T> & map)
 {
-    T & data =
-#ifdef NDEBUG
-        map[offset];     // No bounds check.
-#else
-        map.at(offset);  // Perform bounds check.
-#endif
-
-    // Clip minimum, maximum and datum to fit within map data type
-    // range, if necessary.
+    // Clip datum to fit within map data type range, if necessary.
     double datum = 0;
 
     bool const found_data =
@@ -88,8 +80,17 @@ MaRC::MapFactory::plot(SourceImage const & source,
          && datum >= Map_traits<T>::minimum(minimum)
          && datum <= Map_traits<T>::maximum(maximum));
 
-    if (found_data)
+    if (found_data) {
+        T & data =
+#ifdef NDEBUG
+            map[offset];     // No bounds check.
+#else
+            map.at(offset);  // Perform bounds check.
+#endif
+
         data = static_cast<T>(datum);
+    }
+
 
     /**
      * @todo Remove map progress output.  Library calls should not
@@ -113,5 +114,5 @@ MaRC::MapFactory::plot(SourceImage const & source,
 
 
     // ------------------- NEW ---------------------
-    progress->notify_observers(offset, map.size());
+    progress->notify_observers(map.size());
 }

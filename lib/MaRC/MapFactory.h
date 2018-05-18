@@ -67,11 +67,10 @@ namespace MaRC
         using plot_type =
             std::function<void(double lat,
                                double lon,
-                               unsigned char percent_complete,
                                std::size_t offset)>;
 
         /// Constructor.
-        MapFactory();
+        MapFactory() = default;
 
         // Disallow copying.
         MapFactory(MapFactory const &) = delete;
@@ -141,6 +140,21 @@ namespace MaRC
 
     private:
 
+        class plot_info
+        {
+        public:
+            plot_info(SourceImage const & source,
+                      double minimum,
+                      double maximum,
+                      map_type<T> map);
+
+        private:
+            SourceImage const & source_;
+            double minimum_;
+            double maximum_;
+            map_type<T> map_;
+        };
+
         /**
          * Create the desired map projection.
          *
@@ -191,14 +205,10 @@ namespace MaRC
          *       as well as calling this @c plot() method.
          */
         template <typename T>
-        void plot(SourceImage const & source,
-                  double minimum,
-                  double maximum,
+        void plot(PlotInfo & info,
                   double lat,
                   double lon,
-                  unsigned char percent_complete,
-                  std::size_t offset,
-                  map_type<T> & map);
+                  std::size_t offset);
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.
@@ -220,16 +230,6 @@ namespace MaRC
                                double lat_interval,
                                double lon_interval,
                                grid_type & grid) const = 0;
-
-    private:
-
-        /**
-         * Previously measured percentage of map completed.
-         *
-         * @todo Look into a better way of allow the MaRC program to
-         *       track mapping progress.
-         */
-        unsigned char percent_complete_old_;
 
     };
 

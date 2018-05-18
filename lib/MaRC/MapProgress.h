@@ -48,7 +48,7 @@ namespace MaRC
         virtual ~MapProgressObserver() = default;
 
         /// Notify observer of progress update.
-        virtual void notify() const;
+        virtual void notify(double ) const;
 
     };
 
@@ -64,10 +64,15 @@ namespace MaRC
     class MARC_API MapProgress
     {
     public:
+
         using observer_type = std::unique_ptr<MapProgressObserver>;
 
-        /// Constructor.
-        MapProgress();
+        /**
+         * @brief Constructor
+         *
+         * @param[in] map_size The number of elements in map array.
+         */
+        MapProgress(std::size_t map_size);
 
         // Disallow copying.
         MapProgress(MapProgress const &) = delete;
@@ -91,24 +96,30 @@ namespace MaRC
 
     private:
 
-        std::vector<observer_type> observers_;
-
         /// The number of elements in map array.
-        std::size_t map_size_;
+        std::size_t const map_size_;
 
         /**
          * @brief Observer notification count.
          *
          * The number of times observers have been notified
          * corresponds the number of elements in a map that have been
-         * plotted, i.e. @c count_ out of map_size_ elements.  Values
-         * are always the range [0, map_size_].
+         * plotted, i.e. @c plot_count_ out of @c map_size_ elements.
+         * Values are always the range [0, map_size_].
          *
-         * @todo One parallelization of mapping is supported make this
-         *       an atomic variable to address a potential race
+         * @todo Once parallelization of mapping is supported make
+         *       this an atomic variable to address a potential race
          *       condition.
          */
-        std::size_t count_;
+        std::size_t plot_count_;
+
+        /**
+         * @brief List of subscribed map progress observers.
+         *
+         * @todo Access to this container should be synchronized once
+         *       parallelized mapping is supported.
+         */
+        std::vector<observer_type> observers_;
 
     };
 

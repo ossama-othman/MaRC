@@ -24,11 +24,6 @@
 #include "MapFactory.h"
 
 
-MaRC::MapFactory::MapFactory()
-    : percent_complete_old_(0)
-{
-}
-
 MaRC::MapFactory::grid_type
 MaRC::MapFactory::make_grid(std::size_t samples,
                             std::size_t lines,
