@@ -94,6 +94,27 @@ namespace MaRC
                                double & data,
                                std::size_t & weight,
                                bool scan) const;
+
+        /**
+         * @brief Unit of physical data.
+         *
+         * Get the units of the physical data, i.e. image data that
+         * has been scaled and offset according to the following
+         * equation:
+         *
+         * @code
+         *     physical_data = image_data * scale + offset;
+         * @endcode
+         *
+         * The unit should conform to IAU Style Manual
+         * recommendations.
+         *
+         * @see https://www.iau.org/publications/proceedings_rules/units/
+         *
+         * @return Unit of physical data in the source image.
+         */
+        virtual char const * unit() const { return ""; }
+
     };
 
 } // End MaRC namespace
