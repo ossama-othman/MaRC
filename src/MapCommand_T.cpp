@@ -27,6 +27,7 @@
 #include <MaRC/VirtualImage.h>  // For scale_and_offset()
 
 #include <cassert>
+#include <iostream>
 
 #include <fitsio.h>
 
@@ -120,7 +121,6 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
         //     "Plane " + std::to_string(plane_count) ": " + image->name();
 
         // descriptions.push_back();
-
 
         /**
          * @todo Refactor this call so that it isn't specific to

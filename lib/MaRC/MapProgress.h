@@ -37,8 +37,7 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
-        ~MapProgressObserver();
+        MapProgressObserver() = default;
 
         // Disallow copying.
         MapProgressObserver(MapProgressObserver const &) = delete;
@@ -47,8 +46,16 @@ namespace MaRC
         /// Destructor.
         virtual ~MapProgressObserver() = default;
 
-        /// Notify observer of progress update.
-        virtual void notify(double ) const;
+        /**
+         * @brief Notify observer of progress update.
+         *
+         * @param[in] map_size   The number of elements in map array.
+         * @param[in] plot_count Observer notification count.
+         *
+         * @see MapProgress
+         */
+        virtual void notify(std::size_t map_size,
+                            std::size_t plot_count);
 
     };
 

@@ -36,6 +36,7 @@
 namespace MaRC
 {
     class SourceImage;
+    class MapProgress;
 
     /**
      * @class MapFactory
@@ -143,16 +144,34 @@ namespace MaRC
         class plot_info
         {
         public:
+
             plot_info(SourceImage const & source,
                       double minimum,
                       double maximum,
-                      map_type<T> map);
+                      MapProgress & progress)
+                : source_(source)
+                , minimum_(minimum)
+                , maximum_(maximum)
+                , progress_(progress)
+            {
+            }
+
+            ~plot_info() = default;
+            plot_info(plot_info const &) = delete;
+            void operator=(plot_info const &) = delete;
+
+            SourceImage const & source() const { return this->source_; }
+            double minimum() const { return this->minimum_; }
+            double maximum() const { return this->maximum_; }
+            MapProgress & progress() const { return this->progress_; }
 
         private:
+
             SourceImage const & source_;
-            double minimum_;
-            double maximum_;
-            map_type<T> map_;
+            double const minimum_;
+            double const maximum_;
+            MapProgress & progress_;
+
         };
 
         /**
@@ -205,10 +224,11 @@ namespace MaRC
          *       as well as calling this @c plot() method.
          */
         template <typename T>
-        void plot(PlotInfo & info,
+        void plot(plot_info const & info,
                   double lat,
                   double lon,
-                  std::size_t offset);
+                  std::size_t offset,
+                  map_type<T> & map);
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.

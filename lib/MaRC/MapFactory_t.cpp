@@ -25,8 +25,6 @@
 #include "MaRC/Map_traits.h"
 #include "MaRC/SourceImage.h"
 
-#include <iostream>
-
 
 template <typename T>
 MaRC::MapFactory::map_type<T>
@@ -36,7 +34,7 @@ MaRC::MapFactory::make_map(SourceImage const & source,
                            double minimum,
                            double maximum)
 {
-    plot_info info(source, minimum, maximum,
+    plot_info info(source, minimum, maximum);
     map_type<T> map(samples * lines, Map_traits<T>::empty_value());
 
     using namespace std::placeholders;
@@ -48,9 +46,7 @@ MaRC::MapFactory::make_map(SourceImage const & source,
      */
     auto plot = std::bind(&MapFactory::plot<T>,
                           this,
-                          std::cref(source),
-                          minimum,
-                          maximum,
+                          std::cref(info),
                           _1,   // lat
                           _2,   // lon
                           _3,   // map array offset
@@ -63,12 +59,10 @@ MaRC::MapFactory::make_map(SourceImage const & source,
 
 template <typename T>
 void
-MaRC::MapFactory::plot(SourceImage const & source,
-                       double minimum,
-                       double maximum,
+MaRC::MapFactory::plot(plot_info const & info,
                        double lat,
                        double lon,
-                       unsigned char percent_complete,
+                       // unsigned char percent_complete,
                        std::size_t offset,
                        map_type<T> & map)
 {
@@ -76,9 +70,9 @@ MaRC::MapFactory::plot(SourceImage const & source,
     double datum = 0;
 
     bool const found_data =
-        (source.read_data(lat, lon, datum)
-         && datum >= Map_traits<T>::minimum(minimum)
-         && datum <= Map_traits<T>::maximum(maximum));
+        (info.source().read_data(lat, lon, datum)
+         && datum >= Map_traits<T>::minimum(info.minimum())
+         && datum <= Map_traits<T>::maximum(info.maximum()));
 
     if (found_data) {
         T & data =
@@ -91,28 +85,6 @@ MaRC::MapFactory::plot(SourceImage const & source,
         data = static_cast<T>(datum);
     }
 
-
-    /**
-     * @todo Remove map progress output.  Library calls should not
-     *       provide output unless desired by the user.
-     */
-
     // Inform "observers" of mapping progress.
-    if (percent_complete == 100 && this->percent_complete_old_ != 0) {
-        std::cout << "100%\n";
-        this->percent_complete_old_ = 0;
-    } else if (percent_complete > this->percent_complete_old_) {
-        if (percent_complete % 20 == 0)
-            std::cout
-                << static_cast<unsigned int>(percent_complete)
-                << std::flush;
-        else if (percent_complete % 2 == 0)
-            std::cout << '.' << std::flush;
-
-        this->percent_complete_old_ = percent_complete;
-    }
-
-
-    // ------------------- NEW ---------------------
     progress->notify_observers(map.size());
 }

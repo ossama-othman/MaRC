@@ -32,6 +32,7 @@ libMaRC_la_LIBADD   = $(CODE_COVERAGE_LIBS)
 
 libMaRC_la_SOURCES = \
   Log.cpp \
+  MapProgress.cpp \
   \
   Geometry.cpp \
   \
@@ -71,6 +72,7 @@ libMaRC_la_SOURCES = \
 
 pkginclude_HEADERS = \
   Log.h \
+  MapProgress.h \
   DefaultConfiguration.h \
   config.h \
   \

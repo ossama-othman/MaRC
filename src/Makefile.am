@@ -34,6 +34,7 @@ bin_PROGRAMS = marc
 AM_YFLAGS = -d
 
 marc_SOURCES = \
+  ProgressConsole.cpp \
   ImageFactory.cpp \
   MuImageFactory.cpp \
   Mu0ImageFactory.cpp \
@@ -56,6 +57,7 @@ marc_LDADD    = \
   $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \
+  ProgressConsole.h \
   ImageFactory.h \
   MuImageFactory.h \
   Mu0ImageFactory.h \
