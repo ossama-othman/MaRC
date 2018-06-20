@@ -80,32 +80,37 @@ namespace MaRC
             return this->interpolation_strategy_.get();
         }
 
-        /// Set all nibble values to @a n.
         /**
+         * @brief Set all nibble values to @a n.
+         *
          * @param[in] n Nibble value for all image sides.
          */
         void nibble(std::size_t n);
 
-        /// Set left nibble value to @a n.
         /**
+         * @brief Set left nibble value to @a n.
+         *
          * @param[in] n Nibble value for left image side.
          */
         void nibble_left(std::size_t n);
 
-        /// Set right nibble value to @a n.
         /**
+         * @brief Set right nibble value to @a n.
+         *
          * @param[in] n Nibble value for right image side.
          */
         void nibble_right(std::size_t n);
 
-        /// Set top nibble value to @a n.
         /**
+         * @brief Set top nibble value to @a n.
+         *
          * @param[in] n Nibble value for top image side.
          */
         void nibble_top(std::size_t n);
 
-        /// Set bottom nibble value to @a n.
         /**
+         * @brief Set bottom nibble value to @a n.
+         *
          * @param[in] n Nibble value for bottom image side.
          */
         void nibble_bottom(std::size_t n);
@@ -122,8 +127,26 @@ namespace MaRC
         /// Return bottom nibble value.
         std::size_t nibble_bottom() const { return this->nibble_bottom_; }
 
-        /// Set sky removal variable
         /**
+         * @brief Set the unit for the physical data in the image.
+         *
+         * @param[in] u Unit for the physical data in the image.
+         * @param[in] c Comment for the physical data unit.
+         */
+        void unit(char const * u, char const * c);
+
+        /// Get the unit for the physical data in the image.
+        std::string const & unit() const { return this->unit_; }
+
+        /// Get the comment for the physical data unit.
+        std::string const & unit_comment() const
+        {
+            return this->unit_comment_;
+        }
+
+        /**
+         * @brief Set sky removal variable
+         *
          * Enabling sky removal prevents data believed (i.e. computed)
          * to be in the sky rather than on the body from being
          * mapped.
@@ -171,6 +194,12 @@ namespace MaRC
 
         /// Pointer to the interpolation strategy.
         std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
+
+        /// Unit of physical data in the image.
+        std::string unit_;
+
+        /// Physical data unit comment.
+        std::string unit_comment_;
 
         /// Should the sky removal mask be generated.
         bool remove_sky_;

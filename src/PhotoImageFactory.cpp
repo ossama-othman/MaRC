@@ -47,8 +47,7 @@
 #include <cassert>
 
 
-MaRC::PhotoImageFactory::PhotoImageFactory(
-    char const * filename)
+MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
     : filename_(filename)
     , flat_field_()
     , geometric_correction_(false)
@@ -103,14 +102,12 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
                               &status);
 
     // Get the image data unit name (FITS standard BUNIT).
-    char bunit[FLEN_VALUE];
-    char bunit_comment[FLEN_COMMENT];
+    char bunit[FLEN_VALUE] = { '\0' };
+    char bunit_comment[FLEN_COMMENT] = { '\0' };
 
     fits_read_key_str(fptr, "BUNIT", bunit, bunit_comment, &status);
     if (status == 0) {
-        /**
-         * @todo Do something useful with BUNIT.
-         */
+        this->config_->unit(bunit, bunit_comment);
     } else if (status != KEY_NO_EXIST) {
         throw std::logic_error("Problem reading FITS BUNIT value.");
     } else {
