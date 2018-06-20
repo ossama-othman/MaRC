@@ -24,6 +24,7 @@
 #include "MaRC/MapFactory.h"
 #include "MaRC/Map_traits.h"
 #include "MaRC/SourceImage.h"
+#include "MaRC/MapProgress.h"
 
 
 template <typename T>
@@ -86,5 +87,5 @@ MaRC::MapFactory::plot(plot_info const & info,
     }
 
     // Inform "observers" of mapping progress.
-    progress->notify_observers(map.size());
+    info.progress().notify_observers();
 }

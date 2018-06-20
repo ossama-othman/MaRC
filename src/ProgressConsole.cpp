@@ -27,8 +27,9 @@
 #include <iostream>
 
 
-void MaRC::ProgressConsole::notify(std::size_t map_size,
-                                   std::size_t plot_count)
+void
+MaRC::ProgressConsole::notify(std::size_t map_size,
+                              std::size_t plot_count)
 {
     /**
      * @bug This calculation can overflow for maps of size greater
@@ -37,15 +38,15 @@ void MaRC::ProgressConsole::notify(std::size_t map_size,
     int const percent_complete =
         static_cast<int>(plot_count * 100 / map_size);
 
-    if (percent_complete > this->percent_complete_old_) {
-        if (percent_complete % 2 == 0)
-            std::cout << '.' << std::flush;
-        else if (percent_complete % 20 == 0)
-            std::cout << percent_complete << std::flush;
-
-        this->percent_complete_old_ = percent_complete;
-    } else if (percent_complete == 100 && this->percent_complete_old_ != 0) {
+    if (percent_complete == 100 && this->percent_complete_old_ != 0) {
         std::cout << "100%\n";
         this->percent_complete_old_ = 0;
+    } else if (percent_complete > this->percent_complete_old_) {
+        if (percent_complete % 20 == 0)
+            std::cout << percent_complete << std::flush;
+        else if (percent_complete % 2 == 0)
+            std::cout << '.' << std::flush;
+
+        this->percent_complete_old_ = percent_complete;
     }
 }

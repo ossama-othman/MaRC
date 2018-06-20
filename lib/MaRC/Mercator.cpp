@@ -100,8 +100,6 @@ MaRC::Mercator::plot_map(std::size_t samples,
                          std::size_t lines,
                          plot_type plot) const
 {
-    std::size_t const nelem = samples * lines;
-
     std::size_t offset = 0;
 
     /**
@@ -169,10 +167,7 @@ MaRC::Mercator::plot_map(std::size_t samples,
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double const lon = this->get_longitude(i, samples);
 
-            unsigned char const percent_complete =
-                static_cast<unsigned char>((offset + 1) * 100 / nelem);
-
-            plot(lat, lon, percent_complete, offset);
+            plot(lat, lon, offset);
         }
     }
 }

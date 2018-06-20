@@ -293,10 +293,7 @@ MaRC::Orthographic::plot_map(std::size_t samples,
                 else
                     lon = this->sub_observ_lon_ + std::atan2(-x, y) - C::pi;
 
-                unsigned char const percent_complete =
-                    static_cast<unsigned char>((offset + 1) * 100 / nelem);
-
-                plot(lat, lon, percent_complete, offset);
+                plot(lat, lon, offset);
             }
         }
     }
