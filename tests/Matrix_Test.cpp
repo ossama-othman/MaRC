@@ -50,7 +50,8 @@ bool test_matrix_initialization()
 
     return
         element_count > 0
-        && static_cast<decltype(ROWS)>(element_count) == ROWS * COLUMNS
+        && static_cast<std::remove_const<decltype(ROWS)>::type>(
+            element_count) == ROWS * COLUMNS
         && std::find_if_not(
             std::cbegin(m1),
             std::cend(m1),
