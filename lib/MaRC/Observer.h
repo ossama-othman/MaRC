@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file ProgressConsole.h
+ * @file Observer.h
  *
  * Copyright (C) 2018  Ossama Othman
  *
@@ -22,10 +22,12 @@
  * @author Ossama Othman
  */
 
-#ifndef MARC_PROGRESS_CONSOLE_H
-#define MARC_PROGRESS_CONSOLE_H
+#ifndef MARC_OBSERVER_H
+#define MARC_OBSERVER_H
 
-#include <MaRC/Observer.h>
+#include <MaRC/Export.h>
+
+#include <cstddef>
 
 
 namespace MaRC
@@ -34,39 +36,40 @@ namespace MaRC
     {
 
         /**
-         * @class Console
+         * @class Observer
          *
-         * @brief Log map progress updates to the console.
-         */
-        class Console : public Observer
+         * @brief Map progress observer.
+         *
+         * This declares the interface (an abstract base class) that
+         * all map progress "observers" must implement.  It
+         * corresponds to "Observer" component of the Observer design
+         * pattern.
+         */        
+        class MARC_API Observer
         {
         public:
 
             /// Constructor
-            Console()
-            : Observer()
-            , percent_complete_old_(0)
-            {
-            }
+            Observer() = default;
 
-            Console(Console const &) = delete;
-            void operator=(Console const &) = delete;
+            // Disallow copying.
+            Observer(Observer const &) = delete;
+            void operator=(Observer const &) = delete;
+
+            /// Destructor.
+            virtual ~Observer() = default;
 
             /**
              * @brief Notify observer of progress update.
              *
-             * @see MaRC::MapProgress::notify()
+             * @param[in] map_size   The number of elements in map
+             *                       array.
+             * @param[in] plot_count Observer notification count.
+             *
+             * @see MapProgress
              */
             virtual void notify(std::size_t map_size,
-                            std::size_t plot_count);
-
-        private:
-
-            /**
-             * @todo Synchronize access once mapping in parallel is
-             *       supported.
-             */
-            int percent_complete_old_;
+                                std::size_t plot_count) = 0;
 
         };
 
@@ -74,4 +77,4 @@ namespace MaRC
 }  // MaRC
 
 
-#endif  // MARC_PROGRESS_CONSOLE_H
+#endif  // MARC_OBSERVER_H

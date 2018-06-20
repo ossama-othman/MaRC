@@ -28,8 +28,8 @@
 
 
 void
-MaRC::ProgressConsole::notify(std::size_t map_size,
-                              std::size_t plot_count)
+MaRC::Progress::Console::notify(std::size_t map_size,
+                                std::size_t plot_count)
 {
     /**
      * @bug This calculation can overflow for maps of size greater

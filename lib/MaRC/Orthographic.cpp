@@ -218,8 +218,6 @@ MaRC::Orthographic::plot_map(std::size_t samples,
                          sample_center,
                          line_center);
 
-    std::size_t const nelem = samples * lines;
-
     DVector ImgCoord, Rotated;
 
     DMatrix const rotY(MaRC::Geometry::RotYMatrix(-this->PA_));

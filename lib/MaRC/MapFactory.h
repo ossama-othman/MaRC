@@ -36,7 +36,7 @@
 namespace MaRC
 {
     class SourceImage;
-    class MapProgress;
+    class plot_info;
 
     /**
      * @class MapFactory
@@ -89,15 +89,11 @@ namespace MaRC
          * underlying map array, and delegates actual mapping to the
          * subclass implementation of @c plot_map().
          *
-         * @param[in] source  SourceImage object containing the data
-         *                    to be mapped.
+         * @param[in] info    Map plotting information, such as the
+         *                    source image, min/max allowed data
+         *                    values, etc.
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed value on map, i.e. all
-         *                    data greater than or equal to
-         *                    @a minimum.
-         * @param[in] maximum Maximum allowed value on map, i.e. all
-         *                    data less than or equal to @a maximum.
          *
          * @return The generated map image.
          *
@@ -105,11 +101,9 @@ namespace MaRC
          *       the returned map.
          */
         template <typename T>
-        map_type<T> make_map(SourceImage const & source,
+        map_type<T> make_map(plot_info const & info,
                              std::size_t samples,
-                             std::size_t lines,
-                             double minimum,
-                             double maximum);
+                             std::size_t lines);
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.
@@ -140,39 +134,6 @@ namespace MaRC
                             double lon_interval);
 
     private:
-
-        class plot_info
-        {
-        public:
-
-            plot_info(SourceImage const & source,
-                      double minimum,
-                      double maximum,
-                      MapProgress & progress)
-                : source_(source)
-                , minimum_(minimum)
-                , maximum_(maximum)
-                , progress_(progress)
-            {
-            }
-
-            ~plot_info() = default;
-            plot_info(plot_info const &) = delete;
-            void operator=(plot_info const &) = delete;
-
-            SourceImage const & source() const { return this->source_; }
-            double minimum() const { return this->minimum_; }
-            double maximum() const { return this->maximum_; }
-            MapProgress & progress() const { return this->progress_; }
-
-        private:
-
-            SourceImage const & source_;
-            double const minimum_;
-            double const maximum_;
-            MapProgress & progress_;
-
-        };
 
         /**
          * Create the desired map projection.
@@ -258,4 +219,4 @@ namespace MaRC
 
 #include "MaRC/MapFactory_t.cpp"
 
-#endif
+#endif  // MARC_MAP_FACTORY_H

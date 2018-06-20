@@ -21,21 +21,20 @@
  * @author Ossama Othman
  */
 
-#include "MapProgress.h"
+#include "Notifier.h"
+#include "Observer.h"
 
 #include <cassert>
 
 
-MaRC::MapProgress::MapProgress(std::size_t map_size)
-    : map_size_(map_size)
-    , plot_count_(0)
+MaRC::Progress::Notifier::Notifier()
+    : plot_count_(0)
     , observers_()
 {
-    assert(map_size > 0);
 }
 
 void
-MaRC::MapProgress::subscribe(observer_type observer)
+MaRC::Progress::Notifier::subscribe(observer_type observer)
 {
     /**
      * @todo Access to this container should be synchronized once
@@ -45,9 +44,10 @@ MaRC::MapProgress::subscribe(observer_type observer)
 }
 
 void
-MaRC::MapProgress::notify_observers()
+MaRC::Progress::Notifier::notify_observers(size_t map_size)
 {
-    assert(this->plot_count_ < this->map_size_);
+    assert(map_size > 0);
+    assert(this->plot_count_ < map_size);
 
     ++this->plot_count_;
 
@@ -56,5 +56,5 @@ MaRC::MapProgress::notify_observers()
      *       once parallelized mapping is supported.
      */
     for (auto const & o : this->observers_)
-        o->notify(this->map_size_, this->plot_count_);
+        o->notify(map_size, this->plot_count_);
 }

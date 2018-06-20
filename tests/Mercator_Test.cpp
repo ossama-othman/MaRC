@@ -109,12 +109,10 @@ bool test_make_map()
     constexpr auto minimum = std::numeric_limits<data_type>::lowest();
     constexpr auto maximum = std::numeric_limits<data_type>::max();
 
+    MaRC::plot_info info(*image, minimum, maximum);
+
     auto const map =
-        projection->template make_map<data_type>(*image,
-                                                 samples,
-                                                 lines,
-                                                 minimum,
-                                                 maximum);
+        projection->template make_map<data_type>(info, samples, lines);
 
     if (map.empty())
         return false;

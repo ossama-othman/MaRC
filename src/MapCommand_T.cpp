@@ -22,6 +22,7 @@
 
 #include "MapCommand_T.h"
 #include "FITS_traits.h"
+#include "ProgressConsole.h"
 
 #include <MaRC/MapFactory.h>
 #include <MaRC/VirtualImage.h>  // For scale_and_offset()
@@ -135,6 +136,11 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                                         image.get(),
                                         status);
 
+        plot_info info(*image, i->minimum(), i->maximum());
+
+        using namespace MaRC::Progress;
+        info.notifier().subscribe(std::make_unique<Console>());
+
         // Create the map plane.
         /**
          * @todo Pass the FITS @c BLANK value (@see @c this->blank_)
@@ -142,11 +148,9 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
          *       @c make_map() so that the map may be initialized with
          *       that value in the integer data typed map case.
          */
-        auto map(this->factory_->template make_map<T>(*image,
+        auto map(this->factory_->template make_map<T>(info,
                                                       this->samples_,
-                                                      this->lines_,
-                                                      i->minimum(),
-                                                      i->maximum()));
+                                                      this->lines_));
 
         // Sanity check.
         assert(map.size()

@@ -24,18 +24,15 @@
 #include "MaRC/MapFactory.h"
 #include "MaRC/Map_traits.h"
 #include "MaRC/SourceImage.h"
-#include "MaRC/MapProgress.h"
+#include "MaRC/plot_info.h"
 
 
 template <typename T>
 MaRC::MapFactory::map_type<T>
-MaRC::MapFactory::make_map(SourceImage const & source,
+MaRC::MapFactory::make_map(plot_info const & info,
                            std::size_t samples,
-                           std::size_t lines,
-                           double minimum,
-                           double maximum)
+                           std::size_t lines)
 {
-    plot_info info(source, minimum, maximum);
     map_type<T> map(samples * lines, Map_traits<T>::empty_value());
 
     using namespace std::placeholders;
@@ -87,5 +84,5 @@ MaRC::MapFactory::plot(plot_info const & info,
     }
 
     // Inform "observers" of mapping progress.
-    info.progress().notify_observers();
+    info.notifier().notify_observers(map.size());
 }
