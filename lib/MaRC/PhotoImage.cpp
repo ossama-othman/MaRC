@@ -176,6 +176,12 @@ MaRC::PhotoImage::read_data(double lat,
     return true;  // Success
 }
 
+char const *
+MaRC::PhotoImage::unit() const
+{
+    return this->config_->unit().c_str();
+}
+
 void
 MaRC::PhotoImage::data_weight(std::size_t i,
                               std::size_t k,

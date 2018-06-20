@@ -132,6 +132,8 @@ namespace MaRC
          *
          * @param[in] u Unit for the physical data in the image.
          * @param[in] c Comment for the physical data unit.
+         *
+         * @see SourceImage::unit()
          */
         void unit(char const * u, char const * c);
 
@@ -141,6 +143,10 @@ namespace MaRC
         /// Get the comment for the physical data unit.
         std::string const & unit_comment() const
         {
+            /**
+             * @todo The unit comment is currently unused.  Do
+             *       something with it, or remove it.
+             */
             return this->unit_comment_;
         }
 
