@@ -30,6 +30,7 @@
 #include "MaRC/Export.h"
 
 #include <memory>
+#include <string>
 
 
 namespace MaRC
