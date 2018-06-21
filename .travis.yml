@@ -73,5 +73,5 @@ before_install:
 
 after_success:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
-          cpp-coveralls --exclude tests --gcov-options '\-lp';
+          cpp-coveralls --exclude external --exclude tests --gcov-options '\-lp';
       fi
