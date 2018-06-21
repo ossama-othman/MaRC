@@ -72,8 +72,8 @@ namespace MaRC
              *       between calls to this method, there is no
              *       guarantee that it will increase by 1 each time
              *       this method is called.  Implementations should be
-             *       able to handle arbitrarily sized gaps @a
-             *       plot_count.
+             *       able to handle arbitrarily sized gaps in the
+             *       @a plot_count between @c notify() calls.
              */
             virtual void notify(std::size_t map_size,
                                 std::size_t plot_count) = 0;
