@@ -44,13 +44,17 @@ namespace MaRC
 
             /// Constructor
             Console()
-            : Observer()
-            , percent_complete_old_(0)
+                : Observer()
+                , percent_complete_old_(0)
             {
             }
 
+            // Disallow copying.
             Console(Console const &) = delete;
             void operator=(Console const &) = delete;
+
+            /// Destructor
+            virtual ~Console() = default;
 
             /**
              * @brief Notify observer of progress update.

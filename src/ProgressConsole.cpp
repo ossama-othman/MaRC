@@ -35,17 +35,27 @@ MaRC::Progress::Console::notify(std::size_t map_size,
      * @bug This calculation can overflow for maps of size greater
      *      than @c std::numeric_limits<std::size_t>::max()/100.
      */
-    int const percent_complete =
+    auto const percent_complete =
         static_cast<int>(plot_count * 100 / map_size);
 
-    if (percent_complete == 100 && this->percent_complete_old_ != 0) {
-        std::cout << "100%\n";
-        this->percent_complete_old_ = 0;
-    } else if (percent_complete > this->percent_complete_old_) {
-        if (percent_complete % 20 == 0)
-            std::cout << percent_complete << std::flush;
-        else if (percent_complete % 2 == 0)
-            std::cout << '.' << std::flush;
+    if (percent_complete > this->percent_complete_old_) {
+
+        // Round to the next even integer.
+        auto p = this->percent_complete_old_ + 1;
+        p += p % 2;
+
+        // Loop to fill in any gaps greater than 2% between the
+        // previous progress dump and this one.
+        for ( ; p <= percent_complete; p += 2) {
+            // Print the percent complete at increments of 20, a
+            // period '.' at increments of 2, and nothing otherwise.
+            if (p == 100)
+                std::cout << "100%\n";
+            else if (p % 20 == 0)
+                std::cout << p << std::flush;
+            else if (p % 2 == 0)
+                std::cout << '.' << std::flush;
+        }
 
         this->percent_complete_old_ = percent_complete;
     }
