@@ -104,8 +104,8 @@ MaRC::Orthographic::Orthographic (
         this->km_per_pixel_ = km_per_pixel;
 
     if (center.geometry == CENTER_GIVEN) {
-      this->sample_center_ = center.sample_lat_center;
-      this->line_center_   = center.line_lon_center;
+        this->sample_center_ = center.sample_lat_center;
+        this->line_center_   = center.line_lon_center;
     } else if (center.geometry == LAT_LON_GIVEN) {
         // Latitude and Longitude at center of map given (in addition
         // to KM/pixel)
@@ -305,10 +305,10 @@ MaRC::Orthographic::plot_map(std::size_t samples,
      *       line center or latitude/longitude at the center,  if the
      *       user didn't provide those values.
      */
-    MaRC::info("Body center in ORTHOGRAPHIC projection "
-               "(line, sample): ({}, {})",
-               line_center,
-               sample_center);
+    MaRC::debug("Body center in ORTHOGRAPHIC projection "
+                "(line, sample): ({}, {})",
+                line_center,
+                sample_center);
 }
 
 void
