@@ -75,10 +75,29 @@ namespace MaRC
             /**
              * @brief Inform all observers of a new progress update.
              *
+             * Notify all observers that a point was plotted in the
+             * map of size @a map_size.
+             *
              * @param[in] map_size The number of elements in the map
              *                     array.
              */
-            void notify_observers(std::size_t map_size);
+            void notify_plotted(std::size_t map_size);
+
+            /**
+             * @brief Inform all observers that mapping is done.
+             *
+             * Some map projections will only plot a portion of the
+             * map, in which case the underlying plot count in this
+             * @c Notifier will never reach @a map_size, meaning
+             * subscribed observers may not know that mapping was
+             * completed.  Explicitly notify all observers that
+             * mapping in a map of size @a map_size is done by passing
+             * a plot count equal to @a map_size.
+             *
+             * @param[in] map_size The number of elements in the map
+             *                     array.
+             */
+            void notify_done(std::size_t map_size);
 
         private:
 

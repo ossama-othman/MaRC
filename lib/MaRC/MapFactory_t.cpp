@@ -52,6 +52,9 @@ MaRC::MapFactory::make_map(plot_info const & info,
 
     this->plot_map(samples, lines, plot);
 
+    // Inform "observers" of map completion.
+    info.notifier().notify_done(map.size());
+
     return std::move(map);
 }
 
@@ -84,5 +87,5 @@ MaRC::MapFactory::plot(plot_info const & info,
     }
 
     // Inform "observers" of mapping progress.
-    info.notifier().notify_observers(map.size());
+    info.notifier().notify_plotted(map.size());
 }

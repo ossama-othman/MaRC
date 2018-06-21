@@ -44,6 +44,8 @@ namespace MaRC
          * all map progress "observers" must implement.  It
          * corresponds to "Observer" component of the Observer design
          * pattern.
+         *
+         * @see Notifier
          */        
         class MARC_API Observer
         {
@@ -66,7 +68,12 @@ namespace MaRC
              *                       array.
              * @param[in] plot_count Observer notification count.
              *
-             * @see MapProgress
+             * @note While @a plot_count is guaranteed to increase
+             *       between calls to this method, there is no
+             *       guarantee that it will increase by 1 each time
+             *       this method is called.  Implementations should be
+             *       able to handle arbitrarily sized gaps @a
+             *       plot_count.
              */
             virtual void notify(std::size_t map_size,
                                 std::size_t plot_count) = 0;

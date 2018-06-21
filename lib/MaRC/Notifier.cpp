@@ -1,5 +1,5 @@
 /**
- * @file MapProgress.cpp
+ * @file Notifier.cpp
  *
  * Copyright (C) 2018  Ossama Othman
  *
@@ -44,11 +44,15 @@ MaRC::Progress::Notifier::subscribe(observer_type observer)
 }
 
 void
-MaRC::Progress::Notifier::notify_observers(size_t map_size)
+MaRC::Progress::Notifier::notify_plotted(std::size_t map_size)
 {
     assert(map_size > 0);
     assert(this->plot_count_ < map_size);
 
+    /**
+     * @bug This assumes that all points in the map will be plotted.
+     *      That isn't true for all map projections.
+     */
     ++this->plot_count_;
 
     /**
@@ -57,4 +61,17 @@ MaRC::Progress::Notifier::notify_observers(size_t map_size)
      */
     for (auto const & o : this->observers_)
         o->notify(map_size, this->plot_count_);
+}
+
+void
+MaRC::Progress::Notifier::notify_done(std::size_t map_size)
+{
+    assert(map_size > 0);
+
+    /**
+     * @todo Access to the observers container should be synchronized
+     *       once parallelized mapping is supported.
+     */
+    for (auto const & o : this->observers_)
+        o->notify(map_size, map_size);  // plot_count == map_size
 }
