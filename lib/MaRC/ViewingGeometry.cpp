@@ -345,7 +345,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
           latitudes when calculating suitable rotation matrices to go
           between observer and body coordinates.
         */
-        MaRC::error("Unable to calculate suitable rotation matrices.");
+        MaRC::error("unable to calculate suitable rotation matrices");
 
         return false;  // Failure
     }
@@ -403,12 +403,12 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
           matrix was not found for the given image.  Percent
           difference between vectors was greater than tolerance.
         */
-        MaRC::warn("Suitable transformation matrix "
-                   "not found for given image.");
-        MaRC::warn("Results may be incorrect");
+        MaRC::warn("suitable transformation matrix "
+                   "not found for given image");
+        MaRC::warn("results may be incorrect");
 
-        MaRC::debug("Percent difference between test "
-                    "vectors {}% is greater than {}.",
+        MaRC::debug("percent difference between test "
+                    "vectors {}% is greater than {}",
                     percent_diff,
                     tolerance);
     }
@@ -447,8 +447,8 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     // North pole vector in camera coordinates.
     DVector const camera_north(body2observ * body_north);
 
-    MaRC::debug("Computed NORAZ = {} degrees (positive is CCW)\n"
-                "Computed North pole vector in camera space = {}\n"
+    MaRC::debug("computed NORAZ = {} degrees (positive is CCW)\n"
+                "computed North pole vector in camera space = {}\n"
                 "observ2body = {}\n"
                 "body2observ = {}\n",
                 std::atan2(-camera_north[0],
@@ -570,12 +570,12 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
           matrix was not found for the given image.  Percent
           difference between vectors was greater than tolerance.
         */
-        MaRC::warn("Suitable transformation matrix "
-                   "not found for given image.");
-        MaRC::warn("Results may be incorrect");
+        MaRC::warn("suitable transformation matrix "
+                   "not found for given image");
+        MaRC::warn("results may be incorrect");
 
-        MaRC::debug("Percent difference between test "
-                    "vectors {}% is greater than {}.",
+        MaRC::debug("percent difference between test "
+                    "vectors {}% is greater than {}",
                     percent_diff,
                     tolerance);
     }
@@ -615,8 +615,8 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     // North pole vector in camera coordinates.
     DVector const camera_north(body2observ * body_north);
 
-    MaRC::debug("Computed NORAZ = {} degrees (positive is CCW)\n"
-                "Computed North pole vector in camera space = {}\n"
+    MaRC::debug("computed NORAZ = {} degrees (positive is CCW)\n"
+                "computed North pole vector in camera space = {}\n"
                 "observ2body = {}\n"
                 "body2observ = {}\n",
                 std::atan2(-camera_north[0],

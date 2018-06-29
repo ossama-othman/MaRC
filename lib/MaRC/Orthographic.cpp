@@ -72,7 +72,7 @@ MaRC::Orthographic::Orthographic (
      * @todo Leverage @c MaRC::almost_equal() here.
      */
     if (std::abs(std::abs(this->sub_observ_lat_) - 90) < 1e-5) {
-        MaRC::info("Assuming POLAR ORTHOGRAPHIC projection.");
+        MaRC::info("assuming POLAR ORTHOGRAPHIC projection");
 
         if ((this->sub_observ_lat_ > 0 && this->body_->prograde())
             || (this->sub_observ_lat_ < 0 && !this->body_->prograde())) {
