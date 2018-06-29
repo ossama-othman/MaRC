@@ -72,10 +72,13 @@ following build dependencies:
     MaRC is known to build with g++ and clang++, but it should work
     other C++14 conforming compilers.
 
-* CFITSIO Library
+* CFITSIO library
   * Often available as prepackaged binaries on various platforms.
     Additional details are available on the [CFITSIO
     homepage](https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html).
+
+* [spdlog](https://github.com/gabime/spdlog) logging library
+  * Prepackaged binaries are available for many platforms.
 
 * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
 

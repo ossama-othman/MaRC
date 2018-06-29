@@ -20,10 +20,10 @@
  * @author Ossama Othman
  */
 
+#include "command_line.h"
 #include "parse_scan.h"
 
 #include <MaRC/config.h>
-#include <MaRC/Version.h>
 #include <MaRC/Log.h>
 
 /**
@@ -38,27 +38,16 @@
 
 #include <unistd.h>
 
+
 extern void yyrestart(FILE * input_file);
 
 int
 main(int argc, char *argv[])
 {
-    if (argc < 2) {
-        std::cerr << "USAGE:   marc inputfile1 [inputfile2 ...]\n\n";
+    MaRC::command_line cl;
 
-        return 1;  // Failure
-    }
-
-    std::cout
-        << PACKAGE_NAME " -- Built on " << __DATE__ << " at " << __TIME__"\n"
-        << "\t" PACKAGE_NAME " Binary  Version " PACKAGE_VERSION  "\n"
-        << "\t" PACKAGE_NAME " Library Version " << MaRC::library_version()
-        << "\n\n"
-        << "Copyright (C) 1996-1998, 2003-2004, 2017-2018  Ossama Othman\n"
-        << "All Rights Reserved\n\n"
-        << PACKAGE_NAME " comes with ABSOLUTELY NO WARRANTY.\n"
-        << "This is free software, and you are welcome to redistribute it\n"
-        << "under certain conditions.\n\n";
+    if (!cl.parse(argc, argv))
+        return 1;
 
     try {
         MaRC::ParseParameter parse_parameters;
@@ -80,19 +69,23 @@ main(int argc, char *argv[])
              */
             fclose(defaults);
 
-            if (parsed == 0) {
-                // Successful parse
-                std::cout << "MaRC user defaults file parsed.\n";
-            } else {
-                MaRC::error("Error parsing '{}'.", user_defaults);
+            if (parsed != 0) {
+                MaRC::error("error parsing '{}'.", user_defaults);
 
                 return 1;  // Failure
             }
+
+            // Successful parse
+            MaRC::debug("user defaults file '{}' parsed",
+                        user_defaults);
         }
 
         // Parse MaRC input files.
-        for (int i = 1; i < argc; ++i) {
-            FILE * const map_input = fopen(argv[i], "r");
+        auto const begin = cl.files();
+        auto const end   = begin + cl.num_files();
+
+        for (auto f = begin; f != end; ++f) {
+            FILE * const map_input = fopen(*f, "r");
             if (map_input != 0) {
                 ::yyrestart(map_input);
 
@@ -107,22 +100,17 @@ main(int argc, char *argv[])
                  */
                 fclose(map_input);
 
-                if (parsed == 0) {
-                    // Successful parse
-                    std::cout << "MaRC input file '"
-                              << argv[i]
-                              << "' parsed.\n";
-                } else {
-                    MaRC::error("Error parsing " PACKAGE_NAME
-                                " input file '{}'.",
-                                argv[i]);
+                if (parsed != 0) {
+                    MaRC::error("error parsing '{}'.", *f);
 
-                  return 1;  // Failure
+                    return 1;  // Failure
                 }
+
+                // Successful parse
+                MaRC::debug("input file '{}' parsed", *f);
             } else {
-                MaRC::error("Unable to open " PACKAGE_NAME
-                            " input file '{}'.",
-                            argv[i]);
+                MaRC::error("unable to open '{}'.",
+                            *f);
 
                 return 1;
             }

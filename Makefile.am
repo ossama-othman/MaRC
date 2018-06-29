@@ -38,8 +38,7 @@ EXTRA_DIST =		\
 	Doxyfile	\
 	marc.dox	\
 	CODE_OF_CONDUCT.md \
-	README.md \
-	external/
+	README.md
 
 include $(top_srcdir)/aminclude_static.am
 

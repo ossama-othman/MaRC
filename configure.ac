@@ -33,6 +33,12 @@ AC_ARG_ENABLE([arch-detect],
      [],
      [enable_arch_detect=no])
 
+dnl AC_ARG_WITH([spdlog],
+dnl      [AS_HELP_STRING([--with-spdlog],
+dnl                      [support improved logging through the spdlog library @<:@default=check@:>@])],
+dnl      [],
+dnl      [with_spdlog=check])
+
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules -Wall -Werror -Wno-portability])
@@ -105,40 +111,81 @@ dnl Checks for libraries.
 dnl We're of course going to need the C math library.
 AC_SEARCH_LIBS([cos],[m])
 
-dnl spdlog requires the POSIX threads support.
-AX_CXX_PTHREAD
-LIBS="$PTHREAD_LIBS $LIBS"
-CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
-CXX="$PTHREAD_CXX"
+MARC_SAVE_LIBS=$LIBS
+ARGP_LIBS=
+AC_SEARCH_LIBS([argp_parse],
+               [argp],
+	       [AC_DEFINE([HAVE_ARGP], [1], [Define if you have Argp])
+	        dnl Prevent the Argp library from being link to all
+		dnl MaRC binaries.  It is only used by the MaRC
+		dnl program.
+	        AS_IF([test "x$ac_cv_search_argp_parse" != "xno"
+		       -a "x$ac_cv_search_argp_parse" != "xnone_required"],
+		       [ARGP_LIBS="$ac_cv_search_argp_parse"
+		        LIBS="$MARC_SAVE_LIBS"
+		        AC_SUBST([ARGP_LIBS])
+		       ])
+	       ])
 
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 AC_SUBST([CFITSIO_LIBS])
 AC_SUBST([CFITSIO_CFLAGS])
 
+dnl spdlog requires POSIX threads support.
+AX_CXX_PTHREAD
+LIBS="$PTHREAD_LIBS $LIBS"
+CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
+CXX="$PTHREAD_CXX"
+
+AC_CACHE_CHECK([for spdlog library],
+  [marc_cv_lib_spdlog],
+  [
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <spdlog/spdlog.h>
+      ]],
+      [[
+auto logger = spdlog::stdout_color_mt("marc");
+
+logger->info("foo");
+      ]])
+    ],
+    [
+     marc_cv_lib_spdlog=yes
+    ],
+    [
+     marc_cv_lib_spdlog=no
+    ])
+  ])
+dnl  ])
+
+AS_IF([test "x$marc_cv_lib_spdlog" = "xyes"],
+      [AC_DEFINE([HAVE_SPDLOG], [1], [Define if you have spdlog.])],
+      [AC_MSG_FAILURE([spdlog library is required])])
+
 dnl Check for C++17 three-parameter std::hypot() function.
 AC_CACHE_CHECK([if $CXX supports C++17 three-parameter std::hypot()],
-  [ac_cv_cxx_3_param_std_hypot_supported],[
+  [marc_cv_cxx_3_param_std_hypot_supported],[
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <cmath>
       ]],
       [[
 double h = std::hypot(3, 4, 5);
-
       ]])
     ],
     [
-     ac_cv_cxx_3_param_std_hypot_supported=yes
+     marc_cv_cxx_3_param_std_hypot_supported=yes
     ],
     [
-     ac_cv_cxx_3_param_std_hypot_supported=no
+     marc_cv_cxx_3_param_std_hypot_supported=no
     ])
   ])
 
-AS_IF([test "x$ac_cv_cxx_3_param_std_hypot_supported" = "xyes"],
+AS_IF([test "x$marc_cv_cxx_3_param_std_hypot_supported" = "xyes"],
       [AC_DEFINE([MARC_HAS_3_PARAM_STD_HYPOT])])
 
 dnl Checks for header files.
 AC_HEADER_STDC
+
 
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],

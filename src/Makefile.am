@@ -26,7 +26,6 @@ include $(top_srcdir)/aminclude_static.am
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
-  -I$(top_srcdir)/external \
   $(CODE_COVERAGE_CPPFLAGS)
 
 bin_PROGRAMS = marc
@@ -44,6 +43,7 @@ marc_SOURCES = \
   PhotoImageFactory.cpp \
   MosaicImageFactory.cpp \
   MapCommand.cpp \
+  command_line.cpp \
   marc.cpp \
   parse_scan.cpp \
   calc.cpp \
@@ -53,6 +53,7 @@ marc_SOURCES = \
 marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
 marc_LDADD    = \
   $(CFITSIO_LIBS) \
+  $(ARGP_LIBS) \
   $(top_builddir)/lib/MaRC/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
@@ -72,6 +73,7 @@ noinst_HEADERS = \
   FITS_memory.h \
   FITS_traits.h \
   calc.h \
+  command_line.h \
   parse_scan.h
 
 BUILT_SOURCES = parse.hh

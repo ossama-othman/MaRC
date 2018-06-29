@@ -46,6 +46,9 @@ matrix:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
 
 before_script:
+    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
+        #TODO Install spdlog for old linux platforms!
+      fi
     - ./bootstrap
 
 script:
@@ -63,7 +66,7 @@ before_install:
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          brew install cfitsio bison flex texinfo autoconf-archive;
+          brew install cfitsio bison flex texinfo autoconf-archive spdlog;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
           for p in bison gettext flex texinfo; do
@@ -73,5 +76,5 @@ before_install:
 
 after_success:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
-          cpp-coveralls --exclude external --exclude tests --gcov-options '\-lp';
+          cpp-coveralls --exclude tests --gcov-options '\-lp';
       fi

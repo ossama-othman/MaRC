@@ -22,7 +22,6 @@ include $(top_srcdir)/aminclude_static.am
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
-  -I$(top_srcdir)/external \
   $(CODE_COVERAGE_CPPFLAGS)
 
 lib_LTLIBRARIES = libMaRC.la
