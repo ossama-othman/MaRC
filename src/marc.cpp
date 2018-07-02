@@ -29,7 +29,6 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include <cstdio>
 
 #include <unistd.h>
 
@@ -53,6 +52,9 @@ main(int argc, char *argv[])
         FILE * const defaults = fopen(user_defaults.c_str(), "r");
         if (defaults != 0) {
             ::yyrestart(defaults);
+
+            // For syntax error reporting.
+            parse_parameters.filename = user_defaults.c_str();
 
             // Parse user defaults/MaRC initialization file.
             int const parsed = ::yyparse(parse_parameters);
@@ -80,6 +82,9 @@ main(int argc, char *argv[])
             FILE * const map_input = fopen(f, "r");
             if (map_input != 0) {
                 ::yyrestart(map_input);
+
+                // For syntax error reporting.
+                parse_parameters.filename = f;
 
                 // Parse user defaults/MaRC initialization file.
                 int const parsed = ::yyparse(parse_parameters);

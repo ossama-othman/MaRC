@@ -67,13 +67,10 @@ namespace MaRC
         /// Return reference to symbol table.
         symrec & sym_table() { return this->sym_table_; }
 
-        /// Return reference to scanner.
-        //     FlexLexer & lexer() { return this->lexer_; }
-
-        /// Change
-        void input_stream(std::istream & i);
-
     public:
+
+        /// Name of file being parsed.
+        char const * filename;
 
         /**
          * @name User Defined Defaults

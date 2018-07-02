@@ -31,8 +31,9 @@
 #include <cstdlib>
 
 
-MaRC::ParseParameter::ParseParameter (void)
-    : lat_interval(10)
+MaRC::ParseParameter::ParseParameter()
+    : filename(nullptr)
+    , lat_interval(10)
     , lon_interval(10)
     , minimum(std::numeric_limits<decltype(this->minimum)>::lowest())
     , maximum(std::numeric_limits<decltype(this->maximum)>::max())
@@ -108,12 +109,12 @@ MaRC::Radii::validate()
 // -------------------------------------------------------------------
 
 void
-yyerror(YYLTYPE * /* locp */,
-        MaRC::ParseParameter & /* pp */,
+yyerror(YYLTYPE * locp,
+        MaRC::ParseParameter & pp,
         char const * msg)
 {
-    /**
-     * @todo Pull location from @a locp argument.
-     */
-    MaRC::error(msg);
+    MaRC::error("{}:{}: {}",
+                pp.filename,
+                locp->first_line,
+                msg);
 }
