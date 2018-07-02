@@ -113,6 +113,14 @@ yyerror(YYLTYPE * locp,
         MaRC::ParseParameter & pp,
         char const * msg)
 {
+    /**
+     * @bug The line number is off when the parser explicitly calls
+     *      @c yyerror().  For example, if a negative KM_PER_PIXEL
+     *      value is set in an input file the reported line is
+     *      actually the first line that isn't solely whitespace after
+     *      the line containing the invalid KM_PER_PIXEL value.  Line
+     *      numbers in syntax errors, on the other hand, are correct
+     */
     MaRC::error("{}:{}: {}",
                 pp.filename,
                 locp->first_line,
