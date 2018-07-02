@@ -192,7 +192,7 @@ MaRC::command_line::parse(int argc, char * argv[])
 
     // No input files provided.
     if (begin == end) {
-        std::cout << "Usage: " PACKAGE " [OPTION...] "
+        std::cerr << "Usage: " PACKAGE " [OPTION...] "
                   << args_doc << '\n'
                   << try_message;
 
