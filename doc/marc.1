@@ -1,4 +1,4 @@
-.\" Copyright (C) 1997-1999, 2003, 2004, 2017 Ossama Othman
+.\" Copyright (C) 1997-1999, 2003, 2004, 2017-2018 Ossama Othman
 .\"
 .\"   Permission is granted to copy, distribute and/or modify this
 .\"   document under the terms of the GNU Free Documentation License,
@@ -10,34 +10,70 @@
 .\" Process this file with
 .\" groff -man -Tascii marc.1
 .\"
-.TH MARC 1 "2017-10-25" "MaRC" "User Commands"
+.TH MARC 1 "2018-07-02" "MaRC" "User Commands"
 .SH NAME
 marc \- create digital map projections
 .SH SYNOPSIS
-.B marc
-.I inputfile1
-.BI [ inputfile2... ]
+.SY marc
+.OP \-?V
+.OP \-\-help
+.OP \-\-usage
+.OP \-\-version
+.IR FILE .\|.\|.
+.YS
 
 .SH DESCRIPTION
 .B marc
-is a program designed to produce maps from digital images or from
-computed values of incidence, emission or phase angles, and latitudes
-and longitudes.  Multi-plane maps can be created with digital image
-data in several planes and incidence, emission, phase angles,
-latitudes and longitudes in other planes.  Placement of data in a
-given plane is completely arbitrary.  The user decides in what plane
-to place a given set of data.  Created maps are stored in FITS
-(Flexible Image Transport System) format.
+(Map Reprojections and Conversions) is a program designed to produce
+maps from digital images or from computed values of incidence,
+emission or phase angles, and latitudes and longitudes.  Multi-plane
+maps can be created with digital image data in several planes and
+cosines of incidence, emission, and phase angles, as well as latitudes
+and longitudes in other planes.  Placement of data in a given plane is
+completely arbitrary.  The user decides in what plane to place a given
+set of data.  Created maps are stored in FITS (Flexible Image
+Transport System) format.
+
+Input
+.IR FILE s
+provided on the
+.B marc
+command line describe the body being mapped, observer viewing
+geometry, source data, and map characteristics.  Multiple
+.IR FILE s
+may be specified, causing
+.B marc
+to process each of them.  See the
+.B MaRC_input
+manual for a description
+of the
+.B marc
+input file format.
+
+.B marc
+supports the following options:
+.TP
+.B -?, --help
+give this help list
+.TP
+.B --usage
+give a short usage message
+.TP
+.B -V, --version
+print program version
 
 .SH FILES
 .TP
 .I ~/.marc
-Per user configuration file. See the
-.BR MaRC_input
+User configuration file. See the
+.B MaRC_input
 manual for further details.
 
 .SH BUGS
-Conformal and equivalent projects have not been well tested or
+Conformal and equivalent projections have not been well tested or
 verified.
 
-Report bugs to https://github.com/ossama-othman/MaRC/issues.
+Report bugs on the
+.UR https://github.com/ossama-othman/MaRC/issues
+MaRC issues page
+.UE .
