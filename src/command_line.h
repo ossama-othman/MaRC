@@ -41,37 +41,70 @@ namespace MaRC
     public:
 
         /**
-         * @class input_files
+         * @class arguments
          *
-         * @brief 
+         * @brief Command line argument container
+         *
          */
-        class input_files
+        class arguments
         {
         public:
 
+            using const_iterator = char const * const *;
+
             /// Constructor.
-            input_files() : num_files_(0), files_(nullptr) {}
+            arguments() : argc_(0), argv_(nullptr) {}
 
             /// Destructor.
-            ~input_files() = default;
+            ~arguments() = default;
 
             // Disallow copying.
-            input_files(input_files const &) = delete;
-            void operator=(input_files const &) = delete;
+            arguments(arguments const &) = delete;
+            void operator=(arguments const &) = delete;
 
-            void num_files(int n);
-            int num_files() const { return this->num_files_; }
+            /**
+             * @brief Set argument count and vector.
+             *
+             * @param[in] argc Argument count.
+             * @param[in] argv Argument vector.
+             *
+             * @internal This method is meant to be used internally by
+             *           @c command_line.
+             */
+            void args(int argc, char const * const * argv);
 
-            void files(char const * const * f);
-            char const * const * files() const { return this->files_; }
+            /**
+             * @name Iterators
+             *
+             * @brief STL style iterator support.
+             *
+             * These iterator methods allow the argument vector to be
+             * accessed in the same way data held by other containers
+             * is accessed, including STL algorithms, ranged-for
+             * loops, etc.
+             *
+             * @note Only read-only (@c const) iterators are exposed
+             *       by this class since only the command line parsing
+             *       code is allowed to alter the command line
+             *       argument vector.
+             */
+            //@{
+            const_iterator begin() const noexcept { return this->argv_; }
+            const_iterator cbegin() const noexcept { return this->begin(); }
+            const_iterator end() const noexcept
+            {
+                return this->argv_ + this->argc_;
+            }
+            const_iterator cend() const noexcept { return this->end(); }
+            //@}
 
         private:
 
-            /// Number of input filenames on the command line.
-            int num_files_;
+            /// Command line argument count.
+            int argc_;
 
             /**
-             * @brief Names of MaRC input files to be processed.
+             * @brief Command line argument vector.
              *
              * @note The memory for this array is part of the argument
              *       vector @c argv[] passed to the @c main()
@@ -80,10 +113,10 @@ namespace MaRC
              *       the last element in the array (e.g.
              *       @c argv[argc]) is the @c nullptr.
              */
-            char const * const * files_;
+            char const * const * argv_;
 
         };
-    
+
         /// Constructor.
         command_line() : files_() {}
 
@@ -97,13 +130,15 @@ namespace MaRC
         /// Parse command line arguments.
         bool parse(int argc, char * argv[]);
 
-        int num_files() const { return this->files_.num_files(); }
-        char const * const * files() const { return this->files_.files(); }
+        /// Get container of MaRC input filenames.
+        auto const & files() const { return this->files_; }
 
     private:
 
-        /// Information about input files provided on the command line.
-        input_files files_;
+        /**
+         * @brief Names of input files to be processed by MaRC.
+         */
+        arguments files_;
 
     };
 

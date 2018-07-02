@@ -38,7 +38,7 @@
 
 namespace
 {
-    constexpr char const args_doc[] = "inputfile1 [inputfile2...]";
+    constexpr char const args_doc[] = "file...";
     constexpr char const doc[] =
         "Create map projections based on information in given input files.";
 
@@ -47,14 +47,14 @@ namespace
     parse_opt(int key, char * /* arg */, argp_state * state)
     {
         auto const f =
-            static_cast<MaRC::command_line::input_files *>(state->input);
+            static_cast<MaRC::command_line::arguments *>(state->input);
 
         assert(f != nullptr);
 
         switch(key) {
         case ARGP_KEY_ARGS:
-            f->num_files(state->argc - state->next);
-            f->files(state->argv + state->next);
+            f->args(state->argc - state->next,
+                    state->argv + state->next);
             break;
         case ARGP_KEY_NO_ARGS:
             argp_usage(state);
@@ -91,17 +91,14 @@ namespace
 // ------------------------------------------------------------
 
 void
-MaRC::command_line::input_files::num_files(int n)
+MaRC::command_line::arguments::args(int argc,
+                                    char const * const * argv)
 {
-    assert(n > 0);
-    this->num_files_ = n;
-}
+    assert(argc > 0);
+    assert(argv != nullptr);
 
-void
-MaRC::command_line::input_files::files(char const * const * f)
-{
-    assert(f != nullptr);
-    this->files_ = f;
+    this->argc_ = argc;
+    this->argv_ = argv;
 }
 
 // ------------------------------------------------------------
@@ -121,7 +118,6 @@ MaRC::command_line::parse(int argc, char * argv[])
                       &this->files_) == 0;
 #else
     // No Argp support.  Fall back on basic argument parsing loop.
-
     constexpr char const try_message[] =
         "Try `" PACKAGE " --help' or `"
         PACKAGE " --usage' for more information.\n";
@@ -134,6 +130,14 @@ MaRC::command_line::parse(int argc, char * argv[])
 
     for (auto arg = begin; arg != end && *arg != nullptr; ++arg) {
         if ((*arg)[0] == '-' && !nropts) {
+            /**
+             * @bug This command line option parser doesn't correctly
+             *      handle multiple short options grouped as one,
+             *      e.g. "-a -c" grouped as "-ac".  This will become a
+             *      problem if MaRC supports multiple short options in
+             *      the future.
+             */
+
             if (strcmp(*arg, "--") == 0) {
                 /*
                   "--" encountered on command line, meaning the user
@@ -151,7 +155,7 @@ MaRC::command_line::parse(int argc, char * argv[])
 
                 // Dump full usage message.
                 std::cout << "Usage: " PACKAGE " "
-                          << "[-?V] [--help] [--usage] [--version]"
+                          << "[-?V] [--help] [--usage] [--version] "
                           << args_doc << '\n';
 
                 exit(EXIT_SUCCESS);
@@ -174,7 +178,7 @@ MaRC::command_line::parse(int argc, char * argv[])
 
                 exit(EXIT_SUCCESS);
             } else {
-                std::cout
+                std::cerr
                     << argv[0]
                     << ": unrecognized option '" << *arg << "'\n"
                     << try_message;
@@ -195,8 +199,7 @@ MaRC::command_line::parse(int argc, char * argv[])
         exit(EXIT_FAILURE);
     }
 
-    this->files_.num_files(end - begin);
-    this->files_.files(begin);
+    this->files_.args(end - begin, begin);
 
     return true;
 #endif  // HAVE_ARGP

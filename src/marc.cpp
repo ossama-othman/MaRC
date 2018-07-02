@@ -26,11 +26,6 @@
 #include <MaRC/config.h>
 #include <MaRC/Log.h>
 
-/**
- * @todo Should this be an equivalent MaRC include directive?
- */
-#include <spdlog/fmt/ostr.h>
-
 #include <string>
 #include <iostream>
 #include <list>
@@ -81,11 +76,8 @@ main(int argc, char *argv[])
         }
 
         // Parse MaRC input files.
-        auto const begin = cl.files();
-        auto const end   = begin + cl.num_files();
-
-        for (auto f = begin; f != end; ++f) {
-            FILE * const map_input = fopen(*f, "r");
+        for (auto const f : cl.files()) {
+            FILE * const map_input = fopen(f, "r");
             if (map_input != 0) {
                 ::yyrestart(map_input);
 
@@ -101,16 +93,16 @@ main(int argc, char *argv[])
                 fclose(map_input);
 
                 if (parsed != 0) {
-                    MaRC::error("error parsing '{}'.", *f);
+                    MaRC::error("error parsing '{}'.", f);
 
                     return 1;  // Failure
                 }
 
                 // Successful parse
-                MaRC::debug("input file '{}' parsed", *f);
+                MaRC::debug("input file '{}' parsed", f);
             } else {
                 MaRC::error("unable to open '{}'.",
-                            *f);
+                            f);
 
                 return 1;
             }
