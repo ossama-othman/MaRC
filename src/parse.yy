@@ -1487,7 +1487,7 @@ km_per_pixel:
             } else {
                 yyerror(&yylloc,
                         pp,
-                        "ERROR: KM_PER_PIXEL is not greater than zero.");
+                        "KM_PER_PIXEL must be greater than zero.");
                 YYERROR;
             }
         }
@@ -1655,7 +1655,7 @@ lat_range:
           } else  {
               yyerror(&yylloc,
                       pp,
-                      "ERROR: LO_LAT is greater than or equal to HI_LAT.");
+                      "LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
           }
         }
@@ -1667,7 +1667,7 @@ lat_range:
           } else {
               yyerror(&yylloc,
                       pp,
-                      "ERROR: LO_LAT is greater than or equal to HI_LAT.");
+                      "LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
           }
         }
