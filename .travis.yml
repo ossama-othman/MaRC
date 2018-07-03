@@ -47,7 +47,9 @@ matrix:
 
 before_script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
-        #TODO Install spdlog for old linux platforms!
+        wget https://github.com/gabime/spdlog/archive/v0.17.0.tar.gz -O /tmp/spdlog.tar.gz;
+        tar xf /tmp/spdlog.tar.gz spdlog-0.17.0/include/;
+        export CPPFLAGS="$CPPFLAGS -I$PWD/spdlog-0.17.0/include";
       fi
     - ./bootstrap
 
