@@ -41,7 +41,7 @@ dnl      [with_spdlog=check])
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules -Wall -Werror -Wno-portability])
+AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
