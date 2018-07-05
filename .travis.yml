@@ -78,5 +78,5 @@ before_install:
 
 after_success:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
-          cpp-coveralls --exclude spdlog-0.17.0 --exclude tests --gcov-options '\-lp';
+          cpp-coveralls --exclude src/parse.hh --exclude src/parse.cc --exclude src/lexer.cc --exclude spdlog-0.17.0 --exclude tests --gcov-options '\-lp';
       fi
