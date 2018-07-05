@@ -72,8 +72,6 @@ MaRC::SimpleCylindrical::plot_map(std::size_t samples,
     // Conversion factor -- latitudes per line
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
 
-    std::size_t const nelem = samples * lines;
-
     std::size_t offset = 0;
 
     for (std::size_t k = 0; k < lines; ++k) {
@@ -87,10 +85,7 @@ MaRC::SimpleCylindrical::plot_map(std::size_t samples,
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
             double const lon = this->get_longitude(i, samples);
 
-            unsigned char const percent_complete =
-                static_cast<unsigned char>((offset + 1) * 100 / nelem);
-
-            plot(lat, lon, percent_complete, offset);
+            plot(lat, lon, offset);
         }
     }
 }

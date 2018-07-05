@@ -21,12 +21,13 @@
  * @author Ossama Othman
  */
 
-#include "MaRC/Orthographic.h"
-#include "MaRC/OblateSpheroid.h"
-#include "MaRC/Constants.h"
-#include "MaRC/Geometry.h"
-#include "MaRC/Mathematics.h"
-#include "MaRC/Validate.h"
+#include "Orthographic.h"
+#include "OblateSpheroid.h"
+#include "Constants.h"
+#include "Geometry.h"
+#include "Mathematics.h"
+#include "Validate.h"
+#include "Log.h"
 
 #include <sstream>
 #include <cmath>
@@ -67,8 +68,11 @@ MaRC::Orthographic::Orthographic (
     if (PA >= -360 && PA <= 360)
         this->PA_ = PA;
 
+    /**
+     * @todo Leverage @c MaRC::almost_equal() here.
+     */
     if (std::abs(std::abs(this->sub_observ_lat_) - 90) < 1e-5) {
-        std::cout << "Assuming POLAR ORTHOGRAPHIC projection.\n";
+        MaRC::info("assuming POLAR ORTHOGRAPHIC projection");
 
         if ((this->sub_observ_lat_ > 0 && this->body_->prograde())
             || (this->sub_observ_lat_ < 0 && !this->body_->prograde())) {
@@ -100,8 +104,8 @@ MaRC::Orthographic::Orthographic (
         this->km_per_pixel_ = km_per_pixel;
 
     if (center.geometry == CENTER_GIVEN) {
-      this->sample_center_ = center.sample_lat_center;
-      this->line_center_   = center.line_lon_center;
+        this->sample_center_ = center.sample_lat_center;
+        this->line_center_   = center.line_lon_center;
     } else if (center.geometry == LAT_LON_GIVEN) {
         // Latitude and Longitude at center of map given (in addition
         // to KM/pixel)
@@ -140,7 +144,6 @@ MaRC::Orthographic::Orthographic (
             // Upper boundary
             upper = this->sub_observ_lon_ + std::abs(std::acos(-cosine));
         }
-
 
         if (this->lon_at_center_ < lower)
             this->lon_at_center_ += C::_2pi;
@@ -215,8 +218,6 @@ MaRC::Orthographic::plot_map(std::size_t samples,
                          sample_center,
                          line_center);
 
-    std::size_t const nelem = samples * lines;
-
     DVector ImgCoord, Rotated;
 
     DMatrix const rotY(MaRC::Geometry::RotYMatrix(-this->PA_));
@@ -290,10 +291,7 @@ MaRC::Orthographic::plot_map(std::size_t samples,
                 else
                     lon = this->sub_observ_lon_ + std::atan2(-x, y) - C::pi;
 
-                unsigned char const percent_complete =
-                    static_cast<unsigned char>((offset + 1) * 100 / nelem);
-
-                plot(lat, lon, percent_complete, offset);
+                plot(lat, lon, offset);
             }
         }
     }
@@ -302,11 +300,15 @@ MaRC::Orthographic::plot_map(std::size_t samples,
      * @bug This is printed after each map plane plotting run, and
      *      interferes with the map progress output.  Print only once
      *      per orthographic map.
+     *
+     * @todo Inform the user of the kilometers per pixel, and sample and
+     *       line center or latitude/longitude at the center,  if the
+     *       user didn't provide those values.
      */
-    std::cout
-        << "Body center in ORTHOGRAPHIC projection (line, sample): ("
-        << line_center << ", " << sample_center
-        << ")\n";
+    MaRC::debug("Body center in ORTHOGRAPHIC projection "
+                "(line, sample): ({}, {})",
+                line_center,
+                sample_center);
 }
 
 void
@@ -353,7 +355,7 @@ MaRC::Orthographic::plot_grid(std::size_t samples,
             // tan(graphic lat) * tan(sub observ lat)
             double const cosine =
                 this->body_->eq_rad() * this->body_->eq_rad() /
-            this->body_->pol_rad() / this->body_->pol_rad() *
+                this->body_->pol_rad() / this->body_->pol_rad() *
             std::tan(nn) * std::tan(this->sub_observ_lat_);
 
             if (cosine >= -1 && cosine <= 1) {

@@ -36,6 +36,7 @@
 namespace MaRC
 {
     class SourceImage;
+    class plot_info;
 
     /**
      * @class MapFactory
@@ -67,11 +68,10 @@ namespace MaRC
         using plot_type =
             std::function<void(double lat,
                                double lon,
-                               unsigned char percent_complete,
                                std::size_t offset)>;
 
         /// Constructor.
-        MapFactory();
+        MapFactory() = default;
 
         // Disallow copying.
         MapFactory(MapFactory const &) = delete;
@@ -89,15 +89,11 @@ namespace MaRC
          * underlying map array, and delegates actual mapping to the
          * subclass implementation of @c plot_map().
          *
-         * @param[in] source  SourceImage object containing the data
-         *                    to be mapped.
+         * @param[in] info    Map plotting information, such as the
+         *                    source image, min/max allowed data
+         *                    values, etc.
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed value on map, i.e. all
-         *                    data greater than or equal to
-         *                    @a minimum.
-         * @param[in] maximum Maximum allowed value on map, i.e. all
-         *                    data less than or equal to @a maximum.
          *
          * @return The generated map image.
          *
@@ -105,11 +101,9 @@ namespace MaRC
          *       the returned map.
          */
         template <typename T>
-        map_type<T> make_map(SourceImage const & source,
+        map_type<T> make_map(plot_info const & info,
                              std::size_t samples,
-                             std::size_t lines,
-                             double minimum,
-                             double maximum);
+                             std::size_t lines);
 
         /// Create the latitude/longitude grid for the desired map
         /// projection.
@@ -191,12 +185,9 @@ namespace MaRC
          *       as well as calling this @c plot() method.
          */
         template <typename T>
-        void plot(SourceImage const & source,
-                  double minimum,
-                  double maximum,
+        void plot(plot_info const & info,
                   double lat,
                   double lon,
-                  unsigned char percent_complete,
                   std::size_t offset,
                   map_type<T> & map);
 
@@ -221,16 +212,6 @@ namespace MaRC
                                double lon_interval,
                                grid_type & grid) const = 0;
 
-    private:
-
-        /**
-         * Previously measured percentage of map completed.
-         *
-         * @todo Look into a better way of allow the MaRC program to
-         *       track mapping progress.
-         */
-        unsigned char percent_complete_old_;
-
     };
 
 }
@@ -238,4 +219,4 @@ namespace MaRC
 
 #include "MaRC/MapFactory_t.cpp"
 
-#endif
+#endif  // MARC_MAP_FACTORY_H

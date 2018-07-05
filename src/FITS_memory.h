@@ -53,7 +53,7 @@ namespace MaRC
 
                 // At this point we don't really care about the
                 // status.  Don't bother checking it.
-            }                
+            }
         };
 
         /**

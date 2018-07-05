@@ -1,7 +1,8 @@
+// -*- C++ -*-
 /**
- * @file MapFactory.cpp
+ * @file Log.cpp
  *
- * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,22 +22,29 @@
  * @author Ossama Othman
  */
 
-#include "MapFactory.h"
+#include "Log.h"
+#include "config.h"
 
 
-MaRC::MapFactory::grid_type
-MaRC::MapFactory::make_grid(std::size_t samples,
-                            std::size_t lines,
-                            double lat_interval,
-                            double lon_interval)
+namespace {
+    auto init_marc_logger()
+    {
+        auto logger = spdlog::stdout_color_mt(PACKAGE);
+
+        // No need for a date and time stamp for console logging at
+        // this point in time.
+        // [logger name] [log level] text to log
+        logger->set_pattern("[%n] [%l] %v");
+
+#ifndef NDEBUG
+        logger->set_level(spdlog::level::debug);
+#endif  // NDEBUG
+
+        return logger;
+    }
+}
+
+namespace MaRC
 {
-    grid_type grid(samples * lines, grid_type::value_type());
-
-    this->plot_grid(samples,
-                    lines,
-                    lat_interval,
-                    lon_interval,
-                    grid);
-
-    return grid;
+    logger_type const _logger = init_marc_logger();
 }

@@ -33,6 +33,7 @@ bin_PROGRAMS = marc
 AM_YFLAGS = -d
 
 marc_SOURCES = \
+  ProgressConsole.cpp \
   ImageFactory.cpp \
   MuImageFactory.cpp \
   Mu0ImageFactory.cpp \
@@ -42,6 +43,7 @@ marc_SOURCES = \
   PhotoImageFactory.cpp \
   MosaicImageFactory.cpp \
   MapCommand.cpp \
+  command_line.cpp \
   marc.cpp \
   parse_scan.cpp \
   calc.cpp \
@@ -51,10 +53,12 @@ marc_SOURCES = \
 marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
 marc_LDADD    = \
   $(CFITSIO_LIBS) \
+  $(ARGP_LIBS) \
   $(top_builddir)/lib/MaRC/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \
+  ProgressConsole.h \
   ImageFactory.h \
   MuImageFactory.h \
   Mu0ImageFactory.h \
@@ -69,6 +73,7 @@ noinst_HEADERS = \
   FITS_memory.h \
   FITS_traits.h \
   calc.h \
+  command_line.h \
   parse_scan.h
 
 BUILT_SOURCES = parse.hh

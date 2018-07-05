@@ -53,7 +53,8 @@ bool test_vector_initialization()
 
     return
         row_count > 0
-        && static_cast<decltype(ROWS)>(row_count) == ROWS
+        && static_cast<std::remove_const<decltype(ROWS)>::type>(
+            row_count) == ROWS
         && std::find_if_not(
             std::cbegin(v1),
             std::cend(v1),

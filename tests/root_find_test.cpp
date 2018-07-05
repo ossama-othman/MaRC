@@ -39,7 +39,7 @@ bool test_root_find()
     // Root finding brackets
     constexpr double xl = 0.5;
     constexpr double xh = -0.7;
-    
+
     return
         // Since the value we're looking for is zero, check for
         // "almost zero" rather than "almost equal to zero", since

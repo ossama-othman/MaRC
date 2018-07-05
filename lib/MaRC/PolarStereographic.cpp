@@ -21,10 +21,11 @@
  * @author Ossama Othman
  */
 
-#include "MaRC/PolarStereographic.h"
-#include "MaRC/OblateSpheroid.h"
-#include "MaRC/Constants.h"
-#include "MaRC/root_find.h"
+#include "PolarStereographic.h"
+#include "OblateSpheroid.h"
+#include "Constants.h"
+#include "root_find.h"
+#include "Log.h"
 
 #include <functional>
 #include <limits>
@@ -147,8 +148,6 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
                                    std::size_t lines,
                                    plot_type plot) const
 {
-    std::size_t const nelem = samples * lines;
-
     std::size_t offset = 0;
 
     /*
@@ -228,9 +227,9 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             double const latg =
                 MaRC::root_find(rho, ll, ul, map_equation);
 
-            // std::cout << "*** (latg_guess, latg) = ("
-            //           << latg_guess << ", "
-            //           << latg << ")\n";
+            // MaRC::debug("(latg_guess, latg) = ({}, {})",
+            //             latg_guess,
+            //             latg);
 
             // Convert to planetoCENTRIC latitude.
             double const lat =
@@ -241,10 +240,7 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
             double const lon =
                 std::atan2((ccw ? Y : -Y), X);
 
-            unsigned char const percent_complete =
-                static_cast<unsigned char>((offset + 1) * 100 / nelem);
-
-            plot(lat, lon, percent_complete, offset);
+            plot(lat, lon, offset);
         }
     }
 }

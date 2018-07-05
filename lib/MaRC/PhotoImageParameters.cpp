@@ -26,8 +26,8 @@
 #include "NullInterpolation.h"
 
 #include <stdexcept>
-#include <iostream>
-#include <sstream>
+// #include <sstream>
+#include <cassert>
 
 #ifndef MARC_DEFAULT_PHOTO_CORR_STRATEGY
 # define MARC_DEFAULT_PHOTO_CORR_STRATEGY MaRC::NullPhotometricCorrection
@@ -47,6 +47,8 @@ MaRC::PhotoImageParameters::PhotoImageParameters()
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_strategy_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
+    , unit_()
+    , unit_comment_()
     , remove_sky_(false)
 {
 }
@@ -145,6 +147,15 @@ MaRC::PhotoImageParameters::nibble_bottom(std::size_t n)
 
     //     throw std::invalid_argument(s.str());
     // }
+}
+
+void
+MaRC::PhotoImageParameters::unit(char const * u, char const * c)
+{
+    assert(u != nullptr && c != nullptr);
+
+    this->unit_ = u;
+    this->unit_comment_ = c;
 }
 
 void

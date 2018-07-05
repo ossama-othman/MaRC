@@ -35,6 +35,12 @@ namespace MaRC
     /**
      * @brief Get MaRC library version.
      *
+     * @todo Remove this function.  It doesn't serve a useful purpose,
+     *       particularly library versioning is introduced.
+     *
+     * @deprecated This function will be removed soon.  Do not use
+     *             it.
+     *
      * @return String containing the MaRC library version.
      */
     MARC_API char const * library_version();

@@ -1,7 +1,7 @@
 /**
  * @file marc.cpp
  *
- * Copyright (C) 1996-1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1999, 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,15 @@
  * @author Ossama Othman
  */
 
+#include "command_line.h"
 #include "parse_scan.h"
 
 #include <MaRC/config.h>
-#include <MaRC/Version.h>
+#include <MaRC/Log.h>
 
+#include <string>
 #include <iostream>
 #include <list>
-#include <cstdio>
 
 #include <unistd.h>
 
@@ -37,27 +38,10 @@ extern void yyrestart(FILE * input_file);
 int
 main(int argc, char *argv[])
 {
-    std::cout
-        << std::endl <<  "MaRC -- "
-        << "Built on " << __DATE__ << " at " << __TIME__ << std::endl
-        << "        MaRC Binary  Version " PACKAGE_VERSION  << std::endl
-        << "        MaRC Library Version " << MaRC::library_version()
-        << std::endl << std::endl
-        << "Copyright (C) 1996-1998, 2003-2004, 2017  Ossama Othman"
-        << std::endl
-        << "All Rights Reserved" << std::endl << std::endl
-        << "MaRC comes with ABSOLUTELY NO WARRANTY." << std::endl
-        << "This is free software, and you are welcome to redistribute it"
-        << std::endl
-        << "under certain conditions." << std::endl << std::endl;
+    MaRC::command_line cl;
 
-    if (argc < 2) {
-        std::cerr << std::endl
-                  << "USAGE:   marc inputfile1 [inputfile2 ...]"
-                  << std::endl << std::endl;
-
-        return 1;  // Failure
-    }
+    if (!cl.parse(argc, argv))
+        return 1;
 
     try {
         MaRC::ParseParameter parse_parameters;
@@ -69,50 +53,61 @@ main(int argc, char *argv[])
         if (defaults != 0) {
             ::yyrestart(defaults);
 
+            // For syntax error reporting.
+            parse_parameters.filename = user_defaults.c_str();
+
             // Parse user defaults/MaRC initialization file.
-            if (::yyparse(parse_parameters) == 0) {
-                // Successful parse
-                std::cout << "MaRC user defaults file parsed.\n";
-            } else {
-                fclose (defaults);
+            int const parsed = ::yyparse(parse_parameters);
 
-                std::cerr << "\n"
-                             "Parse error occurred during user "
-                             "defaults file read.\n";
+            /**
+             * @bug The "defaults" @c FILE stream is explicitly closed
+             *      if an exception is thrown when parsing the
+             *      initialization file.  Make exception-safe.
+             */
+            fclose(defaults);
 
-              return 1;  // Failure
+            if (parsed != 0) {
+                MaRC::error("error parsing '{}'.", user_defaults);
+
+                return 1;  // Failure
             }
+
+            // Successful parse
+            MaRC::debug("user defaults file '{}' parsed",
+                        user_defaults);
         }
 
         // Parse MaRC input files.
-        for (int i = 1; i < argc; ++i) {
-            FILE * const map_input = fopen(argv[i], "r");
+        for (auto const f : cl.files()) {
+            FILE * const map_input = fopen(f, "r");
             if (map_input != 0) {
                 ::yyrestart(map_input);
 
+                // For syntax error reporting.
+                parse_parameters.filename = f;
+
                 // Parse user defaults/MaRC initialization file.
-                if (::yyparse(parse_parameters) == 0) {
-                    fclose (map_input);
+                int const parsed = ::yyparse(parse_parameters);
 
-                    // Successful parse
-                    std::cout << "MaRC input file '"
-                              << argv[i]
-                              << "' parsed.\n";
-                } else {
-                    fclose(map_input);
+                /**
+                 * @bug The "map_input" @c FILE stream is explicitly
+                 *      closed if an exception is thrown when parsing
+                 *      the initialization file.  Make
+                 *      exception-safe.
+                 */
+                fclose(map_input);
 
-                    std::cerr
-                        << "\n"
-                           "Parse error occurred while processing "
-                           "MaRC input file \""
-                        << argv[i] << "\".\n";
+                if (parsed != 0) {
+                    MaRC::error("error parsing '{}'.", f);
 
-                  return 1;  // Failure
+                    return 1;  // Failure
                 }
+
+                // Successful parse
+                MaRC::debug("input file '{}' parsed", f);
             } else {
-                std::cerr << "Unable to open MaRC input file \""
-                          << argv[i]
-                          << "\".\n";
+                MaRC::error("unable to open '{}'.",
+                            f);
 
                 return 1;
             }
@@ -120,12 +115,13 @@ main(int argc, char *argv[])
 
         // Create the map(s).
         MaRC::ParseParameter::command_list const & commands =
-            parse_parameters.commands ();
+            parse_parameters.commands();
 
         for (auto & p : commands)
             (void) p->execute();
-    } catch (std::exception const & e) {
-        std::cerr << "MaRC: " << e.what() << std::endl;
+    } catch (const std::exception & e) {
+        MaRC::error(e.what());
+
         return -1;
     }
 

@@ -182,5 +182,5 @@ XCOMMENT: Test FITS extension comment.
         PLANE:  8
                 LATITUDE : CENTRIC
 
-        PLANE: 9
+        PLANE:  9
                 LONGITUDE

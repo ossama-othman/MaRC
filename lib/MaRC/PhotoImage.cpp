@@ -31,7 +31,6 @@
 #include "PhotometricCorrection.h"
 
 #include <stdexcept>
-#include <iostream>
 #include <sstream>
 #include <cassert>
 
@@ -175,6 +174,12 @@ MaRC::PhotoImage::read_data(double lat,
         this->data_weight(i, k, weight);
 
     return true;  // Success
+}
+
+char const *
+MaRC::PhotoImage::unit() const
+{
+    return this->config_->unit().c_str();
 }
 
 void

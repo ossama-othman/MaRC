@@ -111,6 +111,9 @@ namespace MaRC
                                std::size_t & weight,
                                bool scan = true) const;
 
+
+        virtual char const * unit() const;
+
     private:
 
         /**

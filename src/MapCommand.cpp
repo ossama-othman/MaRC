@@ -487,6 +487,10 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
     if (!v)
         return;  // Not a VirtualImage subclass instance.
 
+    /**
+     * @bug This prevents the BUNIT card from being written for
+     *      floating point virtual images.
+     */
     // bitpix > 0: integer data
     // bitpix < 0: floating point data
     if (bitpix < 0)

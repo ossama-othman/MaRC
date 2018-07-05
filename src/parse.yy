@@ -47,7 +47,9 @@
 #include <MaRC/SimpleCylindrical.h>
 
 #include <MaRC/Constants.h>
-#include "MaRC/DefaultConfiguration.h"
+#include <MaRC/DefaultConfiguration.h>
+
+#include <MaRC/Log.h>
 
 #include "parse_scan.h"
 #include "calc.h"
@@ -252,7 +254,7 @@
 %token GRID GRID_INTERVAL LAT_GRID_INTERVAL LON_GRID_INTERVAL
 %token MAP_TYPE SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
 %token PROGRADE RETROGRADE FLATTENING
-%token AVERAGING NONE WEIGHTED UNWEIGHTED
+%token AVERAGING _NONE WEIGHTED UNWEIGHTED
 %token OPTIONS EQ_RAD POL_RAD ROTATION _IMAGE _PHOTO _MU _MU0 _PHASE
 %token PLANES LO_LAT HI_LAT LO_LON HI_LON
 %token LATITUDE LONGITUDE
@@ -333,14 +335,10 @@ map_setup:
                  * @todo Call yyerror() here instead, e.g.:
                  *       yyerror(&yylloc, pp, "some error message");
                  */
-                //
-                std::cerr <<
-                    "ERROR: Number of planes in map entry does not\n"
-                    "       match the number of planes stated by \n"
-                    "       the \"PLANES\" keyword.\n"
-                    "           Expected planes: " << num_planes << "\n"
-                    "           Actual planes:   "
-                    << image_factories.size() << '\n';
+                MaRC::error("number of planes ({}) does not "
+                            "match \"PLANES\" value ({})",
+                            image_factories.size(),
+                            num_planes);
                 YYERROR;
             } else {
                 std::unique_ptr<MaRC::MapCommand> map_command;
@@ -641,11 +639,10 @@ planes: | PLANES ':' size         {
            */
           if ($3 > 0) {
               num_planes = static_cast<std::size_t>($3);
-              // std::cout << "NOTE: Specifying the number of map "
-              //              "planes is no longer necessary.\n";
+              // MaRC::info("specifying the number of map "
+              //            "planes is no longer necessary.");
           } else {
-              std::cerr << "Incorrect number of planes entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect number of planes entered: {}", $3);
               YYERROR;
           }
         }
@@ -656,8 +653,7 @@ samples:
           if ($3 > 0)
               map_samples = static_cast<long>($3);
           else {
-              std::cerr << "Incorrect value for SAMPLES entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect value for SAMPLES entered: {}", $3);
               YYERROR;
           }
         }
@@ -667,8 +663,7 @@ lines:  LINES ':' size  {
           if ($3 > 0)
               map_lines = static_cast<long>($3);
           else {
-              std::cerr << "Incorrect value for LINES entered: " << $3
-                        << '\n';
+              MaRC::error("incorrect value for LINES entered: {}", $3);
               YYERROR;
           }
         }
@@ -780,12 +775,11 @@ plane_size:
             if (num_planes == 0) {
                 yyerror(&yylloc,
                         pp,
-                        "Number of planes not entered prior to "
+                        "number of planes not entered prior to "
                         "plane definition");
             } else {
-                // std::cout <<
-                //     "NOTE: Specifying the map plane number is no "
-                //     "longer necessary.\n";
+                // MaRC::info("specifying the map plane number is no "
+                //            "longer necessary.)";
             }
 
             std::size_t const map_plane = static_cast<std::size_t>($3);
@@ -799,13 +793,9 @@ plane_size:
                      * @todo Call yyerror() here instead, e.g.:
                      *       yyerror(&yylloc, pp, "some error message");
                      */
-                    std::cerr <<
-                        "\n"
-                        "ERROR: Incorrect plane number entered.  Plane\n"
-                        "       number should be greater than zero\n"
-                        "       and less than or equal to the number\n"
-                        "       of planes (" << num_planes << ").\n"
-                        "       You entered:  " << $3 << '\n';
+                    MaRC::error("plane number ({}) greater than "
+                                "the number of planes ({})",
+                                $3, num_planes);
                     YYERROR;
                 }
             } else {
@@ -813,10 +803,9 @@ plane_size:
                  * @todo Call yyerror() here instead, e.g.:
                  *       yyerror(&yylloc, pp, "some error message");
                  */
-                std::cerr << "Incorrect plane number entered.\n"
-                             "Expected plane number is: " << expected_plane
-                          << "\n"
-                             "You entered:  " << $3 << '\n';
+                MaRC::error("expected plane number is {}, "
+                            "not {} as entered",
+                            expected_plane, $3);
                 YYERROR;
             }
 
@@ -838,9 +827,9 @@ plane_data_range:
                  * @todo Call yyerror() here instead, e.g.:
                  *       yyerror(&yylloc, pp, "some error message");
                  */
-                std::cerr << "Minimum data value: " << $3
-                          << " is greater than\n"
-                             "maximum data value: " << $6 << '\n';
+                MaRC::error("minimum data value {} is greater than "
+                            "maximum {}",
+                            $3, $6);
                 YYERROR;
             }
         }
@@ -854,9 +843,9 @@ plane_data_range:
                  * @todo Call yyerror() here instead, e.g.:
                  *       yyerror(&yylloc, pp, "some error message");
                  */
-                std::cerr << "Minimum data value: " << $6
-                          << " is greater than\n"
-                             "maximum data value: " << $3 << '\n';
+                MaRC::error("minimum data value {} is greater than "
+                            "maximum {}",
+                            $6, $3);
                 YYERROR;
             }
         }
@@ -1010,8 +999,7 @@ nibble:
                * @todo Call yyerror() here instead, e.g.:
                *       yyerror(&yylloc, pp, "some error message");
                */
-              std::cerr << "Incorrect value for NIBBLE entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect value for NIBBLE entered: {}", $3);
               YYERROR;
           }
         }
@@ -1037,8 +1025,8 @@ nibble_left:
           if ($3 >= 0) {
               nibble_left_val = static_cast<std::size_t>($3);
           } else {
-              std::cerr << "Incorrect value for NIBBLE_LEFT entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect value for NIBBLE_LEFT entered: {}",
+                          $3);
               YYERROR;
           }
         }
@@ -1049,8 +1037,8 @@ nibble_right:
           if ($3 >= 0) {
               nibble_right_val = static_cast<std::size_t>($3);
           } else {
-              std::cerr << "Incorrect value for NIBBLE_RIGHT entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect value for NIBBLE_RIGHT entered: {}",
+                          $3);
               YYERROR;
           }
         }
@@ -1061,8 +1049,8 @@ nibble_top:
           if ($3 >= 0) {
               nibble_top_val = static_cast<std::size_t>($3);
           } else {
-              std::cerr << "Incorrect value for NIBBLE_TOP entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect value for NIBBLE_TOP entered: {}",
+                          $3);
               YYERROR;
           }
         }
@@ -1073,8 +1061,8 @@ nibble_bottom:
           if ($3 >= 0) {
               nibble_bottom_val = static_cast<std::size_t>($3);
           } else {
-              std::cerr << "Incorrect value for NIBBLE_BOTTOM entered: "
-                        << $3 << '\n';
+              MaRC::error("incorrect value for NIBBLE_BOTTOM entered: {}",
+                          $3);
               YYERROR;
           }
         }
@@ -1476,9 +1464,8 @@ position_angle:
             if ($3 >= 0)
                 $$ = $3;
             else {
-                std::cerr << "Incorrect position (North) angle entered: "
-                          << $3 << " CW" << '\n'
-                          << "Numeric value should be positive." << '\n';
+                MaRC::error("position (North) angle {} CW is negative",
+                            $3);
                 YYERROR;
             }
         }
@@ -1486,9 +1473,8 @@ position_angle:
             if ($3 >= 0)
                 $$ = $3;
             else {
-                std::cerr << "Incorrect position (North) angle entered: "
-                          << $3 << " CCW" << '\n'
-                          << "Numeric value should be positive." << '\n';
+                MaRC::error("position (North) angle {} CCW is negative",
+                            $3);
                 YYERROR;
             }
         }
@@ -1501,7 +1487,7 @@ km_per_pixel:
             } else {
                 yyerror(&yylloc,
                         pp,
-                        "ERROR: KM_PER_PIXEL is not greater than zero.");
+                        "KM_PER_PIXEL must be greater than zero.");
                 YYERROR;
             }
         }
@@ -1669,7 +1655,7 @@ lat_range:
           } else  {
               yyerror(&yylloc,
                       pp,
-                      "ERROR: LO_LAT is greater than or equal to HI_LAT.");
+                      "LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
           }
         }
@@ -1681,7 +1667,7 @@ lat_range:
           } else {
               yyerror(&yylloc,
                       pp,
-                      "ERROR: LO_LAT is greater than or equal to HI_LAT.");
+                      "LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
           }
         }
@@ -1735,7 +1721,7 @@ averaging:
               averaging_type = MaRC::MosaicImage::AVG_UNWEIGHTED; }
         | AVERAGING ':' WEIGHTED {
               averaging_type = MaRC::MosaicImage::AVG_WEIGHTED; }
-        | AVERAGING ':' NONE {
+        | AVERAGING ':' _NONE {
               averaging_type = MaRC::MosaicImage::AVG_NONE; }
 ;
 
@@ -1748,16 +1734,12 @@ one_std_lat:
             MapEntry->setStdLat($3);
           }
           else {
-            cerr << "ERROR: Standard latitude must be greater than zero for"
-                 << endl
-                 << "       north polar projections and negative for south"
-                 << endl
-                 << "       polar projections.  Absolute value of standard"
-                 << endl
-                 << "       latitude must also be less than 90 degrees."
-                 << endl;
-            cerr << "       STD_LAT: " << $3 << endl;
-            YYERROR;
+              MaRC::error("Standard latitude must be greater than zero "
+                          "north polar projections and negative for "
+                          "south polar projections.  Absolute value of "
+                          "standard latitude must also be less than 90 "
+                          "degrees.  STD_LAT: {}", $3);
+              YYERROR;
           }
         }
 ;
@@ -1771,22 +1753,16 @@ two_std_lats:
               MapEntry->setStdLat($3, $6);
             }
             else {
-              cerr << "ERROR: Absolute value of first standard latitude must"
-                   << endl
-                   << "       be greater than absolute value of second"
-                   << endl
-                   << "       standard latitude.  First standard latitude must"
-                   << endl
-                   << "       also be greater than zero for north polar"
-                   << endl
-                   << "       projections and negative for south polar" << endl
-                   << "       projections.  The absolute value of either"
-                   << endl
-                   << "       standard latitude cannot be zero or 90 degrees."
-                   << endl;
-              cerr << "       STD_LAT_1: " << $3 << endl
-                   << "       STD_LAT_2: " << $6 << endl;
-              YYERROR;
+                MaRC::error("Absolute value of first standard latitude "
+                            "must be greater than absolute value of "
+                            "second standard latitude.  First standard "
+                            "latitude must also be greater than zero for "
+                            "north polar projections and negative for "
+                            "south polar projections.  The absolute "
+                            "value of either standard latitude cannot "
+                            "be zero or 90 degrees.  STD_LAT_1: {}"
+                            "   STD_LAT_2: {}", $3, $6);
+                YYERROR;
             }
         }
 ;
@@ -1812,10 +1788,9 @@ latitude:
 latitude_sub:
         expr    {
             if (std::abs($1) <= 90)
-            $$ = $1;
+                $$ = $1;
             else {
-                std::cerr << "Incorrect latitude entered: " << $1
-                          << '\n';
+                MaRC::error("incorrect latitude entered: {}", $1);
                 YYERROR;
             }
         }
@@ -1823,8 +1798,7 @@ latitude_sub:
             if ($1 >= 0 && $1 <= 90)
                 $$ = $1;
             else {
-                std::cerr << "Incorrect latitude entered: "
-                          << $1 << " N\n";
+                MaRC::error("incorrect latitude entered: {} N", $1);
                 YYERROR;
             }
         }
@@ -1832,8 +1806,7 @@ latitude_sub:
             if ($1 >= 0 && $1 <= 90)
                 $$ = -$1;
             else {
-                std::cerr << "Incorrect latitude entered: "
-                          << $1 << " S\n";
+                MaRC::error("incorrect latitude entered: {} S", $1);
                 YYERROR;
             }
         }
@@ -1846,8 +1819,7 @@ longitude:
                       $1 += 360;
                   $$ = $1;
               } else {
-                  std::cerr << "Incorrect longitude entered: " << $1
-                            << '\n';
+                  MaRC::error("incorrect longitude entered: {}", $1);
                   YYERROR;
               }
          }
@@ -1860,8 +1832,7 @@ longitude:
                  else
                      $$ = $1;
              } else {
-                 std::cerr << "Incorrect longitude entered: " << $1
-                           << " E\n";
+                 MaRC::error("incorrect longitude entered: {} E", $1);
                  YYERROR;
              }
         }
@@ -1874,8 +1845,7 @@ longitude:
                 else
                     $$ = 360 - $1;
             } else {
-                std::cerr << "Incorrect longitude entered: " << $1
-                          << " W\n";
+                MaRC::error("incorrect longitude entered: {} W", $1);
                 YYERROR;
             }
         }
@@ -1890,17 +1860,18 @@ expr:     NUM                   { $$ = $1;                         }
         | expr '+' expr         { $$ = $1 + $3;                    }
         | expr '-' expr         { $$ = $1 - $3;                    }
         | expr '*' expr         { $$ = $1 * $3;                    }
-        | expr '/' expr         { if ($3 != 0)
-                                      $$ = $1 / $3;
-                                  else {
-                                      $$ = $1;
-                                      fprintf(stderr,
-                                              "%d.%d-%d.%d: division by zero",
-                                              @3.first_line,
-                                              @3.first_column,
-                                              @3.last_line,
-                                              @3.last_column);
-                                  }
+        | expr '/' expr         {
+            if ($3 != 0)
+                $$ = $1 / $3;
+            else {
+                $$ = $1;
+
+                MaRC::error("{}.{}-{}.{}: division by zero",
+                            @3.first_line,
+                            @3.first_column,
+                            @3.last_line,
+                            @3.last_column);
+            }
                                 }
         | '-' expr  %prec NEG   { $$ = -$2;                        }
         | expr '^' expr         { $$ = std::pow($1, $3);           }

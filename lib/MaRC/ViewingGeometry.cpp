@@ -27,11 +27,17 @@
 #include "Mathematics.h"
 #include "Validate.h"
 #include "NullGeometricCorrection.h"
+#include "Log.h"
+#include "config.h"  // For NDEBUG
+
+/**
+ * @todo Should this be an equivalent MaRC include directive?
+ */
+#include <spdlog/fmt/ostr.h>
 
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#include <iostream>
 #include <cassert>
 
 #ifndef MARC_DEFAULT_GEOM_CORR_STRATEGY
@@ -332,12 +338,14 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     std::pair<double, double> SubLatModSin;
 
     if (!MaRC::quadratic_roots(a, b, c, SubLatModSin)) {
-        // No real roots.
-        std::cerr
-            << "ERROR: Unable to find roots corresponding to\n"
-               "       sub-observation latitudes when calculating\n"
-               "       suitable rotation matrices to go between\n"
-               "       observer and body coordinates.\n";
+        /*
+          No real roots.
+
+          Unable to find roots corresponding to sub-observation
+          latitudes when calculating suitable rotation matrices to go
+          between observer and body coordinates.
+        */
+        MaRC::error("unable to calculate suitable rotation matrices");
 
         return false;  // Failure
     }
@@ -384,24 +392,25 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude(this->range_b_);
+        diff_magnitude / MaRC::magnitude(this->range_b_) * 100;
 
     static constexpr double tolerance = 1e-8;
-    if (percent_diff * 100 > tolerance) {
-        // If greater than tolerance, warn.
-        std::cerr
-            << "\n"
-            "WARNING: Results may be incorrect since a\n"
-            "         \"suitable\" transformation matrix was\n"
-            "         not found for the given image.\n"
-            "         There was a "
-            <<  percent_diff * 100 << "%\n"
-            "         difference between the two test vectors."
-            "\n"
-            "         This warning occured since the percent\n"
-            "         difference between the vectors was\n"
-            "         greater than "
-            << tolerance << "%.\n";
+    if (percent_diff > tolerance) {
+        /*
+          Warn if greater than tolerance.
+
+          Results may be incorrect since a "suitable" transformation
+          matrix was not found for the given image.  Percent
+          difference between vectors was greater than tolerance.
+        */
+        MaRC::warn("suitable transformation matrix "
+                   "not found for given image");
+        MaRC::warn("results may be incorrect");
+
+        MaRC::debug("percent difference between test "
+                    "vectors {}% is greater than {}",
+                    percent_diff,
+                    tolerance);
     }
 
     // Body to observer transformation
@@ -409,43 +418,45 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     // transformation matrices are orthogonal.
     body2observ = MaRC::transpose(observ2body);
 
-#ifdef DEBUG
+#ifndef NDEBUG
     for (std::size_t i = 0; i < 3; ++i)
-        std::cout
-            << std::abs((this->range_b_[i] - (observ2body * range_o)[i])
-                        / (this->range_b_[i] + (observ2body * range_o)[i])
-                        * 2)
-            << '\n';
+        MaRC::debug(
+            std::abs((this->range_b_[i] - (observ2body * range_o)[i])
+                     / (this->range_b_[i] + (observ2body * range_o)[i])
+                     * 2));
 
-    std::cout
-        << "range_b_ = " << this->range_b_ << "\n"
-        "range_b_ from transformation = " << observ2body * range_o
-        << "\n"
-        "range_o = " << range_o << "\n"
-        "range_o from transformation = " << body2observ * this->range_b_
-        << '\n';
+    MaRC::debug("range_b_ = {}\n"
+                "range_b_ from transformation = {}\n"
+                "range_o = {}\n"
+                "range_o from transformation = {}",
+                this->range_b_,
+                observ2body * range_o,
+                range_o,
+                body2observ * this->range_b_);
 
-    std::cout
-        << "position_angle_ = "
-        << this->position_angle_ / C::degree
-        << " degrees (positive is CCW)\n"
-        "SubLatMod = " << SubLatMod / C::degree << "\n"
-        "Ztwist = " << Ztwist / C::degree << '\n';
+    MaRC::debug("position_angle_ = {} degrees (positive is CCW)\n"
+                "SubLatMod = {}\n"
+                "Ztwist = {}\n",
+                this->position_angle_ / C::degree,
+                SubLatMod / C::degree,
+                Ztwist / C::degree);
 
-    DVector test;
-    test[2] = 1; // Unit vector along z-axis
-    DVector result(body2observ * test); // Test vector in camera
-                                            // coordinates.
+    // North pole unit vector.
+    DVector const body_north {0, 0, 1};
 
-    std::cout
-        << "Computed NORAZ = "
-        << std::atan2(-result[0], result[2]) / C::degree
-        << " degrees (positive is CCW)\n"
-        "Computed North pole vector in camera space = " << result
-        << "\n"
-           "observ2body = " << observ2body << "\n"
-           "body2observ = " << body2observ << '\n';
-#endif
+    // North pole vector in camera coordinates.
+    DVector const camera_north(body2observ * body_north);
+
+    MaRC::debug("computed NORAZ = {} degrees (positive is CCW)\n"
+                "computed North pole vector in camera space = {}\n"
+                "observ2body = {}\n"
+                "body2observ = {}\n",
+                std::atan2(-camera_north[0],
+                           camera_north[2]) / C::degree,
+                camera_north,
+                observ2body,
+                body2observ);
+#endif  // !NDEBUG
 
     return true;
 }
@@ -527,9 +538,9 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
         * (Geometry::RotXMatrix(SubLatMod[1])
            * Geometry::RotYMatrix(-this->position_angle_));
 
-#ifdef DEBUG
+#ifndef NDEBUG
     double Ztwist, SubLatModified;
-#endif  /* DEBUG */
+#endif  /* !NDEBUG */
 
     if (diff_magnitude > MaRC::magnitude(OA_O
                                          - o2b * UnitOpticalAxis)) {
@@ -537,66 +548,83 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
             MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
         observ2body = o2b;
 
-#ifdef DEBUG
+#ifndef NDEBUG
         SubLatModified = SubLatMod[1];
         Ztwist = Ztwist2;
     } else {
         SubLatModified = SubLatMod[0];
         Ztwist = Ztwist1;
-#endif  /* DEBUG */
+#endif  /* !NDEBUG */
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude(UnitOpticalAxis);
+        diff_magnitude / MaRC::magnitude(UnitOpticalAxis) * 100;
 
     static constexpr double tolerance = 1e-8;
 
-    if (percent_diff * 100 > tolerance)
-        // If greater than tolerance, warn.
-        std::cerr
-            << '\n'
-            << "WARNING: Results may be incorrect since a\n"
-            << "         \"suitable\" transformation matrix was\n"
-            << "         not found for the given image.\n"
-            << "         There was a "
-            << percent_diff * 100 << "%"<< '\n'
-            << "         difference between the two test vectors.\n"
-            << "         This warning occured since the percent\n"
-            << "         difference between the vectors was\n"
-            << "         greater than "
-            << tolerance << "%.\n";
+    if (percent_diff > tolerance) {
+        /*
+          Warn if greater than tolerance.
+
+          Results may be incorrect since a "suitable" transformation
+          matrix was not found for the given image.  Percent
+          difference between vectors was greater than tolerance.
+        */
+        MaRC::warn("suitable transformation matrix "
+                   "not found for given image");
+        MaRC::warn("results may be incorrect");
+
+        MaRC::debug("percent difference between test "
+                    "vectors {}% is greater than {}",
+                    percent_diff,
+                    tolerance);
+    }
 
     // Body to observer transformation
     // Get reverse transformation by taking transpose since
     // transformation matrices are orthogonal.
     body2observ = MaRC::transpose(observ2body);
 
-#ifdef DEBUG
+#ifndef NDEBUG
     for (std::size_t i = 0; i < 3; ++i)
-        std::cout
-            << std::abs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
-                        / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
-                        * 2)
-            << '\n';
+        MaRC::debug(
+            "{}",
+            std::abs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
+                     / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
+                     * 2));
 
-    std::cout
-        << "UnitOpticalAxis = " << UnitOpticalAxis << "\n"
-           "OpticalAxis from transformation = "
-        << observ2body * OA_O << "\n"
-           "OA_O = " << OA_O << "\n"
-           "OA_O from transformation = " << body2observ * UnitOpticalAxis
-        << '\n';
-//   output_ << "position_angle_ = " << position_angle_ / C::degree << " degrees (positive is CCW)\n"
-//       << "SubLatModified = " << SubLatModified / C::degree << '\n'
-//       << "Ztwist = " << Ztwist / C::degree << '\n';
-//   test[2] = 1; // Unit vector along z-axis
-//   result = body2observ * test; // test vector in camera coordinates.
-//   output_ << "Computed NORAZ = " << std::atan2(-result[0], result[2]) / C::degree
-//       << " degrees (positive is CCW)\n"
-//       << "Computed North pole vector in camera space = " << result << '\n';
-//   output_ << "observ2body = " << observ2body << '\n'
-//       << "body2observ = " << body2observ << '\n';
-#endif
+    MaRC::debug("UnitOpticalAxis = {}\n"
+                "OpticalAxis from transformation = {}\n"
+                "OA_O = {}\n"
+                "OA_O from transformation = {}\n",
+                UnitOpticalAxis,
+                body2observ * UnitOpticalAxis,
+                OA_O,
+                observ2body * OA_O);
+
+    MaRC::debug("position_angle_ = {} degrees (positive is CCW)\n"
+                "SubLatModified = {}\n"
+                "Ztwist = {}\n",
+                position_angle_ / C::degree,
+                SubLatModified / C::degree,
+                Ztwist / C::degree);
+
+    // North pole unit vector.
+    DVector const body_north {0, 0, 1};
+
+    // North pole vector in camera coordinates.
+    DVector const camera_north(body2observ * body_north);
+
+    MaRC::debug("computed NORAZ = {} degrees (positive is CCW)\n"
+                "computed North pole vector in camera space = {}\n"
+                "observ2body = {}\n"
+                "body2observ = {}\n",
+                std::atan2(-camera_north[0],
+                           camera_north[2]) / C::degree,
+                camera_north,
+                observ2body,
+                body2observ);
+#endif  // !NDEBUG
 }
 
 void

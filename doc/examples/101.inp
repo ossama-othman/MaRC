@@ -31,9 +31,9 @@ XCOMMENT:Another map comment.
 				INTERPOLATE:		NO
 				SAMPLE_CENTER:		2756.684
 				LINE_CENTER:		1293.4014
-				FLAT_FIELD:		101_410flat.big.fits 
+				FLAT_FIELD:		101_410flat.big.fits
 				GEOM_CORRECT:		YES
-				SUB_OBSERV_LAT:		-3.62 
+				SUB_OBSERV_LAT:		-3.62
 				SUB_OBSERV_LON:		15.20 E
 				POSITION_ANGLE:		-183.182
 				SUB_SOLAR_LAT:		-1.80
@@ -61,7 +61,7 @@ XCOMMENT:Another map comment.
 				INTERPOLATE:		NO
 				SAMPLE_CENTER:		2788.453
 				LINE_CENTER:		1295.195
-				FLAT_FIELD:		101_756flat.big.fits 
+				FLAT_FIELD:		101_756flat.big.fits
 				GEOM_CORRECT:		YES
 				SUB_OBSERV_LAT:		-3.61
 				SUB_OBSERV_LON:		14.30 E
@@ -93,11 +93,10 @@ XCOMMENT:Another map comment.
 				RANGE:			1819712.917
 				SUB_SOLAR_LAT:		-1.80
 				SUB_SOLAR_LON:		65.07 E
-		
+
 	PLANE:
 		MU0:		SUB_OBSERV_LAT:		3.62 S
 				SUB_OBSERV_LON:		14.45 E
 				RANGE:			1819712.917 KM
 				SUB_SOLAR_LAT:		-1.80
 				SUB_SOLAR_LON:		65.07 E
-

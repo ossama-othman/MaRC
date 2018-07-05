@@ -48,11 +48,11 @@
  * @brief Various mathematical and physical constants.
  *
  * The conversion factors convert to an internal representation.  For
- * example, C::inch when used as a factor converts from inchs to internal
- * units (in this case metres).  When used as a divisor it converts from
- * internal units to inchs.
- * @verbatim
+ * example, @c C::inch when used as a factor converts from inchs to
+ * internal units (in this case metres).  When used as a divisor it
+ * converts from internal units to inchs.
  *
+ * @verbatim
  * Compound usage accords with conventional dimensional analysis, e.g.:
  *
  *    * Factor to convert seconds to days:
@@ -80,9 +80,16 @@
  *
  * @endverbatim
  *
- * For derived quantities such as volume, velocity, force, and power, the
- * units are specified in terms of those of the fundamental quantities.
-*/
+ * For derived quantities such as volume, velocity, force, and power,
+ * the units are specified in terms of those of the fundamental
+ * quantities.
+ *
+ * @todo Some of these constants are outdated, and should be updated
+ *       with the latest values, such as those found on the NIST Web
+ *       site (https://physics.nist.gov/cuu/Constants/index.html).
+ *       We may also want to remove those that aren't used by MaRC,
+ *       which is the majority of them.
+ */
 namespace C
 {
   // Begin Mathematical constants

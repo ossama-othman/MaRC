@@ -34,7 +34,7 @@ bool test_scaling(double minimum, double maximum)
 
     constexpr double T_lowest = std::numeric_limits<T>::lowest();
     constexpr double T_max    = std::numeric_limits<T>::max();
-    
+
     double scale;
     double offset;
 
@@ -124,7 +124,7 @@ int main()
         && test_extreme_value_scaling<int64_t>()
         && test_extreme_value_scaling<float>()
         && test_extreme_value_scaling<double>()
-        
+
         && test_cosine_scaling<uint8_t>()
         && test_cosine_scaling<int16_t>()
         && test_cosine_scaling<int32_t>()

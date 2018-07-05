@@ -1,3 +1,24 @@
+- Added command line option support.  Try "marc --help".
+
+- Improved logging by leveraging the spdlog library as the underling
+  logging framework.  This allows for faster logging, and log level
+  differentiated output (e.g. text color on terminals that support
+  ANSI colors), as well.
+
+- Corrected progress output for the Orthographic map projection so
+  that completion percentage is printed up to 100%.
+
+- MERCATOR map entries in MaRC input files may now use options common
+  to all MaRC map projections.
+
+- Fixed a mosaic averaging regression that caused weighted and
+  unweighted averaging to be disabled if either was selected.
+
+- Added support for generation of code coverage results for g++
+  builds.  Try the following to generate the results:
+        ./configure --enable-code-coverage
+        make check-code-coverage
+
 - Replaced all uses of the MaRC-specific "bodycentric" and
   "bodygraphic" latitude terminology with the NASA NAIF recommended
   "planetocentric" and "planetographic", respectively.

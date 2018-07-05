@@ -30,6 +30,9 @@ libMaRC_la_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
 libMaRC_la_LIBADD   = $(CODE_COVERAGE_LIBS)
 
 libMaRC_la_SOURCES = \
+  Log.cpp \
+  Notifier.cpp \
+  \
   Geometry.cpp \
   \
   BodyData.cpp \
@@ -67,6 +70,9 @@ libMaRC_la_SOURCES = \
   Version.cpp
 
 pkginclude_HEADERS = \
+  Log.h \
+  Observer.h \
+  Notifier.h \
   DefaultConfiguration.h \
   config.h \
   \
@@ -111,6 +117,7 @@ pkginclude_HEADERS = \
   PolarStereographic.h \
   SimpleCylindrical.h \
   Validate.h \
+  plot_info.h \
   root_find.h \
   utility.h \
   \

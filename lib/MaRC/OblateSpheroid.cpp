@@ -24,6 +24,7 @@
 #include "OblateSpheroid.h"
 #include "Vector.h"
 #include "Mathematics.h"
+#include "Log.h"
 
 #include <stdexcept>
 #include <cmath>
@@ -307,7 +308,9 @@ MaRC::OblateSpheroid::ellipse_intersection(DVector const & vec,
         return 1;  // Unsuccessful
     }
 
-    // std::cout << "k0 = " << k.first << "  \tk1 = " << k.second << '\n';
+    // MaRC::debug("(k0, k1) = ({}, {})",
+    //             k.first,
+    //             k.second);
 
     //   if (k.first < k.second)  // This is unlikely to be true.
     //   //  if (std::abs(k.first) < std::abs(k.second))

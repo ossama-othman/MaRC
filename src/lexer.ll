@@ -4,7 +4,7 @@
  *
  * Scanner for MaRC input files.  Requires GNU Flex 2.5.4a or greater.
  *
- * Copyright (C) 1996-1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1999, 2004, 2017-2018  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,12 +31,21 @@
 
 int yycolumn = 1;
 
-#define YY_USER_ACTION {                             \
-        yylloc->first_line = yylineno;               \
-        yylloc->last_line = yylineno;                \
-        yylloc->first_column = yycolumn;             \
-        yylloc->last_column = yycolumn + yyleng - 1; \
-        yycolumn += yyleng; }
+namespace
+{
+    void
+    update_yylloc(char const * /* text */, YYLTYPE * loc)
+    {
+        loc->first_line = yylineno;
+        loc->last_line = yylineno;
+        loc->first_column = yycolumn;
+        loc->last_column = yycolumn + yyleng - 1;
+        yycolumn += yyleng;
+    }
+}
+
+#define YY_USER_ACTION update_yylloc(yytext, yylloc);
+
 %}
 
 %option noyywrap
@@ -54,7 +63,7 @@ int yycolumn = 1;
 %%
 <comment_init>[:]       {
                           BEGIN(comment); return ':';
-                          /* This colon is seperated from <comment> so
+                          /* This colon is separated from <comment> so
                              colons may be placed in side of comments */
                         }
 <comment>[^\n]*         {
@@ -169,7 +178,7 @@ int yycolumn = 1;
 "LINES"         { return LINES; }
 "BODY"          { BEGIN(string); return BODY; }
 "AVERAGING"     { BEGIN(keyword_token); return AVERAGING; }
-"NONE"          { return NONE; }
+"NONE"          { return _NONE; }
 "WEIGHTED"      { return WEIGHTED; }
 "UNWEIGHTED"    { return UNWEIGHTED; }
 "PLANES"        { return PLANES; }
