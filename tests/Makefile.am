@@ -40,7 +40,7 @@ check_PROGRAMS =            \
   root_find_test            \
   utility_test
 
-dist_check_SCRIPTS = MaRC_Prog_Test.sh
+dist_check_SCRIPTS = MaRC_Prog_Test.sh command_line_test.sh
 
 dist_check_DATA = \
   test_map.marc \
