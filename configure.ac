@@ -119,13 +119,16 @@ AC_SEARCH_LIBS([argp_parse],
 	        dnl Prevent the Argp library from being link to all
 		dnl MaRC binaries.  It is only used by the MaRC
 		dnl program.
-	        AS_IF([test "x$ac_cv_search_argp_parse" != "xno"
-		       -a "x$ac_cv_search_argp_parse" != "xnone_required"],
+	        AS_IF([test "x$ac_cv_search_argp_parse" != "xno" \
+		       -a "x$ac_cv_search_argp_parse" != "xnone required"],
 		       [ARGP_LIBS="$ac_cv_search_argp_parse"
 		        LIBS="$MARC_SAVE_LIBS"
 		        AC_SUBST([ARGP_LIBS])
 		       ])
-	       ])
+	       ],
+	       [dnl BSD-style EX_* exit codes.
+                AC_CHECK_HEADERS([sysexits.h])
+               ])
 
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 AC_SUBST([CFITSIO_LIBS])
@@ -185,7 +188,6 @@ AS_IF([test "x$marc_cv_cxx_3_param_std_hypot_supported" = "xyes"],
 
 dnl Checks for header files.
 AC_HEADER_STDC
-
 
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],

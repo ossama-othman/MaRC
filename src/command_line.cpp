@@ -33,6 +33,11 @@
 # include <iostream>
 # include <cstring>
 # include <cstdlib>
+# ifdef HAVE_SYSEXITS_H
+#   include <sysexits.h>
+# else
+#   define EX_USAGE 64
+# endif
 #endif  // HAVE_ARGP
 
 
@@ -183,7 +188,7 @@ MaRC::command_line::parse(int argc, char * argv[])
                     << ": unrecognized option '" << *arg << "'\n"
                     << try_message;
 
-                exit(EXIT_FAILURE);
+                exit(EX_USAGE);
             }
 
             end = std::rotate(arg, arg + 1, end);
@@ -196,7 +201,7 @@ MaRC::command_line::parse(int argc, char * argv[])
                   << args_doc << '\n'
                   << try_message;
 
-        exit(EXIT_FAILURE);
+        exit(EX_USAGE);
     }
 
     this->files_.args(end - begin, begin);
