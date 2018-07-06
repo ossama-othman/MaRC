@@ -165,7 +165,7 @@ XCOMMENT: Test FITS extension comment.
                         PIXEL_SCALE:            32.8084
 
         PLANE:  5
-		DATA_MIN: 0
+                DATA_MIN: 0
                 MU:     SUB_OBSERV_LAT:         -0.06 C
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
@@ -214,10 +214,12 @@ MAP:    test_map2.fits
                         NIBBLE_RIGHT:           8
                         NIBBLE_BOTTOM:          4
                         NIBBLE_TOP:             4
+                        INTERPOLATE:            NO
                         REMOVE_SKY:             NO
                         SAMPLE_CENTER:          2807.61
                         LINE_CENTER:            1200.67
                         GEOM_CORRECT:           NO
+                        TERMINATOR:             NO
                         SUB_OBSERV_LAT:         0.06 S
                         SUB_OBSERV_LON:         215.63 E
                         POSITION_ANGLE:         179.175
@@ -291,3 +293,79 @@ MAP:    test_map3.fits
                         RANGE:                  1209552
                         FOCAL_LENGTH:           1501.039
                         PIXEL_SCALE:            32.8084
+
+MAP:    test_map4.fits
+        AUTHOR: Foo Bar
+        ORIGIN: Baz
+        BODY:   Jupiter
+                EQ_RAD:         71492
+                POL_RAD:        66854
+                ROTATION:       PROGRADE
+        DATA_TYPE:              SHORT
+        DATA_BLANK:             -32768
+        GRID:                   NO
+        TYPE:                   SIMPLE_C
+        SAMPLES:        25
+        LINES:          25
+
+        PLANE:
+                MU:     SUB_OBSERV_LAT:         -0.06 C
+                        SUB_OBSERV_LON:         214.54 E
+                        RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LAT:          -0.22 C
+                        SUB_SOLAR_LON:          283.52 E
+
+MAP:    test_map5.fits
+        BODY:   Jupiter
+                EQ_RAD:         71492
+                POL_RAD:        66854
+                ROTATION:       PROGRADE
+        DATA_OFFSET:            -1
+        DATA_SCALE:             2
+        DATA_TYPE:              LONGLONG
+        GRID:                   NO
+        TYPE:                   SIMPLE_C
+        SAMPLES:        25
+        LINES:          25
+
+        PLANE:
+                MU:     SUB_OBSERV_LAT:         -0.06 C
+                        SUB_OBSERV_LON:         214.54 E
+                        RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LAT:          -0.22 C
+                        SUB_SOLAR_LON:          283.52 E
+
+MAP:    test_map6.fits
+        BODY:   Jupiter
+                EQ_RAD:         71492
+                POL_RAD:        66854
+                ROTATION:       PROGRADE
+        DATA_OFFSET:            -1
+        DATA_SCALE:             2
+        DATA_TYPE:              DOUBLE
+        GRID:                   NO
+        TYPE:                   SIMPLE_C
+        OPTIONS:
+                GRAPHIC
+        SAMPLES:        25
+        LINES:          25
+        PLANE:
+                DATA_MAX: 0
+                MU:     SUB_OBSERV_LAT:         -0.06 C
+                        SUB_OBSERV_LON:         214.54 E
+                        RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LAT:          -0.22 C
+                        SUB_SOLAR_LON:          283.52 E
+
+MAP:    test_map7.fits
+        BODY:   Jupiter
+                EQ_RAD:         71492
+                POL_RAD:        66854
+                ROTATION:       PROGRADE
+        DATA_TYPE:              SHORT
+        GRID:                   YES
+        TYPE:                   MERCATOR
+        SAMPLES:        25
+        LINES:          25
+        PLANE:
+                LATITUDE : GRAPHIC
