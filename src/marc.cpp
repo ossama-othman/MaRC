@@ -43,6 +43,8 @@ main(int argc, char *argv[])
     if (!cl.parse(argc, argv))
         return 1;
 
+    int result = 0;
+
     try {
         MaRC::ParseParameter parse_parameters;
 
@@ -106,8 +108,7 @@ main(int argc, char *argv[])
                 // Successful parse
                 MaRC::debug("input file '{}' parsed", f);
             } else {
-                MaRC::error("unable to open '{}'.",
-                            f);
+                MaRC::error("unable to open '{}'.", f);
 
                 return 1;
             }
@@ -117,13 +118,18 @@ main(int argc, char *argv[])
         MaRC::ParseParameter::command_list const & commands =
             parse_parameters.commands();
 
-        for (auto & p : commands)
-            (void) p->execute();
+        for (auto & p : commands) {
+            if (p->execute() != 0) {
+                MaRC::error("problem during creation of map '{}'",
+                            p->filename());
+                result = 1;
+            }
+        }
     } catch (const std::exception & e) {
         MaRC::error(e.what());
 
         return -1;
     }
 
-    return 0;  // Success
+    return result;
 }

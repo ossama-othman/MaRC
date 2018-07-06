@@ -136,8 +136,10 @@ MaRC::MapCommand::execute()
     // Create the map file.
     fitsfile * fptr = 0;
     int status = 0;
-    if (fits_create_file(&fptr, this->filename_.c_str(), &status) != 0)
+    if (fits_create_file(&fptr, this->filename_.c_str(), &status) != 0) {
+        fits_report_error(stderr, status);
         return status;
+    }
 
     FITS::file_unique_ptr safe_fptr(fptr);
 

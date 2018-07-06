@@ -81,6 +81,9 @@ namespace MaRC
         /// Execute the command.
         int execute();
 
+        /// Get map file name.
+        char const * filename() const  { return this->filename_.c_str(); }
+
         /// Get name of projection.
         char const * projection_name() const;
 
