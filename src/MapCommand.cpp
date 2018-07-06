@@ -26,6 +26,7 @@
 
 #include <MaRC/VirtualImage.h>
 #include <MaRC/Mathematics.h>
+#include <MaRC/Log.h>
 #include <MaRC/config.h>
 
 #include <fitsio.h>
@@ -520,13 +521,17 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
         // actual FITS cards instead of writing freeform text in a
         // FITS COMMENT or HISTORY card.
 
+        if (this->transform_data_)
+            MaRC::warn("computed scale and offset will override "
+                       "user supplied values");
+
         // -------------------
         // Set scaling factors
         // -------------------
         /*
           The MaRC library already scales the VirtualImage values.
           Set the CFITSIO internal scaling factors to force raw values
-          to be written by effectively disable automatic data
+          to be written by effectively disabling automatic data
           scaling.  Otherwise CFITSIO issues a numerical overflow
           error when writing the array (data) values to the FITS
           file.
