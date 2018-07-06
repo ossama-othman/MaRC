@@ -52,10 +52,6 @@
 # define MARC_DEBUG_ARGS(x) x
 #endif  // NDEBUG
 
-/**
- * @bug MaRC's copy of spdlog could conflict with an installed copy in
- *      elsewhere in the compiler's include path.
- */
 #include <spdlog/spdlog.h>
 
 
