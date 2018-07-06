@@ -106,14 +106,15 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
 
     // Create and write the map planes.
     for (auto const & i : this->image_factories_) {
-        std::cout << "Plane "
-                  << plane_count << " / " << num_planes
-                  <<" : " << std::flush;
         // Create the SourceImage.
         std::unique_ptr<SourceImage> const image(i->make(sof));
 
         if (!image)
             continue;  // Problem creating SourceImage.  Move on.
+
+        std::cout << "Plane "
+                  << plane_count << " / " << num_planes
+                  <<" : " << std::flush;
 
         // Add description of the source image.
         // comment_list_type descriptions;
