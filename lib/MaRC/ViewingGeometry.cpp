@@ -49,6 +49,58 @@ namespace
 {
     static constexpr double not_a_number =
         std::numeric_limits<double>::signaling_NaN();
+
+#ifndef NDEBUG
+    void
+    dump_vectors(MaRC::DVector const & original,
+                 MaRC::DVector const & rotated,
+                 MaRC::DMatrix const & transformation,
+                 std::string name,
+                 std::string coordinate_type)
+    {
+        auto const computed = transformation * rotated;
+        std::string const title =
+            name + " Vector in " + coordinate_type + " Coordinates";
+
+        /*
+          Dump a table of the form:
+          |=========================================|
+          |  Range Vector in Observer Coordinates   |
+          |=========================================|
+          |      Original      |From Transformation |
+          |-----------------------------------------|
+          |            -62692.5|            -62692.5|
+          |        -1.20769e+06|        -1.20769e+06|
+          |             16742.4|             16742.4|
+          |-----------------------------------------|
+          |         1.20943e+06|         1.20943e+06|
+          |-----------------------------------------|
+        */
+        MaRC::debug("\n"
+                    "|{:=^45}|\n"
+                    "|{:^45}|\n"
+                    "|{:=^45}|\n"
+                    "|{:^22}|{:^22}|\n"
+                    "|{:-^45}|\n"
+                    "|{:22}|{:22}|\n"
+                    "|{:22}|{:22}|\n"
+                    "|{:22}|{:22}|\n"
+                    "|{:-^45}|\n"
+                    "|{:22}|{:22}|\n"
+                    "|{:-^45}|\n",
+                    "",
+                    title,
+                    "",
+                    "Original", "From Transformation",
+                    "",
+                    original[0], computed[0],
+                    original[1], computed[1],
+                    original[2], computed[2],
+                    "",
+                    MaRC::magnitude(original), MaRC::magnitude(computed),
+                    "");
+    }
+#endif
 }
 
 
@@ -419,20 +471,8 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     body2observ = MaRC::transpose(observ2body);
 
 #ifndef NDEBUG
-    for (std::size_t i = 0; i < 3; ++i)
-        MaRC::debug(
-            std::abs((this->range_b_[i] - (observ2body * range_o)[i])
-                     / (this->range_b_[i] + (observ2body * range_o)[i])
-                     * 2));
-
-    MaRC::debug("range_b_ = {}\n"
-                "range_b_ from transformation = {}\n"
-                "range_o = {}\n"
-                "range_o from transformation = {}",
-                this->range_b_,
-                observ2body * range_o,
-                range_o,
-                body2observ * this->range_b_);
+    dump_vectors(this->range_b_, range_o, observ2body, "Range", "Body");
+    dump_vectors(range_o, this->range_b_, body2observ, "Range", "Observer");
 
     MaRC::debug("position_angle_ = {} degrees (positive is CCW)\n"
                 "SubLatMod = {}\n"
@@ -444,7 +484,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     // North pole unit vector.
     DVector const body_north {0, 0, 1};
 
-    // North pole vector in camera coordinates.
+    // North pole vector in camera (observer) coordinates.
     DVector const camera_north(body2observ * body_north);
 
     MaRC::debug("computed NORAZ = {} degrees (positive is CCW)\n"
@@ -586,21 +626,16 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     body2observ = MaRC::transpose(observ2body);
 
 #ifndef NDEBUG
-    for (std::size_t i = 0; i < 3; ++i)
-        MaRC::debug(
-            "{}",
-            std::abs((UnitOpticalAxis[i] - (observ2body * OA_O)[i])
-                     / (UnitOpticalAxis[i] + (observ2body * OA_O)[i])
-                     * 2));
-
-    MaRC::debug("UnitOpticalAxis = {}\n"
-                "OpticalAxis from transformation = {}\n"
-                "OA_O = {}\n"
-                "OA_O from transformation = {}\n",
-                UnitOpticalAxis,
-                body2observ * UnitOpticalAxis,
-                OA_O,
-                observ2body * OA_O);
+    dump_vectors(UnitOpticalAxis,
+                 body2observ * UnitOpticalAxis,
+                 observ2body,
+                 "Unit Optical Axis",
+                 "Body");
+    dump_vectors(OA_O,
+                 observ2body * OA_O,
+                 body2observ,
+                 "Optical Axis",
+                 "Observer");
 
     MaRC::debug("position_angle_ = {} degrees (positive is CCW)\n"
                 "SubLatModified = {}\n"
@@ -610,9 +645,9 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
                 Ztwist / C::degree);
 
     // North pole unit vector.
-    DVector const body_north {0, 0, 1};
+    DVector const body_north{0, 0, 1};
 
-    // North pole vector in camera coordinates.
+    // North pole vector in camera (observer) coordinates.
     DVector const camera_north(body2observ * body_north);
 
     MaRC::debug("computed NORAZ = {} degrees (positive is CCW)\n"
