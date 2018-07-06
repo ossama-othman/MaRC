@@ -25,18 +25,19 @@
 #include "ProgressConsole.h"
 
 #include <iostream>
-
+#include <cassert>
 
 void
 MaRC::Progress::Console::notify(std::size_t map_size,
                                 std::size_t plot_count)
 {
-    /**
-     * @bug This calculation can overflow for maps of size greater
-     *      than @c std::numeric_limits<std::size_t>::max()/100.
-     */
+    // Compute percentage of map completion, being careful to avoid
+    // integer overflow.
     auto const percent_complete =
-        static_cast<int>(plot_count * 100 / map_size);
+        static_cast<std::size_t>(
+            static_cast<double>(plot_count) / map_size) * 100;
+
+    assert(percent_complete <= 100);
 
     if (percent_complete > this->percent_complete_old_) {
 

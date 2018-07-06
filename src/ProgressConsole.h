@@ -62,7 +62,7 @@ namespace MaRC
              * @see MaRC::MapProgress::notify()
              */
             virtual void notify(std::size_t map_size,
-                            std::size_t plot_count);
+                                std::size_t plot_count);
 
         private:
 
@@ -70,7 +70,7 @@ namespace MaRC
              * @todo Synchronize access once mapping in parallel is
              *       supported.
              */
-            int percent_complete_old_;
+            size_t percent_complete_old_;
 
         };
 
