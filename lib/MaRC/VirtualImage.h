@@ -169,20 +169,20 @@ namespace MaRC
      * provide floating point numbers.  That is a problem when storing
      * those numbers in integer typed maps since significant digits
      * after the decimal point could be truncated when casting from
-     * floating point to integer.  To prevent loss of significant
+     * floating point to integer.  To reduce the loss of significant
      * digits in such cases, the data should be scaled upward and
      * potentially offset from their original values so that more
-     * significant digits end up to the left decimal point prior to
-     * assignment to elements in integer typed maps.
+     * significant digits end up to the left of the decimal point
+     * prior to assignment to integer typed map array elements.
      *
      * For example, cosine values to be stored in a 16 bit signed
      * integer map could be scaled by 10000 with a zero offset to
      * increase the number of significant digits in the map data from
-     * one to four, e.g. 0.1234567 becomes 1234.567, which ends being
-     * stored as 1234 in a 16 bit signed integer map.  A scale factor
-     * of 10000 in this case is suitable since the scaled data range,
-     * -10000 to 10000, never exceeds the 16 bit signed integer data
-     * range, i.e -32768 to 32767.  The chosen scale order of
+     * one to four, e.g. 0.1234567 becomes 1234.567, which ends up
+     * being stored as 1234 in a 16 bit signed integer map.  A scale
+     * factor of 10000 in this case is suitable since the scaled data
+     * range, -10000 to 10000, never exceeds the 16 bit signed integer
+     * data range, i.e -32768 to 32767.  The chosen scale order of
      * magnitude is the largest it can be without causing transformed
      * data to exceed the map data range.
      *
@@ -211,12 +211,15 @@ namespace MaRC
      *       type, i.e. @c float or @c double.
      *
      * @attention This function only generates @a scale and @a offset
-     *            values that allow data to fit within the map data
-     *            range without decreasing the order of magnitude of
-     *            the data, resulting in loss of significant digits.
-     *            In particular, the scale value will always be
-     *            greater than or equal to one if this function
-     *            completes successfully.
+     *            values that allow data to fit within the map type
+     *            @c T data range without decreasing the order of
+     *            magnitude of the data, Otherwise a complete loss of
+     *            significant digits would occur since they'd all be
+     *            to the right of the decimal point, and ultimately
+     *            truncated when assigned to an integer.  In
+     *            particular, the scale value will always be greater
+     *            than or equal to one if this function completes
+     *            successfully.
      *
      * @param[in]  min    The lowest physical value to be plotted on a
      *                    map.  For example, this would be -1 for
@@ -239,9 +242,10 @@ namespace MaRC
      *               found.
      * @retval false Suitable @a scale and @a offset values were not
      *               found.  This can occur if it isn't possible to
-     *               scale data without loss of significant digits,
-     *               such as when a scale factor less than 1 would be
-     *               required.
+     *               scale data without complete loss of significant
+     *               digits when assigned to an integer due to
+     *               trunctation, such as when a scale factor less
+     *               than 1 would be required.
      */
     template <typename T>
     bool scale_and_offset(double min,
