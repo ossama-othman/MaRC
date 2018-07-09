@@ -36,7 +36,7 @@ namespace MaRC
         /**
          * @brief CFITSIO file close functor.
          *
-         * This functor closes FITS files opened by CFITSIO
+         * This functor closes a FITS file opened by CFITSIO
          * functions.  It is meant for use as the @c std::unique_ptr<>
          * @c Deleter template parameter.
          */
