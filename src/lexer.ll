@@ -27,25 +27,22 @@
 %{
 
 #include "parse_scan.h"
-#include "parse.hh" // Parser definitions
+#include "parse.hh"
 
-int yycolumn = 1;
+#pragma GCC diagnostic ignored "-Wunused-function"
 
-namespace
-{
-    void
-    update_yylloc(char const * /* text */, YYLTYPE * loc)
-    {
-        loc->first_line = yylineno;
-        loc->last_line = yylineno;
-        loc->first_column = yycolumn;
-        loc->last_column = yycolumn + yyleng - 1;
-        yycolumn += yyleng;
-    }
-}
+#define YY_USER_ACTION {                                             \
+        YYLTYPE * const loc = yyget_lloc(yyscanner);                 \
+        loc->first_line   = yyget_lineno(yyscanner);                 \
+        loc->last_line    = loc->first_line;                         \
+        loc->first_column = yycolumn;                                \
+        loc->last_column  = yycolumn + yyget_leng(yyscanner) - 1;    \
+        /* yycolumn += yyget_leng(yyscanner); */}
+        /**<
+         * @bug This isn't reentrant!  Global variable being set.
+         */
 
-#define YY_USER_ACTION update_yylloc(yytext, yylloc);
-
+    // int yycolumn = 1;
 %}
 
 %option noyywrap
@@ -53,6 +50,9 @@ namespace
 %option bison-bridge bison-locations
 %option yylineno
 %option nounput
+%option reentrant
+%option warn
+%option header-file="lexer.hh"
 %s comment_init
 %x comment
 %s keyword_token

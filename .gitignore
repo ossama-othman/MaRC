@@ -72,6 +72,7 @@ doc/doxygen/
 
 # Scanner (Flex) and Parser (GNU Bison) Files
 src/lexer.cc
+src/lexer.hh
 src/parse.cc
 src/parse.h*
 

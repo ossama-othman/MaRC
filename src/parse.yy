@@ -52,6 +52,8 @@
 #include <MaRC/Log.h>
 
 #include "parse_scan.h"
+#include "parse.hh"
+#include "lexer.hh"
 #include "calc.h"
 #include "MapCommand.h"
 #include "MapCommand_T.h"
@@ -63,6 +65,27 @@
 #include <cmath>
 #include <sstream>
 
+YY_DECL;
+
+void
+yyerror(YYLTYPE * locp,
+        yyscan_t /* scanner */,
+        MaRC::ParseParameter & pp,
+        char const * msg)
+{
+    /**
+     * @bug The line number is off when the parser explicitly calls
+     *      @c yyerror().  For example, if a negative KM_PER_PIXEL
+     *      value is set in an input file the reported line is
+     *      actually the first line that isn't solely whitespace after
+     *      the line containing the invalid KM_PER_PIXEL value.  Line
+     *      numbers in syntax errors, on the other hand, are correct
+     */
+    MaRC::error("{}:{}: {}",
+                pp.filename,
+                locp->first_line,
+                msg);
+}
 
     namespace
     {
@@ -200,13 +223,12 @@
      */
     template <typename T>
     using auto_free = std::unique_ptr<T, deallocate_with_free>;
-
 %}
 
 /* BISON Declarations */
 
-%parse-param {MaRC::ParseParameter & pp}
-%lex-param {MaRC::ParseParameter & pp}
+%param { void * scanner } { MaRC::ParseParameter & pp }
+
 %locations
 %error-verbose
 
@@ -333,7 +355,8 @@ map_setup:
             if (num_planes > 0 && image_factories.size() != num_planes) {
                 /**
                  * @todo Call yyerror() here instead, e.g.:
-                 *       yyerror(&yylloc, pp, "some error message");
+                 *       yyerror(&yylloc, scanner, pp,
+                 *               "some error message");
                  */
                 MaRC::error("number of planes ({}) does not "
                             "match \"PLANES\" value ({})",
@@ -774,6 +797,7 @@ plane_size:
            */
             if (num_planes == 0) {
                 yyerror(&yylloc,
+                        scanner,
                         pp,
                         "number of planes not entered prior to "
                         "plane definition");
@@ -1486,6 +1510,7 @@ km_per_pixel:
                 km_per_pixel_val = $3;
             } else {
                 yyerror(&yylloc,
+                        scanner,
                         pp,
                         "KM_PER_PIXEL must be greater than zero.");
                 YYERROR;
@@ -1654,6 +1679,7 @@ lat_range:
               hi_lat = $6;
           } else  {
               yyerror(&yylloc,
+                      scanner,
                       pp,
                       "LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;
@@ -1666,6 +1692,7 @@ lat_range:
               hi_lat = $3;
           } else {
               yyerror(&yylloc,
+                      scanner,
                       pp,
                       "LO_LAT is greater than or equal to HI_LAT.");
               YYERROR;

@@ -26,20 +26,19 @@
 #define MARC_PARSE_SCAN_H
 
 #include "calc.h"
-#include "MapCommand.h"
 
 #include <list>
 #include <memory>
 
-// The following #undef in necessary to make it possible to use GNU
-// Flex 2.5.31 generated C++ scanners without "redefinition"
-// compile-time errors.  *sigh*
-// #undef yyFlexLexer
-// #include <FlexLexer.h>
-
+#define YY_DECL int yylex(YYSTYPE * yylval_param,       \
+                          YYLTYPE * yylloc_param,       \
+                          yyscan_t yyscanner,           \
+                          MaRC::ParseParameter & pp)
 
 namespace MaRC
 {
+
+    class MapCommand;
 
     /**
      * @class ParseParameter
@@ -115,9 +114,6 @@ namespace MaRC
         /// Calculator symbol table.
         symrec sym_table_;
 
-        /// C++ scanner instance.
-        //     yyFlexLexer lexer_;
-
     };
 
     /**
@@ -168,15 +164,6 @@ namespace MaRC
     };
 
 }
-
-
-#include "parse.hh"
-
-#define YY_DECL int yylex(YYSTYPE * yylval_param, YYLTYPE * yylloc_param, MaRC::ParseParameter & pp)
-
-YY_DECL;
-
-void yyerror (YYLTYPE * locp, MaRC::ParseParameter & pp, char const * msg);
 
 
 #endif
