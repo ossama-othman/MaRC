@@ -247,7 +247,8 @@ MAP:    test_map3.fits
                 EQ_RAD:         71492
                 FLATTENING:     (71492 - 66854) / 71492
                 ROTATION:       PROGRADE
-
+        DATA_OFFSET:            -1
+        DATA_SCALE:             2
         DATA_TYPE:              FLOAT
         GRID:
                    YES
@@ -320,8 +321,6 @@ MAP:    test_map5.fits
                 EQ_RAD:         71492
                 POL_RAD:        66854
                 ROTATION:       PROGRADE
-        DATA_OFFSET:            -1
-        DATA_SCALE:             2
         DATA_TYPE:              LONGLONG
         GRID:                   NO
         TYPE:                   SIMPLE_C
