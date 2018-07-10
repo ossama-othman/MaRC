@@ -25,6 +25,8 @@
 #include "BodyData.h"
 #include "Constants.h"
 
+#include <cassert>
+
 
 MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<BodyData> body,
                                    double sub_observ_lat,
@@ -60,6 +62,8 @@ MaRC::CosPhaseImage::read_data_i(double lat,
                                   lat,
                                   lon,
                                   this->range_);
+
+    assert(data >= -1 && data <= 1);
 
     return true;
 }

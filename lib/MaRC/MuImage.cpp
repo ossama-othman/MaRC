@@ -25,7 +25,7 @@
 #include "BodyData.h"
 #include "Constants.h"
 
-#include <cmath>
+#include <cassert>
 
 
 MaRC::MuImage::MuImage(std::shared_ptr<BodyData> body,
@@ -56,6 +56,8 @@ MaRC::MuImage::read_data_i(double lat, double lon, double & data) const
                            lat,
                            lon,
                            this->range_);
+
+    assert(data >= -1 && data <= 1);
 
     return true;
 }

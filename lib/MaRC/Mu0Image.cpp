@@ -25,7 +25,7 @@
 #include "BodyData.h"
 #include "Constants.h"
 
-#include <cmath>
+#include <cassert>
 
 
 MaRC::Mu0Image::Mu0Image(std::shared_ptr<BodyData> body,
@@ -53,6 +53,8 @@ MaRC::Mu0Image::read_data_i(double lat, double lon, double & data) const
                             this->sub_solar_lon_,
                             lat,
                             lon);
+
+    assert(data >= -1 && data <= 1);
 
     return true;
 }
