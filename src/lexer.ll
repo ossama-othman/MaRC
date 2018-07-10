@@ -33,18 +33,14 @@
 
 #pragma GCC diagnostic ignored "-Wunused-function"
 
-#define YY_USER_ACTION {                                             \
-        YYLTYPE * const loc = yyget_lloc(yyscanner);                 \
-        loc->first_line   = yyget_lineno(yyscanner);                 \
-        loc->last_line    = loc->first_line;                         \
-        loc->first_column = yycolumn;                                \
-        loc->last_column  = yycolumn + yyget_leng(yyscanner) - 1;    \
-        /* yycolumn += yyget_leng(yyscanner); */}
-        /**<
-         * @bug This isn't reentrant!  Global variable being set.
-         */
+#define YY_USER_ACTION {                                                \
+    auto const loc    = yyget_lloc(yyscanner);                          \
+    loc->first_line   = yyget_lineno(yyscanner);                        \
+    loc->last_line    = loc->first_line;                                \
+    loc->first_column = yyget_column(yyscanner);                        \
+    loc->last_column  = loc->first_column + yyget_leng(yyscanner) - 1;  \
+    }                                                                   \
 
-    // int yycolumn = 1;
 %}
 
 %option noyywrap
