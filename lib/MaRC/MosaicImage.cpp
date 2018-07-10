@@ -25,8 +25,6 @@
 #include "PhotoImage.h"
 #include "Mathematics.h"
 
-#include <cmath>
-
 
 MaRC::MosaicImage::MosaicImage(list_type && images,
                                average_type type)

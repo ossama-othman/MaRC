@@ -30,18 +30,14 @@
 #include <MaRC/Log.h>
 
 #include <string>
-#include <iostream>
-#include <list>
+#include <cstdio>
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
 
-#include <unistd.h>
-
 
 namespace MaRC
 {
-
     namespace
     {
         /**
@@ -128,9 +124,9 @@ namespace MaRC
         /**
          * @param[in] stream Pointer to @c FILE stream.
          */
-        void operator()(FILE * stream) const
+        void operator()(std::FILE * stream) const
         {
-            fclose(stream);
+            std::fclose(stream);
         }
     };
 
@@ -141,7 +137,7 @@ namespace MaRC
      * the a @c FILE stream up on exiting the scope in which an
      * instance of this @c file_unique_ptr resides.
      */
-    using FILE_unique_ptr = std::unique_ptr<FILE, FILE_closer>;
+    using FILE_unique_ptr = std::unique_ptr<std::FILE, FILE_closer>;
 
     // --------------------------------------------------------------
 
@@ -185,7 +181,7 @@ namespace MaRC
      */
     bool parse_file(char const * filename, MaRC::ParseParameter & pp)
     {
-        MaRC::FILE_unique_ptr const file(fopen(filename, "r"));
+        MaRC::FILE_unique_ptr const file(std::fopen(filename, "r"));
 
         if (!file) {
 #ifndef NDEBUG
