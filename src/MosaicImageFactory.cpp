@@ -28,7 +28,8 @@
 MaRC::MosaicImageFactory::MosaicImageFactory (
     list_type && factories,
     MosaicImage::average_type type)
-    : factories_(std::move(factories))
+    : ImageFactory()
+    , factories_(std::move(factories))
     , average_type_(type)
 {
     if (this->factories_.empty())
