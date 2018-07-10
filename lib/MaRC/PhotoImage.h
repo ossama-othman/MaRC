@@ -75,10 +75,10 @@ namespace MaRC
         /// Destructor.
         virtual ~PhotoImage() = default;
 
-        /// Retrieve data from source image.
+        /// Retrieve physical data from source image.
         /**
-         * Retrieve data from source image. The configured data
-         * interpolation strategy will be applied.
+         * Retrieve physical data from source image. The configured
+         * data interpolation strategy will be applied.
          *
          * @see MaRC::SourceImage::read_data().
          */
@@ -86,14 +86,14 @@ namespace MaRC
                                double lon,
                                double & data) const;
 
-        /// Retrieve data and weight from source image.
+        /// Retrieve physical data and weight from source image.
         /**
-         * Retrieve data and weight from source image.  The configured
-         * data interpolation strategy will be applied.
+         * Retrieve physical data and weight from source image.  The
+         * configured data interpolation strategy will be applied.
          *
          * @param[in]     lat    Planetocentric latitude in radians.
          * @param[in]     lon    Longitude in radians.
-         * @param[out]    data   Data retrieved from image.
+         * @param[out]    data   Physical data retrieved from image.
          * @param[in,out] weight Distance from pixel to closest edge
          *                       or blank pixel.
          * @param[in]     scan   Flag that determines if a data weight
@@ -102,8 +102,8 @@ namespace MaRC
          *                       @c read_data() that does not return a
          *                       weight.
          *
-         * @retval true  Data retrieved.
-         * @retval false No data retrieved.
+         * @retval true  Physical data retrieved.
+         * @retval false No physical data retrieved.
          */
         virtual bool read_data(double lat,
                                double lon,

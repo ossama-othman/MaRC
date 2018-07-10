@@ -282,16 +282,15 @@ namespace MaRC
         /// Destructor.
         virtual ~SourceImage() = default;
 
-        /// Retrieve data from source image.
         /**
-         * Retrieve data from source image.
+         * @brief Retrieve physical data from source image.
          *
          * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
-         * @param[out] data Data retrieved from image.
+         * @param[out] data Physical data retrieved from image.
          *
-         * @retval true  Data retrieved.
-         * @retval false No data retrieved.
+         * @retval true  Physical data retrieved.
+         * @retval false No physical data retrieved.
          */
         virtual bool read_data(double lat,
                                double lon,
@@ -299,23 +298,23 @@ namespace MaRC
 
         /// Retrieve data and weight from source image.
         /**
-         * Retrieve data and weight from source image.  The default
-         * implementation merely ignores the @a weight and @a scan
-         * arguments, and forwards the call to the concrete
+         * Retrieve physical data and weight from source image.  The
+         * default implementation merely ignores the @a weight and
+         * @a scan arguments, and forwards the call to the concrete
          * implementation of @c read_data().  Subclasses should
          * override this method if they will provide a @a weight along
          * with @a data.
          *
          * @param[in]     lat    Planetocentric latitude in radians.
          * @param[in]     lon    Longitude in radians.
-         * @param[out]    data   Data retrieved from image.
+         * @param[out]    data   Physical data retrieved from image.
          * @param[in,out] weight Distance from pixel to closest edge
          *                       or blank pixel.
          * @param[in]     scan   Flag that determines if a data weight
          *                       scan is performed..
          *
-         * @retval true  Data retrieved.
-         * @retval false No data retrieved.
+         * @retval true  Physical data retrieved.
+         * @retval false No physical data retrieved.
          */
         virtual bool read_data(double lat,
                                double lon,

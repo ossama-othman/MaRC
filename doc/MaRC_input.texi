@@ -1383,16 +1383,18 @@ plane entry immediately following the previous entry.  Each map plane
 entry contains an optional range of valid values that can be mapped
 and a description of what is being mapped.  A plane entry begins with
 the @code{PLANE} keyword.  Following this is the optional entry for
-the valid data range.  The data range is specified by the
-@code{DATA_MIN} and @code{DATA_MAX} keywords.  All data greater than
-or equal to @code{DATA_MIN} and less than or equal to @code{DATA_MAX}
-will be mapped.  If one or both of these keywords are not specified
-then they are assigned the lowest and highest possible values a given
+the valid physical data range.  The physical data range is specified
+by the @code{DATA_MIN} and @code{DATA_MAX} keywords.  All physical
+data greater than or equal to @code{DATA_MIN} and less than or equal
+to @code{DATA_MAX} will be mapped.  If one or both of these keywords
+are not specified, and an appropriate default cannot be chosen, then
+they are assigned the lowest and highest possible values a given
 platform may have for double precision floating point numbers (usually
-on the order of 1E+300 or more), respectively.  ``Data'' in this case
-refers to values being mapped @emph{after} any scaling and offsets
-have been applied.  Here is an example of the beginning of a plane
-entry:
+on the order of 1E+300 or more), respectively.  ``Physical data'' in
+this case refers to values being mapped @emph{after} any scaling and
+offsets have been applied, i.e. physical values (e.g. degrees) as
+opposed to array values.  Here is an example of the beginning of a
+plane entry:
 
 @example
 PLANE:

@@ -51,9 +51,9 @@ namespace MaRC
         /**
          * @enum AverageType
          *
-         * The type of averaging to be performed on data retrieved
-         * from multiple images that contain data at the given
-         * latitude and longitude.
+         * The type of averaging to be performed on physical data
+         * retrieved from multiple images that contain data at the
+         * given latitude and longitude.
          */
         enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
 
@@ -67,19 +67,20 @@ namespace MaRC
          */
         MosaicImage(list_type && images, average_type type);
 
-        /// Retrieve data from mosaic images.
+        /// Retrieve physical data from mosaic images.
         /**
-         * Retrieve data from all mosaic images that have data at the
-         * given latitude and longitude.  The configured data
-         * averaging strategy will be applied in cases where multiple
-         * images have data at the given longitude and latitude.
+         * Retrieve physical data from all mosaic images that have
+         * data at the given latitude and longitude.  The configured
+         * data averaging strategy will be applied in cases where
+         * multiple images have data at the given longitude and
+         * latitude.
          *
          * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
-         * @param[out] data Data retrieved from image.
+         * @param[out] data Physical data retrieved from image.
          *
-         * @retval true  Data retrieved,
-         * @retval false No data retrieved.
+         * @retval true  Physical data retrieved,
+         * @retval false No physical data retrieved.
          *
          * @see @c MaRC::SourceImage::read_data();
          */

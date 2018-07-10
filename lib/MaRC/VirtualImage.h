@@ -57,16 +57,37 @@ namespace MaRC
         /// Retrieve data from virtual image.
         /**
          * Retrieve data from virtual image and apply configured data
-         * transformations, if any.  Raw data is computed/retrieved
-         * from the @c read_data_i() template method.
+         * transformations, if any.  Raw physical data is
+         * computed/retrieved from the @c read_data_i() template
+         * method.
          *
          * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
-         *
          * @param[out] data Data retrieved from image.
          *
          * @retval true  Data retrieved
          * @retval false No data retrieved.
+         *
+         * @note The retrieved data will be scaled and offset using
+         *       the respective values passed to the @c VirtualImage
+         *       constructor.  This behavior differs from behavior
+         *       documented in the @c SourceImage abstract base class
+         *       where the data is expected to be physical data.  The
+         *       reason for this is historical.  MaRC virtual images,
+         *       such as &mu;, &mu;<SUB>0</SUB> and cos(&phi;), were
+         *       originally embedded in FITS files with potentially
+         *       different kinds of physical data stored in an integer
+         *       typed map "cube".  To retain significant digits,
+         *       floating point physical data values, such as the
+         *       computed cosines mentioned earlier, were scaled and
+         *       offset accordingly.  Ideally, different physical data
+         *       types shouldn't be mixed and matched in such a data
+         *       cube, and should instead be stored in a cube
+         *       containing matching physical data types with a map.
+         *       Appropriate scale and offset values could then be
+         *       applied to the data cube as a whole, rather than
+         *       having to worry about applying a different scale and
+         *       offset for each cube "plane".
          *
          * @see read_data_i()
          */
@@ -113,18 +134,17 @@ namespace MaRC
 
     private:
 
-        /// Compute data specific to a given virtual image.
+        /// Compute physical data specific to a given virtual image.
         /**
          * This template method is the core implementation of the
          * @c read_data() method.
          *
          * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
+         * @param[out] data Physical data retrieved from image.
          *
-         * @param[out] data Data retrieved from image.
-         *
-         * @retval true  Data retrieved
-         * @retval false No data retrieved.
+         * @retval true  Physical data retrieved
+         * @retval false No physical data retrieved.
          *
          * @see read_data()
          */
@@ -140,8 +160,8 @@ namespace MaRC
          * allow data to fit in map array element of specific type
          * with the most amount of significant digits.
          *
-         * @note This is inverse of the of the scaling coefficient
-         *       needed to retrieve the true physical value.
+         * @note This is inverse of the scaling coefficient needed to
+         *       retrieve the true physical value.
          *
          * @see @c VirtualImage::scale()
          */
