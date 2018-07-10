@@ -35,13 +35,17 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
     double sub_solar_lat,
     double sub_solar_lon,
     double range)
-    : body_(body)
+    : ImageFactory()
+    , body_(body)
     , sub_observ_lat_(sub_observ_lat)
     , sub_observ_lon_(sub_observ_lon)
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)
     , range_(range)
 {
+    using namespace MaRC::default_configuration;
+    this->minimum(cos_phase_low);
+    this->maximum(cos_phase_high);
 }
 
 std::unique_ptr<MaRC::SourceImage>

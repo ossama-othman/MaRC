@@ -28,6 +28,14 @@
 #include <stdexcept>
 
 
+MaRC::LongitudeImageFactory::LongitudeImageFactory()
+    : ImageFactory()
+{
+    using namespace MaRC::default_configuration;
+    this->minimum(longitude_low);
+    this->maximum(longitude_high);
+}
+
 std::unique_ptr<MaRC::SourceImage>
 MaRC::LongitudeImageFactory::make(scale_offset_functor calc_so)
 {

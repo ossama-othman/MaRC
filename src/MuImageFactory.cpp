@@ -32,11 +32,15 @@ MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<BodyData> body,
                                      double sub_observ_lat,
                                      double sub_observ_lon,
                                      double range)
-    : body_(body)
+    : ImageFactory()
+    , body_(body)
     , sub_observ_lat_(sub_observ_lat)
     , sub_observ_lon_(sub_observ_lon)
     , range_(range)
 {
+    using namespace MaRC::default_configuration;
+    this->minimum(mu_low);
+    this->maximum(mu_high);
 }
 
 std::unique_ptr<MaRC::SourceImage>

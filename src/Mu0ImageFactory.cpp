@@ -32,10 +32,14 @@ MaRC::Mu0ImageFactory::Mu0ImageFactory(
     std::shared_ptr<BodyData> body,
     double sub_solar_lat,
     double sub_solar_lon)
-    : body_(body)
+    : ImageFactory()
+    , body_(body)
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)
 {
+    using namespace MaRC::default_configuration;
+    this->minimum(mu0_low);
+    this->maximum(mu0_high);
 }
 
 std::unique_ptr<MaRC::SourceImage>

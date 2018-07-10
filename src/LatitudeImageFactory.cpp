@@ -31,9 +31,13 @@
 MaRC::LatitudeImageFactory::LatitudeImageFactory(
     std::shared_ptr<BodyData> body,
     bool graphic_latitudes)
-    : body_(body)
+    : ImageFactory()
+    , body_(body)
     , graphic_latitudes_(graphic_latitudes)
 {
+    using namespace MaRC::default_configuration;
+    this->minimum(latitude_low);
+    this->maximum(latitude_high);
 }
 
 std::unique_ptr<MaRC::SourceImage>
