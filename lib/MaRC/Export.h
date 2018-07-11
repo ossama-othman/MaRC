@@ -44,13 +44,6 @@
 #    endif
 #endif
 
-// Automatically enable symbol visibility (shared library) support if
-// the "PIC" preprocessor symbol is defined.
-#if defined(PIC) && !defined(MARC_DLL) and !defined(MARC_DLL_EXPORTS)
-#  define MARC_DLL
-#  define MARC_DLL_EXPORTS
-#endif
-
 // MaRC shared library macros: MARC_API and MARC_LOCAL
 #ifdef MARC_DLL // MaRC library is compiled as a shared library (DLL)
 #  ifdef MARC_DLL_EXPORTS // MaRC DLL being built rather than used

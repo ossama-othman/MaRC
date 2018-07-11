@@ -19,10 +19,17 @@
 
 include $(top_srcdir)/aminclude_static.am
 
-AM_CPPFLAGS =           \
-  -I$(top_builddir)/lib \
-  -I$(top_srcdir)/lib   \
-  $(CODE_COVERAGE_CPPFLAGS)
+if BUILDING_DLL
+# libMaRC is being built as a shared library.  Export all symbols in
+# public API.
+DLL_CPPFLAGS = -DMARC_DLL -DMARC_DLL_EXPORTS
+endif
+
+AM_CPPFLAGS =                   \
+  -I$(top_builddir)/lib         \
+  -I$(top_srcdir)/lib           \
+  $(CODE_COVERAGE_CPPFLAGS)     \
+  $(DLL_CPPFLAGS)
 
 lib_LTLIBRARIES = libMaRC.la
 

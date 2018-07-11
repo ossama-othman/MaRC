@@ -223,6 +223,9 @@ AS_IF([test "x$GXX" = "xyes"],
 
 AX_APPEND_COMPILE_FLAGS([-fvisibility=hidden -fvisibility-inlines-hidden])
 
+dnl Export the public API from the MaRC shared library.
+AM_CONDITIONAL([BUILDING_DLL], [test "x$enable_shared" = xyes])
+
 dnl Combine package set flags with user's flags.
 dnl User's flags go after package flags to allow user to override
 dnl package defaults.
