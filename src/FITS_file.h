@@ -25,16 +25,28 @@
 #define MARC_FITS_FILE_H
 
 #include "FITS_memory.h"
-#include "FITS_header.h"
+// #include "FITS_header.h"
 
 
 namespace MaRC
 {
     namespace FITS
     {
+        class header
+        {
+        public:
+            header(fitsfile * fptr);
+            ~header() = default;
+        };
 
         class data
         {
+        public:
+            data(fitsfile * fptr);
+            ~data() = default;
+
+            int bitpix() const;
+            std::vector<std::size_t> const & axes() const;
         };
 
         /**
@@ -69,7 +81,7 @@ namespace MaRC
 
             header header_;
 
-            // data   data_;
+            data   data_;
 
         };
 

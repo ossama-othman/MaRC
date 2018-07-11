@@ -46,7 +46,8 @@
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
-    : filename_(filename)
+    : ImageFactory()
+    , filename_(filename)
     , flat_field_()
     , geometric_correction_(false)
     // , photometric_correction_(false)
@@ -59,7 +60,7 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
 }
 
 std::unique_ptr<MaRC::SourceImage>
-MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
+MaRC::PhotoImageFactory::make(scale_offset_functor calc_so)
 {
     if (!this->config_ || !this->geometry_)
         return nullptr;  // not set or make() already called!
@@ -76,6 +77,13 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
                               &naxis,
                               naxes,
                               &status);
+
+    /**
+     * @todo Check the result/status of the above
+     *       @c fits_get_img_param() function call!
+     */
+
+    // Get the minimum and maximum data values if available in the
 
     // Get the image data unit name (FITS standard BUNIT).
     char bunit[FLEN_VALUE] = { '\0' };

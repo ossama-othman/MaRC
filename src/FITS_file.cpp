@@ -22,6 +22,10 @@
 
 #include "FITS_file.h"
 
+#include <MaRC/Log.h>
+
+#include <stdexcept>
+
 
 namespace
 {
@@ -37,7 +41,7 @@ namespace
      * @return CFITSIO @c fitsfile object corresponding to the opened
      *         file.
      *
-     * @throw std::invalid_argument FITS file could not be opened.
+     * @throw std::runtime_error FITS file could not be opened.
 
      */
     fitsfile *
@@ -48,17 +52,10 @@ namespace
         fitsfile * fptr = nullptr;
         int status = 0;
 
-        if (fits_open_image(&fptr,
-                            filename,
-                            mode,
-                            &status) != 0) {
-            /**
-             * @todo Use MaRC's logging mechanism to display CFITSIO
-             *       error.
-             */
-            fits_report_error(stderr, status);
-
-            throw std::invalid_argument(s.str());
+        if (fits_open_image(&fptr, filename, mode, &status) != 0) {
+            char err[FLEN_STATUS] = { 0 };
+            fits_get_errstatus(status, err);
+            throw std::runtime_error(err);
         }
 
         return fptr;
@@ -80,13 +77,12 @@ FITS::file::file(char const * filename)
 
     if (fits_verify_chksum(fptr_, &dataok, &hduok, &status) != 0) {
         if (dataok == -1)  // Incorrect data checksum
-            std::cerr << "WARNING: Data checksum for FITS file \""
-                      << filename
-                      << "\" is incorrect.\n";
+            MaRC::warn("Data checksum for FITS file \"{}\" is incorrect",
+                       filename);
 
-        if (hduok  == -1)
-            std::cerr << "WARNING: Header checksum for FITS file \""
-                      << filename
-                      << "\" is incorrect.\n";
+        if (hduok == -1)
+            MaRC::warn("Header checksum for FITS file \"{}\" "
+                       "is incorrect",
+                       filename);
     }
 }
