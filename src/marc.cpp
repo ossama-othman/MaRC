@@ -242,24 +242,38 @@ namespace MaRC
      */
     std::string get_config_filename()
     {
+        // Get XDG Base Directory Specification conforming
+        // configuration file.
         std::string filename;
 
         char const * const config_dir = std::getenv("XDG_CONFIG_HOME");
+        char const * const home_dir   = std::getenv("HOME");
 
         if (config_dir != nullptr) {
             filename = std::string(config_dir) + "/" PACKAGE;
         } else {
-            char const * const home_dir = std::getenv("HOME");
+            if (home_dir == nullptr)
+                return filename;  // No home directory!
 
             constexpr char const tmp[] = "/.config/" PACKAGE;
 
-            if (home_dir != nullptr)
-                filename = std::string(home_dir);
-            else
-                filename = '~';
-
-            filename += tmp;
+            filename = std::string(home_dir) + tmp;
         }
+
+        // -----------------------------------------------------
+        // Warn of existence of old configuration file.
+        // -----------------------------------------------------
+        if (home_dir != nullptr) {
+            std::string const old_config =
+                std::string(home_dir) + "/.marc";
+
+            if (access(old_config.c_str(), F_OK) == 0) {
+                MaRC::warn("old configuration file `{}' exists",
+                           old_config);
+                MaRC::warn("expected: `{}'.", filename);
+            }
+        }
+        // -----------------------------------------------------
 
         return filename;
     }
