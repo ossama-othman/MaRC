@@ -29,7 +29,7 @@ Free Documentation License".
 
 @titlepage
 @title MaRC Input Files
-@subtitle Creation of Input and User Defaults Files
+@subtitle Creation of Input and User Configuration Files
 @subtitle Edition @value{EDITION}
 @subtitle @value{UPDATED-MONTH}
 @author Ossama Othman
@@ -52,13 +52,13 @@ Free Documentation License".
 @end ifnottex
 
 @menu
-* Overview::              The form and purpose of a MaRC input
-                          file and the user defaults file.
-* Input Files::           This chapter described how to create
-                          and setup a MaRC input file.
-* User Defaults Files::   This chapter describes hot to create
-                          and setup a MaRC user defaults file.
-* Copying This Manual::   How to make copies of this manual.
+* Overview::                  The form and purpose of a MaRC input
+                              file and the user configuration file.
+* Input Files::               This chapter described how to create
+                              and setup a MaRC input file.
+* User Configuration File::   This chapter describes how to structure
+                              a MaRC user configuration file.
+* Copying This Manual::       How to make copies of this manual.
 * Concept Index::
 @end menu
 
@@ -94,14 +94,15 @@ Map Size
 Map Plane Information
 @end itemize
 
-The user defaults file allows the user to set standard values for all
-maps, planes and input images.  The form of the information entered into
-this file is much simpler than that of the input file.  However, the
-detailed descriptions of the information entered into the user defaults
-file can be found in the input files section since entries in the user
-defaults file have much in common with their input file counterparts.
+The user configuration file allows the user to set standard values for
+all maps, planes and input images.  The form of the information
+entered into this file is much simpler than that of the input file.
+However, the detailed descriptions of the information entered into the
+user configuration file can be found in the input files section since
+entries in the user configuration file have much in common with their
+input file counterparts.
 
-@node    Input Files,  User Defaults Files, Overview,    Top
+@node    Input Files,  User Configuration File, Overview,    Top
 @comment node-name,     next,           previous, up
 
 @cindex Input Files
@@ -2298,26 +2299,29 @@ XCOMMENT:Latitude / Longitude grid for primary array (the cube)
                 LONGITUDE
 @end example
 
-@node    User Defaults Files,   Copying This Manual,  Input Files,    Top
+@node    User Configuration File,   Copying This Manual,  Input Files,    Top
 @comment node-name,     next,           previous, up
-@chapter User Defaults Files
-@cindex User Defaults Files
-@cindex .marc user defaults file
-Sometimes all maps in a given input file have the same options.  Setting
-the same option for each map or image can be tedious.  Instead, the user
-can define default values for all maps and input images.  At startup,
-MaRC searches for a file called @file{.marc} in the users home
-directory.  This file contains user defined defaults for the grid
-interval size, the valid data range for each plane and the nibbling
-values for all input images.  If set, than these values will be applied
-to all maps and input images.  However, it is possible to override these
-values by entering a different value in the input file where
-appropriate, as explained the MaRC Input File section.  Any map, plane
-or image entry that does not override the values in the user defaults
-file will use the values found in the user defaults file.  If a value is
-not set in the user defaults file, then the MaRC internal defaults will
-be used.  All entries in the user defaults file are optional, but must
-follow a specific order if used:
+@chapter User Configuration File
+@cindex User Configuration File
+@cindex .marc user configuration file
+Sometimes all maps in a given input file have the same options.
+Setting the same option for each map or image can be tedious.
+Instead, the user can define default values for all maps and input
+images.  At startup, MaRC searches for a file
+@file{$XDG_CONFIG_HOME/marc}, which defaults to @file{~/.config/marc}
+if the @file{$XDG_CONFIG_HOME} environment variable is not set.  This
+file contains the user-specific MaRC configuration settings for the
+grid interval size, the valid data range for each plane and the
+nibbling values for all input images.  If set, than these values will
+be applied to all maps and input images.  However, it is possible to
+override these values by entering a different value in the input file
+where appropriate, as explained the MaRC Input File section.  Any map,
+plane or image entry that does not override the values in the user
+configuration file will use the values found in the user configuration
+file.  If a value is not set in the user configuration file, then the
+MaRC internal defaults will be used.  All entries in the user
+configuration file are optional, but must follow a specific order if
+used:
 
 @example
 GRID_INTERVAL:  10      # Must be before the data range and nibbling.
@@ -2331,10 +2335,10 @@ NIBBLE_BOTTOM:  8
 
 @noindent
 If it is not necessary, for example, to set @code{DATA_MIN} and
-@code{NIBBLE_RIGHT}, then simply remove them from the user defaults
-file, since all of these entries are optional.
+@code{NIBBLE_RIGHT}, then simply remove them from the user
+configuration file, since all of these entries are optional.
 
-@node    Copying This Manual,   Concept Index,  User Defaults Files,    Top
+@node    Copying This Manual,   Concept Index,  User Configuration File,    Top
 @comment node-name,     next,           previous, up
 @appendix Copying This Manual
 @cindex copying

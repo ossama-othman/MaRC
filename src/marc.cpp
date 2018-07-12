@@ -34,6 +34,7 @@
 #include <list>
 #include <cerrno>
 #include <cstring>
+#include <cstdlib>
 
 #include <unistd.h>
 
@@ -41,7 +42,8 @@
 namespace MaRC
 {
 
-    namespace {
+    namespace
+    {
         /**
          * @brief Return error string for XSI-compliant case.
          *
@@ -173,6 +175,14 @@ namespace MaRC
 
     // --------------------------------------------------------------
 
+    /**
+     * @brief Parse a MaRC configuration or input file.
+     *
+     * @param[in]     filename MaRC configuration or input file to parse.
+     * @param[in,out] pp       MaRC configuration parameters.
+     *
+     * @return @c true if file parsing succeded.  @c false otherwise.
+     */
     bool parse_file(char const * filename, MaRC::ParseParameter & pp)
     {
         MaRC::FILE_unique_ptr const file(fopen(filename, "r"));
@@ -219,8 +229,42 @@ namespace MaRC
 
         return true;
     }
-}
 
+    /**
+     * @brief Get the MaRC configuration filename.
+     *
+     * Get the MaRC configuration filename, conforming to the XDG
+     * Base Directory specification.  The MaRC configuration file will
+     * be @c ~/.config/marc by default, assuming the user hasn't
+     * changed the MaRC package name at build-time.
+     *
+     * @see https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+     */
+    std::string get_config_filename()
+    {
+        std::string filename;
+
+        char const * const config_dir = std::getenv("XDG_CONFIG_HOME");
+
+        if (config_dir != nullptr) {
+            filename = std::string(config_dir) + "/" PACKAGE;
+        } else {
+            char const * const home_dir = std::getenv("HOME");
+
+            constexpr char const tmp[] = "/.config/" PACKAGE;
+
+            if (home_dir != nullptr)
+                filename = std::string(home_dir);
+            else
+                filename = '~';
+
+            filename += tmp;
+        }
+
+        return filename;
+    }
+
+}
 
 int main(int argc, char *argv[])
 {
@@ -234,10 +278,9 @@ int main(int argc, char *argv[])
     try {
         MaRC::ParseParameter parse_parameter;
 
-        std::string user_defaults(::getenv("HOME"));
-        user_defaults += "/.marc";
+        std::string config_file(MaRC::get_config_filename());
 
-        MaRC::parse_file(user_defaults.c_str(), parse_parameter);
+        MaRC::parse_file(config_file.c_str(), parse_parameter);
 
         // Parse MaRC input files give on command line.
         for (auto const filename : cl.files())
