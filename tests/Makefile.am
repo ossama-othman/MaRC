@@ -43,6 +43,7 @@ check_PROGRAMS =            \
 dist_check_SCRIPTS = MaRC_Prog_Test.sh command_line_test.sh
 
 dist_check_DATA = \
+  config/marc \
   test_map.marc \
   test.fits.gz
 
