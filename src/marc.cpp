@@ -278,7 +278,7 @@ int main(int argc, char *argv[])
     try {
         MaRC::ParseParameter parse_parameter;
 
-        std::string config_file(MaRC::get_config_filename());
+        std::string const config_file(MaRC::get_config_filename());
 
         MaRC::parse_file(config_file.c_str(), parse_parameter);
 
