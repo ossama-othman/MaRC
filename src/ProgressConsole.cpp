@@ -35,7 +35,7 @@ MaRC::Progress::Console::notify(std::size_t map_size,
     // integer overflow.
     auto const percent_complete =
         static_cast<std::size_t>(
-            static_cast<double>(plot_count) / map_size) * 100;
+            static_cast<double>(plot_count) / map_size * 100);
 
     assert(percent_complete <= 100);
 
