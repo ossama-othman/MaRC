@@ -200,14 +200,12 @@ MaRC::root_find(double y,
       "Numerical Recipes in C" by Press, Teukolsky, Vetterling and
       Flannery.
     */
-    double x0 = (xl + xh) / 2;
-
     double const yl = f(xl);
     double const yh = f(xh);
 
-    // MaRC::debug ("(x0, xl, xh, yl, yh, y) = "
-    //              "({}, {}, {}, {}, {}, {})",
-    //                x0, xl, xh, yl, yh, y);
+    // MaRC::debug ("(xl, xh, yl, yh, y) = "
+    //              "({}, {}, {}, {}, {})",
+    //                xl, xh, yl, yh, y);
 
     if ((yl > y && yh > y) || (yl < y && yh < y))
         throw
@@ -232,43 +230,33 @@ MaRC::root_find(double y,
     // The last step.
     double dx = dxold;
 
+    double x0 = (xl + xh) / 2;
     double y0 = f(x0);
-    double df = first_derivative(x0, f);
 
     constexpr int max_iterations = 100;
 
     for (int i = 0; i < max_iterations; ++i) {
+        double const df = first_derivative(x0, f);
+
         // Bisect if Newtown-Raphson is out of range or not
         // decreasing fast enough.
         if (((x0 - xh) * df - y0 + y) * ((x0 - xl) * df - y0 + y) > 0
             || std::abs(2 * (y0 - y)) > std::abs(dxold * df)){
             dxold = dx;
             dx = (xh - xl) / 2;
-
             x0 = xl + dx;
 
             // MaRC::debug("{:>8}: (dx, xl, x0) = ({}, {}, {})",
             //             i, dx, xl, x0);
-
-            if (is_almost_equal(xl, x0)) {
-                // Change in root is negligible.  Newton step is
-                // acceptable.  Take it.
-                return x0;
-            }
         } else {
             // Perform the Newtown-Raphson iteration.
             dxold = dx;
             dx = (y0 - y) / df;
-
-            double const temp = x0;
             x0 -= dx;
 
-            // MaRC::debug("{:>8}: (dx, df, temp, x0, y0, y) = "
-            //             "({}, {}, {}, {}, {}, {})",
-            //             i, dx, df, temp, x0, y0, y);
-
-            if (is_almost_equal(temp, x0))
-                return x0;
+            // MaRC::debug("{:>8}: (dx, df, x0, y0, y) = "
+            //             "({}, {}, {}, {}, {})",
+            //             i, dx, df, x0, y0, y);
         }
 
         // Convergence criterion.
@@ -277,7 +265,6 @@ MaRC::root_find(double y,
             return x0;
 
         y0 = f(x0);
-        df = first_derivative(x0, f);
 
         if (y0 < y)
             xl = x0;
