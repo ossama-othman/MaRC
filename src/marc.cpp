@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
                 result = 1;
             }
         }
-    } catch (const std::exception & e) {
+    } catch (std::exception const & e) {
         MaRC::error(e.what());
 
         return -1;
