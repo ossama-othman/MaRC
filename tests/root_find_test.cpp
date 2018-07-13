@@ -40,11 +40,15 @@ bool test_root_find()
     constexpr double xl = 0.5;
     constexpr double xh = -0.7;
 
+    // Root guess for non-bracketing variant of MaRC::root_find().
+    constexpr double x0 = xh;
+
     return
         // Since the value we're looking for is zero, check for
         // "almost zero" rather than "almost equal to zero", since
         // MaRC::almost_equal() is not suitable for the latter.
-        MaRC::almost_zero(MaRC::root_find(y, xl, xh, f), ulps);
+        MaRC::almost_zero(MaRC::root_find(y, xl, xh, f), ulps)
+        && MaRC::almost_zero(MaRC::root_find(y, x0, f), ulps);
 }
 
 int main()
