@@ -88,10 +88,17 @@ dnl
 
 dnl Text to be placed at the top of the `MaRC/config.h' header.
 AH_TOP([
+/**
+ * @file config.h
+ *
+ * MaRC configuration header file.
+ *
+ * @note This is an internal header, and not meant for use
+ *       outside of MaRC.
+ */
 #ifndef MARC_CONFIG_H
 #define MARC_CONFIG_H
 
-// MaRC configuration header file
 ])
 
 dnl Text to be placed at the bottom of the `MaRC/config.h' header.

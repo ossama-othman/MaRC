@@ -44,8 +44,7 @@ namespace MaRC
      *
      * @see MaRC::scale_and_offset()
      *
-     * @internal This functor is not part of the public MaRC library
-     *           API.
+     * @note This functor is not part of the public MaRC library API.
      */
     template <typename T>
     struct scale_and_offset_impl
@@ -111,7 +110,7 @@ namespace MaRC
      *
      * @see MaRC::scale_and_offset()
      *
-     * @internal This functor is not part of public MaRC library API.
+     * @note This functor is not part of the public MaRC library API.
      */
     template <>
     struct scale_and_offset_impl<float>
@@ -140,7 +139,7 @@ namespace MaRC
      *
      * @see MaRC::scale_and_offset()
      *
-     * @internal This functor is not part of public MaRC library API.
+     * @note This functor is not part of the public MaRC library API.
      */
     template <>
     struct scale_and_offset_impl<double>

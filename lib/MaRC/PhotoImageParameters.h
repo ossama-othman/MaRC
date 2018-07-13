@@ -1,6 +1,6 @@
 //   -*- C++ -*-
 /**
- * @file PhotoImage.h
+ * @file PhotoImageParameters.h
  *
  * Copyright (C) 1999, 2003-2005, 2017  Ossama Othman
  *

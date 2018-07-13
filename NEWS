@@ -1,3 +1,8 @@
+- The user-specific MaRC configuration file is now expected to be
+  `$XDG_CONFIG_HOME/marc', which is `~/.config/marc' by default, to
+  conform to the XDG Base Directory Specification.  The old MaRC
+  configuration filename `~/.marc' is no longer supported.
+
 - Added command line option support.  Try "marc --help".
 
 - Improved logging by leveraging the spdlog library as the underling

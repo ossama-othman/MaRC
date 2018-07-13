@@ -1,0 +1,10 @@
+# This is a test file used to exercise the MaRC user configuration
+# file parsing code.
+
+GRID_INTERVAL:  10      # Must be before the data range and nibbling.
+DATA_MIN:      -10000   # Both before the nibbling entries.
+DATA_MAX:       10000
+NIBBLE_LEFT:    6       # These must used in the shown order.
+NIBBLE_RIGHT:   20
+NIBBLE_TOP:     8
+NIBBLE_BOTTOM:  8

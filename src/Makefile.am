@@ -74,7 +74,8 @@ noinst_HEADERS = \
   FITS_traits.h \
   calc.h \
   command_line.h \
-  parse_scan.h
+  parse_scan.h \
+  lexer.hh
 
 BUILT_SOURCES = parse.hh lexer.hh
 lexer.hh: lexer.cc

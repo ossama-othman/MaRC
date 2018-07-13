@@ -57,6 +57,11 @@
 
 namespace MaRC
 {
+    /**
+     * @typedef Underlying logger type.
+     *
+     * @note Not meant for use outside of MaRC.
+     */
     using logger_type = std::shared_ptr<spdlog::logger>;
 
     /**
@@ -65,12 +70,17 @@ namespace MaRC
      * @todo This isn't a good way to expose the MaRC logger
      *       instance since it isn't meant to be part of the MaRC
      *       API.
-     *
-     * @attention Not to be confused with @c std::log()!
-     *
      */
     extern MARC_API logger_type const _logger;
 
+    /**
+     * @brief Log debugging messages.
+     *
+     * @param[in] args Log arguments formatted according to the @c fmt
+     *                 library.
+     *
+     * @see http://fmtlib.net/latest/index.html
+     */
     template <typename ... Args>
     void
     debug(Args const & ... MARC_DEBUG_ARGS(args))
@@ -78,6 +88,14 @@ namespace MaRC
         SPDLOG_DEBUG(_logger, args ...);
     }
 
+    /**
+     * @brief Log information messages.
+     *
+     * @param[in] args Log arguments formatted according to the @c fmt
+     *                 library.
+     *
+     * @see http://fmtlib.net/latest/index.html
+     */
     template <typename ... Args>
     void
     info(Args const & ... args)
@@ -85,6 +103,14 @@ namespace MaRC
         _logger->info(args ...);
     }
 
+    /**
+     * @brief Log warning messages.
+     *
+     * @param[in] args Log arguments formatted according to the @c fmt
+     *                 library.
+     *
+     * @see http://fmtlib.net/latest/index.html
+     */
     template <typename ... Args>
     void
     warn(Args const & ... args)
@@ -92,6 +118,14 @@ namespace MaRC
         _logger->warn(args ...);
     }
 
+    /**
+     * @brief Log error messages.
+     *
+     * @param[in] args Log arguments formatted according to the @c fmt
+     *                 library.
+     *
+     * @see http://fmtlib.net/latest/index.html
+     */
     template <typename ... Args>
     void
     error(Args const & ... args)
@@ -99,6 +133,14 @@ namespace MaRC
         _logger->error(args ...);
     }
 
+    /**
+     * @brief Log critical messages.
+     *
+     * @param[in] args Log arguments formatted according to the @c fmt
+     *                 library.
+     *
+     * @see http://fmtlib.net/latest/index.html
+     */
     template <typename ... Args>
     void
     critical(Args const & ... args)

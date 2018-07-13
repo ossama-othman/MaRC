@@ -313,6 +313,8 @@ namespace MaRC
      *            calculated.
      *
      * @return Magnitude of vector @a v.
+     *
+     * @relates MaRC::Vector
      */
     template <typename T, std::size_t M>
     auto magnitude(Vector<T, M> const & v)
@@ -338,6 +340,8 @@ namespace MaRC
      *            calculated.
      *
      * @return Magnitude of vector @a v.
+     *
+     * @relates MaRC::Vector
      */
     template <typename T>
     auto magnitude(Vector<T, 3> const & v)
@@ -354,6 +358,8 @@ namespace MaRC
      *            calculated.
      *
      * @return Magnitude of vector @a v.
+     *
+     * @relates MaRC::Vector
      */
     template <typename T>
     auto magnitude(Vector<T, 2> const & v)
@@ -370,8 +376,9 @@ namespace MaRC
      *            calculated.
      *
      * @return Magnitude of vector @a v.
+     *
+     * @relates MaRC::Vector
      */
-
     template <typename T>
     auto magnitude(Vector<T, 1> const & v)
     {
@@ -385,6 +392,8 @@ namespace MaRC
      * @attention This function requires that the vector @a v contain
      *            floating point values since it is not possible to
      *            store fractional values in an integer.
+     *
+     * @relates MaRC::Vector
      */
     template <typename T, std::size_t M>
     void to_unit_vector(Vector<T, M> & v)
@@ -407,6 +416,8 @@ namespace MaRC
      * @param[in] b Second vector operand.
      *
      * @return Dot product of vectors @a a and @a b.
+     *
+     * @relates MaRC::Vector
      */
     template <typename T, std::size_t M>
     auto dot_product(Vector<T, M> const & a,
@@ -422,7 +433,11 @@ namespace MaRC
 
 // ---------------------------------------------------------
 
-/// Vector addition operator.
+/**
+ * @brief Vector addition operator.
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 MaRC::Vector<T, M> const operator+(MaRC::Vector<T, M> const & lhs,
                                    MaRC::Vector<T, M> const & rhs)
@@ -433,7 +448,11 @@ MaRC::Vector<T, M> const operator+(MaRC::Vector<T, M> const & lhs,
     return vector;
 }
 
-/// Vector subtraction operator
+/**
+ * @brief Vector subtraction operator
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 MaRC::Vector<T, M> const operator-(MaRC::Vector<T, M> const & lhs,
                                    MaRC::Vector<T, M> const & rhs)
@@ -444,7 +463,11 @@ MaRC::Vector<T, M> const operator-(MaRC::Vector<T, M> const & lhs,
     return vector;
 }
 
-/// Vector/scalar multiplication operator
+/**
+ * Vector/scalar multiplication operator
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 MaRC::Vector<T, M> const operator*(MaRC::Vector<T, M> const & V,
                                    T x)
@@ -455,7 +478,11 @@ MaRC::Vector<T, M> const operator*(MaRC::Vector<T, M> const & V,
     return vector;
 }
 
-/// Vector/scalar multiplication operator
+/**
+ * Vector/scalar multiplication operator
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 MaRC::Vector<T, M> const operator*(T x,
                                    MaRC::Vector<T, M> const & V)
@@ -465,7 +492,11 @@ MaRC::Vector<T, M> const operator*(T x,
 
 // ---------------------------------------------------------
 
-/// Vector equality operator.
+/**
+ * @brief Vector equality operator.
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 bool operator==(MaRC::Vector<T, M> const & lhs,
                 MaRC::Vector<T, M> const & rhs)
@@ -478,7 +509,11 @@ bool operator==(MaRC::Vector<T, M> const & lhs,
                       rhs.begin(), rhs.end());
 }
 
-/// Vector inequality operator.
+/**
+ * @brief Vector inequality operator.
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 bool operator!=(MaRC::Vector<T, M> const & lhs,
                 MaRC::Vector<T, M> const & rhs)
@@ -488,7 +523,11 @@ bool operator!=(MaRC::Vector<T, M> const & lhs,
 
 // ---------------------------------------------------------
 
-/// Stream insertion operator
+/**
+ * @brief Stream insertion operator
+ *
+ * @relates MaRC::Vector
+ */
 template <typename T, std::size_t M>
 std::ostream & operator<<(std::ostream & s, MaRC::Vector<T, M> const & v)
 {

@@ -10,7 +10,7 @@
 .\" Process this file with
 .\" groff -man -Tascii marc.1
 .\"
-.TH MARC 1 "2018-07-02" "MaRC" "User Commands"
+.TH MARC 1 "2018-07-12" "MaRC" "User Commands"
 .SH NAME
 marc \- create digital map projections
 .SH SYNOPSIS
@@ -64,8 +64,12 @@ print program version
 
 .SH FILES
 .TP
-.I ~/.marc
-User configuration file. See the
+.I $XDG_CONFIG_HOME/marc
+User configuration file, which defaults to
+.I ~/.config/marc
+if
+.I $XDG_CONFIG_HOME
+is not set.  See the
 .B MaRC_input
 manual for further details.
 

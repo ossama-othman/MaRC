@@ -43,6 +43,7 @@ check_PROGRAMS =            \
 dist_check_SCRIPTS = MaRC_Prog_Test.sh command_line_test.sh
 
 dist_check_DATA = \
+  config/marc \
   test_map.marc \
   test.fits.gz
 
@@ -117,6 +118,10 @@ CLEANFILES = \
   test_map.fits \
   test_map2.fits \
   test_map3.fits \
+  test_map4.fits \
+  test_map5.fits \
+  test_map6.fits \
+  test_map7.fits \
   test_map_ortho.fits \
   test_map_mercator.fits \
   test_map_polar_stereographic.fits
