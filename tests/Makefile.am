@@ -38,7 +38,8 @@ check_PROGRAMS =            \
   Mercator_Test             \
   PolarStereographic_Test   \
   root_find_test            \
-  utility_test
+  utility_test              \
+  validate_test
 
 dist_check_SCRIPTS = MaRC_Prog_Test.sh command_line_test.sh
 
@@ -104,6 +105,10 @@ root_find_test_LDADD   = \
 
 utility_test_SOURCES = utility_test.cpp
 utility_test_LDADD   = $(CODE_COVERAGE_LIBS)
+
+validate_test_SOURCES = validate_test.cpp
+validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
+
 
 TESTS = \
   $(check_PROGRAMS) \

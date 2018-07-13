@@ -97,6 +97,7 @@ tests/Mercator_Test
 tests/PolarStereographic_Test
 tests/root_find_test
 tests/utility_test
+tests/validate_test
 tests/test-suite.log
 tests/test_map*.fits
 
