@@ -4,7 +4,7 @@
  *
  * MaRC matrix class and operations.
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -366,7 +366,11 @@ namespace MaRC
 
     // ---------------------------------------------------------
 
-    /// Matrix transpose.
+    /**
+     * @brief Matrix transpose.
+     *
+     * @relates MaRC::Matrix
+     */
     template <typename T, std::size_t M, std::size_t N>
     Matrix<T, N, M> transpose(Matrix<T, M, N> const & m)
     {
@@ -382,7 +386,11 @@ namespace MaRC
 
 // ---------------------------------------------------------
 
-/// Matrix addition operator.
+/**
+ * @brief Matrix addition operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 MaRC::Matrix<T, M, N> operator+(MaRC::Matrix<T, M, N> const & lhs,
                                 MaRC::Matrix<T, M, N> const & rhs)
@@ -393,7 +401,11 @@ MaRC::Matrix<T, M, N> operator+(MaRC::Matrix<T, M, N> const & lhs,
     return matrix;
 }
 
-/// Matrix subtraction operator
+/**
+ * @brief Matrix subtraction operator
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 MaRC::Matrix<T, M, N> operator-(MaRC::Matrix<T, M, N> const & lhs,
                                 MaRC::Matrix<T, M, N> const & rhs)
@@ -404,7 +416,11 @@ MaRC::Matrix<T, M, N> operator-(MaRC::Matrix<T, M, N> const & lhs,
     return matrix;
 }
 
-/// Matrix/matrix multiplication operator.
+/**
+ * @brief Matrix/matrix multiplication operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N, std::size_t R>
 MaRC::Matrix<T, M, R> operator*(MaRC::Matrix<T, M, N> const & lhs,
                                 MaRC::Matrix<T, N, R> const & rhs)
@@ -423,7 +439,11 @@ MaRC::Matrix<T, M, R> operator*(MaRC::Matrix<T, M, N> const & lhs,
     return matrix;
 }
 
-/// Matrix/vector multiplication operator.
+/**
+ * @brief Matrix/vector multiplication operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 MaRC::Vector<T, M> operator*(MaRC::Matrix<T, M, N> const & A,
                              MaRC::Vector<T, N> const & x)
@@ -437,7 +457,11 @@ MaRC::Vector<T, M> operator*(MaRC::Matrix<T, M, N> const & A,
     return v;
 }
 
-/// Matrix/scalar multiplication operator.
+/**
+ * @brief Matrix/scalar multiplication operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 MaRC::Matrix<T, M, N> operator*(MaRC::Matrix<T, M, N> const & A, T x)
 {
@@ -447,17 +471,24 @@ MaRC::Matrix<T, M, N> operator*(MaRC::Matrix<T, M, N> const & A, T x)
     return matrix;
 }
 
-/// Matrix/scalar multiplication operator.
+/**
+ * @brief Matrix/scalar multiplication operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 MaRC::Matrix<T, M, N> operator*(T x, MaRC::Matrix<T, M, N> const & A)
 {
     return A * x;
 }
 
-
 // ---------------------------------------------------------
 
-/// Matrix equality operator.
+/**
+ * @brief Matrix equality operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 bool operator==(MaRC::Matrix<T, M, N> const & lhs,
                 MaRC::Matrix<T, M, N> const & rhs)
@@ -470,7 +501,11 @@ bool operator==(MaRC::Matrix<T, M, N> const & lhs,
                       rhs.begin(), rhs.end());
 }
 
-/// Matrix inequality operator.
+/**
+ * @brief Matrix inequality operator.
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 bool operator!=(MaRC::Matrix<T, M, N> const & lhs,
                 MaRC::Matrix<T, M, N> const & rhs)
@@ -480,7 +515,11 @@ bool operator!=(MaRC::Matrix<T, M, N> const & lhs,
 
 // ---------------------------------------------------------
 
-/// Stream insertion operator
+/**
+ * @brief Stream insertion operator
+ *
+ * @relates MaRC::Matrix
+ */
 template <typename T, std::size_t M, std::size_t N>
 std::ostream & operator<<(std::ostream & s,
                           MaRC::Matrix<T, M, N> const & m)
