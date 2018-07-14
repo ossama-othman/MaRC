@@ -350,7 +350,7 @@ MAP:    test_map6.fits
         LINES:          25
         PLANE:
                 DATA_MAX: 0
-                MU:     SUB_OBSERV_LAT:         -0.06 C
+                MU:     SUB_OBSERV_LAT:         -acos(cos(0.06))
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
                         SUB_SOLAR_LAT:          -0.22 C
@@ -358,8 +358,8 @@ MAP:    test_map6.fits
 
 MAP:    test_map7.fits
         BODY:   Jupiter
+                POL_RAD:        sqrt(66854 ^ 2)
                 EQ_RAD:         71492
-                POL_RAD:        66854
                 ROTATION:       PROGRADE
         DATA_TYPE:              SHORT
         GRID:                   YES
