@@ -29,6 +29,8 @@
 #include "parse_scan.h"
 #include "parse.hh"
 
+#include <cstdlib>
+
 #pragma GCC diagnostic ignored "-Wunused-function"
 
 #define YY_USER_ACTION {                                             \
@@ -67,13 +69,15 @@
                              colons may be placed in side of comments */
                         }
 <comment>[^\n]*         {
-  BEGIN(INITIAL); yylval->sval = strdup(yytext); return _STRING;
-  /* Comments must end with a carriage return */
+    BEGIN(INITIAL);
+    yyget_lval(yyscanner)->sval = strdup(yyget_text(yyscanner));
+    return _STRING;
+    /* Comments must end with a carriage return */
                         }
 <keyword_token>[:]      { BEGIN(INITIAL); return ':'; }
 <string>{
         [:]             return ':';
-        [[:graph:]]+    BEGIN(INITIAL); yylval->sval = strdup(yytext) ;return _STRING;
+        [[:graph:]]+    BEGIN(INITIAL); yyget_lval(yyscanner)->sval = strdup(yyget_text(yyscanner)); return _STRING;
 }
 <pole>{
         [:]             return ':';
@@ -107,13 +111,15 @@
         "KM"                            { return KM;  }
         "CW"                            { return CW;  }
         "CCW"                           { return CCW; }
-        [[:digit:]]*("."[[:digit:]]*)?(E[-+]?[[:digit:]]{1,3})?          {
+        [[:digit:]]*("."[[:digit:]]*)?(E[-+]?[[:digit:]]{1,3})?  {
             // Numbers will be handled in double precision
-          yylval->val = strtod(yytext, 0);
+            yyget_lval(yyscanner)->val =
+                std::strtod(yyget_text(yyscanner), nullptr);
             return NUM;
-          }
+        }
         [[:alpha:]]+[[:digit:]]*          {
-            MaRC::sym_entry * const s = pp.sym_table().getsym(yytext);
+            MaRC::sym_entry * const s =
+                pp.sym_table().getsym(yyget_text(yyscanner));
 
             if (s == nullptr) {
                 /*
@@ -130,7 +136,7 @@
                 // s = pp.symrec()->putsym(symbuf, VAR);
             }
 
-            yylval->tptr = s;
+            yyget_lval(yyscanner)->tptr = s;
 
             return s->type;  // This returns either FNCT or VAR.
         }
