@@ -357,10 +357,10 @@ MAP:    test_map6.fits
                         SUB_SOLAR_LON:          283.52 E
 
 MAP:    test_map7.fits
-        BODY:   Jupiter
-                POL_RAD:        sqrt(66854 ^ 2)
-                EQ_RAD:         71492
-                ROTATION:       PROGRADE
+        BODY:   Venus
+                POL_RAD:        sqrt(6051.8 ^ 2)
+                EQ_RAD:         6051.8
+                ROTATION:       RETROGRADE
         DATA_TYPE:              SHORT
         GRID:                   YES
         TYPE:                   MERCATOR
