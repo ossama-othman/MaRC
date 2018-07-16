@@ -67,11 +67,10 @@
 
 YY_DECL;
 
-void
-yyerror(YYLTYPE * locp,
-        yyscan_t /* scanner */,
-        MaRC::ParseParameter & pp,
-        char const * msg)
+void yyerror(YYLTYPE * locp,
+             yyscan_t /* scanner */,
+             MaRC::ParseParameter & pp,
+             char const * msg)
 {
     /**
      * @bug The line number is off when the parser explicitly calls
@@ -87,142 +86,169 @@ yyerror(YYLTYPE * locp,
                 msg);
 }
 
-    namespace
+namespace
+{
+    static constexpr double not_a_number =
+        std::numeric_limits<double>::signaling_NaN();
+
+    /**
+     * @brief Get angle within 360 degree (circle) range.
+     *
+     * Determine the angle in the [0,360] (circle) range equivalent to
+     * the provided @a angle.  For example, given an @a angle of -365
+     * degrees, the equivalent angle in the [0,360] range would be 355
+     * degrees.
+     *
+     * @param[in] angle Angle in degrees to be placed in 360 degree
+     *                  range.
+     *
+     * @return Angle in [0,360] degree range equivalent to the
+     *         provided @a angle.
+     *
+     * @todo Merge this function with similar generalized code used in
+     *       @c MaRC::LongitudeImage::read_data_i().
+     */
+    inline double
+    circle_angle(double angle)
     {
-        static constexpr double not_a_number =
-            std::numeric_limits<double>::signaling_NaN();
+        constexpr int circle = 360;  // degrees
+
+        // Place in the range [-360, 360].
+        angle = std::fmod(angle, circle);
+
+        // The sign of the first argument to std::fmod(), angle in
+        // this case, is retained.  Shift to the [0, 360] range if
+        // negative.
+        return angle >= 0 ? angle : angle + circle;
     }
+}
 
-    std::string map_filename;
+std::string map_filename;
 
-    std::string body_name;
-    std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
+std::string body_name;
+std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
-    std::string map_author;
-    std::string map_origin;
+std::string map_author;
+std::string map_origin;
 
-    std::list<std::string> comment_list;
-    std::list<std::string> xcomment_list;
+std::list<std::string> comment_list;
+std::list<std::string> xcomment_list;
 
-    typedef enum { BYTE, SHORT, LONG, _LONGLONG, FLOAT, DOUBLE } data_type;
+typedef enum { BYTE, SHORT, LONG, _LONGLONG, FLOAT, DOUBLE } data_type;
 
-    data_type map_data_type;
+data_type map_data_type;
 
-    using namespace MaRC;
+using namespace MaRC;
 
-    std::unique_ptr<MapFactory> map_factory;
+std::unique_ptr<MapFactory> map_factory;
 
-    // CFITSIO's "naxes" parameter is an array of long values.
-    long map_samples = 0;
-    long map_lines = 0;
+// CFITSIO's "naxes" parameter is an array of long values.
+long map_samples = 0;
+long map_lines = 0;
 
-    bool   transform_data = false;
-    double fits_bzero     = 0;
-    double fits_bscale    = 1;
+bool   transform_data = false;
+double fits_bzero     = 0;
+double fits_bscale    = 1;
 
-    bool blank_set   = false;
-    int  fits_blank  = 0;
+bool blank_set   = false;
+int  fits_blank  = 0;
 
-    // To create a grid or not to create a grid?  That is the question.
-    bool create_grid = false;
-    double lat_interval;
-    double lon_interval;
+// To create a grid or not to create a grid?  That is the question.
+bool create_grid = false;
+double lat_interval;
+double lon_interval;
 
-    std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
-    MaRC::MosaicImageFactory::list_type photo_factories;
-    MaRC::MosaicImage::average_type averaging_type;
+std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
+MaRC::MosaicImageFactory::list_type photo_factories;
+MaRC::MosaicImage::average_type averaging_type;
 
-    std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
-    std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
+std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
+std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
 
-    // Map plane image factory.
-    std::unique_ptr<MaRC::ImageFactory> image_factory;
+// Map plane image factory.
+std::unique_ptr<MaRC::ImageFactory> image_factory;
 
-    // Map plane image factories.
-    MaRC::MapCommand::image_factories_type image_factories;
+// Map plane image factories.
+MaRC::MapCommand::image_factories_type image_factories;
 
-    bool north_pole = true;
+bool north_pole = true;
 
-    // Current line number in stream.
-    //int lineno = 0;
+// Temporary storage for plane number
+std::size_t plane_num = 0;
 
-    // Temporary storage for plane number
-    std::size_t plane_num = 0;
+// Number of planes to be expected
+std::size_t num_planes = 0;
 
-    // Number of planes to be expected
-    std::size_t num_planes = 0;
+// Used to ensure num_planes are defined in sequence
+std::size_t expected_plane = 1;
 
-    // Used to ensure num_planes are defined in sequence
-    std::size_t expected_plane = 1;
+std::size_t nibble_left_val   = 0;
+std::size_t nibble_right_val  = 0;
+std::size_t nibble_top_val    = 0;
+std::size_t nibble_bottom_val = 0;
+double minimum = not_a_number;
+double maximum = not_a_number;
 
-    std::size_t nibble_left_val   = 0;
-    std::size_t nibble_right_val  = 0;
-    std::size_t nibble_top_val    = 0;
-    std::size_t nibble_bottom_val = 0;
-    double minimum = not_a_number;
-    double maximum = not_a_number;
+double sample_center = not_a_number;
+double line_center   = not_a_number;
+double lat_at_center = not_a_number;
+double lon_at_center = not_a_number;
 
-    double sample_center = not_a_number;
-    double line_center   = not_a_number;
-    double lat_at_center = not_a_number;
-    double lon_at_center = not_a_number;
+double km_per_pixel_val   = -1;
+double arcsec_per_pix_val = -1;
+double focal_length_val   = -1;
+double pixel_scale_val    = -1;
 
-    double km_per_pixel_val   = -1;
-    double arcsec_per_pix_val = -1;
-    double focal_length_val   = -1;
-    double pixel_scale_val    = -1;
+bool graphic_lat = false;
 
-//   double _range;  // Observer to target center distance
+// Conformal projection options
+double max_lat = not_a_number;
 
-    bool graphic_lat = false;
+// Simple Cylindrical projection options
+double lo_lat = MaRC::default_configuration::latitude_low;
+double hi_lat = MaRC::default_configuration::latitude_high;
+double lo_lon = MaRC::default_configuration::longitude_low;
+double hi_lon = MaRC::default_configuration::longitude_high;
 
-    // Conformal projection options
-    double max_lat = not_a_number;
+// Orthographic and Perspective projection options
 
-    // Simple Cylindrical projection options
-    double lo_lat = MaRC::default_configuration::latitude_low;
-    double hi_lat = MaRC::default_configuration::latitude_high;
-    double lo_lon = MaRC::default_configuration::longitude_low;
-    double hi_lon = MaRC::default_configuration::longitude_high;
+// Sub-observer latitude and longitude.
+MaRC::SubObserv sub_observation_data = {
+    not_a_number,
+    not_a_number
+};
 
-    // Orthographic and Perspective projection options
+double position_angle_val = not_a_number;   // Position (north) angle
+MaRC::OrthographicCenter ortho_center;
 
-    // Sub-observer latitude and longitude.
-    MaRC::SubObserv sub_observation_data = {
-        not_a_number,
-        not_a_number
-    };
-
-    double position_angle_val = not_a_number;   // Position (north) angle
-    MaRC::OrthographicCenter ortho_center;
-
-    /**
-     * @struct free_functor
-     *
-     * @brief Functor used for calling @c free() on pointers.
-     *
-     * This functor is used as the @c Deleter template parameter to
-     * the type alias of @c std::unique_ptr<> below used for
-     * automatically freeing string values created by the parser.
-     */
-    struct deallocate_with_free
-    {
-        template <typename T>
-        void
-        operator()(T * p) const
-        {
-            std::free(const_cast<std::remove_const_t<T> *>(p));
-        }
-    };
-
-    /**
-     * @typedef auto_free
-     *
-     * Automatically manage memory allocated by C based
-     * allocators, such as @c malloc(), etc.
-     */
+/**
+ * @struct free_functor
+ *
+ * @brief Functor used for calling @c free() on pointers.
+ *
+ * This functor is used as the @c Deleter template parameter to the
+ * type alias of @c std::unique_ptr<> below used for automatically
+ * freeing string values created by the parser.
+ */
+struct deallocate_with_free
+{
     template <typename T>
-    using auto_free = std::unique_ptr<T, deallocate_with_free>;
+    void
+    operator()(T * p) const
+    {
+        std::free(const_cast<std::remove_const_t<T> *>(p));
+    }
+};
+
+/**
+ * @typedef auto_free
+ *
+ * Automatically manage memory allocated by C based allocators, such
+ * as @c malloc(), etc.
+ */
+template <typename T>
+using auto_free = std::unique_ptr<T, deallocate_with_free>;
+
 %}
 
 /* BISON Declarations */
@@ -1477,24 +1503,35 @@ sub_solar:
 ;
 
 position_angle:
-        POSITION_ANGLE ':' expr    { $$ = $3; }
-        | POSITION_ANGLE ':' expr CW   {
-            if ($3 >= 0)
-                $$ = $3;
-            else {
-                MaRC::error("position (North) angle {} CW is negative",
+        POSITION_ANGLE ':' expr    {
+            if (std::abs($3) > 360) {
+                MaRC::error("incorrect position (North) "
+                            "angle entered: {}",
                             $3);
                 YYERROR;
             }
+
+            $$ = circle_angle($3);
         }
-        | POSITION_ANGLE ':' expr CCW {
-            if ($3 >= 0)
-                $$ = $3;
-            else {
-                MaRC::error("position (North) angle {} CCW is negative",
+        | POSITION_ANGLE ':' expr CW   {
+            if (std::abs($3) > 360) {
+                MaRC::error("incorrect position (North) "
+                            "angle entered: {} CW",
                             $3);
                 YYERROR;
             }
+
+            $$ = 360 - circle_angle($3);
+        }
+        | POSITION_ANGLE ':' expr CCW    {
+            if (std::abs($3) > 360) {
+                MaRC::error("incorrect position (North) "
+                            "angle entered: {} CCW",
+                            $3);
+                YYERROR;
+            }
+
+            $$ = circle_angle($3);
         }
 ;
 
@@ -1834,42 +1871,36 @@ latitude_sub:
 ;
 
 longitude:
-          expr {
-              if (std::abs($1) <= 360) {
-                  if ($1 < 0)
-                      $1 += 360;
-                  $$ = $1;
-              } else {
+         expr {
+             if (std::abs($1) > 360) {
                   MaRC::error("incorrect longitude entered: {}", $1);
                   YYERROR;
-              }
+             }
+
+             $$ = circle_angle($1);
          }
          | expr 'E' {
-             if (std::abs($1) <= 360) {
-                 if ($1 < 0)
-                     $1 += 360;
-                 if (oblate_spheroid->prograde())
-                     $$ = 360 - $1;
-                 else
-                     $$ = $1;
-             } else {
-                 MaRC::error("incorrect longitude entered: {} E", $1);
-                 YYERROR;
+             if (std::abs($1) > 360) {
+                  MaRC::error("incorrect longitude entered: {} E", $1);
+                  YYERROR;
              }
-        }
-        | expr 'W'      {
-            if (std::abs($1) <= 360) {
-                if ($1 < 0)
-                    $1 += 360;
-                if (oblate_spheroid->prograde())
-                    $$ = $1;
-                else
-                    $$ = 360 - $1;
-            } else {
-                MaRC::error("incorrect longitude entered: {} W", $1);
-                YYERROR;
-            }
-        }
+
+             $$ = circle_angle($1);
+
+             if (oblate_spheroid->prograde())
+                 $$ = 360 - $$;  // Convert to West longitude.
+         }
+         | expr 'W' {
+             if (std::abs($1) > 360) {
+                  MaRC::error("incorrect longitude entered: {} W", $1);
+                  YYERROR;
+             }
+
+             $$ = circle_angle($1);
+
+             if (!oblate_spheroid->prograde())
+                 $$ = 360 - $$;  // Convert to East longitude.
+         }
 ;
 
 /* --------------- Multifunction Infix Notation Calculator ----------------- */
