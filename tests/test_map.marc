@@ -187,7 +187,7 @@ XCOMMENT: Test FITS extension comment.
                         SUB_SOLAR_LON:          283.52 E
 
         PLANE:  8
-                LATITUDE : CENTRIC
+                LATITUDE: LATITUDE_TYPE: CENTRIC
 
         PLANE: 9
                 LONGITUDE
@@ -223,7 +223,7 @@ MAP:    test_map2.fits
                         SUB_OBSERV_LAT:         0.06 S
                         SUB_OBSERV_LON:         215.63 E
                         POSITION_ANGLE:         179.175
-                        SUB_SOLAR_LAT:          0.22
+                        SUB_SOLAR_LAT:          0.22 N
                         SUB_SOLAR_LON:          284.67 E
                         RANGE:                  0.00809057036933 AU
                         ARCSEC_PER_PIX:         0.125
@@ -273,7 +273,7 @@ MAP:    test_map3.fits
                         GEOM_CORRECT:           NO
                         SUB_OBSERV_LAT:         0.06 S
                         SUB_OBSERV_LON:         215.63 E
-                        POSITION_ANGLE:         179.175
+                        POSITION_ANGLE:         179.175 CCW
                         SUB_SOLAR_LAT:          0.22
                         SUB_SOLAR_LON:          284.67 E
                         RANGE:                  1211230
@@ -288,7 +288,7 @@ MAP:    test_map3.fits
                         GEOM_CORRECT:           YES
                         SUB_OBSERV_LAT:         -0.06
                         SUB_OBSERV_LON:         213.60 E
-                        POSITION_ANGLE:         179.247
+                        POSITION_ANGLE:         180.825 CW
                         SUB_SOLAR_LAT:          -0.22
                         SUB_SOLAR_LON:          282.53 E
                         RANGE:                  1209552
@@ -306,6 +306,11 @@ MAP:    test_map4.fits
         DATA_BLANK:             -32768
         GRID:                   NO
         TYPE:                   SIMPLE_C
+        OPTIONS:
+                HI_LAT:         4 S
+                LO_LAT:         25 S
+                HI_LON:         100 W
+                LO_LON:         45  W
         SAMPLES:        25
         LINES:          25
 
@@ -328,11 +333,11 @@ MAP:    test_map5.fits
         LINES:          25
 
         PLANE:
-                MU:     SUB_OBSERV_LAT:         -0.06 C
-                        SUB_OBSERV_LON:         214.54 E
+                MU:     SUB_OBSERV_LON:         214.54 E
+                        SUB_OBSERV_LAT:         -0.06 C
                         RANGE:                  1210332.1 KM
+                        SUB_SOLAR_LON:          -283.52
                         SUB_SOLAR_LAT:          -0.22 C
-                        SUB_SOLAR_LON:          283.52 E
 
 MAP:    test_map6.fits
         BODY:   Jupiter
@@ -345,7 +350,7 @@ MAP:    test_map6.fits
         GRID:                   NO
         TYPE:                   SIMPLE_C
         OPTIONS:
-                GRAPHIC
+                LATITUDE_TYPE: GRAPHIC
         SAMPLES:        25
         LINES:          25
         PLANE:
@@ -363,6 +368,8 @@ MAP:    test_map7.fits
                 ROTATION:       RETROGRADE
         DATA_TYPE:              SHORT
         GRID:                   YES
+        LAT_GRID_INTERVAL:      2
+        LON_GRID_INTERVAL:      2
         TYPE:                   MERCATOR
         SAMPLES:        25
         LINES:          25
