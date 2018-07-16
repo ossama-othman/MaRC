@@ -159,9 +159,13 @@ namespace MaRC
          */
         void scale(double s);
 
-        /// Set position (i.e. North) angle in degrees found in
-        /// image.
         /**
+         * @brief Set position angle in degrees found in image.
+         *
+         * Set the position (i.e. North) angle in degrees found in the
+         * image, measured counter-clockwise positive from the
+         * vertical "up" direction of the image.
+         *
          * @param[in] north Position angle (degrees).
          *
          * @throw std::invalid_argument Invalid @a north.
@@ -404,7 +408,13 @@ namespace MaRC
         /// Center of body distance to observer (Kilometers)
         double range_;
 
-        /// Position angle in the image NOT in the sky.
+        /**
+         * @brief Position angle in the image NOT in the sky.
+         *
+         * Position angle of the body in the image measured
+         * counter-clockwise positive from the vertical "up" direction
+         * of the image.
+         */
         double position_angle_;
 
         /// Kilometers per pixel at plane that passes through body
