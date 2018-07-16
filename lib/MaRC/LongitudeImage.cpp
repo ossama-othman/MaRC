@@ -48,6 +48,13 @@ MaRC::LongitudeImage::read_data_i(double /* lat */,
     // [0, 360] or [-180, 180], for example, depending on the
     // configuration.  Shift the longitude by 360 degrees as needed in
     // an attempt to bring it within the configured range.
+    /**
+     * @note We would only need to check if @c data less then zero for
+     *       the [0,360] case but we also need to support the case
+     *       where @c longitude_high is less than 360, such as
+     *       [-180,180], which is why we we have the "@c else if"
+     *       clause below.
+     */
     if (data < longitude_low)
         data += 360;
     else if (data > longitude_high)
