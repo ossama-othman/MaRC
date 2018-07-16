@@ -552,15 +552,14 @@ data_type:
 
 data_blank:
         | DATA_BLANK ':' expr {
-          if (map_data_type == FLOAT || map_data_type == DOUBLE)
-            throw std::invalid_argument("\"BLANK\" keyword not valid with "
-                                        "floating point types.");
-          else
-            {
+            if (map_data_type == FLOAT || map_data_type == DOUBLE) {
+                throw std::invalid_argument(
+                    "\"BLANK\" keyword not valid with "
+                    "floating point types.");
+            } else {
               fits_blank = static_cast<int>($3);
               blank_set = true;
             }
-          ;
         }
 ;
 
@@ -588,16 +587,13 @@ grid_intervals:
 
 grid_interval:
         GRID_INTERVAL ':' size {
-          if ($3 <= 0)
-            {
-              std::ostringstream s;
-              s << "Grid interval value (" << $3 << ") "
-                << "less than or equal to zero";
+            if ($3 <= 0) {
+                std::ostringstream s;
+                s << "Grid interval value (" << $3 << ") "
+                  << "less than or equal to zero";
 
-              throw std::invalid_argument(s.str ());
-            }
-          else
-            {
+                throw std::invalid_argument(s.str ());
+            } else {
               lat_interval = $3;
               lon_interval = $3;
             }
@@ -606,31 +602,29 @@ grid_interval:
 
 lat_grid_interval:
         LAT_GRID_INTERVAL ':' size {
-          if ($3 <= 0)
-            {
-              std::ostringstream s;
-              s << "Latitude grid interval value (" << $3 << ") "
-                << "less than or equal to zero";
+            if ($3 <= 0) {
+                std::ostringstream s;
+                s << "Latitude grid interval value (" << $3 << ") "
+                  << "less than or equal to zero";
 
-              throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s.str ());
+            } else {
+                lat_interval = $3;
             }
-          else
-            lat_interval = $3;
         }
 ;
 
 lon_grid_interval:
         LON_GRID_INTERVAL ':' size {
-          if ($3 <= 0)
-            {
-              std::ostringstream s;
-              s << "Longitude grid interval value (" << $3 << ") "
-                << "less than or equal to zero";
+            if ($3 <= 0) {
+                std::ostringstream s;
+                s << "Longitude grid interval value (" << $3 << ") "
+                  << "less than or equal to zero";
 
-              throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s.str ());
+            } else {
+                lon_interval = $3;
             }
-          else
-            lon_interval = $3;
         }
 ;
 
