@@ -2,9 +2,9 @@
 # file parsing code.
 
 GRID_INTERVAL:  10      # Must be before the data range and nibbling.
-DATA_MIN:      -10000   # Both before the nibbling entries.
-DATA_MAX:       10000
-NIBBLE_LEFT:    6       # These must used in the shown order.
-NIBBLE_RIGHT:   20
-NIBBLE_TOP:     8
-NIBBLE_BOTTOM:  8
+DATA_MIN:      -1e100   # Both before the nibbling entries.
+DATA_MAX:       1e100
+NIBBLE_LEFT:    5       # These must used in the shown order.
+NIBBLE_RIGHT:   5
+NIBBLE_TOP:     4
+NIBBLE_BOTTOM:  4
