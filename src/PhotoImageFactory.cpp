@@ -65,75 +65,34 @@ MaRC::PhotoImageFactory::make(scale_offset_functor calc_so)
     if (!this->config_ || !this->geometry_)
         return nullptr;  // not set or make() already called!
 
+    std::vector<double> img;
+    std::size_t samples = 0;
+    std::size_t lines   = 0;
 
-    int naxis = 0;
-    int bitpix = 0;
-    static constexpr int MAXDIM = 2;  // CFITSIO wants int.
-    long naxes[MAXDIM] = { 0 };
+    {
+        FITS::file f(this->filename_.c_str());
 
-    (void) fits_get_img_param(fptr,
-                              MAXDIM,
-                              &bitpix,
-                              &naxis,
-                              naxes,
-                              &status);
+#if 0
+        // Get the image data unit name (FITS standard BUNIT).
+        char bunit[FLEN_VALUE] = { '\0' };
+        char bunit_comment[FLEN_COMMENT] = { '\0' };
 
-    /**
-     * @todo Check the result/status of the above
-     *       @c fits_get_img_param() function call!
-     */
+        int status = 0;
+        fits_read_key_str(fptr, "BUNIT", bunit, bunit_comment, &status);
+        if (status == 0) {
+            this->config_->unit(bunit, bunit_comment);
+        } else if (status != KEY_NO_EXIST) {
+            throw std::logic_error("Problem reading FITS BUNIT value.");
+        } else {
+            status = 0;
+        }
+#endif
 
-    // Get the minimum and maximum data values if available in the
+        f.data().read(img, samples, lines);
 
-    // Get the image data unit name (FITS standard BUNIT).
-    char bunit[FLEN_VALUE] = { '\0' };
-    char bunit_comment[FLEN_COMMENT] = { '\0' };
-
-    fits_read_key_str(fptr, "BUNIT", bunit, bunit_comment, &status);
-    if (status == 0) {
-        this->config_->unit(bunit, bunit_comment);
-    } else if (status != KEY_NO_EXIST) {
-        throw std::logic_error("Problem reading FITS BUNIT value.");
-    } else {
-        status = 0;
+        // Get the minimum and maximum data values if available in the
+        // source image FITS file.
     }
-
-    LONGLONG const nelements =
-        static_cast<LONGLONG>(naxes[0]) * naxes[1];
-
-    // Note that we're only reading a 2-dimensional image above.
-    std::vector<double> img(nelements,
-                            std::numeric_limits<double>::signaling_NaN());
-
-    /**
-     * First pixel to be read.
-     *
-     * @attention First pixel in CFITSIO is { 1, 1 } not { 0, 0 }.
-     */
-    long fpixel[MAXDIM] = { 1, 1 };
-
-    // For integer typed FITS images with a BLANK value, set the
-    // "blank" value in our floating point converted copy of the image
-    // to NaN.
-    auto nulval = std::numeric_limits<double>::signaling_NaN();
-    int anynul = 0;  // Unused
-
-    static_assert(std::is_same<decltype(img)::value_type,
-                               decltype(nulval)>(),
-                  "Nul value type doesn't match photo container type.");
-
-    (void) fits_read_pix(fptr,
-                         TDOUBLE, // Array of type "double".
-                         fpixel,
-                         nelements,
-                         &nulval,  // "Blank" value in our image.
-                         img.data(),
-                         &anynul,  // Were any blank values found?
-                         &status);
-
-    fits_report_error(stderr, status);
-
-    safe_fptr.reset();  // Done reading the FITS file.
 
     // Perform flat fielding if a flat field file was provided.
     int const result = flat_field_correct(naxes, img);
@@ -143,9 +102,6 @@ MaRC::PhotoImageFactory::make(scale_offset_functor calc_so)
         // creation can be time consuming.
         return nullptr;
     }
-
-    std::size_t const samples = static_cast<std::size_t>(naxes[0]);
-    std::size_t const lines   = static_cast<std::size_t>(naxes[1]);
 
     // Invert image if desired.
     if (this->invert_h_)

@@ -33,6 +33,7 @@ bin_PROGRAMS = marc
 AM_YFLAGS = -d
 
 marc_SOURCES = \
+  FITS_file.cpp \
   ProgressConsole.cpp \
   ImageFactory.cpp \
   MuImageFactory.cpp \
@@ -58,6 +59,10 @@ marc_LDADD    = \
   $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \
+  FITS_memory.h \
+  FITS_traits.h \
+  FITS_header.h \
+  FITS_file.h \
   ProgressConsole.h \
   ImageFactory.h \
   MuImageFactory.h \
@@ -70,9 +75,6 @@ noinst_HEADERS = \
   MapCommand.h \
   MapCommand_T.h \
   MapCommand_T.cpp \
-  FITS_memory.h \
-  FITS_traits.h \
-  FITS_header.h \
   calc.h \
   command_line.h \
   parse_scan.h \

@@ -27,6 +27,9 @@
 #include "FITS_memory.h"
 // #include "FITS_header.h"
 
+#include <array>
+#include <vector>
+
 
 namespace MaRC
 {
@@ -37,6 +40,11 @@ namespace MaRC
         public:
             header(fitsfile * fptr);
             ~header() = default;
+
+        private:
+
+            fitsfile * const fptr_;
+
         };
 
         class data
@@ -45,8 +53,17 @@ namespace MaRC
             data(fitsfile * fptr);
             ~data() = default;
 
-            int bitpix() const;
-            std::vector<std::size_t> const & axes() const;
+            void read(std::vector<double> & img,
+                      std::size_t & samples,
+                      std::size_t & lines) const;
+
+        private:
+
+            fitsfile * const fptr_;
+
+            using naxes_array_type = std::array<long, 2>;
+            naxes_array_type naxes_;
+
         };
 
         /**
@@ -74,6 +91,8 @@ namespace MaRC
             file(file const &) = delete;
             void operator=(file const &) = delete;
 
+            FITS::data const & data() const { return this->data_; }
+
         private:
 
             /// Underlying CFITSIO @c fitsfile object.
@@ -81,7 +100,7 @@ namespace MaRC
 
             header header_;
 
-            data   data_;
+            FITS::data data_;
 
         };
 
