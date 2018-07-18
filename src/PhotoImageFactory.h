@@ -95,15 +95,15 @@ namespace MaRC
          * corresponding flat-field image elements from the photo
          * image.
          *
-         * @param[in]     naxes Photo image dimensions retrieved from
-         *                      FITS file.
-         * @param[in,out] img   Image to be flat-field corrected.
-         *
-         * @return 0 on success.
+         * @param[in,out] img     Image to be flat-field corrected.
+         * @param[in]     samples Number of samples in the image to be
+         *                        flat-field corrected.
+         * @param[in]     lines   Number of samples in the image to be
+         *                        flat-field corrected.
          */
-        int flat_field_correct(long const naxes[2],
-                               std::vector<double> & img) const;
-
+        void flat_field_correct(std::vector<double> & img,
+                                std::size_t samples,
+                                std::size_t lines) const;
 
     private:
 

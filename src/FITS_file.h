@@ -53,9 +53,17 @@ namespace MaRC
             data(fitsfile * fptr);
             ~data() = default;
 
-            void read(std::vector<double> & img,
-                      std::size_t & samples,
-                      std::size_t & lines) const;
+            std::size_t samples() const
+            {
+                    return static_cast<std::size_t>(this->naxes_[0]);
+            }
+
+            std::size_t lines() const
+            {
+                    return static_cast<std::size_t>(this->naxes_[1]);
+            }
+
+            void read(std::vector<double> & img) const;
 
         private:
 

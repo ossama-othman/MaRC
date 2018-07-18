@@ -74,6 +74,13 @@ namespace MaRC
 
 // ----------------------------------------------------------------
 
+MaRC::FITS::header::header(fitsfile * fptr)
+    : fptr_(fptr)
+{
+}
+
+// ----------------------------------------------------------------
+
 MaRC::FITS::data::data(fitsfile * fptr)
     : fptr_(fptr)
     , naxes_({0, 0})
@@ -102,9 +109,7 @@ MaRC::FITS::data::data(fitsfile * fptr)
 }
 
 void
-MaRC::FITS::data::read(std::vector<double> & image,
-                       std::size_t & samples,
-                       std::size_t & lines) const
+MaRC::FITS::data::read(std::vector<double> & image) const
 {
     LONGLONG const nelements =
         static_cast<LONGLONG>(this->naxes_[0]) * this->naxes_[1];
@@ -143,10 +148,7 @@ MaRC::FITS::data::read(std::vector<double> & image,
                       &status) != 0)
         throw_on_cfitsio_error(status);
 
-    image   = std::move(tmp);
-    samples = static_cast<std::size_t>(this->naxes_[0]);
-    lines   = static_cast<std::size_t>(this->naxes_[1]);
-
+    image = std::move(tmp);
 }
 
 // ----------------------------------------------------------------

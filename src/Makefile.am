@@ -61,7 +61,6 @@ marc_LDADD    = \
 noinst_HEADERS = \
   FITS_memory.h \
   FITS_traits.h \
-  FITS_header.h \
   FITS_file.h \
   ProgressConsole.h \
   ImageFactory.h \
