@@ -32,11 +32,20 @@
 #include <cstdlib>
 
 #ifdef __GNUG__
-# pragma GCC   diagnostic ignored "-Wunused-function"
+# pragma GCC diagnostic ignored "-Wunused-function"
+# pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 #ifdef __clang__
 # pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
+
+#if YY_FLEX_MINOR_VERSION < 6
+# if YY_FLEX_MINOR_VERSION != 5 || YY_FLEX_SUBMINOR_VERSION < 36
+// The yy{get,set}_column() prototypes were missing prior to Flex 2.5.36.
+int yyget_column(yyscan_t);
+void yyset_column(int, yyscan_t);
+# endif
 #endif
 
 #define YY_USER_ACTION {                                                \
