@@ -40,7 +40,7 @@
 # pragma clang diagnostic ignored "-Wdeprecated-register"
 #endif
 
-#if YY_FLEX_MINOR_VERSION < 6
+#if YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION < 6
 # if YY_FLEX_MINOR_VERSION != 5 || YY_FLEX_SUBMINOR_VERSION < 36
 // The yy{get,set}_column() prototypes were missing prior to Flex 2.5.36.
 int yyget_column(yyscan_t);
