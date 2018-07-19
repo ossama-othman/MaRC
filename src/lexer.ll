@@ -50,11 +50,15 @@ void yyset_column(int, yyscan_t);
 
 #define YY_USER_ACTION {                                                \
     auto const loc    = yyget_lloc(yyscanner);                          \
+                                                                        \
     loc->first_line   = yyget_lineno(yyscanner);                        \
     loc->last_line    = loc->first_line;                                \
-    loc->first_column = yyget_column(yyscanner);                        \
-    loc->last_column  = loc->first_column + yyget_leng(yyscanner) - 1;  \
-    }                                                                   \
+                                                                        \
+    auto const column = yyget_column(yyscanner);                        \
+    loc->first_column = column == 0 ? 1 : column - 1;                   \
+    loc->last_column  = column + yyget_leng(yyscanner);                 \
+    yyset_column(loc->last_column, yyscanner);                          \
+    }
 
 %}
 

@@ -80,9 +80,10 @@ void yyerror(YYLTYPE * locp,
      *      the line containing the invalid KM_PER_PIXEL value.  Line
      *      numbers in syntax errors, on the other hand, are correct
      */
-    MaRC::error("{}:{}: {}",
+    MaRC::error("{}:{}:{}: {}",
                 pp.filename,
                 locp->first_line,
+                locp->first_column,
                 msg);
 }
 
@@ -256,10 +257,12 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %param { void * scanner } { MaRC::ParseParameter & pp }
 
 %locations
-%error-verbose
+
+%define parse.lac full
+%define parse.error verbose
 
 /* Generate reentrant parser */
-%pure-parser
+%define api.pure full
 
 
 %union
@@ -292,32 +295,69 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %right '^'    // Exponentiation
 
 // Map Projections
-%token _ALBEQV1 _ALBEQV2 _LAMCNF1 _LAMCNF2 _LAMCYLEQ _LAMPOLEQ
-%token _MERCATOR _ORTHO _P_STEREO _PERSPECTIVE _SIMPLE_C _SINUSOID
+%token _ALBEQV1 "ALBEQV1"
+%token _ALBEQV2 "ALBEQV2"
+%token _LAMCNF1 "LAMCNF1"
+%token _LAMCNF2 "LAMCNF2"
+%token _LAMCYLEQ "LAMCYLEQ"
+%token _LAMPOLEQ "LAMPOLEQ"
+%token _MERCATOR
+%token _ORTHO "ORTHO"
+%token _P_STEREO "P_STEREO"
+%token _PERSPECTIVE "PERSPECTIVE"
+%token _SIMPLE_C "SIMPLE_C"
+%token _SINUSOID "SINUSOID"
 %token _IDENTITY
 
 // Reserved input file keywords
-%token _MAP AUTHOR ORIGIN _COMMENT XCOMMENT
-%token _DATA_TYPE DATA_OFFSET DATA_SCALE DATA_BLANK
+%token _MAP "MAP"
+%token AUTHOR ORIGIN XCOMMENT
+%token _COMMENT "COMMENT"
+%token _DATA_TYPE "DATA_TYPE"
+%token DATA_OFFSET DATA_SCALE DATA_BLANK
 %token GRID GRID_INTERVAL LAT_GRID_INTERVAL LON_GRID_INTERVAL
 %token MAP_TYPE SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
 %token PROGRADE RETROGRADE FLATTENING
-%token AVERAGING _NONE WEIGHTED UNWEIGHTED
-%token OPTIONS EQ_RAD POL_RAD ROTATION _IMAGE _PHOTO _MU _MU0 _PHASE
+%token AVERAGING  WEIGHTED UNWEIGHTED
+%token _NONE "NONE"
+%token OPTIONS EQ_RAD POL_RAD ROTATION
+%token _IMAGE "IMAGE"
+%token _PHOTO "PHOTO"
+%token _MU "MU"
+%token _MU0 "MU0"
+%token _PHASE "PHASE"
 %token PLANES LO_LAT HI_LAT LO_LON HI_LON
 %token LATITUDE LONGITUDE
 %token LATITUDE_TYPE CENTRIC GRAPHIC
 %token LAT_AT_CENTER LON_AT_CENTER
 %token SAMPLE_OA LINE_OA STD_LAT STD_LAT_1 STD_LAT_2 MAX_LAT POLE
 %token NIBBLE NIBBLE_LEFT NIBBLE_RIGHT NIBBLE_TOP NIBBLE_BOTTOM
-%token INVERT HORIZONTAL VERTICAL BOTH _INTERPOLATE SAMPLE_CENTER LINE_CENTER
-%token FLAT_FIELD MINNAERT AUTO TABLE GEOM_CORRECT _EMI_ANG_LIMIT TERMINATOR
+%token INVERT HORIZONTAL VERTICAL BOTH
+%token _INTERPOLATE "INTERPOLATE"
+%token SAMPLE_CENTER LINE_CENTER
+%token FLAT_FIELD MINNAERT AUTO TABLE GEOM_CORRECT TERMINATOR
+%token _EMI_ANG_LIMIT "EMI_ANG_LIMIT"
 %token SUB_OBSERV_LAT SUB_OBSERV_LON POSITION_ANGLE
-%token SUB_SOLAR_LAT SUB_SOLAR_LON RANGE _REMOVE_SKY
+%token SUB_SOLAR_LAT SUB_SOLAR_LON RANGE
+%token _REMOVE_SKY "REMOVE_SKY"
 %token FOCAL_LENGTH PIXEL_SCALE ARCSEC_PER_PIX KM_PER_PIXEL
-%token BYTE_DATA SHORT_DATA LONG_DATA LONGLONG_DATA FLOAT_DATA DOUBLE_DATA
+%token BYTE_DATA "BYTE"
+%token SHORT_DATA "SHORT"
+%token LONG_DATA "LONG"
+%token LONGLONG_DATA "LONGLONG"
+%token FLOAT_DATA "FLOAT"
+%token DOUBLE_DATA "DOUBLE"
 %token CW CCW
-%token YES NO UNMATCHED
+%token YES NO
+ /**
+  * @todo Is there a way to get Bison's verbose error output to print
+  *       the actual unmatched text rather than "UNMATCHED" or "text"
+  *       as we define below?
+  */
+%token UNMATCHED "text"
+
+// End of file
+%token END 0 "end of file"
 
 // Unit tokens
 %token AU KM

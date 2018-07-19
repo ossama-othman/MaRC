@@ -228,8 +228,6 @@ namespace MaRC
         int const parsed = ::yyparse(scanner, pp);
 
         if (parsed != 0) {
-            MaRC::error("error parsing '{}'.", filename);
-
             return false;  // Failure
         }
 
