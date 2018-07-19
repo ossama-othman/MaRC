@@ -111,8 +111,6 @@ AH_BOTTOM([
 ])
 
 
-AH_TEMPLATE([MARC_HAS_3_PARAM_STD_HYPOT],[C++ compiler supports C++17 three-parameter std::hypot().])
-
 dnl Checks for libraries.
 
 dnl We're of course going to need the C math library.
@@ -171,27 +169,6 @@ dnl  ])
 AS_IF([test "x$marc_cv_lib_spdlog" = "xyes"],
       [AC_DEFINE([HAVE_SPDLOG], [1], [Define if you have spdlog.])],
       [AC_MSG_FAILURE([spdlog library is required])])
-
-dnl Check for C++17 three-parameter std::hypot() function.
-AC_CACHE_CHECK([if $CXX supports C++17 three-parameter std::hypot()],
-  [marc_cv_cxx_3_param_std_hypot_supported],[
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <cmath>
-      ]],
-      [[
-double h = std::hypot(3, 4, 5);
-      ]])
-    ],
-    [
-     marc_cv_cxx_3_param_std_hypot_supported=yes
-    ],
-    [
-     marc_cv_cxx_3_param_std_hypot_supported=no
-    ])
-  ])
-
-AS_IF([test "x$marc_cv_cxx_3_param_std_hypot_supported" = "xyes"],
-      [AC_DEFINE([MARC_HAS_3_PARAM_STD_HYPOT])])
 
 dnl Checks for header files.
 AC_HEADER_STDC
