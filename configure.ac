@@ -145,6 +145,13 @@ LIBS="$PTHREAD_LIBS $LIBS"
 CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
 CXX="$PTHREAD_CXX"
 
+dnl Workaround AX_CXX_PTHREAD's inability to detect the need for
+dnl Clang's -Qunused-arguments command line option in some cases, such
+dnl as when building a shared library through Libtool.
+AS_IF([test "x$ax_pthread_clang" = "xyes"],
+      [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
+       AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
+
 AC_CACHE_CHECK([for spdlog library],
   [marc_cv_lib_spdlog],
   [

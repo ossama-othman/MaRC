@@ -75,15 +75,15 @@ namespace MaRC
 // ----------------------------------------------------------------
 
 MaRC::FITS::header::header(fitsfile * fptr)
-    : fptr_(fptr)
+    : fptr_{fptr}
 {
 }
 
 // ----------------------------------------------------------------
 
 MaRC::FITS::data::data(fitsfile * fptr)
-    : fptr_(fptr)
-    , naxes_({0, 0})
+    : fptr_{fptr}
+    , naxes_{}
 {
     // Get the image parameters.
     int naxis = 0;
@@ -126,7 +126,7 @@ MaRC::FITS::data::read(std::vector<double> & image) const
      *
      * @attention First pixel in CFITSIO is { 1, 1 } not { 0, 0 }.
      */
-    naxes_array_type fpixel{ 1 , 1 };
+    naxes_array_type fpixel{{ 1 , 1 }};
 
     // For integer typed FITS images with a BLANK value, set the
     // "blank" value in our floating point converted copy of the image

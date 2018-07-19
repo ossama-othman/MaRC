@@ -31,7 +31,13 @@
 
 #include <cstdlib>
 
-#pragma GCC diagnostic ignored "-Wunused-function"
+#ifdef __GNUG__
+# pragma GCC   diagnostic ignored "-Wunused-function"
+#endif
+
+#ifdef __clang__
+# pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
 #define YY_USER_ACTION {                                                \
     auto const loc    = yyget_lloc(yyscanner);                          \
