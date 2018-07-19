@@ -35,6 +35,17 @@
 #include <cstring>
 #include <cstdlib>
 
+// Check if we can use the C++17 [[maybe_unused]] attribute.
+// Otherwise fall back on the equivalent attribute in a
+// compiler-specific attribute namespace if one exists.
+#if __cplusplus >= 201703L
+# define MARC_UNUSED [[maybe_unused]]
+#elif defined(__GNUG__)
+# define MARC_UNUSED [[gnu::unused]]
+#else
+# define MARC_UNUSED
+#endif  // __cplusplus >= 201703L
+
 
 namespace MaRC
 {
@@ -45,6 +56,7 @@ namespace MaRC
          *
          * @internal Not part of the MaRC API.
          */
+        MARC_UNUSED
         inline char const * strerror_helper(int /* result */,
                                             char const * buf)
         {
@@ -64,6 +76,7 @@ namespace MaRC
          *
          * @internal Not part of the MaRC API.
          */
+        MARC_UNUSED
         inline char const * strerror_helper(char const * result,
                                             char const * /* buf */)
         {
