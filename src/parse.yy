@@ -349,6 +349,10 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %token DOUBLE_DATA "DOUBLE"
 %token CW CCW
 %token YES NO
+
+// Unit tokens
+%token AU KM
+
  /**
   * @todo Is there a way to get Bison's verbose error output to print
   *       the actual unmatched text rather than "UNMATCHED" or "text"
@@ -358,9 +362,6 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 
 // End of file
 %token END 0 "end of file"
-
-// Unit tokens
-%token AU KM
 
 // Grammar follows
 %%
@@ -552,10 +553,12 @@ map_entry:
 ;
 
 author:
+        %empty
         | AUTHOR ':' _STRING { auto_free<char> str($3); map_author = $3; }
 ;
 
 origin:
+        %empty
         | ORIGIN ':' _STRING { auto_free<char> str($3); map_origin = $3; }
 ;
 
@@ -565,6 +568,7 @@ comments:
 ;
 
 comment:
+        %empty
         | comment comment_setup
 ;
 
@@ -576,7 +580,8 @@ comment_setup:
 ;
 
 xcomment:
-        |  xcomment xcomment_setup
+        %empty
+        | xcomment xcomment_setup
 ;
 
 xcomment_setup:
@@ -594,6 +599,7 @@ data_info:
 ;
 
 data_offset:
+        %empty
         | DATA_OFFSET ':' size  {
             fits_bzero = $3;
             transform_data = true;
@@ -601,6 +607,7 @@ data_offset:
 ;
 
 data_scale:
+        %empty
         | DATA_SCALE ':' size   {
             fits_bscale = $3;
             transform_data = true;
@@ -617,6 +624,7 @@ data_type:
 ;
 
 data_blank:
+        %empty
         | DATA_BLANK ':' expr {
             if (map_data_type == FLOAT || map_data_type == DOUBLE) {
                 throw std::invalid_argument(
@@ -644,6 +652,7 @@ grid_yes_or_no:
 ;
 
 grid_intervals:
+        %empty
         | grid_interval
         | lat_grid_interval
         | lon_grid_interval
@@ -712,7 +721,7 @@ projection_type:
         | simple_c
 ;
 
-planes: | PLANES ':' size         {
+planes: %empty | PLANES ':' size {
           /**
            * @deprecated The "PLANES" keyword is no longer necessary.
            *             The number of planes is set dynamically as
@@ -899,6 +908,7 @@ plane_size:
 ;
 
 plane_data_range:
+        %empty
         | DATA_MIN ':' size { minimum = $3; }
         | DATA_MAX ':' size { maximum = $3; }
         | DATA_MIN ':' size
@@ -1064,6 +1074,7 @@ image_initialize:
 ;
 
 nibbling:
+        %empty
         | nibble
         | nibble_samples
         | nibble_lines
@@ -1153,18 +1164,21 @@ nibble_bottom:
 ;
 
 inversion:
+        %empty
         | INVERT ':' VERTICAL   { photo_factory->invert(true,  false); }
         | INVERT ':' HORIZONTAL { photo_factory->invert(false, true);  }
         | INVERT ':' BOTH       { photo_factory->invert(true,  true);  }
 ;
 
 image_interpolate:
+        %empty
         /* If INTERPOLATE is not found, use the program default */
         | _INTERPOLATE ':' YES { photo_factory->interpolate(true);  }
         | _INTERPOLATE ':' NO  { photo_factory->interpolate(false); }
 ;
 
 remove_sky:
+        %empty
         | _REMOVE_SKY ':' YES { photo_parameters->remove_sky(true);  }
         | _REMOVE_SKY ':' NO  { photo_parameters->remove_sky(false); }
 ;
@@ -1172,7 +1186,7 @@ remove_sky:
 mu:     _MU ':'
         sub_observ
         range
-        sub_solar       {
+        sub_solar /* Unused */ {
             // Mu (potentially scaled to increase significant digits)
             image_factory =
                 std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
@@ -1230,6 +1244,7 @@ lon_plane: LONGITUDE {
 ;
 
 flat_field:
+        %empty
         | FLAT_FIELD ':' _STRING {
             auto_free<char> str($3);
             photo_factory->flat_field($3);
@@ -1237,6 +1252,7 @@ flat_field:
 ;
 
 photo_correct:
+        %empty
         | MINNAERT ':' expr { /* Image->setMinnaertExponent($3); */ }
         | MINNAERT ':' AUTO {
             /* Image->setLimbCorrect(SourceImage::MINNAERT_AUTO); */ }
@@ -1245,6 +1261,7 @@ photo_correct:
 ;
 
 geom_correct:
+        %empty
         /* Do not perform geometric abberation correction if
            GEOM_CORRECT keyword not present */
         | GEOM_CORRECT ':' YES  {
@@ -1257,10 +1274,12 @@ geom_correct:
 ;
 
 emi_ang_limit:
+        %empty
         | _EMI_ANG_LIMIT ':' expr { viewing_geometry->emi_ang_limit($3); }
 ;
 
 terminator:
+        %empty
         | TERMINATOR ':' YES { viewing_geometry->use_terminator(true);  }
         | TERMINATOR ':' NO  { viewing_geometry->use_terminator(false); }
 ;
@@ -1332,10 +1351,10 @@ albeqv2_type:
 ;
 
 albeqv2_options:
-        |
-        options
-        pole
-        two_std_lats
+        %empty
+        | options
+          pole
+          two_std_lats
 ;
 */
 
@@ -1364,11 +1383,11 @@ lamcnf1_type:
 ;
 
 lamcnf1_options:
-        |
-        options
-        pole
-        one_std_lat
-        max_latitude
+        %empty
+        | options
+          pole
+          one_std_lat
+          max_latitude
 ;
 */
 
@@ -1385,11 +1404,11 @@ lamcnf2_type:
 ;
 
 lamcnf2_options:
-        |
-        options
-        pole
-        two_std_lats
-        max_latitude
+        %empty
+        | options
+          pole
+          two_std_lats
+          max_latitude
 ;
 */
 
@@ -1414,9 +1433,9 @@ lampoleq_type:
 ;
 
 lampoleq_options:
-        |
-        options
-        pole
+        %empty
+        | options
+          pole
 ;
 */
 
@@ -1430,6 +1449,7 @@ mercator:
 ;
 
 mercator_options:
+        %empty
         | options
 ;
 
@@ -1455,10 +1475,12 @@ ortho:  MAP_TYPE ':' _ORTHO
 ;
 
 ortho_options:
+        %empty
         | options ortho_optsub
 ;
 
 ortho_optsub:
+        %empty
         | sub_observ {
           sub_observation_data.lat = ($1).lat;
           sub_observation_data.lon = ($1).lon;
@@ -1635,6 +1657,7 @@ lat_lon_given:
 ;
 
 optical_axis:
+        %empty
         | SAMPLE_OA ':' expr
           LINE_OA   ':' expr  { viewing_geometry->optical_axis($3, $6); }
         | LINE_OA   ':' expr
@@ -1654,12 +1677,13 @@ perspective_type:
 ;
 
 perspective_options:
-        |
-        options { in_perspective_options = true; }
-        perspective_optsub
+        %empty
+        | options { in_perspective_options = true; }
+          perspective_optsub
 ;
 
 perspective_optsub:
+        %empty
         | centers
         | sub_observ {}
         | position_angle {}
@@ -1689,10 +1713,8 @@ p_stereo:
 ;
 
 p_stereo_options:
-        |
-        options
-        pole
-        max_latitude
+        %empty
+        | options pole max_latitude
 ;
 
 /* -------------- Simple Cylindrical (Rectangular ?) Projection ------------ */
@@ -1718,14 +1740,13 @@ simple_c:
 ;
 
 simple_c_options:
-        |
-        options
-        lat_type
-        simple_c_latlonrange
+        %empty
+        | options lat_type simple_c_latlonrange
 ;
 
 lat_type:
-        | LATITUDE_TYPE ':' CENTRIC   { graphic_lat = false; }
+        %empty
+        | LATITUDE_TYPE ':' CENTRIC { graphic_lat = false; }
         | LATITUDE_TYPE ':' GRAPHIC { graphic_lat = true;  }
         /**
          * @deprecated The following are only for backward
@@ -1736,6 +1757,7 @@ lat_type:
 ;
 
 simple_c_latlonrange:
+        %empty
         | lat_range
         | lon_range
         | lat_range lon_range
@@ -1796,6 +1818,7 @@ sinusoid_type:
 ;
 
 sinusoid_options:
+        %empty
         | options
 ;
 */
@@ -1815,6 +1838,7 @@ options_common:
 ;
 
 averaging:
+        %empty
         | AVERAGING ':' UNWEIGHTED {
               averaging_type = MaRC::MosaicImage::AVG_UNWEIGHTED; }
         | AVERAGING ':' WEIGHTED {
@@ -1826,6 +1850,7 @@ averaging:
 /* ----------------------- General Subroutines ---------------------------- */
 /*
 one_std_lat:
+        %empty
         | STD_LAT ':' latitude {
           if ((north_pole && $3 > 0 && $3 < 90) ||
               (!north_pole && $3 < 0 && $3 > -90)) {
@@ -1843,6 +1868,7 @@ one_std_lat:
 ;
 
 two_std_lats:
+        %empty
         | STD_LAT_1 ':' latitude
           STD_LAT_2 ':' latitude {
             if (std::abs($6) < std::abs($3) &&
@@ -1867,6 +1893,7 @@ two_std_lats:
 */
 
 max_latitude:
+        %empty
         | MAX_LAT ':' latitude { max_lat = $3; }
 ;
 
