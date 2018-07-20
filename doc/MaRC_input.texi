@@ -1291,17 +1291,17 @@ similarly for longitudes.  It is possible to map data using either
 planetocentric or planetographic latitudes.  Also, latitude and
 longitude ranges to be mapped can also be specified.
 @cindex @code{LATITUDE_TYPE}
-@cindex @code{CENTRIC_LAT}
-@cindex @code{GRAPHIC_LAT}
+@cindex @code{CENTRIC}
+@cindex @code{GRAPHIC}
 @cindex @code{LO_LAT}
 @cindex @code{HI_LAT}
 @cindex @code{LO_LON}
 @cindex @code{HI_LON}
 The latitude type is set using the @code{LATITUDE_TYPE} keyword.  To
 choose a planetocentric latitude map, the keyword token
-@code{@w{CENTRIC_LAT}} is used.  Planetographic latitudes are selected by
-using the @code{GRAPHIC_LAT} keyword token. The latitude range is set
-by using the @code{LO_LAT} and @code{HI_LAT} keywords, while the
+@code{@w{CENTRIC}} is used.  Planetographic latitudes are selected by
+using the @code{GRAPHIC} keyword token. The latitude range is set by
+using the @code{LO_LAT} and @code{HI_LAT} keywords, while the
 longitude range is set by using the @code{LO_LON} and @code{HI_LON}
 keywords.  The latitude and longitude options as described earlier
 (@pxref{Angle & Range}) also hold for these latitude/longitude range
@@ -1318,7 +1318,7 @@ a MaRC input file:
 TYPE:   SIMPLE_C
         OPTIONS:
                         AVERAGING:      UNWEIGHTED
-                        LATITUDE_TYPE:  GRAPHIC_LAT # or CENTRIC_LAT
+                        LATITUDE_TYPE:  GRAPHIC # or CENTRIC
                         LO_LAT:         38 S  # CENTRIC lat. by default
                         HI_LAT:         8 S
                         LO_LON:         282 W
@@ -2026,34 +2026,38 @@ LONGITUDE
 @cindex emission angle
 @cindex incidence angle
 @cindex phase angle
-The emission angle is the angle between the observer and the normal at a
-given point on the body.  The incidence angle is the angle between the
-sun and the normal at a given point on the body.  The phase angle is the
-angle between the observer and the sun, where a given point on the
-surface of the body is the vertex.  All computations involving these
-angles take into account the distance between the observer and the body.
-The sun is assumed to be an infinite distance away.  Here is an example
-of how to specify the use of the cosines of the incidence angles in the
-plane entry:
+The emission angle is the angle between the observer and the normal at
+a given point on the body.  The incidence angle is the angle between
+the sun and the normal at a given point on the body.  The phase angle
+is the angle between the observer and the sun, where a given point on
+the surface of the body is the vertex.  Emission and phase angle
+calculations take into account the distance between the observer and
+the point on the body.  The sun is assumed to be an infinite distance
+away when calculating incidence and phase angles.
+
+Rather than map the angles themselves, MaRC will instead map the
+corresponding cosines of the emission, incidence and phase angles,
+@emph{mu}, @emph{mu0}, and @emph{cos(phi)}, respectively.  Here
+is an example of how to specify each of the cosine map plane entries:
 
 @example
-MU0:    SUB_OBSERV_LAT:         3.62 S
-        SUB_OBSERV_LON:         14.45 E
-        RANGE:                  1819712.917 KM
-        SUB_SOLAR_LAT:          -1.80
-        SUB_SOLAR_LON:          65.07 E
+# Cosines of emission angles
+MU:     SUB_OBSERV_LAT:    -3.62
+        SUB_OBSERV_LON:    14.45 E
+        RANGE:             1819712.917 KM
+
+# Cosines of incidence angles
+MU0:    SUB_SOLAR_LAT:     -1.80
+        SUB_SOLAR_LON:     65.07 E
+
+# Cosines of phase angles
+PHASE:  SUB_OBSERV_LAT:    3.62 S
+        SUB_OBSERV_LON:    14.45 E
+        RANGE:             1819712.917 KM
+        SUB_SOLAR_LAT:     -1.80
+        SUB_SOLAR_LON:     65.07 E
 @end example
 
-@noindent
-To specify one of the other angles, simply replace @code{MU0} with
-@code{MU} or @code{PHASE}.  Note that all three types of angle entries
-require the sub-observation point, the observer range and the sub-solar
-point to be specified.  This is more for the sake of consistency rather
-than necessity (e.g. the observer range isn't need to compute incidence
-angles). These were described in the image entry section (@pxref{Image
-Geometry}).  Although the sub-observer point and the observer range are
-not needed to compute the incidence angles, they are used to force the
-user to be consistent when entering other angle entries.
 
 @node    Plane Entry,    ,  Virtual Images,  Map Planes
 @comment node-name,     next,           previous, up
@@ -2112,7 +2116,7 @@ or:
 
 @example
         PLANE:
-                LATITUDE:       LATITUDE_TYPE:          GRAPHIC_LAT
+                LATITUDE:       LATITUDE_TYPE:          GRAPHIC
         PLANE:
                 LONGITUDE
         PLANE:
@@ -2143,7 +2147,7 @@ XCOMMENT:Latitude/Longitude grid for this map.
         TYPE:   SIMPLE_C
                 OPTIONS:
                                 AVERAGING:     UNWEIGHTED
-                                LATITUDE_TYPE: GRAPHIC_LAT
+                                LATITUDE_TYPE: GRAPHIC
                                 LO_LAT:        -38 # CENTRIC is default
                                 HI_LAT:        -8
                                 LO_LON:        282 # West since prograde
@@ -2247,14 +2251,9 @@ XCOMMENT:Latitude/Longitude grid for this map.
                                 SUB_OBSERV_LON:         14.45 E
                 # RANGE defaults to units of Kilometers
                                 RANGE:                  1819712.917
-                                SUB_SOLAR_LAT:          -1.80
-                                SUB_SOLAR_LON:          65.07 E
 
         PLANE:
-                MU0:            SUB_OBSERV_LAT:         3.62 S
-                                SUB_OBSERV_LON:         14.45 E
-                                RANGE:                  1819712.917 KM
-                                SUB_SOLAR_LAT:          -1.80
+                MU0:            SUB_SOLAR_LAT:          -1.80
                                 SUB_SOLAR_LON:          65.07 E
 
 # The next map in the input file follows.
@@ -2283,13 +2282,8 @@ XCOMMENT:Latitude / Longitude grid for primary array (the cube)
                 MU:             SUB_OBSERV_LAT:         -2.83
                                 SUB_OBSERV_LON:         56.46 E
                                 RANGE:                  1555114.417 KM
-                                SUB_SOLAR_LAT:          -1.80
-                                SUB_SOLAR_LON:          65.07 E
         PLANE:
-                MU0:            SUB_OBSERV_LAT:         -2.83
-                                SUB_OBSERV_LON:         56.46 E
-                                RANGE:                  1555114.417
-                                SUB_SOLAR_LAT:          -1.80
+                MU0:            SUB_SOLAR_LAT:          -1.80
                                 SUB_SOLAR_LON:          65.07 E
         PLANE:
                 PHASE:          SUB_OBSERV_LAT:         -2.83

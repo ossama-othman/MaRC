@@ -1,3 +1,14 @@
+- The MU plane no longer needs to have the sub-solar point specified.
+  It was never needed for emission angle calculations.
+
+- The MU0 plane no longer needs to have the sub-observer point and
+  range specified.  They were never needed for incidence angle
+  computations.
+
+- Improved MaRC input file parser error reporting.  The filename, line
+  number and column containing the syntax error are now reported to
+  the user.
+
 - Corrected handling of position angles explicity marked as clockwise,
   i.e. "CW", in MaRC input files.  They were erroneously treated as
   counter-clockwise position angles.

@@ -169,14 +169,9 @@ XCOMMENT: Test FITS extension comment.
                 MU:     SUB_OBSERV_LAT:         -0.06 C
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
-                        SUB_SOLAR_LAT:          -0.22 C
-                        SUB_SOLAR_LON:          283.52 E
 
         PLANE:  6
-                MU0:    SUB_OBSERV_LAT:         -0.06 C
-                        SUB_OBSERV_LON:         214.54 E
-                        RANGE:                  1210332.1 KM
-                        SUB_SOLAR_LAT:          -0.22 C
+                MU0:    SUB_SOLAR_LAT:          -0.22 C
                         SUB_SOLAR_LON:          283.52 E
 
         PLANE:  7
@@ -318,6 +313,8 @@ MAP:    test_map4.fits
                 MU:     SUB_OBSERV_LAT:         -0.06 C
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
+			# NOTE: Sub-solar point is no longer necessary
+			#       for MU plane.
                         SUB_SOLAR_LAT:          -0.22 C
                         SUB_SOLAR_LON:          283.52 E
 
@@ -333,7 +330,10 @@ MAP:    test_map5.fits
         LINES:          25
 
         PLANE:
-                MU:     SUB_OBSERV_LON:         214.54 E
+                MU0:
+			# NOTE: Sub-observer point and range are no
+			#       longer necessary for MU0 plane.
+		        SUB_OBSERV_LON:         214.54 E
                         SUB_OBSERV_LAT:         -0.06 C
                         RANGE:                  1210332.1 KM
                         SUB_SOLAR_LON:          -283.52
@@ -355,7 +355,7 @@ MAP:    test_map6.fits
         LINES:          25
         PLANE:
                 DATA_MAX: 0
-                MU:     SUB_OBSERV_LAT:         -acos(cos(0.06))
+                PHASE:  SUB_OBSERV_LAT:         -acos(cos(0.06))
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
                         SUB_SOLAR_LAT:          -0.22 C

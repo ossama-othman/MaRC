@@ -12,7 +12,7 @@ XCOMMENT:Another map comment.
 	DATA_TYPE:		SHORT
 	GRID:			YES
 	TYPE:	SIMPLE_C
-		OPTIONS:	GRAPHIC_LAT
+		OPTIONS:	LATITUDE_TYPE:  GRAPHIC
 				LO_LAT:		-38 # PlanetoCENTRIC is default
 				HI_LAT:		-8
 				LO_LON:		282 # West since prograde
@@ -91,12 +91,7 @@ XCOMMENT:Another map comment.
 				SUB_OBSERV_LON:		14.45 E
 		# RANGE defaults to units of Kilometers
 				RANGE:			1819712.917
-				SUB_SOLAR_LAT:		-1.80
-				SUB_SOLAR_LON:		65.07 E
 
 	PLANE:
-		MU0:		SUB_OBSERV_LAT:		3.62 S
-				SUB_OBSERV_LON:		14.45 E
-				RANGE:			1819712.917 KM
-				SUB_SOLAR_LAT:		-1.80
+		MU0:		SUB_SOLAR_LAT:		-1.80
 				SUB_SOLAR_LON:		65.07 E

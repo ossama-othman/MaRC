@@ -1183,10 +1183,7 @@ remove_sky:
         | _REMOVE_SKY ':' NO  { photo_parameters->remove_sky(false); }
 ;
 
-mu:     _MU ':'
-        sub_observ
-        range
-        sub_solar /* Unused */ {
+mu:    _MU ':' sub_observ range {
             // Mu (potentially scaled to increase significant digits)
             image_factory =
                 std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
@@ -1194,9 +1191,29 @@ mu:     _MU ':'
                                                        ($3).lon,
                                                        $4);
         }
+        | _MU ':'
+          sub_observ
+          range
+          sub_solar /* Unused */ {
+            // Mu (potentially scaled to increase significant digits)
+            image_factory =
+                std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
+                                                       ($3).lat,
+                                                       ($3).lon,
+                                                       $4);
+
+            MaRC::info("sub-solar point is no longer needed for MU planes");
+        }
 ;
 
-mu0:    _MU0 ':'
+mu0:    _MU0 ':' sub_solar {
+          // Mu0 (potentially scaled to increase significant digits)
+          image_factory =
+              std::make_unique<MaRC::Mu0ImageFactory>(oblate_spheroid,
+                                                      ($3).lat,
+                                                      ($3).lon);
+        }
+        | _MU0 ':'
         sub_observ      /* Unused */
         range           /* Unused */
         sub_solar       {
@@ -1205,13 +1222,13 @@ mu0:    _MU0 ':'
               std::make_unique<MaRC::Mu0ImageFactory>(oblate_spheroid,
                                                       ($5).lat,
                                                       ($5).lon);
+
+          MaRC::info("sub-observer point and are no longer "
+                     "needed for MU0 planes");
         }
 ;
 
-phase:  _PHASE ':'
-        sub_observ
-        range
-        sub_solar       {
+phase:  _PHASE ':' sub_observ range sub_solar {
           // cos(phase angle) (potentially scaled to increase
           //                   significant digits)
           image_factory =
