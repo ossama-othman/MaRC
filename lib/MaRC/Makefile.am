@@ -125,6 +125,7 @@ pkginclude_HEADERS = \
   PolarStereographic.h \
   SimpleCylindrical.h \
   Validate.h \
+  optional.h \
   plot_info.h \
   root_find.h \
   utility.h \

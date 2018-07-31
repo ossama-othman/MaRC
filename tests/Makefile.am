@@ -37,6 +37,7 @@ check_PROGRAMS =            \
   ViewingGeometry_Test      \
   Mercator_Test             \
   PolarStereographic_Test   \
+  optional_test             \
   root_find_test            \
   utility_test              \
   validate_test
@@ -95,6 +96,11 @@ Mercator_Test_LDADD = \
 
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = \
+  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
+
+optional_test_SOURCES = optional_test.cpp
+optional_test_LDADD   = \
   $(top_builddir)/lib/MaRC/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
