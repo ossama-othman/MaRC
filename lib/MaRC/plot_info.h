@@ -27,6 +27,7 @@
 
 #include <MaRC/Export.h>
 #include <MaRC/Notifier.h>
+#include <MaRC/optional.h>
 
 
 namespace MaRC
@@ -57,13 +58,19 @@ namespace MaRC
          *                     @a minimum.
          * @param[in] maximum  Maximum allowed value on map, i.e. all
          *                     data less than or equal to @a maximum.
+         * @param[in] blank    Blank map array value for integer typed
+         *                     maps.  The blank map array value
+         *                     corresponds to undefined "blank"
+         *                     physical values.
          */
         plot_info(SourceImage const & source,
                   double minimum,
-                  double maximum)
+                  double maximum,
+                  MaRC::optional<int64_t> blank)
             : source_(source)
             , minimum_(minimum)
             , maximum_(maximum)
+            , blank_(blank)
             , notifier_()
         {
         }
@@ -80,7 +87,13 @@ namespace MaRC
 
         /// Get maximum allowed value on map.
         double maximum() const { return this->maximum_; }
-        
+
+        /// Get blank map array value.
+        MaRC::optional<int64_t> const & blank() const
+        {
+            return this->blank_;
+        }
+
         /**
          * @brief Get map progress notifier.
          *
@@ -101,6 +114,13 @@ namespace MaRC
 
         /// Maximum allowed value on map, i.e. data <= @c maximum_.
         double const maximum_;
+
+        /**
+         * @brief  Value of pixels with undefined physical value.
+         *
+         * @note This value is only valid for integer typed maps.
+         */
+        MaRC::optional<int64_t> const blank_;
 
         /// Map progress notifier.
         mutable notifier_type notifier_;

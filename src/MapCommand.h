@@ -25,8 +25,10 @@
 #define MARC_MAP_COMMAND_H
 
 #include "ImageFactory.h"
+#include "FITS_traits.h"
 
 #include <MaRC/MapFactory.h>
+#include <MaRC/optional.h>
 
 #include <fitsio.h>
 
@@ -37,6 +39,12 @@
 
 namespace MaRC
 {
+    /**
+     * @typedef Type used to store a FITS @c BLANK integer value.
+     *
+     * @todo Use @c std::optional<> once MaRC requires C++17.
+     */
+    using blank_type = MaRC::optional<FITS::longlong_type>;
 
     /**
      * @class MapCommand
@@ -147,7 +155,7 @@ namespace MaRC
          *
          * @param[in] blank FITS @c BLANK keyword value.
          */
-        void data_blank(int blank);
+        void data_blank(blank_type blank);
 
         /// Set the @c ImageFactory list responsible for creating
         /// each of the planes in the map.
@@ -243,12 +251,12 @@ namespace MaRC
         /// be mapped on each map plane.
         image_factories_type image_factories_;
 
-        /// Flag that determines whether the FITS @c BLANK value is
-        /// set.
-        bool blank_set_;
-
-        /// Value of pixels with undefined physical value.
-        int blank_;
+        /**
+         * @brief  Value of pixels with undefined physical value.
+         *
+         * @note This value is only valid for integer typed maps.
+         */
+        blank_type blank_;
 
     private:
 

@@ -24,9 +24,6 @@
  */
 
 %{
-// BodyData strategies
-#include <MaRC/OblateSpheroid.h>
-
 // SourceImage factories
 #include "PhotoImageFactory.h"
 #include "MosaicImageFactory.h"
@@ -35,6 +32,9 @@
 #include "CosPhaseImageFactory.h"
 #include "LatitudeImageFactory.h"
 #include "LongitudeImageFactory.h"
+
+// BodyData strategies
+#include <MaRC/OblateSpheroid.h>
 
 // Image parameters
 #include <MaRC/PhotoImageParameters.h>
@@ -95,15 +95,15 @@ namespace
     /**
      * @brief Get angle within 360 degree (circle) range.
      *
-     * Determine the angle in the [0,360] (circle) range equivalent to
+     * Determine the angle in the [0,360) (circle) range equivalent to
      * the provided @a angle.  For example, given an @a angle of -365
-     * degrees, the equivalent angle in the [0,360] range would be 355
+     * degrees, the equivalent angle in the [0,360) range would be 355
      * degrees.
      *
      * @param[in] angle Angle in degrees to be placed in 360 degree
      *                  range.
      *
-     * @return Angle in [0,360] degree range equivalent to the
+     * @return Angle in [0,360) degree range equivalent to the
      *         provided @a angle.
      *
      * @todo Merge this function with similar generalized code used in
@@ -121,6 +121,35 @@ namespace
         // this case, is retained.  Shift to the [0, 360] range if
         // negative.
         return angle >= 0 ? angle : angle + circle;
+    }
+
+    /**
+     * @brief Verify that the provided FITS @c BLANK value actually
+     *        fits within the chosen map data type.
+     *
+     * @param[in] blank     FITS @c BLANK value explicitly provided by
+     *                      the user.  While it is of type double
+     *                      here, it is ultimately stored as an
+     *                      integer.
+     * @param[in] data_type MaRC map data type name (e.g. "BYTE",
+     *                      "SHORT", etc).
+     */
+    template <typename T>
+    bool
+    verify_data_blank(double blank, char const * data_type)
+    {
+        constexpr auto minimum = std::numeric_limits<T>::lowest();
+        constexpr auto maximum = std::numeric_limits<T>::max();
+
+        bool const verified = (blank >= minimum && blank <= maximum);
+
+        if (!verified)
+            MaRC::error("DATA_BLANK {} does not fit within "
+                        "map data type {}",
+                        blank,
+                        data_type);
+
+        return verified;
     }
 }
 
@@ -151,8 +180,7 @@ bool   transform_data = false;
 double fits_bzero     = 0;
 double fits_bscale    = 1;
 
-bool blank_set   = false;
-int  fits_blank  = 0;
+MaRC::blank_type fits_blank;
 
 // To create a grid or not to create a grid?  That is the question.
 bool create_grid = false;
@@ -513,8 +541,7 @@ map_setup:
                     map_command->data_scale(fits_bscale);
                 }
 
-                if (blank_set)
-                    map_command->data_blank(fits_blank);
+                map_command->data_blank(fits_blank);
 
                 map_command->image_factories(std::move(image_factories));
 
@@ -538,7 +565,7 @@ map_entry:
 
             create_grid = false;
             transform_data = false;
-            blank_set = false;
+            fits_blank.reset();
 
             image_factories.clear();
 
@@ -628,11 +655,28 @@ data_blank:
         | DATA_BLANK ':' expr {
             if (map_data_type == FLOAT || map_data_type == DOUBLE) {
                 throw std::invalid_argument(
-                    "\"BLANK\" keyword not valid with "
+                    "\"DATA_BLANK\" keyword not valid with "
                     "floating point types.");
             } else {
-              fits_blank = static_cast<int>($3);
-              blank_set = true;
+                bool verified = false;
+
+                if (map_data_type == BYTE)
+                    verified =
+                        verify_data_blank<FITS::byte_type>($3, "BYTE");
+                else if (map_data_type == SHORT)
+                    verified =
+                        verify_data_blank<FITS::short_type>($3, "SHORT");
+                else if (map_data_type == LONG)
+                    verified =
+                        verify_data_blank<FITS::long_type>($3, "LONG");
+                else
+                    verified =
+                        verify_data_blank<FITS::longlong_type>($3, "LONGLONG");
+
+                if (!verified)
+                    YYERROR;
+
+                fits_blank = static_cast<blank_type::value_type>($3);
             }
         }
 ;
@@ -1223,7 +1267,7 @@ mu0:    _MU0 ':' sub_solar {
                                                       ($5).lat,
                                                       ($5).lon);
 
-          MaRC::info("sub-observer point and are no longer "
+          MaRC::info("sub-observer point and range are no longer "
                      "needed for MU0 planes");
         }
 ;

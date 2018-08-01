@@ -66,8 +66,7 @@ MaRC::MapCommand::MapCommand(std::string filename,
     , lines_(lines)
     , factory_(std::move(factory))
     , image_factories_()
-    , blank_set_(false)
-    , blank_(0)
+    , blank_()
     , filename_(std::move(filename))
     , author_()
     , origin_()
@@ -194,7 +193,7 @@ MaRC::MapCommand::execute()
                     TSTRING,
                     "OBJECT",
                     const_cast<char *>(object),
-                    "name of observed object.",
+                    "name of observed object",
                     &status);
 
     // Write the map comments.
@@ -458,10 +457,9 @@ MaRC::MapCommand::data_scale(double scale)
 }
 
 void
-MaRC::MapCommand::data_blank(int blank)
+MaRC::MapCommand::data_blank(blank_type blank)
 {
     this->blank_ = blank;
-    this->blank_set_ = true;
 }
 
 void

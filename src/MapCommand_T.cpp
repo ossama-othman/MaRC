@@ -66,22 +66,11 @@ MaRC::MapCommand_T<T>::initialize_FITS_image(fitsfile * fptr,
     long naxes[] = { this->samples_, this->lines_, planes };
 
     // Create the primary array.
-    if (fits_create_img(fptr,
-                        FITS::traits<T>::bitpix,
-                        naxis,
-                        naxes,
-                        &status) != 0)
-        return;
-
-    // Write the BLANK keyword and value into the map FITS file.
-    if (FITS::traits<T>::supports_blank_keyword && this->blank_set_) {
-        fits_update_key(fptr,
-                        TINT,
-                        "BLANK",
-                        &this->blank_,
-                        "Value of pixels with undefined physical value.",
-                        &status);
-    }
+    (void) fits_create_img(fptr,
+                           FITS::traits<T>::bitpix,
+                           naxis,
+                           naxes,
+                           &status);
 }
 
 template <typename T>
@@ -137,7 +126,7 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                                         image.get(),
                                         status);
 
-        plot_info info(*image, i->minimum(), i->maximum());
+        plot_info info(*image, i->minimum(), i->maximum(), this->blank_);
 
         using namespace MaRC::Progress;
         info.notifier().subscribe(std::make_unique<Console>());
@@ -173,5 +162,15 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
         fpixel += nelements;
 
         ++plane_count;
+    }
+
+    // Write the BLANK keyword and value into the map FITS file.
+    if (FITS::traits<T>::supports_blank_keyword && this->blank_) {
+        fits_update_key(fptr,
+                        FITS::traits<blank_type::value_type>::datatype,
+                        "BLANK",
+                        &this->blank_,
+                        "value of pixels with undefined physical value",
+                        &status);
     }
 }

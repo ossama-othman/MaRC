@@ -26,6 +26,10 @@
 #include "MaRC/SourceImage.h"
 #include "MaRC/plot_info.h"
 
+#include <type_traits>
+#include <limits>
+#include <stdexcept>
+
 
 template <typename T>
 MaRC::MapFactory::map_type<T>
@@ -33,7 +37,19 @@ MaRC::MapFactory::make_map(plot_info const & info,
                            std::size_t samples,
                            std::size_t lines)
 {
-    map_type<T> map(samples * lines, Map_traits<T>::empty_value());
+    T blank = Map_traits<T>::empty_value();
+
+    if (std::is_integral<T>::value && info.blank()) {
+        if (blank < std::numeric_limits<T>::lowest()
+            || blank > std::numeric_limits<T>::max()) {
+            throw std::invalid_argument("Blank map value does not fit "
+                                        "within map data type.");
+        }
+
+        blank = static_cast<T>(*info.blank());
+    }
+
+    map_type<T> map(samples * lines, blank);
 
     using namespace std::placeholders;
 

@@ -1,3 +1,8 @@
+- Blank areas of integer typed maps now contain the user-supplied
+  DATA_BLANK value, if specified in the MaRC input file.  This allows
+  FITS image readers to easily identify areas of integer typed maps
+  that lack data.
+
 - Corrected a problem where MaRC's Simple Cylindrical projection could
   not handle the case where lower and upper longitudes in the map were
   the same, signifying a 360 degree range, resulting in only single

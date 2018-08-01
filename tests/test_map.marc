@@ -302,15 +302,16 @@ MAP:    test_map4.fits
         GRID:                   NO
         TYPE:                   SIMPLE_C
         OPTIONS:
-                HI_LAT:         4 S
-                LO_LAT:         25 S
-                HI_LON:         100 W
-                LO_LON:         45  W
+                HI_LAT:         90 N
+                LO_LAT:         90 S
+                HI_LON:         360 W
+                LO_LON:         0  W
         SAMPLES:        25
         LINES:          25
 
         PLANE:
-                MU:     SUB_OBSERV_LAT:         -0.06 C
+	        DATA_MIN: 0
+                MU:     SUB_OBSERV_LAT:         -25 C
                         SUB_OBSERV_LON:         214.54 E
                         RANGE:                  1210332.1 KM
 			# NOTE: Sub-solar point is no longer necessary
