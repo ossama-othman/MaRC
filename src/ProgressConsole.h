@@ -38,7 +38,7 @@ namespace MaRC
          *
          * @brief Log map progress updates to the console.
          */
-        class Console : public Observer
+        class Console final : public Observer
         {
         public:
 
