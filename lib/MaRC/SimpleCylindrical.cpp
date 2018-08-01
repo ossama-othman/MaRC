@@ -21,9 +21,11 @@
  * @author Ossama Othman
  */
 
-#include "MaRC/SimpleCylindrical.h"
-#include "MaRC/Constants.h"
-#include "MaRC/Validate.h"
+#include "SimpleCylindrical.h"
+#include "Constants.h"
+#include "Validate.h"
+#include "Mathematics.h"
+#include "Log.h"
 
 #include <limits>
 #include <cmath>
@@ -53,9 +55,20 @@ MaRC::SimpleCylindrical::SimpleCylindrical(
     }
 
     // Set lower longitude to equivalent longitude less than upper
-    // longitude to make sure longitude range is computed correctly.
+    // longitude or add 360 degrees to the upper longitude if it is
+    // equal to the lower longitude (i.e. full 360 degree range) to
+    // make sure longitude range is computed correctly.
+    constexpr int ulps = 2;
     if (this->lo_lon_ > this->hi_lon_)
         this->lo_lon_ -= C::_2pi;
+    else if (MaRC::almost_equal(this->lo_lon_, this->hi_lon_, ulps)
+             || (MaRC::almost_zero(this->lo_lon_, ulps)
+                 && MaRC::almost_zero(this->hi_lon_, ulps))) {
+        this->hi_lon_ += C::_2pi;
+
+        MaRC::info("lower and upper map longitudes are the same");
+        MaRC::info("assuming 360 degree longitude range");
+    }
 }
 
 char const *

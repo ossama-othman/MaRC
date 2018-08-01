@@ -1,3 +1,11 @@
+- Corrected a problem where MaRC's Simple Cylindrical projection could
+  not handle the case where lower and upper longitudes in the map were
+  the same, signifying a 360 degree range, resulting in only single
+  longitude being mapped across all map pixels.  MaRC now assumes the
+  full 360 degree longitude range is being mapped if both the lower
+  and upper longitude are the same, and issues a diagnostic message
+  accordingly.
+
 - The MU plane no longer needs to have the sub-solar point specified.
   It was never needed for emission angle calculations.
 
