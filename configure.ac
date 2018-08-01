@@ -21,7 +21,7 @@ dnl An autoconf script to automatically configure MaRC.
 
 
 AC_PREREQ([2.69])
-AC_INIT([MaRC], [0.9.10], [othman@users.sourceforge.net], [marc])
+AC_INIT([MaRC], [0.10a], [othman@users.sourceforge.net], [marc])
 
 dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
@@ -41,7 +41,7 @@ dnl      [with_spdlog=check])
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options -Wall -Werror -Wno-portability])
+AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options readme-alpha -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
