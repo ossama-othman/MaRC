@@ -89,11 +89,14 @@ namespace MaRC
          * underlying map array, and delegates actual mapping to the
          * subclass implementation of @c plot_map().
          *
-         * @param[in] info    Map plotting information, such as the
-         *                    source image, min/max allowed data
-         *                    values, etc.
-         * @param[in] samples Number of samples in map.
-         * @param[in] lines   Number of lines   in map.
+         * @param[in,out] info    Map plotting information, such as
+         *                        the source image, min/max allowed
+         *                        data values, etc.  Some fields, such
+         *                        as the minimum and maximum, may be
+         *                        updated to reflect the actual values
+         *                        used when creating the map.
+         * @param[in]     samples Number of samples in map.
+         * @param[in]     lines   Number of lines   in map.
          *
          * @return The generated map image.
          *
@@ -101,7 +104,7 @@ namespace MaRC
          *       the returned map.
          */
         template <typename T>
-        map_type<T> make_map(plot_info const & info,
+        map_type<T> make_map(plot_info & info,
                              std::size_t samples,
                              std::size_t lines);
 

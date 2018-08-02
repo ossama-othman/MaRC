@@ -82,8 +82,14 @@ namespace MaRC
         /// Get data to be mapped.
         SourceImage const & source() const { return this->source_; }
 
+        /// Set minimum allowed value on map.
+        void minimum(double m) { this->minimum_ = m; }
+
         /// Get minimum allowed value on map.
         double minimum() const { return this->minimum_; }
+
+        /// Set maximum allowed value on map.
+        void maximum(double m) { this->maximum_ = m; }
 
         /// Get maximum allowed value on map.
         double maximum() const { return this->maximum_; }
@@ -110,10 +116,10 @@ namespace MaRC
         SourceImage const & source_;
 
         /// Minimum allowed value on map, i.e. data >= @c minimum_.
-        double const minimum_;
+        double minimum_;
 
         /// Maximum allowed value on map, i.e. data <= @c maximum_.
-        double const maximum_;
+        double maximum_;
 
         /**
          * @brief  Value of pixels with undefined physical value.

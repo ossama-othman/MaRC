@@ -33,7 +33,7 @@
 
 template <typename T>
 MaRC::MapFactory::map_type<T>
-MaRC::MapFactory::make_map(plot_info const & info,
+MaRC::MapFactory::make_map(plot_info & info,
                            std::size_t samples,
                            std::size_t lines)
 {
@@ -48,6 +48,11 @@ MaRC::MapFactory::make_map(plot_info const & info,
 
         blank = static_cast<T>(*info.blank());
     }
+
+    T const actual_min = Map_traits<T>::minimum(info.minimum());
+    T const actual_max = Map_traits<T>::maximum(info.maximum());
+    info.minimum(actual_min);
+    info.maximum(actual_max);
 
     map_type<T> map(samples * lines, blank);
 
@@ -88,8 +93,8 @@ MaRC::MapFactory::plot(plot_info const & info,
 
     bool const found_data =
         (info.source().read_data(lat, lon, datum)
-         && datum >= Map_traits<T>::minimum(info.minimum())
-         && datum <= Map_traits<T>::maximum(info.maximum()));
+         && datum >= info.minimum()
+         && datum <= info.maximum());
 
     if (found_data) {
         T & data =
