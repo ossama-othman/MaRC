@@ -128,11 +128,8 @@ namespace MaRC
 
         static float minimum(double min)
         {
-            /**
-             * @todo Why do we need to add one here?
-             */
             static constexpr float const absolute_min =
-                std::numeric_limits<float>::lowest() + 1;
+                std::numeric_limits<float>::lowest();
 
             return (min < absolute_min ? absolute_min : min);
         }
