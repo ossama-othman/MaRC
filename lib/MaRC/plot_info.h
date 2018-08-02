@@ -58,6 +58,28 @@ namespace MaRC
          *                     @a minimum.
          * @param[in] maximum  Maximum allowed value on map, i.e. all
          *                     data less than or equal to @a maximum.
+         */
+        plot_info(SourceImage const & source,
+                  double minimum,
+                  double maximum)
+            : source_(source)
+            , minimum_(minimum)
+            , maximum_(maximum)
+            , blank_()
+            , notifier_()
+        {
+        }
+
+        /**
+         * @brief Constructor
+         *
+         * @param[in] source   @c SourceImage object containing the
+         *                     data to be mapped.
+         * @param[in] minimum  Minimum allowed value on map, i.e. all
+         *                     data greater than or equal to
+         *                     @a minimum.
+         * @param[in] maximum  Maximum allowed value on map, i.e. all
+         *                     data less than or equal to @a maximum.
          * @param[in] blank    Blank map array value for integer typed
          *                     maps.  The blank map array value
          *                     corresponds to undefined "blank"
