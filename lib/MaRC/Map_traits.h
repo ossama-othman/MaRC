@@ -26,6 +26,7 @@
 #define MARC_MAP_TRAITS_H
 
 #include <limits>
+#include <algorithm>
 
 
 /**
@@ -82,13 +83,12 @@ namespace MaRC
          * @return Minimum value that is greater than or equal to the
          *         minimum valid value for the given map data type.
          */
-        static T minimum(double min)
+        static T minimum(double m)
         {
-            static constexpr T const absolute_min =
-                std::numeric_limits<T>::lowest();
+            constexpr double type_min = std::numeric_limits<T>::lowest();
 
-            return (min < absolute_min
-                    ? absolute_min : static_cast<T>(min));
+            // Return the larger of the two minimums.
+            return std::max(m, type_min);
         }
 
         /// Make sure given maximum value falls within map data type
@@ -99,50 +99,23 @@ namespace MaRC
          * mapped.  In particular, the maximum value is "clipped" if
          * necessary.
          *
-         * @see The discussion for the @c minimum trait for additional
-         * details.
+         * @see @c minimum()
          *
          * @param max User configured maximum.
          *
          * @return Maximum value that is less than or equal to the
          *         maximum valid value for the given map data type.
          */
-        static T maximum(double max)
+        static T maximum(double m)
         {
-            static constexpr T const absolute_max =
-                std::numeric_limits<T>::max();
+            constexpr double type_max = std::numeric_limits<T>::max();
 
-            return (max > absolute_max
-                    ? absolute_max : static_cast<T>(max));
+            // Return the smaller of the two maximums.
+            return std::min(m, type_max);
         }
     };
 
     // Map_traits specializations.
-    template <>
-    struct Map_traits<float>
-    {
-        static constexpr float empty_value()
-        {
-            return std::numeric_limits<float>::quiet_NaN();
-        }
-
-        static float minimum(double min)
-        {
-            static constexpr float const absolute_min =
-                std::numeric_limits<float>::lowest();
-
-            return (min < absolute_min ? absolute_min : min);
-        }
-
-        static float maximum(double max)
-        {
-            static constexpr float const absolute_max =
-                std::numeric_limits<float>::max();
-
-            return (max > absolute_max ? absolute_max : max);
-        }
-    };
-
     template <>
     struct Map_traits<double>
     {
