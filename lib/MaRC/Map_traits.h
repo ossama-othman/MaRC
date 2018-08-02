@@ -2,7 +2,7 @@
 /**
  * @file Map_traits.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -48,8 +48,9 @@ namespace MaRC
     template <typename T>
     struct Map_traits
     {
-        /// Value used to initialize an empty map.
         /**
+         * @brief Value used to initialize an empty map.
+         *
          * The initial/empty map data value for integer typed maps
          * will be zero, but the value for floating point typed maps
          * in MaRC is the Not-a-Number constant, not zero.  This
@@ -61,14 +62,15 @@ namespace MaRC
             return std::numeric_limits<T>::quiet_NaN();
         }
 
-        /// Make sure given minimum value falls within map data type
-        /// range.
         /**
+         * @brief Make sure given minimum value falls within map data
+         *        type range.
+         *
          * The idea behind this trait is to prevent data that is
          * actually outside the valid data range of the map data type
          * from being mapped.  In particular, the minimum value is
          * "clipped" if necessary.
-         * @par
+         *
          * If an invalid minimum is used, data may be cast to a value
          * that is significantly different than its original value.
          * For example, setting the minimum to -65000 for a signed
@@ -91,9 +93,10 @@ namespace MaRC
             return std::max(m, type_min);
         }
 
-        /// Make sure given maximum value falls within map data type
-        /// range.
         /**
+         * @brief Make sure given maximum value falls within map data
+         *        type range.
+         *
          * The idea behind this trait is to prevent data that is actually
          * outside the valid data range of the map data type from being
          * mapped.  In particular, the maximum value is "clipped" if
