@@ -94,8 +94,7 @@ namespace MaRC
         constexpr optional() = default;
         constexpr optional(nullopt_t) noexcept : value_() {}
         constexpr optional(optional const & other) = default;
-        constexpr optional(optional && other) noexcept(
-            std::is_nothrow_move_constructible<T>::value) = default;
+        constexpr optional(optional && other) = default;
         constexpr optional(T v) : value_(v, true) {}
         ~optional() = default;
         optional & operator=(nullopt_t) noexcept
@@ -104,9 +103,7 @@ namespace MaRC
             return *this;
         }
         optional & operator=(optional const & other) = default;
-        optional & operator=(optional && other) noexcept(
-            std::is_nothrow_move_assignable<T>::value
-            && std::is_nothrow_move_constructible<T>::value) = default;
+        optional & operator=(optional && other) = default;
 
         constexpr T const * operator->() const
         {
