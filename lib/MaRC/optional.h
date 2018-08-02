@@ -200,7 +200,7 @@ namespace MaRC
 
         void swap(optional & other) noexcept(
             std::is_nothrow_move_constructible<T>::value
-            && std::is_nothrow_swappable<T>::value)
+            /* && std::is_nothrow_swappable<T>::value */)
         {
             this->value_.swap(other.value_);
         }
