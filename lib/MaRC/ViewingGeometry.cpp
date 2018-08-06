@@ -97,7 +97,7 @@ namespace
                     original[1], computed[1],
                     original[2], computed[2],
                     "",
-                    MaRC::magnitude(original), MaRC::magnitude(computed),
+                    original.magnitude(), computed.magnitude(),
                     "");
     }
 #endif
@@ -309,7 +309,7 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
             (this->line_center_ - this->OA_l_) * this->km_per_pixel_;
         // Since line numbers increase top to bottom (e.g. VICAR images)
 
-        double const mag = MaRC::magnitude(range_O);
+        double const mag = range_O.magnitude();
 
         // Perpendicular distance from observer to image plane.
         this->normal_range_ =
@@ -340,7 +340,7 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
         DVector const OA_prime(r0 - this->range_b_);
 
         DVector OA_hat(OA_prime);
-        MaRC::to_unit_vector(OA_hat);
+        OA_hat.to_unit_vector();
 
         // Dot product.
         double const dp = MaRC::dot_product(r0, OA_hat);
@@ -373,7 +373,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
                                     DMatrix & body2observ)
 {
     DVector r_o(range_o);
-    MaRC::to_unit_vector(r_o);
+    r_o.to_unit_vector();
 
     // Compute transformation matrices
     DVector rotated;
@@ -418,7 +418,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     observ2body = o2b;
 
     double diff_magnitude =
-        MaRC::magnitude(this->range_b_ - o2b * range_o);
+        (this->range_b_ - o2b * range_o).magnitude();
 
     // ----------- TRY THE SECOND ROOT -------------
     r_o = temp2; // Reset to value of vector after first rotation
@@ -436,7 +436,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
            * Geometry::RotYMatrix(-this->position_angle_));
 
     double const test_diff_magnitude =
-        MaRC::magnitude(this->range_b_ - o2b * range_o);
+        (this->range_b_ - o2b * range_o).magnitude();
 
     if (diff_magnitude > test_diff_magnitude) {
         diff_magnitude = test_diff_magnitude;
@@ -444,7 +444,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude(this->range_b_) * 100;
+        diff_magnitude / this->range_b_.magnitude() * 100;
 
     static constexpr double tolerance = 1e-8;
     if (percent_diff > tolerance) {
@@ -517,13 +517,13 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     NPole[2] = 1;
 
     /**
-     * @todo Shouldn't this be @c OA_O[1] @c = @c -MaRC::magnitude(OA) ?
+     * @todo Shouldn't this be @c OA_O[1] @c = @c -OA.magnitude() ?
      */
     // OA_O is the optical axis vector in observer coordinates
-    OA_O[1] = MaRC::magnitude(OA); // Magnitude of optical axis.
+    OA_O[1] = OA.magnitude(); // Magnitude of optical axis.
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
-    MaRC::to_unit_vector(UnitOpticalAxis);
+    UnitOpticalAxis.to_unit_vector();
 
     // Cosine of the angle between the North pole and the optical
     // axis.  No need to divide by the product of the vector
@@ -537,7 +537,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
                                          // plane and OA.
 
     DVector R_b(range_b);
-    MaRC::to_unit_vector(R_b);
+    R_b.to_unit_vector();
 
     /**
      * @bug This value is the same as the one computed above.
@@ -557,8 +557,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 
     observ2body = o2b;
 
-    double diff_magnitude =
-        MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
+    double diff_magnitude = (OA_O - o2b * UnitOpticalAxis).magnitude();
 
     /**
      * @todo This seems like a hack.  Why do we need to check a second
@@ -582,10 +581,9 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     double Ztwist, SubLatModified;
 #endif  /* !NDEBUG */
 
-    if (diff_magnitude > MaRC::magnitude(OA_O
-                                         - o2b * UnitOpticalAxis)) {
-        diff_magnitude =
-            MaRC::magnitude(OA_O - o2b * UnitOpticalAxis);
+    double const mag = (OA_O - o2b * UnitOpticalAxis).magnitude();
+    if (diff_magnitude > mag) {
+        diff_magnitude = mag;
         observ2body = o2b;
 
 #ifndef NDEBUG
@@ -598,7 +596,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     }
 
     double const percent_diff =
-        diff_magnitude / MaRC::magnitude(UnitOpticalAxis) * 100;
+        diff_magnitude / UnitOpticalAxis.magnitude() * 100;
 
     static constexpr double tolerance = 1e-8;
 

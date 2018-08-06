@@ -137,14 +137,14 @@ bool test_vector_magnitude()
     double const mag =
         std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 
-    return MaRC::almost_equal(MaRC::magnitude(v), mag, ulps);
+    return MaRC::almost_equal(v.magnitude(), mag, ulps);
 }
 
 bool test_unit_vector()
 {
     using vector_type = MaRC::Vector<double, 3>;
     vector_type v{ 3, 4, 5 };
-    MaRC::to_unit_vector(v);
+    v.to_unit_vector();
 
     // Unit vector magnitude is always 1.
     constexpr double unit_mag = 1;
@@ -153,7 +153,7 @@ bool test_unit_vector()
            std::abs(v[0]) <= unit_mag
         && std::abs(v[1]) <= unit_mag
         && std::abs(v[2]) <= unit_mag
-        && MaRC::almost_equal(MaRC::magnitude(v),
+        && MaRC::almost_equal(v.magnitude(),
                               unit_mag,
                               ulps);
 }

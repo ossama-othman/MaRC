@@ -27,7 +27,7 @@
 #ifndef MARC_VECTOR_H
 #define MARC_VECTOR_H
 
-#include "MaRC/Mathematics.h"
+#include "MaRC/details/vector.h"
 
 #include <type_traits>
 #include <algorithm>
@@ -298,115 +298,42 @@ namespace MaRC
             return *this;
         }
 
+        /**
+         * @brief Obtain magnitude of this vector.
+         *
+         * @return Magnitude of this vector.
+         */
+        double magnitude() const
+        {
+            return details::magnitude(this->vector_);
+        }
+
+        /**
+         * @brief Convert vector to a unit vector.
+         *
+         * @attention This function requires that the vector @a v contain
+         *            floating point values since it is not possible to
+         *            store fractional values in an integer.
+         */
+        void to_unit_vector()
+        {
+            // This method will only work for integer types if the
+            // vector  is already a unit vector (e.g. {0, 0, 1}).
+            static_assert(std::is_floating_point<T>::value,
+                          "to_unit_vector() cannot work reliably "
+                          "for integer typed vectors.");
+
+            auto const mag = this->magnitude();
+
+            for(auto & elem : *this)
+                elem /= mag;
+        }
+
   private:
 
         /// Underlying vector array.
         T vector_[M];
     };
-
-    /// Obtain magnitude of vector.
-    /**
-     * This generalized implementation can return the magnitude of a
-     * vector with an arbitrary number of rows
-     *
-     * @param[in] v Vector for which the magnitude will be
-     *            calculated.
-     *
-     * @return Magnitude of vector @a v.
-     *
-     * @relates MaRC::Vector
-     */
-    template <typename T, std::size_t M>
-    auto magnitude(Vector<T, M> const & v)
-    {
-        double const m = 0;
-
-        /**
-         * @bug This implementation is subject to overflow or
-         *      underflow.
-         */
-        for (auto i = 0; i < M; ++i)
-            m += v[i] * v[i];
-
-        return std::sqrt(m);
-    }
-
-    /// Obtain magnitude of vector with three rows.
-    /**
-     * This implementation avoids overflow and underflow when
-     * calculating the magnitude of vectors with three rows.
-     *
-     * @param[in] v Vector for which the magnitude will be
-     *            calculated.
-     *
-     * @return Magnitude of vector @a v.
-     *
-     * @relates MaRC::Vector
-     */
-    template <typename T>
-    auto magnitude(Vector<T, 3> const & v)
-    {
-        return MaRC::hypot(v[0], v[1], v[2]);
-    }
-
-    /// Obtain magnitude of vector with two rows.
-    /**
-     * This implementation avoids overflow and underflow when
-     * calculating the magnitude of vectors with two rows.
-     *
-     * @param[in] v Vector for which the magnitude will be
-     *            calculated.
-     *
-     * @return Magnitude of vector @a v.
-     *
-     * @relates MaRC::Vector
-     */
-    template <typename T>
-    auto magnitude(Vector<T, 2> const & v)
-    {
-        return std::hypot(v[0], v[1]);
-    }
-
-    /// Obtain magnitude of vector with one row.
-    /**
-     * This implementation returns the magnitude of vector with one
-     * row.
-     *
-     * @param[in] v Vector for which the magnitude will be
-     *            calculated.
-     *
-     * @return Magnitude of vector @a v.
-     *
-     * @relates MaRC::Vector
-     */
-    template <typename T>
-    auto magnitude(Vector<T, 1> const & v)
-    {
-        return v[0];
-    }
-
-    /// Convert a vector to a unit vector.
-    /**
-     * @param[in,out] v Vector to convert to a unit vector.
-     *
-     * @attention This function requires that the vector @a v contain
-     *            floating point values since it is not possible to
-     *            store fractional values in an integer.
-     *
-     * @relates MaRC::Vector
-     */
-    template <typename T, std::size_t M>
-    void to_unit_vector(Vector<T, M> & v)
-    {
-        static_assert(std::is_floating_point<T>::value,
-                      "MaRC::to_unit_vector() cannot work as expected "
-                      "for integer typed vectors.");
-
-        auto const mag = MaRC::magnitude(v);
-
-        for(std::size_t i = 0; i < M; ++i)
-            v[i] /= mag;
-    }
 
     /// Obtain dot product of two vectors.
     /**

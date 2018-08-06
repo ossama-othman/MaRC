@@ -77,7 +77,7 @@ libMaRC_la_SOURCES = \
   \
   Version.cpp
 
-pkginclude_HEADERS = \
+nobase_pkginclude_HEADERS = \
   Log.h \
   Observer.h \
   Notifier.h \
@@ -134,7 +134,9 @@ pkginclude_HEADERS = \
   \
   Version.h \
   \
-  Export.h
+  Export.h \
+  \
+  details/vector.h
 
 # noinst_HEADERS =
 
