@@ -136,6 +136,7 @@ nobase_pkginclude_HEADERS = \
   \
   Export.h \
   \
+  details/scale_and_offset.h \
   details/vector.h
 
 # noinst_HEADERS =

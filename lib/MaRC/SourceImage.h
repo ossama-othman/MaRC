@@ -27,139 +27,13 @@
 #define MARC_SOURCE_IMAGE_H
 
 #include <MaRC/Export.h>
+#include <MaRC/details/scale_and_offset.h>
 
-#include <limits>
-#include <cmath>
 #include <cstddef>
 
 
 namespace MaRC
 {
-
-    /**
-     * @brief Integer data scale and offset calculation functor.
-     *
-     * Determine the best scale and offset parameters applied to
-     * floating point data read from source images to retain as many
-     * significant digits as possible when storing that data in
-     * integer typed maps.
-     *
-     * @see MaRC::scale_and_offset()
-     *
-     * @internal This functor is not part of the public MaRC library
-     *           API.
-     */
-    template <typename T>
-    struct scale_and_offset_impl
-    {
-        bool operator()(double min,
-                        double max,
-                        double & scale,
-                        double & offset) const
-        {
-            constexpr auto T_lowest = std::numeric_limits<T>::lowest();
-            constexpr auto T_max    = std::numeric_limits<T>::max();
-
-            static_assert(
-                T_lowest >= std::numeric_limits<double>::lowest() / 2
-                && T_max <= std::numeric_limits<double>::max() / 2,
-                "Integer type is too large for scale/offset calculation");
-
-            /*
-              Avoid integer overflow by performing a floating point
-              subtraction.  No overflow will occur since we already
-              know:
-                T_max - T_lowest < std::numeric_limits<double>::max()
-            */
-            constexpr double type_range =
-                static_cast<double>(T_max) - T_lowest;
-
-            double const data_range = max - min;
-
-            if (!std::isfinite(data_range)
-                || data_range < 0
-                || data_range > type_range) {
-                // data_range is not a finite value (e.g. overflowed)
-                // or min > max
-                // or can't fit all data into desired type T
-                return false;
-            }
-
-            int const exponent =
-                static_cast<int>(std::numeric_limits<T>::digits10)
-                - static_cast<int>(std::log10(data_range));
-
-            scale = std::pow(10, exponent);
-
-            if (min * scale < T_lowest)
-                offset = data_range / 2 * scale;
-            else if (max * scale > T_max)
-                offset = -data_range / 2 * scale;
-            else
-                offset = 0;
-
-            return true;
-        }
-    };
-
-    /**
-     * @brief @c float typed data scale and offset calculation
-     *        functor.
-     *
-     * Automatic source data scaling is not performed when mapping to
-     * floating point typed maps.  This implementation is basically a
-     * no-op, and returns @a scale and @a offset values that result in
-     * the source data remaining unchanged.
-     *
-     * @see MaRC::scale_and_offset()
-     *
-     * @internal This functor is not part of public MaRC library API.
-     */
-    template <>
-    struct scale_and_offset_impl<float>
-    {
-        bool operator()(double /* min */,
-                        double /* max */,
-                        double & scale,
-                        double & offset) const
-        {
-            // No auto-scaling for floating point map data.
-            scale  = 1;
-            offset = 0;
-
-            return true;
-        }
-    };
-
-    /**
-     * @brief @c double typed data scale and offset calculation
-     *        functor.
-     *
-     * Automatic source data scaling is not performed when mapping to
-     * floating point typed maps.  This implementation is basically a
-     * no-op, and returns @a scale and @a offset values that result in
-     * the source data remaining unchanged.
-     *
-     * @see MaRC::scale_and_offset()
-     *
-     * @internal This functor is not part of public MaRC library API.
-     */
-    template <>
-    struct scale_and_offset_impl<double>
-    {
-        bool operator()(double /* min */,
-                        double /* max */,
-                        double & scale,
-                        double & offset) const
-        {
-            // No auto-scaling for floating point map data.
-            scale  = 1;
-            offset = 0;
-
-            return true;
-        }
-    };
-
     /**
      * @brief Determine suitable data scale and offset values.
      *
@@ -256,7 +130,7 @@ namespace MaRC
                           double & scale,
                           double & offset)
     {
-        return scale_and_offset_impl<T>()(min, max, scale, offset);
+        return details::scale_and_offset<T>()(min, max, scale, offset);
     }
 
     // --------------------------------------------------------------
