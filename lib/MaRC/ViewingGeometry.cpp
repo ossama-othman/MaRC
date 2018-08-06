@@ -510,16 +510,15 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 {
     double SubLatMod[2];
 
-    DVector NPole, rotated;
-    DVector OA_O;
+    // Unit vector representing North pole in body coordinates.
+    DVector const body_north{0, 0, 1};
 
-    // Unit vector representing North pole in body coordinates
-    NPole[2] = 1;
+    // OA_O is the optical axis vector in observer coordinates.
+    DVector OA_O;
 
     /**
      * @todo Shouldn't this be @c OA_O[1] @c = @c -OA.magnitude() ?
      */
-    // OA_O is the optical axis vector in observer coordinates
     OA_O[1] = OA.magnitude(); // Magnitude of optical axis.
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
@@ -528,25 +527,18 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     // Cosine of the angle between the North pole and the optical
     // axis.  No need to divide by the product of the vector
     // magnitudes since they're both unit vectors (magnitudes of 1).
-    double const dotProd = MaRC::dot_product(NPole, UnitOpticalAxis);
+    double const dotProd = MaRC::dot_product(body_north, UnitOpticalAxis);
 
     /**
      * @todo Shouldn't this be @c (C::pi_2 @c - @c std::acos(dotProd)) ?
      */
-    SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
-                                         // plane and OA.
-
-    DVector R_b(range_b);
-    R_b.to_unit_vector();
-
-    /**
-     * @bug This value is the same as the one computed above.
-     */
     // Try first possibility
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
                                          // plane and OA.
+
+    DVector rotated;
     Geometry::RotX(-SubLatMod[0], range_b, rotated);
-    R_b = rotated;
+    DVector R_b = rotated;
 
     double const Ztwist1 = std::atan2(R_b[0], -R_b[1]);
 
@@ -557,7 +549,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 
     observ2body = o2b;
 
-    double diff_magnitude = (OA_O - o2b * UnitOpticalAxis).magnitude();
+    double diff_magnitude = (OA - o2b * OA_O).magnitude();
 
     /**
      * @todo This seems like a hack.  Why do we need to check a second
@@ -581,9 +573,9 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     double Ztwist, SubLatModified;
 #endif  /* !NDEBUG */
 
-    double const mag = (OA_O - o2b * UnitOpticalAxis).magnitude();
-    if (diff_magnitude > mag) {
-        diff_magnitude = mag;
+    double const diffmag = (OA - o2b * OA_O).magnitude();
+    if (diff_magnitude > diffmag) {
+        diff_magnitude = diffmag;
         observ2body = o2b;
 
 #ifndef NDEBUG
@@ -596,7 +588,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     }
 
     double const percent_diff =
-        diff_magnitude / UnitOpticalAxis.magnitude() * 100;
+        diff_magnitude / OA_O.magnitude() * 100;
 
     static constexpr double tolerance = 1e-8;
 
@@ -641,9 +633,6 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
                 position_angle_ / C::degree,
                 SubLatModified / C::degree,
                 Ztwist / C::degree);
-
-    // North pole unit vector.
-    DVector const body_north{0, 0, 1};
 
     // North pole vector in camera (observer) coordinates.
     DVector const camera_north(body2observ * body_north);
