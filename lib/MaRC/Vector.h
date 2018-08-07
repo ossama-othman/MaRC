@@ -46,6 +46,11 @@ namespace MaRC
      *
      * This is a simple zero-based index mathematical vector
      * implementation with @a M rows.
+     *
+     * @tparam T Vector element type.  It should be an arithmetic type
+     *           such as an integer or floating point type.
+     * @tparam M The number of dimensions (rows) in the vector, i.e an
+     *           @a M -dimensional vector.
      */
     template <typename T, std::size_t M>
     class Vector
@@ -61,7 +66,7 @@ namespace MaRC
         typedef T const *    const_iterator;
 
         /**
-         * Default constructor.
+         * @brief Default constructor.
          *
          * Initialize the elements of the vector to the default value,
          * i.e. @c T(), which is 0 for arithmetic types.
@@ -75,10 +80,10 @@ namespace MaRC
         }
 
         /**
-         * Construct @c Vector from an initializer list.
+         * @brief Construct @c Vector from an initializer list.
          *
-         * This constructor allows a @c Vector to be initialized like
-         * so:
+         * This constructor allows a @c Vector to be list initialized
+         * like so:
          *     Vector<int, 3> m{{0, 1, 2}};
          */
         Vector(std::initializer_list<T> rhs)
@@ -99,10 +104,10 @@ namespace MaRC
         }
 
         /**
-         * Construct @c Vector from an initializer list.
+         * @brief Assign an initializer list to a @c Vector.
          *
-         * This constructor allows a @c Vector to be initialized like
-         * so:
+         * This assignment operator allows a @c Vector to be list
+         * initialized like so:
          *     Vector<int, 3> m{{0, 1, 2}};
          */
         Vector<T, M> & operator=(std::initializer_list<T> rhs)
@@ -125,7 +130,7 @@ namespace MaRC
         }
 
         /**
-         * Element accessor.
+         * @brief Element accessor.
          *
          * @note No bounds checking.
          *
@@ -139,7 +144,7 @@ namespace MaRC
         }
 
         /**
-         * Const element accessor.
+         * @brief Const element accessor.
          *
          * @note No bounds checking.
          *
@@ -154,7 +159,7 @@ namespace MaRC
         }
 
         /**
-         * Element accessor.
+         * @brief Element accessor.
          *
          * @note With bounds checking.
          *
@@ -171,7 +176,7 @@ namespace MaRC
         }
 
         /**
-         * Const element accessor.
+         * @brief Const element accessor.
          *
          * @note With bounds checking.
          *
@@ -189,7 +194,7 @@ namespace MaRC
         }
 
         /**
-         * Get iterator to the beginning of the @c Vector.
+         * @brief Get iterator to the beginning of the @c Vector.
          *
          * @return Iterator to the beginning of this @c Vector.
          *
@@ -203,7 +208,8 @@ namespace MaRC
         }
 
         /**
-         * Get a @c const iterator to the beginning of the @c Vector.
+         * @brief Get a @c const iterator to the beginning of the
+         *        @c Vector.
          *
          * @return @c const iterator to the beginning of of this
          *         @c Vector.
@@ -218,7 +224,7 @@ namespace MaRC
         }
 
         /**
-         * Get iterator to the end of the @c Vector.
+         * @brief Get iterator to the end of the @c Vector.
          *
          * @return Iterator to the end of of this @c Vector.
          *
@@ -232,7 +238,7 @@ namespace MaRC
         }
 
         /**
-         * Get @c const iterator to the end of the @c Vector.
+         * @brief Get @c const iterator to the end of the @c Vector.
          *
          * @return @c const iterator to the end of of this @c Vector.
          *
@@ -246,7 +252,7 @@ namespace MaRC
         }
 
         /**
-         * Addition operator.
+         * @brief Addition operator.
          *
          * @param[in] rhs @c Vector to be added to this one.
          *
@@ -264,7 +270,7 @@ namespace MaRC
         }
 
         /**
-         * Subtraction operator.
+         * @brief Subtraction operator.
          *
          * @param[in] rhs @c Vector to be subtracted from this one.
          *
@@ -282,7 +288,7 @@ namespace MaRC
         }
 
         /**
-         * Scalar multiplication operator.
+         * @brief Scalar multiplication operator.
          *
          * @param[in] rhs Scalar by which this @c Vector will be
          *                multiplied.
@@ -335,8 +341,8 @@ namespace MaRC
         T vector_[M];
     };
 
-    /// Obtain dot product of two vectors.
     /**
+     * @brief Obtain dot product of two vectors.
      * Given two vectors @a a and @a b, calculate their dot product.
      *
      * @param[in] a First  vector operand.
@@ -376,7 +382,7 @@ MaRC::Vector<T, M> const operator+(MaRC::Vector<T, M> const & lhs,
 }
 
 /**
- * @brief Vector subtraction operator
+ * @brief Vector subtraction operator.
  *
  * @relates MaRC::Vector
  */
@@ -391,7 +397,7 @@ MaRC::Vector<T, M> const operator-(MaRC::Vector<T, M> const & lhs,
 }
 
 /**
- * Vector/scalar multiplication operator
+ * @brief Vector/scalar multiplication operator.
  *
  * @relates MaRC::Vector
  */
@@ -406,7 +412,7 @@ MaRC::Vector<T, M> const operator*(MaRC::Vector<T, M> const & V,
 }
 
 /**
- * Vector/scalar multiplication operator
+ * @brief Vector/scalar multiplication operator.
  *
  * @relates MaRC::Vector
  */
@@ -451,7 +457,7 @@ bool operator!=(MaRC::Vector<T, M> const & lhs,
 // ---------------------------------------------------------
 
 /**
- * @brief Stream insertion operator
+ * @brief Stream insertion operator.
  *
  * @relates MaRC::Vector
  */

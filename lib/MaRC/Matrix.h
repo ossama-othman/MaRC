@@ -59,6 +59,11 @@ namespace MaRC
      *
      * @todo Look into using super-optimized third party matrix
      *       implementations.
+     *
+     * @tparam T Matrix element type.  It should be an arithmetic type
+     *           such as an integer or floating point type.
+     * @tparam M The number of rows in the matrix.
+     * @tparam N The number of columns in the matrix.
      */
     template <typename T, std::size_t M, std::size_t N>
     class Matrix
@@ -84,7 +89,7 @@ namespace MaRC
         }
 
         /**
-         * Construct @c Matrix from an initializer list.
+         * @brief Construct @c Matrix from an initializer list.
          *
          * This constructor allows a @c Matrix to be initialized like
          * so:
@@ -123,7 +128,7 @@ namespace MaRC
         }
 
         /**
-         * Assign an initializer list to a @c Matrix.
+         * @brief Assign an initializer list to a @c Matrix.
          *
          * This constructor allows an initializer_list to be assigned
          * to a @c Matrix list so:
@@ -169,7 +174,7 @@ namespace MaRC
         }
 
         /**
-         * Element accessor.
+         * @brief Element accessor.
          *
          * @note No bounds checking.
          *
@@ -185,7 +190,7 @@ namespace MaRC
         }
 
         /**
-         * Const element accessor.
+         * @brief Const element accessor.
          *
          * @note No bounds checking.
          *
@@ -202,7 +207,7 @@ namespace MaRC
         }
 
         /**
-         * Element accessor.
+         * @brief Element accessor.
          *
          * @note With bounds checking.
          *
@@ -223,7 +228,7 @@ namespace MaRC
         }
 
         /**
-         * Const element accessor.
+         * @brief Const element accessor.
          *
          * @note With bounds checking.
          *
@@ -245,7 +250,7 @@ namespace MaRC
         }
 
         /**
-         * Addition operator.
+         * @brief Addition operator.
          *
          * @param[in] rhs @c Matrix to be added to this one.
          *
@@ -263,7 +268,7 @@ namespace MaRC
         }
 
         /**
-         * Subtraction operator.
+         * @brief Subtraction operator.
          *
          * @param[in] rhs @c Matrix to be substracted from this one.
          *
@@ -281,7 +286,7 @@ namespace MaRC
         }
 
         /**
-         * Scalar multiplication operator.
+         * @brief Scalar multiplication operator.
          *
          * @param[in] rhs Scalar by which this @c Matrix will be
          *                multiplied.
@@ -298,7 +303,7 @@ namespace MaRC
         }
 
         /**
-         * Get iterator to the beginning of the @c Matrix.
+         * @brief Get iterator to the beginning of the @c Matrix.
          *
          * @return Iterator to the beginning of the flattened form of
          *         this @c Matrix.
@@ -313,7 +318,8 @@ namespace MaRC
         }
 
         /**
-         * Get a @c const iterator to the beginning of the @c Matrix.
+         * @brief Get a @c const iterator to the beginning of the
+         *        @c Matrix.
          *
          * @return @c const iterator to the beginning of the flattened
          *         form of this @c Matrix.
@@ -328,7 +334,7 @@ namespace MaRC
         }
 
         /**
-         * Get iterator to the end of the @c Matrix.
+         * @brief Get iterator to the end of the @c Matrix.
          *
          * @return Iterator to the end of the flattened form of this
          *         @c Matrix.
@@ -343,7 +349,7 @@ namespace MaRC
         }
 
         /**
-         * Get a @c const iterator to the endof the @c Matrix.
+         * @brief Get a @c const iterator to the endof the @c Matrix.
          *
          * @return @c const iterator to the end of the flattened
          *         form of this @c Matrix.
@@ -382,6 +388,7 @@ namespace MaRC
 
         return t;
     }
+
 }
 
 // ---------------------------------------------------------

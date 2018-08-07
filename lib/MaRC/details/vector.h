@@ -32,6 +32,13 @@
 
 namespace MaRC
 {
+    /**
+     * @namespace details
+     *
+     * @brief Internal MaRC implementation details.
+     *
+     * Implement details that are not part of the MaRC public API.
+     */
     namespace details
     {
         /**
@@ -81,8 +88,9 @@ namespace MaRC
             return MaRC::hypot(v[0], v[1], v[2]);
         }
 
-        /// Obtain magnitude of vector with two rows.
         /**
+         * @brief Obtain magnitude of vector with two rows.
+         *
          * This implementation avoids overflow and underflow when
          * calculating the magnitude of vectors with two rows.
          *
