@@ -54,7 +54,10 @@ namespace MaRC
          * @param[in] prograde Flag that states whether body rotation
          *                     is prograde or retrograde.
          */
-        BodyData(bool prograde);
+        constexpr BodyData(bool prograde) noexcept
+            : prograde_(prograde)
+        {
+        }
 
         // Disallow copying.
         BodyData(BodyData const &) = delete;

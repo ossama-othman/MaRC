@@ -43,7 +43,6 @@ libMaRC_la_SOURCES = \
   \
   Geometry.cpp \
   \
-  BodyData.cpp \
   OblateSpheroid.cpp \
   \
   ViewingGeometry.cpp \
