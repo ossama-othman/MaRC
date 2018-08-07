@@ -24,12 +24,9 @@
 #include "OblateSpheroid.h"
 #include "Vector.h"
 #include "Mathematics.h"
-#include "Log.h"
 
 #include <stdexcept>
 #include <cmath>
-#include <limits>
-#include <sstream>
 #include <cassert>
 
 

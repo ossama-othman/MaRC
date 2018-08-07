@@ -25,7 +25,10 @@
 
 #include "root_find.h"
 #include "Mathematics.h"
-// #include "Log.h"
+
+#ifndef NDEBUG
+// # include "Log.h"
+#endif
 
 #include <cmath>
 #include <limits>

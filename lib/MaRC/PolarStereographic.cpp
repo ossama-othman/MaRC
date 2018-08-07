@@ -25,7 +25,10 @@
 #include "OblateSpheroid.h"
 #include "Constants.h"
 #include "root_find.h"
-#include "Log.h"
+
+#ifndef NDEBUG
+// # include "Log.h"
+#endif
 
 #include <functional>
 #include <limits>
