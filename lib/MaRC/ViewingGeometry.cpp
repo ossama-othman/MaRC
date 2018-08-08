@@ -332,10 +332,10 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
         double const radius =
             this->body_->centric_radius(this->lat_at_center_);
 
-        DVector r0;
-        r0[0] =  radius * std::cos(this->lat_at_center_) * std::sin(lon);
-        r0[1] = -radius * std::cos(this->lat_at_center_) * std::cos(lon);
-        r0[2] =  radius * std::sin(this->lat_at_center_);
+        DVector const r0(
+            radius * std::cos(this->lat_at_center_) * std::sin(lon),
+           -radius * std::cos(this->lat_at_center_) * std::cos(lon),
+            radius * std::sin(this->lat_at_center_));
 
         DVector const OA_prime(r0 - this->range_b_);
 
@@ -345,7 +345,7 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
         // Dot product.
         double const dp = MaRC::dot_product(r0, OA_hat);
 
-        DVector r_OA(dp * OA_hat);
+        DVector const r_OA(dp * OA_hat);
 
         // Optical axis in body coordinates
         DVector const OpticalAxis(OA_prime - r_OA);
@@ -482,7 +482,7 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_o,
                 Ztwist / C::degree);
 
     // North pole unit vector.
-    DVector const body_north {0, 0, 1};
+    constexpr DVector body_north(0, 0, 1);
 
     // North pole vector in camera (observer) coordinates.
     DVector const camera_north(body2observ * body_north);
@@ -508,18 +508,16 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
                                     DMatrix & observ2body,
                                     DMatrix & body2observ)
 {
-    double SubLatMod[2];
-
     // Unit vector representing North pole in body coordinates.
-    DVector const body_north{0, 0, 1};
+    constexpr DVector body_north(0, 0, 1);
 
     // OA_O is the optical axis vector in observer coordinates.
-    DVector OA_O;
-
-    /**
-     * @todo Shouldn't this be @c OA_O[1] @c = @c -OA.magnitude() ?
-     */
-    OA_O[1] = OA.magnitude(); // Magnitude of optical axis.
+    DVector const OA_O(0,
+                       /**
+                        * @todo Shouldn't this be @c -OA.magnitude() ?
+                        */
+                       OA.magnitude(),
+                       0);
 
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
     UnitOpticalAxis.to_unit_vector();
@@ -528,6 +526,8 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     // axis.  No need to divide by the product of the vector
     // magnitudes since they're both unit vectors (magnitudes of 1).
     double const dotProd = MaRC::dot_product(body_north, UnitOpticalAxis);
+
+    double SubLatMod[2];
 
     /**
      * @todo Shouldn't this be @c (C::pi_2 @c - @c std::acos(dotProd)) ?
@@ -863,18 +863,17 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
     // Vector from center of the body to a point at the given latitude
     // and longitude on the surface of the body in the body coordinate
     // system.
-    DVector Coord;
-    Coord[0] =  radius * std::cos(lat) * std::sin(lon);
-    Coord[1] = -radius * std::cos(lat) * std::cos(lon);
-    Coord[2] =  radius * std::sin(lat);
+    DVector const coord(radius * std::cos(lat) * std::sin(lon),
+                       -radius * std::cos(lat) * std::cos(lon),
+                        radius * std::sin(lat));
 
-    DVector const Obs(Coord - this->range_b_);
+    DVector const obs(coord - this->range_b_);
 
     // Convert to observer coordinates.
-    DVector const Rotated(this->body2observ_ * Obs);
+    DVector const rotated(this->body2observ_ * obs);
 
     /**
-     * @todo Rotated[1] should never be larger than
+     * @todo rotated[1] should never be larger than
      *       @c normal_range_ since we verified that the point at the
      *       given latitude and longitude is visible before getting
      *       here.  If that is a correct assumption figure out what is
@@ -888,12 +887,12 @@ MaRC::ViewingGeometry::latlon2pix(double lat,
      *       indeed be visible to the observer, and still be "behind"
      *       the image plane.  Confirm.
      */
-    // if (Rotated[1] > this->normal_range_)
+    // if (rotated[1] > this->normal_range_)
     //     return false;  // On other side of image plane / body.
 
     // Drop the "y" component since it is zero in the image plane.
-    x = Rotated[0] / Rotated[1] * this->focal_length_pixels_;
-    z = Rotated[2] / Rotated[1] * this->focal_length_pixels_;
+    x = rotated[0] / rotated[1] * this->focal_length_pixels_;
+    z = rotated[2] / rotated[1] * this->focal_length_pixels_;
 
     // Convert from object space to image space.
     this->geometric_correction_->object_to_image(z, x);
@@ -921,10 +920,7 @@ MaRC::ViewingGeometry::pix2latlon(double sample,
     // ---------------------------------------------
 
     // Convert from observer coordinates to body coordinates
-    DVector coord;
-    coord[0] = sample;
-    coord[1] = 0;
-    coord[2] = line;
+    DVector const coord(sample, 0, line);
 
     // Do the transformation
     DVector rotated(this->observ2body_ * coord);
