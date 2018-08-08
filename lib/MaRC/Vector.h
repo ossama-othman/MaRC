@@ -30,6 +30,7 @@
 #include "MaRC/details/vector.h"
 
 #include <type_traits>
+#include <initializer_list>
 #include <algorithm>
 #include <numeric>
 #include <iterator>
@@ -84,7 +85,9 @@ namespace MaRC
          *
          * This constructor allows a @c Vector to be list initialized
          * like so:
-         *     Vector<int, 3> m{{0, 1, 2}};
+         *     Vector<int, 3> m{{0, 1, 2}};  // direct-list-initialization
+         * or:
+         *     Vector<int, 3> m = {{0, 1, 2}}; // copy-list-initialization
          */
         Vector(std::initializer_list<T> rhs)
         {
@@ -100,24 +103,6 @@ namespace MaRC
         /// Copy constructor.
         Vector(Vector<T, M> const & rhs)
         {
-            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
-        }
-
-        /**
-         * @brief Assign an initializer list to a @c Vector.
-         *
-         * This assignment operator allows a @c Vector to be list
-         * initialized like so:
-         *     Vector<int, 3> m{{0, 1, 2}};
-         */
-        Vector<T, M> & operator=(std::initializer_list<T> rhs)
-        {
-            if (rhs.size() != M) {
-                throw std::out_of_range("Number of vector / "
-                                        "initializer list "
-                                        "elements do not match.");
-            }
-
             std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 

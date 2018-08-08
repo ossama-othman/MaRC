@@ -127,40 +127,6 @@ namespace MaRC
             std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 
-        /**
-         * @brief Assign an initializer list to a @c Matrix.
-         *
-         * This constructor allows an initializer_list to be assigned
-         * to a @c Matrix list so:
-         *     Matrix<int, 3, 2> m{{0, 1},
-         *                         {1, 2},
-         *                         {2, 3}};
-         */
-        Matrix<T, M, N> & operator=(
-            std::initializer_list<std::initializer_list<T>> rhs)
-        {
-            if (rhs.size() != M || rhs.begin()->size() != N) {
-                throw std::out_of_range("Number of matrix / "
-                                        "initializer list "
-                                        "rows do not match.");
-            }
-
-            auto dest = this->begin();
-
-            for (auto const & row : rhs) {
-                if (row.size() != N) {
-                    throw std::out_of_range("Number of matrix / "
-                                            "initializer list "
-                                            "columns do not match.");
-                }
-
-                std::copy(std::cbegin(row), std::cend(row), dest);
-                dest += N;  // Next matrix row.
-            }
-
-            return *this;
-        }
-
         /// Copy assignment operator.
         Matrix<T, M, N> & operator=(Matrix<T, M, N> const & rhs)
         {
