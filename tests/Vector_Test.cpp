@@ -36,8 +36,8 @@ bool test_vector_initialization()
 
     vector_type const v1;  // Default initialize all elements to 0.
 
-    vector_type::value_type const n[] = { 2, 3, 5 };
-    std::initializer_list<vector_type::value_type>
+    constexpr vector_type::value_type n[] = { 2, 3, 5 };
+    constexpr std::initializer_list<vector_type::value_type>
     vector_initializer_list{n[0], n[1], n[2]};
 
     vector_type const v2{vector_initializer_list};
@@ -47,6 +47,8 @@ bool test_vector_initialization()
     vector_type const v4 = vector_initializer_list;
 
     vector_type const v5 = v3;
+
+    constexpr vector_type v6(n[0], n[1], n[2]);  // Direct initialization.
 
     std::iterator_traits<vector_type::iterator>::difference_type const
         row_count = std::distance(std::cbegin(v1), std::cend(v1));
@@ -69,7 +71,9 @@ bool test_vector_initialization()
         && std::equal(std::cbegin(v4), std::cend(v4),
                       std::cbegin(n),  std::cend(n))
         && std::equal(std::cbegin(v5), std::cend(v5),
-                      std::cbegin(v3), std::cend(v3));
+                      std::cbegin(v3), std::cend(v3))
+        && std::equal(std::cbegin(v6), std::cend(v6),
+                      std::cbegin(n),  std::cend(n));
 }
 
 bool test_vector_comparison()

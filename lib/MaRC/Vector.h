@@ -81,6 +81,19 @@ namespace MaRC
         }
 
         /**
+         * @brief Construct @c Vector from a parameter pack.
+         *
+         * This constructor allows a @c Vector to be direct
+         * initialized like so:
+         *     Vector<int, 3> m(0, 1, 2); // direct initialization
+         */
+        template <typename ... Args>
+        constexpr Vector(Args ... args)
+            : vector_{T(args) ...}
+        {
+        }
+
+        /**
          * @brief Construct @c Vector from an initializer list.
          *
          * This constructor allows a @c Vector to be list initialized
