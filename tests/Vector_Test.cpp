@@ -76,6 +76,33 @@ bool test_vector_initialization()
                       std::cbegin(n),  std::cend(n));
 }
 
+bool test_vector_element_access()
+{
+    static constexpr std::size_t ROWS = 3;
+    using vector_type = MaRC::Vector<int, ROWS>;
+
+    static_assert(ROWS + 1 > ROWS,
+                  "ROWS is too large for element access test.");
+
+    constexpr vector_type::value_type const values[] = { 2, 3 };
+
+    vector_type const v(v[0], v[1]);  // Third element default
+                                      // initialized to 0.
+
+    bool caught_expected_exception = false;
+
+    try {
+        (void) v.at(ROWS + 1);
+    } catch(std::out_of_range const &) {
+        caught_expected_exception = true;
+    }
+
+    return v[0] == values[0] && v.at(0) == values[0]
+        && v[1] == values[1] && v.at(1) == values[1]
+        && v[2] == values[2] && v.at(2) == values[2]
+        && caught_expected_exception;
+}
+
 bool test_vector_comparison()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -178,6 +205,7 @@ int main()
 {
     return
         test_vector_initialization()
+        && test_vector_element_access()
         && test_vector_comparison()
         && test_vector_addition()
         && test_vector_subtraction()

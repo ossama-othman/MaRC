@@ -69,6 +69,56 @@ bool test_matrix_initialization()
                       std::cbegin(m3), std::cend(m3));
 }
 
+bool test_matrix_element_access()
+{
+    static constexpr std::size_t ROWS = 2;
+    static constexpr std::size_t COLUMNS = 2;
+    using matrix_type = MaRC::Matrix<int, ROWS, COLUMNS>;
+
+    static_assert(ROWS + 1 > ROWS && COLUMNS + 1 > COLUMNS,
+                  "ROWS and/or COLUMNS is too large for "
+                  "element access test.");
+
+    matrix_type::value_type const n[] = {2, 3, 5, 7};
+    std::initializer_list<std::initializer_list<matrix_type::value_type>>
+    matrix_initializer_list{{n[0], n[1]},
+                            {n[2], n[3]}};
+
+    matrix_type const m{matrix_initializer_list};
+
+    bool caught_expected_exception = false;
+
+    try {
+        (void) m.at(ROWS + 1, COLUMNS);
+    } catch(std::out_of_range const &) {
+        caught_expected_exception = true;
+    }
+
+    if (caught_expected_exception) {
+        try {
+            (void) m.at(ROWS, COLUMNS + 1);
+            caught_expected_exception = false;
+        } catch(std::out_of_range const &) {
+            caught_expected_exception = true;
+        }
+    }
+
+    if (caught_expected_exception) {
+        try {
+            (void) m.at(ROWS + 1, COLUMNS + 1);
+            caught_expected_exception = false;
+        } catch(std::out_of_range const &) {
+            caught_expected_exception = true;
+        }
+    }
+
+    return m(0, 0) == n[0] && m.at(0, 0) == n[0]
+        && m(0, 1) == n[1] && m.at(0, 1) == n[1]
+        && m(1, 0) == n[2] && m.at(1, 0) == n[2]
+        && m(1, 1) == n[3] && m.at(1, 1) == n[3]
+        && caught_expected_exception;
+}
+
 bool test_matrix_comparison()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
@@ -186,6 +236,7 @@ int main()
 {
     return
         test_matrix_initialization()
+        && test_matrix_element_access()
         && test_matrix_comparison()
         && test_matrix_addition()
         && test_matrix_subtraction()
