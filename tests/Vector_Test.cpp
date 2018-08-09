@@ -84,10 +84,9 @@ bool test_vector_element_access()
     static_assert(ROWS + 1 > ROWS,
                   "ROWS is too large for element access test.");
 
-    constexpr vector_type::value_type const values[] = { 2, 3 };
+    constexpr vector_type::value_type const n[] = { 2, 3, 4 };
 
-    vector_type const v(v[0], v[1]);  // Third element default
-                                      // initialized to 0.
+    vector_type const v(n[0], n[1], n[2]);
 
     bool caught_expected_exception = false;
 
@@ -97,9 +96,9 @@ bool test_vector_element_access()
         caught_expected_exception = true;
     }
 
-    return v[0] == values[0] && v.at(0) == values[0]
-        && v[1] == values[1] && v.at(1) == values[1]
-        && v[2] == values[2] && v.at(2) == values[2]
+    return v[0] == n[0] && v.at(0) == n[0]
+        && v[1] == n[1] && v.at(1) == n[1]
+        && v[2] == n[2] && v.at(2) == n[2]
         && caught_expected_exception;
 }
 
