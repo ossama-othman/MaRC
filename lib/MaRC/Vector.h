@@ -302,7 +302,7 @@ namespace MaRC
          */
         Vector<T, M> & operator*=(T rhs)
         {
-            for (auto & elem : *this)
+            for (auto & elem : this->vector_)
                 elem *= rhs;
 
             return *this;
@@ -335,7 +335,7 @@ namespace MaRC
 
             auto const mag = this->magnitude();
 
-            for(auto & elem : *this)
+            for(auto & elem : this->vector_)
                 elem /= mag;
         }
 

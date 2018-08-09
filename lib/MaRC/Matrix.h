@@ -262,6 +262,16 @@ namespace MaRC
          */
         Matrix<T, M, N> & operator*=(T rhs)
         {
+            /**
+             * @note @c this->matrix_ is a multi-dimensional array.
+             *       Do not blindly use is as the range expression in
+             *       the loop below.  To do that we'd a nested loop
+             *       where the outer loop would iterate over the rows,
+             *       and the inner loop would iterate over the
+             *       columns.  Just use @c *this as the range
+             *       expression to allow for a simpler loop.  The
+             *       optimized compiled code should be quite tight.
+             */
             for (auto & elem : *this)
                 elem *= rhs;
 
