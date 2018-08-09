@@ -37,7 +37,7 @@ bool test_vector_initialization()
     vector_type const v1;  // Default initialize all elements to 0.
 
     constexpr vector_type::value_type n[] = { 2, 3, 5 };
-    constexpr std::initializer_list<vector_type::value_type>
+    std::initializer_list<vector_type::value_type> const
     vector_initializer_list{n[0], n[1], n[2]};
 
     vector_type const v2{vector_initializer_list};
