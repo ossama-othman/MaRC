@@ -176,7 +176,7 @@ namespace MaRC
             if (row >= M)
                 throw std::out_of_range("Out of range vector index");
 
-          return this->vector_[row];
+            return this->vector_[row];
         }
 
         /**
@@ -309,7 +309,10 @@ namespace MaRC
         }
 
         /**
-         * @brief Obtain magnitude of this vector.
+         * @brief Obtain magnitude (norm) of this vector.
+         *
+         * @todo Should we rename this method to @c norm() to be
+         *       consistent with linear algebra conventions?
          *
          * @return Magnitude of this vector.
          */
@@ -339,7 +342,7 @@ namespace MaRC
                 elem /= mag;
         }
 
-  private:
+    private:
 
         /// Underlying vector array.
         T vector_[M];
