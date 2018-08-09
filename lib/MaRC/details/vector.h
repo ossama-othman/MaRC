@@ -107,8 +107,8 @@ namespace MaRC
             return std::hypot(v[0], v[1]);
         }
 
-        /// Obtain magnitude of vector with one row.
         /**
+         * @brief Obtain magnitude of vector with one row.
          * This implementation returns the magnitude of vector with
          * one row.
          *
