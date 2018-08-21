@@ -40,13 +40,13 @@ MaRC::MapFactory::make_map(plot_info & info,
     T blank = Map_traits<T>::empty_value();
 
     if (std::is_integral<T>::value && info.blank()) {
+        blank = static_cast<T>(*info.blank());
+
         if (blank < std::numeric_limits<T>::lowest()
             || blank > std::numeric_limits<T>::max()) {
             throw std::invalid_argument("Blank map value does not fit "
                                         "within map data type.");
         }
-
-        blank = static_cast<T>(*info.blank());
     }
 
     T const actual_min = Map_traits<T>::minimum(info.minimum());
