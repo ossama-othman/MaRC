@@ -25,6 +25,7 @@
 #define MARC_FITS_FILE_H
 
 #include "FITS_memory.h"
+#include "FITS_traits.h"
 // #include "FITS_header.h"
 
 #include <array>
@@ -40,6 +41,24 @@ namespace MaRC
         public:
             header(fitsfile * fptr);
             ~header() = default;
+
+            char const * author() const;
+            int bitpix() const;
+            longlong_type blank() const;
+            double bscale() const;
+            char const * bunit() const;
+            double bzero() const;
+            double datamax() const;
+            double datmin() const;
+            double equinox() const;
+            char const * instrument() const;
+            int naxis() const;
+            int naxis_n(int) const;
+            char const * object() const;
+            char const * observer() const;
+            char const * origin() const;
+            char const * reference() const;
+            char const * telescope() const;
 
         private:
 
