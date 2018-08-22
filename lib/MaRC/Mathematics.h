@@ -84,7 +84,7 @@ namespace MaRC
     using std::hypot;
 
     /**
-     * @brief Compare two floating numbers for equality.
+     * @brief Compare two floating point numbers for equality.
      *
      * Floating point values cannot be reliably compared for equaility
      * using the typical @c operator==().  Determine if two floating
@@ -121,7 +121,7 @@ namespace MaRC
      *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
      */
     template<typename T>
-    typename std::enable_if_t<!std::numeric_limits<T>::is_integer, bool>
+    typename std::enable_if_t<std::is_floating_point<T>::value, bool>
     almost_equal(T x, T y, int ulp)
     {
         /*
@@ -137,7 +137,7 @@ namespace MaRC
     }
 
     /**
-     * @brief Check if floating number is almost zero.
+     * @brief Check if floating point number is almost zero.
      *
      * Determine if a floating point number is essentially zero by
      * comparing it against a small multiple of @c epsilon
@@ -165,7 +165,7 @@ namespace MaRC
      *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
      */
     template<typename T>
-    typename std::enable_if_t<!std::numeric_limits<T>::is_integer, bool>
+    typename std::enable_if_t<std::is_floating_point<T>::value, bool>
     almost_zero(T x, int n)
     {
         /**
