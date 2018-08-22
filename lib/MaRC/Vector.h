@@ -338,7 +338,7 @@ namespace MaRC
 
             auto const mag = this->magnitude();
 
-            for(auto & elem : this->vector_)
+            for (auto & elem : this->vector_)
                 elem /= mag;
         }
 

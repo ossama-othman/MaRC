@@ -121,13 +121,13 @@ namespace MaRC
                             double /* max */,
                             double & scale,
                             double & offset) const
-                {
-                    // No auto-scaling for floating point map data.
-                    scale  = 1;
-                    offset = 0;
+            {
+                // No auto-scaling for floating point map data.
+                scale  = 1;
+                offset = 0;
 
-                    return true;
-                }
+                return true;
+            }
         };
 
         /**
