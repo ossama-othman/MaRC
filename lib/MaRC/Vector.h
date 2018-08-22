@@ -101,11 +101,11 @@ namespace MaRC
          * This constructor allows a @c Vector to be list initialized
          * like so:
          * @code
-         *     Vector<int, 3> m{{0, 1, 2}};  // direct-list-initialization
+         *     Vector<int, 3> m{0, 1, 2};  // direct-list-initialization
          * @endcode
          * or:
          * @code
-         *     Vector<int, 3> m = {{0, 1, 2}}; // copy-list-initialization
+         *     Vector<int, 3> m = {0, 1, 2}; // copy-list-initialization
          * @endcode
          */
         Vector(std::initializer_list<T> rhs)

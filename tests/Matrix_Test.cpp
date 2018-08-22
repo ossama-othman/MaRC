@@ -123,17 +123,17 @@ bool test_matrix_comparison()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
-    matrix_type const m1{{{0, 1},
-                          {3, 4},
-                          {6, 7}}};
+    matrix_type const m1{{0, 1},
+                         {3, 4},
+                         {6, 7}};
 
     matrix_type const m2{m1};
 
     matrix_type const m3 = m2;
 
-    matrix_type const m4{{{2, 3},
-                          {5, 7},
-                          {11, 13}}};
+    matrix_type const m4{{2, 3},
+                         {5, 7},
+                         {11, 13}};
     return m2 == m1 && m3 == m2 && m4 != m1;
 }
 
@@ -141,20 +141,20 @@ bool test_matrix_addition()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
-    matrix_type const m1 {{{ 0, 1 },
-                           { 3, 4 },
-                           { 6, 7 }}};
+    matrix_type const m1 {{ 0, 1 },
+                          { 3, 4 },
+                          { 6, 7 }};
 
-    matrix_type const m2 {{{-1, 2 },
-                           { 4, 1 },
-                           {-2, 0 }}};
+    matrix_type const m2 {{-1, 2 },
+                          { 4, 1 },
+                          {-2, 0 }};
 
     matrix_type m3{m1};
     m3 += m2;
 
-    matrix_type const sum{{{-1, 3 },
-                           { 7, 5 },
-                           { 4, 7 }}};
+    matrix_type const sum{{-1, 3 },
+                          { 7, 5 },
+                          { 4, 7 }};
 
     return m3 == sum && m1 + m2 == sum;
 }
@@ -163,20 +163,20 @@ bool test_matrix_subtraction()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
-    matrix_type const m1  {{{ 0, 1 },
-                            { 3, 4 },
-                            { 6, 7 }}};
+    matrix_type const m1{{ 0, 1 },
+                         { 3, 4 },
+                         { 6, 7 }};
 
-    matrix_type const m2  {{{-1, 2 },
-                            { 4, 1 },
-                            {-2, 0 }}};
+    matrix_type const m2{{-1, 2 },
+                         { 4, 1 },
+                         {-2, 0 }};
 
     matrix_type m3{m1};
     m3 -= m2;
 
-    matrix_type const diff{{{ 1, -1 },
-                            {-1,  3 },
-                            { 8,  7 }}};
+    matrix_type const diff{{ 1, -1 },
+                           {-1,  3 },
+                           { 8,  7 }};
 
     return m3 == diff && m1 - m2 == diff;
 }
@@ -188,26 +188,26 @@ bool test_matrix_multiplication()
     using prod_matrix_type  = MaRC::Matrix<int, 3, 3>;
     using vector_type       = MaRC::Vector<int, 3>;
 
-    left_matrix_type  const  left{{{ 0, 1 },
-                                   { 3, 4 },
-                                   { 6, 7}}};
+    left_matrix_type  const  left{{ 0, 1 },
+                                  { 3, 4 },
+                                  { 6, 7}};
 
-    right_matrix_type const right{{{ 2,  3,  5 },
-                                   { 7, 11, 13 }}};
+    right_matrix_type const right{{ 2,  3,  5 },
+                                  { 7, 11, 13 }};
 
-    prod_matrix_type  const  prod{{{  7, 11,  13 },
+    prod_matrix_type  const  prod{{  7, 11,  13 },
                                    { 34, 53,  67 },
-                                   { 61, 95, 121 }}};
+                                   { 61, 95, 121 }};
 
-    vector_type const     v{{   2,   3,     5 }};
+    vector_type const     v{   2,   3,     5 };
 
-    vector_type const vprod{{ 112, 562,  1012 }}; // prod * v
+    vector_type const vprod{ 112, 562,  1012 }; // prod * v
 
     prod_matrix_type::value_type s = 2;
 
-    prod_matrix_type const sprod{{{  14,  22,  26 },
-                                  {  68, 106, 134 },
-                                  { 122, 190, 242 }}}; //  prod * s
+    prod_matrix_type const sprod{{  14,  22,  26 },
+                                 {  68, 106, 134 },
+                                 { 122, 190, 242 }}; //  prod * s
 
     return
         left * right == prod
@@ -220,12 +220,12 @@ bool test_matrix_transpose()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
-    matrix_type const m{{{0, 1 },
-                         {3, 4 },
-                         {6, 7}}};
+    matrix_type const m{{0, 1},
+                        {3, 4},
+                        {6, 7}};
 
-    matrix_type::transpose_type const expected_t{{{0, 3, 6},
-                                                  {1, 4, 7}}};
+    matrix_type::transpose_type const expected_t{{0, 3, 6},
+                                                 {1, 4, 7}};
 
     auto const t(MaRC::transpose(m));
 

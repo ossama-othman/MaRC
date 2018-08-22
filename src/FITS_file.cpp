@@ -127,7 +127,7 @@ MaRC::FITS::data::read(std::vector<double> & image) const
      *
      * @attention First pixel in CFITSIO is { 1, 1 } not { 0, 0 }.
      */
-    naxes_array_type fpixel{{ 1 , 1 }};
+    naxes_array_type fpixel{ 1 , 1 };
 
     // For integer typed FITS images with a BLANK value, set the
     // "blank" value in our floating point converted copy of the image

@@ -106,10 +106,10 @@ bool test_vector_comparison()
 {
     using vector_type = MaRC::Vector<int, 3>;
 
-    vector_type const v1{{ 2, 3, 5 }};
+    vector_type const v1{ 2, 3, 5 };
     vector_type const v2{v1};
     vector_type const v3 = v2;
-    vector_type const v4{{ 7, 11, 13 }};
+    vector_type const v4{ 7, 11, 13 };
 
     return v2 == v1 && v3 == v2 && v4 != v1;
 }
@@ -118,12 +118,12 @@ bool test_vector_addition()
 {
     using vector_type = MaRC::Vector<int, 3>;
 
-    vector_type const v1 {{  2, 3, 5 }};
-    vector_type const v2 {{ -1, 4, 0 }};
+    vector_type const v1{  2, 3, 5 };
+    vector_type const v2{ -1, 4, 0 };
     vector_type v3{v1};
     v3 += v2;
 
-    vector_type const sum{{ 1, 7, 5 }};
+    vector_type const sum{ 1, 7, 5 };
 
     return v3 == sum && v1 + v2 == sum;
 }
@@ -132,12 +132,12 @@ bool test_vector_subtraction()
 {
     using vector_type = MaRC::Vector<int, 3>;
 
-    vector_type const v1 {{  2, 3, 5 }};
-    vector_type const v2 {{ -1, 4, 0 }};
+    vector_type const v1{  2, 3, 5 };
+    vector_type const v2{ -1, 4, 0 };
     vector_type v3{v1};
     v3 -= v2;
 
-    vector_type const diff{{ 3, -1, 5 }};
+    vector_type const diff{ 3, -1, 5 };
 
     return v3 == diff && v1 - v2 == diff;
 }
@@ -146,14 +146,14 @@ bool test_vector_multiplication()
 {
     using vector_type = MaRC::Vector<int, 3>;
 
-    vector_type const v1 {{ 2, 3,  5 }};
+    vector_type const v1{ 2, 3,  5 };
 
     vector_type::value_type s = 2;
 
     vector_type v2{v1};
     v2 *= s;
 
-    vector_type const prod {{ 4, 6, 10 }};
+    vector_type const prod{ 4, 6, 10 };
 
     return v2 == prod && v1 * s == prod && s * v1 == prod;
 }
