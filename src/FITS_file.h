@@ -28,37 +28,57 @@
 #include "FITS_traits.h"
 // #include "FITS_header.h"
 
+#include <MaRC/optional.h>
+
 #include <array>
 #include <vector>
+#include <string>
 
 
 namespace MaRC
 {
     namespace FITS
     {
+        /**
+         * @class header
+         *
+         * @brief Class that encapsulates standard FITS header
+         *        keywords.
+         *
+         * @todo FITS keyword values are not cached during the first
+         *       access.  Should they?
+         */
         class header
         {
         public:
+
+            /// Constructor
             header(fitsfile * fptr);
+
+            /// Destructor
             ~header() = default;
 
-            char const * author() const;
+            // Prevent copying.
+            header(header const &) = delete;
+            void operator=(header const &) = delete;
+
+            MaRC::optional<std::string> author() const;
             int bitpix() const;
-            longlong_type blank() const;
-            double bscale() const;
-            char const * bunit() const;
-            double bzero() const;
-            double datamax() const;
-            double datmin() const;
-            double equinox() const;
-            char const * instrument() const;
+            MaRC::optional<longlong_type> blank() const;
+            MaRC::optional<double> bscale() const;
+            MaRC::optional<std::string> bunit() const;
+            MaRC::optional<double> bzero() const;
+            MaRC::optional<double> datamax() const;
+            MaRC::optional<double> datamin() const;
+            MaRC::optional<double> equinox() const;
+            MaRC::optional<std::string> instrument() const;
             int naxis() const;
-            int naxis_n(int) const;
-            char const * object() const;
-            char const * observer() const;
-            char const * origin() const;
-            char const * reference() const;
-            char const * telescope() const;
+            std::array<long, 3> naxes() const;
+            MaRC::optional<std::string> object() const;
+            MaRC::optional<std::string> observer() const;
+            MaRC::optional<std::string> origin() const;
+            MaRC::optional<std::string> reference() const;
+            MaRC::optional<std::string> telescope() const;
 
         private:
 
@@ -69,8 +89,16 @@ namespace MaRC
         class data
         {
         public:
+
+            /// Constructor
             data(fitsfile * fptr);
+
+            /// Destructor
             ~data() = default;
+
+            // Prevent copying.
+            data(data const &) = delete;
+            void operator=(data const &) = delete;
 
             std::size_t samples() const
             {

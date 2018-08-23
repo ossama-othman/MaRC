@@ -34,6 +34,11 @@ namespace MaRC
 {
     namespace
     {
+        /**
+         * @brief Throw an exception if a CFITSIO error occurred.
+         *
+         * @throw std::runtime_error CFITSIO error occurred.
+         */
         void throw_on_cfitsio_error(int status)
         {
             if (status != 0) {
@@ -70,6 +75,88 @@ namespace MaRC
 
             return fptr;
         }
+
+        /**
+         * @brief Get the value of the given FITS keyword.
+         *
+         * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
+         * @param[in] key  FITS keyword.
+         *
+         * @return Value corresponding to @a key.  If no such key
+         *         exists in the FITS file the
+         *         @c MaRC::optional<>::has_value() method of the
+         *         returned value will return @c false.
+         */
+        template <typename T>
+        MaRC::optional<T>
+        read_fits_key(fitsfile * fptr, char const * key)
+        {
+            MaRC::optional<T> optional_value;
+
+            int status = 0;
+            T value = 0;
+            if (fits_read_key(fptr,
+                              FITS::traits<T>::datatype,
+                              key,
+                              &value,
+                              nullptr, // comment
+                              &status) == 0)
+                optional_value = MaRC::make_optional(value);
+            else if (status != KEY_NO_EXIST) {
+                throw_on_cfitsio_error(status);
+            }
+
+            return optional_value;
+        }
+
+        /**
+         * @brief Get the string value of the given FITS keyword.
+         *
+         * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
+         * @param[in] key  FITS keyword.
+         *
+         * @return String value corresponding to @a key.  If no such
+         *         key exists in the FITS file the
+         *         @c MaRC::optional<>::has_value() method of the
+         *         returned value will return @c false.
+         */
+        MaRC::optional<std::string>
+        read_fits_string_key(fitsfile * fptr, char const * key)
+        {
+            int length = 0;  // CFITSIO wants 'int'.
+            int status = 0;
+
+            if (fits_get_key_strlen(fptr,
+                                    key,
+                                    &length,
+                                    &status) != 0
+                && status != KEY_NO_EXIST) {
+                throw_on_cfitsio_error(status);
+            }
+
+            MaRC::optional<std::string> optional_value;
+
+            if (status == 0) {  // key exists
+                std::string value(length + 1, '\0');
+                constexpr int firstchar = 1;
+
+                if (fits_read_string_key(fptr,
+                                         key,
+                                         firstchar,
+                                         length,
+                                         &value[0], // data() is const
+                                                    // until C++17
+                                         nullptr, // valuelen
+                                         nullptr, // comm
+                                         &status) != 0) {
+                    throw_on_cfitsio_error(status);
+                }
+
+                optional_value = MaRC::make_optional(value);
+            }
+
+            return optional_value;
+        }
     }
 }
 
@@ -78,6 +165,161 @@ namespace MaRC
 MaRC::FITS::header::header(fitsfile * fptr)
     : fptr_{fptr}
 {
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::author() const
+{
+    constexpr char const key[] = "AUTHOR";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+int
+MaRC::FITS::header::bitpix() const
+{
+    int bp = 0;
+    int status = 0;
+
+    if (fits_get_img_type(this->fptr_,
+                          &bp,
+                          &status) != 0)
+        throw_on_cfitsio_error(status);
+
+    return bp;
+}
+
+MaRC::optional<MaRC::FITS::longlong_type>
+MaRC::FITS::header::blank() const
+{
+    constexpr char const key[] = "BLANK";
+
+    return read_fits_key<longlong_type>(this->fptr_, key);
+}
+
+MaRC::optional<double>
+MaRC::FITS::header::bscale() const
+{
+    constexpr char const key[] = "BSCALE";
+
+    return read_fits_key<double>(this->fptr_, key);
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::bunit() const
+{
+    constexpr char const key[] = "BUNIT";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+MaRC::optional<double>
+MaRC::FITS::header::bzero() const
+{
+    constexpr char const key[] = "BZERO";
+
+    return read_fits_key<double>(this->fptr_, key);
+}
+
+MaRC::optional<double>
+MaRC::FITS::header::datamax() const
+{
+    constexpr char const key[] = "DATAMAX";
+
+    return read_fits_key<double>(this->fptr_, key);
+}
+
+MaRC::optional<double>
+MaRC::FITS::header::datamin() const
+{
+    constexpr char const key[] = "DATAMIN";
+
+    return read_fits_key<double>(this->fptr_, key);
+}
+
+MaRC::optional<double>
+MaRC::FITS::header::equinox() const
+{
+    constexpr char const key[] = "EQUINOX";
+
+    return read_fits_key<double>(this->fptr_, key);
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::instrument() const
+{
+    constexpr char const key[] = "INSTRUME";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+int
+MaRC::FITS::header::naxis() const
+{
+    int n = 0;
+    int status = 0;
+
+    if (fits_get_img_dim(this->fptr_,
+                         &n,
+                         &status) != 0)
+        throw_on_cfitsio_error(status);
+
+    return n;
+}
+
+std::array<long, 3>
+MaRC::FITS::header::naxes() const
+{
+    std::array<long, 3> n;
+    int status = 0;
+
+    if (fits_get_img_size(this->fptr_,
+                          n.size(),
+                          n.data(),
+                          &status) != 0)
+        throw_on_cfitsio_error(status);
+
+    return n;
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::object() const
+{
+    constexpr char const key[] = "OBJECT";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::observer() const
+{
+    constexpr char const key[] = "OBSERVER";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::origin() const
+{
+    constexpr char const key[] = "ORIGIN";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::reference() const
+{
+    constexpr char const key[] = "REFERENC";
+
+    return read_fits_string_key(this->fptr_, key);
+}
+
+MaRC::optional<std::string>
+MaRC::FITS::header::telescope() const
+{
+    constexpr char const key[] = "TELESCOP";
+
+    return read_fits_string_key(this->fptr_, key);
 }
 
 // ----------------------------------------------------------------
@@ -112,6 +354,7 @@ MaRC::FITS::data::data(fitsfile * fptr)
 void
 MaRC::FITS::data::read(std::vector<double> & image) const
 {
+    // CFITSIO wants its own LONGLONG type, not size_t.
     LONGLONG const nelements =
         static_cast<LONGLONG>(this->naxes_[0]) * this->naxes_[1];
 
@@ -120,14 +363,19 @@ MaRC::FITS::data::read(std::vector<double> & image) const
 
     constexpr auto nan = std::numeric_limits<value_type>::signaling_NaN();
 
+    /**
+     * @todo Should we bother initializing the image vector with NaN?
+     *       CFITSIO will just overwrite each element regardless,
+     *       right?
+     */
     image_type tmp(nelements, nan);
 
     /**
      * First pixel to be read.
      *
-     * @attention First pixel in CFITSIO is { 1, 1 } not { 0, 0 }.
+     * @attention First pixel in CFITSIO is {1, 1} not {0, 0}.
      */
-    constexpr naxes_array_type fpixel{ 1 , 1 };
+    constexpr naxes_array_type fpixel{1, 1};
 
     // For integer typed FITS images with a BLANK value, set the
     // "blank" value in our floating point converted copy of the image
