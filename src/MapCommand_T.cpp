@@ -53,6 +53,9 @@ void
 MaRC::MapCommand_T<T>::initialize_FITS_image(fitsfile * fptr,
                                              int & status)
 {
+    // The CFITSIO 'naxes' value is of type 'long'.  It is extremely
+    // unlikely that a map with more than LONG_MAX planes will ever be
+    // created, so this implicit conversion should be safe.
     long const planes = this->image_factories_.size();
 
     int const naxis =
