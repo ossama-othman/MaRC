@@ -115,12 +115,11 @@ namespace MaRC
          * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
          * @param[in] key  FITS keyword.
          *
-         * @return String value corresponding to @a key.  If no such
-         *         key exists in the FITS file the
-         *         @c MaRC::optional<>::has_value() method of the
-         *         returned value will return @c false.
+         * @return String value corresponding to @a key.  The returned
+         *         string will be empty if no such key exists in the
+         *         FITS file.
          */
-        MaRC::optional<std::string>
+        std::string
         read_fits_string_key(fitsfile * fptr, char const * key)
         {
             int length = 0;  // CFITSIO wants 'int'.
@@ -134,10 +133,10 @@ namespace MaRC
                 throw_on_cfitsio_error(status);
             }
 
-            MaRC::optional<std::string> optional_value;
+            std::string value;
 
             if (status == 0) {  // key exists
-                std::string value(length + 1, '\0');
+                value.resize(length + 1, '\0');
                 constexpr int firstchar = 1;
 
                 if (fits_read_string_key(fptr,
@@ -151,11 +150,9 @@ namespace MaRC
                                          &status) != 0) {
                     throw_on_cfitsio_error(status);
                 }
-
-                optional_value = MaRC::make_optional(value);
             }
 
-            return optional_value;
+            return value;
         }
     }
 }
@@ -167,7 +164,7 @@ MaRC::FITS::header::header(fitsfile * fptr)
 {
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::author() const
 {
     constexpr char const key[] = "AUTHOR";
@@ -205,7 +202,7 @@ MaRC::FITS::header::bscale() const
     return read_fits_key<double>(this->fptr_, key);
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::bunit() const
 {
     constexpr char const key[] = "BUNIT";
@@ -245,7 +242,7 @@ MaRC::FITS::header::equinox() const
     return read_fits_key<double>(this->fptr_, key);
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::instrument() const
 {
     constexpr char const key[] = "INSTRUME";
@@ -282,7 +279,7 @@ MaRC::FITS::header::naxes() const
     return n;
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::object() const
 {
     constexpr char const key[] = "OBJECT";
@@ -290,7 +287,7 @@ MaRC::FITS::header::object() const
     return read_fits_string_key(this->fptr_, key);
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::observer() const
 {
     constexpr char const key[] = "OBSERVER";
@@ -298,7 +295,7 @@ MaRC::FITS::header::observer() const
     return read_fits_string_key(this->fptr_, key);
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::origin() const
 {
     constexpr char const key[] = "ORIGIN";
@@ -306,7 +303,7 @@ MaRC::FITS::header::origin() const
     return read_fits_string_key(this->fptr_, key);
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::reference() const
 {
     constexpr char const key[] = "REFERENC";
@@ -314,7 +311,7 @@ MaRC::FITS::header::reference() const
     return read_fits_string_key(this->fptr_, key);
 }
 
-MaRC::optional<std::string>
+std::string
 MaRC::FITS::header::telescope() const
 {
     constexpr char const key[] = "TELESCOP";
@@ -345,10 +342,11 @@ MaRC::FITS::data::data(fitsfile * fptr)
     if (naxis < static_cast<int>(this->naxes_.size()))
         throw std::runtime_error("too few dimensions in FITS image");
 
+    // Smallest image size MaRC will accept is 2x2.  Even that is too
+    // small, but let's not be too picky.
     constexpr naxes_array_type::value_type mindim = 2;
-    for (auto const n : this->naxes_)
-        if (n < mindim)
-            throw("image dimension is too small");
+    if (this->naxes_[0] < mindim || this->naxes_[1] < mindim)
+        throw std::runtime_error("image dimension is too small");
 }
 
 void
