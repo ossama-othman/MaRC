@@ -23,18 +23,18 @@
 #include "PhotoImageFactory.h"
 #include "FITS_file.h"
 
-#include "MaRC/PhotoImage.h"
+#include "marc/PhotoImage.h"
 
 // Geometric correction strategies
-#include "MaRC/GLLGeometricCorrection.h"
+#include "marc/GLLGeometricCorrection.h"
 
 // Photometric correction strategies
-//#include "MaRC/MinnaertPhotometricCorrection.h"
+//#include "marc/MinnaertPhotometricCorrection.h"
 
 // Interpolation strategies
-#include "MaRC/BilinearInterpolation.h"
+#include "marc/BilinearInterpolation.h"
 
-#include "MaRC/utility.h"
+#include "marc/utility.h"
 
 #include <limits>
 #include <stdexcept>

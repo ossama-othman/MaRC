@@ -26,7 +26,7 @@
 
 #include "PhotoImageFactory.h"
 
-#include "MaRC/MosaicImage.h"
+#include "marc/MosaicImage.h"
 
 #include <list>
 

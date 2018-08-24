@@ -25,7 +25,7 @@
 #ifndef MARC_PROGRESS_CONSOLE_H
 #define MARC_PROGRESS_CONSOLE_H
 
-#include <MaRC/Observer.h>
+#include <marc/Observer.h>
 
 
 namespace MaRC

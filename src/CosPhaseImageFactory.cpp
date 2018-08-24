@@ -22,8 +22,8 @@
 
 #include "CosPhaseImageFactory.h"
 
-#include "MaRC/CosPhaseImage.h"
-#include "MaRC/DefaultConfiguration.h"
+#include "marc/CosPhaseImage.h"
+#include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
 

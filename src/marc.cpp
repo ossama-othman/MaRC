@@ -26,8 +26,8 @@
 #include "lexer.hh"
 #include "MapCommand.h"
 
-#include <MaRC/config.h>
-#include <MaRC/Log.h>
+#include <marc/config.h>
+#include <marc/Log.h>
 
 #include <string>
 #include <cstdio>

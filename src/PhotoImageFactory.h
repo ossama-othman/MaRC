@@ -26,8 +26,8 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/PhotoImageParameters.h"
-#include "MaRC/ViewingGeometry.h"
+#include "marc/PhotoImageParameters.h"
+#include "marc/ViewingGeometry.h"
 
 #include <vector>
 #include <string>

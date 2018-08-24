@@ -22,8 +22,8 @@
 
 #include "MuImageFactory.h"
 
-#include "MaRC/MuImage.h"
-#include "MaRC/DefaultConfiguration.h"
+#include "marc/MuImage.h"
+#include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
 

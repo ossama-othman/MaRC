@@ -47,10 +47,10 @@ LT_INIT([disable-static])
 
 AC_CONFIG_MACRO_DIRS([m4])
 
-AC_CONFIG_SRCDIR([lib/MaRC/PhotoImage.h])
+AC_CONFIG_SRCDIR([lib/marc/PhotoImage.h])
 
 dnl Generate a header file with all settings.
-AC_CONFIG_HEADERS([lib/MaRC/config.h])
+AC_CONFIG_HEADERS([lib/marc/config.h])
 
 dnl Checks for programs.
 AC_PROG_CXX
@@ -86,7 +86,7 @@ dnl
 dnl config.h template
 dnl
 
-dnl Text to be placed at the top of the `MaRC/config.h' header.
+dnl Text to be placed at the top of the `marc/config.h' header.
 AH_TOP([
 /**
  * @file config.h
@@ -101,7 +101,7 @@ AH_TOP([
 
 ])
 
-dnl Text to be placed at the bottom of the `MaRC/config.h' header.
+dnl Text to be placed at the bottom of the `marc/config.h' header.
 AH_BOTTOM([
 #endif   /* MARC_CONFIG_H */
 
@@ -195,8 +195,8 @@ AS_IF([test "x$ax_enable_debug" != "xyes"],
                              [AX_APPEND_FLAG([$marc_lto_flag],
                                              [XCXXFLAGS])])
 
-       dnl NDEBUG is defined in <MaRC/config.h> but also define it on
-       dnl the command line to avoid having to include <MaRC/config.h>
+       dnl NDEBUG is defined in <marc/config.h> but also define it on
+       dnl the command line to avoid having to include <marc/config.h>
        dnl in MaRC headers or template code.
        dnl AX_APPEND_FLAG([-DNDEBUG], [XCPPFLAGS])
       ])
@@ -228,7 +228,7 @@ AC_CONFIG_FILES([
   Makefile
   doc/Makefile
   lib/Makefile
-  lib/MaRC/Makefile
+  lib/marc/Makefile
   src/Makefile
   tests/Makefile
 ])

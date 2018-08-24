@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/optional.h>
+#include <marc/optional.h>
 
 #include <string>
 #include <type_traits>

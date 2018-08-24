@@ -23,7 +23,7 @@
 #include "FITS_file.h"
 #include "FITS_traits.h"
 
-#include <MaRC/Log.h>
+#include <marc/Log.h>
 
 #include <limits>
 #include <type_traits>

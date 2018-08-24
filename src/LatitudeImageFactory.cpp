@@ -22,8 +22,8 @@
 
 #include "LatitudeImageFactory.h"
 
-#include "MaRC/LatitudeImage.h"
-#include "MaRC/DefaultConfiguration.h"
+#include "marc/LatitudeImage.h"
+#include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
 

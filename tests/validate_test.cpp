@@ -18,8 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/Validate.h>
-#include <MaRC/Mathematics.h>
+#include <marc/Validate.h>
+#include <marc/Mathematics.h>
 
 #include <functional>
 

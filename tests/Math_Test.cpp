@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/Mathematics.h>
+#include <marc/Mathematics.h>
 
 #include <cstdint>
 

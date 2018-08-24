@@ -18,11 +18,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/LatitudeImage.h>
-#include <MaRC/OblateSpheroid.h>
-#include <MaRC/DefaultConfiguration.h>
-#include <MaRC/Mathematics.h>
-#include <MaRC/Constants.h>
+#include <marc/LatitudeImage.h>
+#include <marc/OblateSpheroid.h>
+#include <marc/DefaultConfiguration.h>
+#include <marc/Mathematics.h>
+#include <marc/Constants.h>
 
 #include <memory>
 #include <cstdint>

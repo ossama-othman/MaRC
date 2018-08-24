@@ -18,8 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/root_find.h>
-#include <MaRC/Mathematics.h>
+#include <marc/root_find.h>
+#include <marc/Mathematics.h>
 
 
 bool test_root_find()

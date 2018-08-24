@@ -27,8 +27,8 @@
 #include "ImageFactory.h"
 #include "FITS_traits.h"
 
-#include <MaRC/MapFactory.h>
-#include <MaRC/optional.h>
+#include <marc/MapFactory.h>
+#include <marc/optional.h>
 
 #include <fitsio.h>
 

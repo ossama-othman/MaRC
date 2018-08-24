@@ -22,7 +22,7 @@
 
 #include "command_line.h"
 
-#include <MaRC/config.h>
+#include <marc/config.h>
 
 #include <cassert>
 

@@ -34,22 +34,22 @@
 #include "LongitudeImageFactory.h"
 
 // BodyData strategies
-#include <MaRC/OblateSpheroid.h>
+#include <marc/OblateSpheroid.h>
 
 // Image parameters
-#include <MaRC/PhotoImageParameters.h>
-#include <MaRC/ViewingGeometry.h>
+#include <marc/PhotoImageParameters.h>
+#include <marc/ViewingGeometry.h>
 
 // Map Strategies
-#include <MaRC/Mercator.h>
-#include <MaRC/Orthographic.h>
-#include <MaRC/PolarStereographic.h>
-#include <MaRC/SimpleCylindrical.h>
+#include <marc/Mercator.h>
+#include <marc/Orthographic.h>
+#include <marc/PolarStereographic.h>
+#include <marc/SimpleCylindrical.h>
 
-#include <MaRC/Constants.h>
-#include <MaRC/DefaultConfiguration.h>
+#include <marc/Constants.h>
+#include <marc/DefaultConfiguration.h>
 
-#include <MaRC/Log.h>
+#include <marc/Log.h>
 
 #include "parse_scan.h"
 #include "parse.hh"

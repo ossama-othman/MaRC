@@ -24,10 +24,10 @@
 #include "FITS_traits.h"
 #include "FITS_memory.h"
 
-#include <MaRC/VirtualImage.h>
-#include <MaRC/Mathematics.h>
-#include <MaRC/Log.h>
-#include <MaRC/config.h>
+#include <marc/VirtualImage.h>
+#include <marc/Mathematics.h>
+#include <marc/Log.h>
+#include <marc/config.h>
 
 #include <fitsio.h>
 

@@ -55,7 +55,7 @@ marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
 marc_LDADD    = \
   $(CFITSIO_LIBS) \
   $(ARGP_LIBS) \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \

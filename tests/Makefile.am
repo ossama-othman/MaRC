@@ -18,7 +18,7 @@
 
 include $(top_srcdir)/aminclude_static.am
 
-MARC_LIB = $(top_builddir)/lib/MaRC/libMaRC.la
+MARC_LIB = $(top_builddir)/lib/marc/libMaRC.la
 
 AM_CPPFLAGS = -I$(top_srcdir)/lib $(CODE_COVERAGE_CPPFLAGS)
 AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
@@ -42,9 +42,9 @@ check_PROGRAMS =            \
   utility_test              \
   validate_test
 
-dist_check_SCRIPTS = MaRC_Prog_Test.sh command_line_test.sh
+dist_check_SCRIPTS = marc_program_test.sh command_line_test.sh
 
-dist_check_DATA = \
+nobase_dist_check_DATA = \
   config/marc \
   test_map.marc \
   test.fits.gz
@@ -63,12 +63,12 @@ Matrix_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 Geometry_Test_SOURCES = Geometry_Test.cpp
 Geometry_Test_LDADD = \
-   $(top_builddir)/lib/MaRC/libMaRC.la \
+   $(top_builddir)/lib/marc/libMaRC.la \
    $(CODE_COVERAGE_LIBS)
 
 OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
 OblateSpheroid_Test_LDADD = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 Scale_Offset_Test_SOURCES = Scale_Offset_Test.cpp
@@ -76,37 +76,37 @@ Scale_Offset_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 LatitudeImage_Test_SOURCES = LatitudeImage_Test.cpp
 LatitudeImage_Test_LDADD = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 LongitudeImage_Test_SOURCES = LongitudeImage_Test.cpp
 LongitudeImage_Test_LDADD = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
 ViewingGeometry_Test_LDADD = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 Mercator_Test_SOURCES = Mercator_Test.cpp
 Mercator_Test_LDADD = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 optional_test_SOURCES = optional_test.cpp
 optional_test_LDADD   = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 root_find_test_SOURCES = root_find_test.cpp
 root_find_test_LDADD   = \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 utility_test_SOURCES = utility_test.cpp
@@ -149,3 +149,11 @@ clean-local: code-coverage-clean
 	fi
 
 dist-clean-local: code-coverage-dist-clean
+
+# The LD_LIBRARY_PATH environment variable may need to be explicitly
+# set when running `make installcheck' if the directory where the MaRC
+# library was installed is not be known to the dynamic linker, e.g.:
+#
+#     LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib make installcheck
+installcheck-local:
+	$(top_srcdir)/tests/marc_program_test.sh -p $(DESTDIR)$(bindir)/marc -t $(top_srcdir)/tests > /dev/null

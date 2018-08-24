@@ -18,9 +18,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/ViewingGeometry.h>
-#include <MaRC/OblateSpheroid.h>
-#include <MaRC/Constants.h>
+#include <marc/ViewingGeometry.h>
+#include <marc/OblateSpheroid.h>
+#include <marc/Constants.h>
 
 
 namespace

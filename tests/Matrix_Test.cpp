@@ -18,8 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/Vector.h>
-#include <MaRC/Matrix.h>
+#include <marc/Vector.h>
+#include <marc/Matrix.h>
 
 #include <algorithm>
 

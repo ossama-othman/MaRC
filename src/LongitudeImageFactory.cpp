@@ -22,8 +22,8 @@
 
 #include "LongitudeImageFactory.h"
 
-#include "MaRC/LongitudeImage.h"
-#include "MaRC/DefaultConfiguration.h"
+#include "marc/LongitudeImage.h"
+#include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
 

@@ -24,8 +24,8 @@
 #include "FITS_traits.h"
 #include "ProgressConsole.h"
 
-#include <MaRC/MapFactory.h>
-#include <MaRC/VirtualImage.h>  // For scale_and_offset()
+#include <marc/MapFactory.h>
+#include <marc/VirtualImage.h>  // For scale_and_offset()
 
 #include <cassert>
 #include <iostream>
