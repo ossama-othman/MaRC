@@ -42,6 +42,51 @@ namespace
     static_assert (a > c,
                    "Test equatorial radius less than or equal "
                    "to polar radius");
+
+#ifdef MARC_USE_CROSS_PRODUCT
+    void
+    cross_product(MaRC::DVector const & u,
+                  MaRC::DVector const & v,
+                  MaRC::DVector & cp)
+    {
+        cp[0] = u[1] * v[2] - u[2] * v[1];
+        cp[1] = u[0] * v[2] - u[2] * v[0];
+        cp[2] = u[0] * v[1] - u[1] * v[0];
+    }
+#endif
+
+    double cos_included_angle(MaRC::DVector const & u,
+                              MaRC::DVector const & v)
+    {
+#ifdef MARC_USE_CROSS_PRODUCT
+        /**
+         * @todo There doesn't appear to be a real need to use this
+         *       approach in MaRC since we only need to know the
+         *       cosine of the angle between the vectors, not the
+         *       angle itself.  Confirm.
+         */
+        MaRC::DVector cp;
+        cross_product(u, v, cp);
+
+        // Obtaining the angle, theta, between two vectors using the
+        // dot product based approach, i.e.:
+        //
+        //     acos(dot_product(u,v)/(norm(u)*norm(v)))
+        //
+        // is inaccurate when the angle is small.  Leverage the sine
+        // and cosine of the angle via the cross and dot products as
+        // arguments to the atan2() function, respectively, to get a
+        // better behaved result when the angle is very small:
+        //
+        //   atan2(norm(cross(u,v)), dot(u,v))
+        double const theta =
+            std::atan2(cp.magnitude(), MaRC::dot_product(u, v));
+
+        return std::cos(theta);
+#else
+        return MaRC::dot_product(u, v) / (u.magnitude() * v.magnitude());
+#endif
+    }
 }
 
 bool test_initialization()
@@ -129,36 +174,176 @@ bool test_latitudes()
 
 bool test_mu()
 {
-    /**
-     * @todo Test @c OblateSpheroid::mu() method.
-     */
-#if 0
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
     constexpr double sub_observ_lat = 42  * C::degree;
     constexpr double sub_observ_lon = 247 * C::degree;
-#endif
+    constexpr double lat            = -75  * C::degree;
+    constexpr double lon            = 185 * C::degree;
+    constexpr double range          = a * 200;  // Multiple of
+                                                // equatorial radius.
 
-    return true;
+    // Cosine of the emission angle.
+    double const mu = o->mu(sub_observ_lat,
+                            sub_observ_lon,
+                            lat,
+                            lon,
+                            range);
+
+    /**
+     * @todo Refactor vector calculations in @c test_mu(),
+     *       @c test_mu0() and @c test_cos_phase() functions.
+     */
+
+    // Vector from the observer (e.g. spacecraft) to the center of the
+    // oblate spheroid (e.g. planet) in body coordindates,
+    MaRC::DVector const ro =
+        {
+            range * cos(sub_observ_lat) * cos(sub_observ_lon),
+            range * cos(sub_observ_lat) * sin(sub_observ_lon),
+            range * sin(sub_observ_lat)
+        };
+
+    double const radius = o->centric_radius(lat);
+
+    // Vector from the center of the oblate spheroid to the point on
+    // the surface at the given latitude and longitude.
+    MaRC::DVector const re = { radius * cos(lat) * cos(lon),
+                               radius * cos(lat) * sin(lon),
+                               radius * sin(lat) };
+
+    // Vector from the observer to the point on the surface at the
+    // given latitude longitude, e.g. the camera optical axis.
+    MaRC::DVector const rc = ro - re;
+
+    double const a2 = a * a;
+    double const c2 = c * c;
+
+    // Normal vector at (lat, lon) (i.e. grad(f(x, y, z))).
+    MaRC::DVector const rn = { 2 * re[0] / a2,
+                               2 * re[1] / a2,
+                               2 * re[2] / c2 };
+
+    // Cosine of angle between the "camera vector" and the vector
+    // normal to the surface at (lat, lon), the emission angle in
+    // this case.
+    double const mu_2 = cos_included_angle(rc, rn);
+
+    return MaRC::almost_equal(mu, mu_2, ulps);
 }
 
 bool test_mu0()
 {
-    /**
-     * @todo Test @c OblateSpheroid::mu0() method.
-     */
+    auto const o =
+        std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
-    return true;
+    constexpr double sub_solar_lat = -65 * C::degree;
+    constexpr double sub_solar_lon = 135 * C::degree;
+    constexpr double lat           =  47 * C::degree;
+    constexpr double lon           = 330 * C::degree;
+
+    // Cosine of the incidence angle.
+    double const mu0 = o->mu0(sub_solar_lat,
+                              sub_solar_lon,
+                              lat,
+                              lon);
+
+    // We assume the Sun is an infinite distance away from the body.
+
+    // Unit vector from the Sun to the center of the oblate spheroid
+    // (e.g. planet) in body coordindates.
+    MaRC::DVector const rs =
+        {
+            cos(sub_solar_lat) * cos(sub_solar_lon),
+            cos(sub_solar_lat) * sin(sub_solar_lon),
+            sin(sub_solar_lat)
+        };
+
+    double const radius = o->centric_radius(lat);
+
+    // Vector from the center of the oblate spheroid to the point on
+    // the surface at the given latitude and longitude.
+    MaRC::DVector const re = { radius * cos(lat) * cos(lon),
+                               radius * cos(lat) * sin(lon),
+                               radius * sin(lat) };
+
+    double const a2 = a * a;
+    double const c2 = c * c;
+
+    // Normal vector at (lat, lon) (i.e. grad(f(x, y, z))).
+    MaRC::DVector const rn = { 2 * re[0] / a2,
+                               2 * re[1] / a2,
+                               2 * re[2] / c2 };
+
+    // Cosine of angle between the Sun and the vector normal to the
+    // surface at (lat, lon), the incidence angle in this case.
+    double const mu0_2 = cos_included_angle(rs, rn);
+
+    return MaRC::almost_equal(mu0, mu0_2, ulps);
 }
 
 bool test_cos_phase()
 {
-    /**
-     * @todo Test @c OblateSpheroid::cos_phase() method.
-     */
+    auto const o =
+        std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
 
-    return true;
+    constexpr double sub_observ_lat = -67 * C::degree;
+    constexpr double sub_observ_lon =  15 * C::degree;
+    constexpr double sub_solar_lat  =  31 * C::degree;
+    constexpr double sub_solar_lon  = 198 * C::degree;
+    constexpr double lat            =  29 * C::degree;
+    constexpr double lon            = 330 * C::degree;
+    constexpr double range          = a * 300;  // Multiple of
+                                                // equatorial radius.
+
+    // Cosine of the phase angle (cos(phi)).
+    double const cos_phase = o->cos_phase(sub_observ_lat,
+                                          sub_observ_lon,
+                                          sub_solar_lat,
+                                          sub_solar_lon,
+                                          lat,
+                                          lon,
+                                          range);
+
+    // Vector from the observer (e.g. spacecraft) to the center of the
+    // oblate spheroid (e.g. planet) in body coordindates,
+    MaRC::DVector const ro =
+        {
+            range * cos(sub_observ_lat) * cos(sub_observ_lon),
+            range * cos(sub_observ_lat) * sin(sub_observ_lon),
+            range * sin(sub_observ_lat)
+        };
+
+    double const radius = o->centric_radius(lat);
+
+    // Vector from the center of the oblate spheroid to the point on
+    // the surface at the given latitude and longitude.
+    MaRC::DVector const re = { radius * cos(lat) * cos(lon),
+                               radius * cos(lat) * sin(lon),
+                               radius * sin(lat) };
+
+    // Vector from the observer to the point on the surface at the
+    // given latitude longitude, e.g. the camera optical axis.
+    MaRC::DVector const rc = ro - re;
+
+    // We assume the Sun is an infinite distance away from the body.
+
+    // Unit vector from the Sun to the center of the oblate spheroid
+    // (e.g. planet) in body coordindates,
+    MaRC::DVector const rs =
+        {
+            cos(sub_solar_lat) * cos(sub_solar_lon),
+            cos(sub_solar_lat) * sin(sub_solar_lon),
+            sin(sub_solar_lat)
+        };
+
+    // Cosine of angle between the Sun and the vector from the
+    // observer to the point on the surface at (lat, lon), the phase
+    // angle in this case.
+    double const cos_phase_2 = cos_included_angle(rc, rs);
+
+    return MaRC::almost_equal(cos_phase, cos_phase_2, ulps);
 }
 
 int main()
