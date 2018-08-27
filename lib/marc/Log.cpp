@@ -25,6 +25,13 @@
 #include "Log.h"
 #include "config.h"
 
+#include <spdlog/spdlog.h>
+#if defined(SPDLOG_VER_MAJOR) && defined(SPDLOG_VER_MINOR) \
+    && (SPDLOG_VER_MAJOR > 1 \
+        || (SPDLOG_VER_MAJOR == 1 && SPDLOG_VER_MINOR > 0))
+#  include <spdlog/sinks/stdout_color_sinks.h>
+#endif  /* SPDLOG > 1.0 */
+
 
 namespace {
     auto init_marc_logger()

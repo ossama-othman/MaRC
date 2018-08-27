@@ -157,6 +157,11 @@ AC_CACHE_CHECK([for spdlog library],
   [
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <spdlog/spdlog.h>
+#if defined(SPDLOG_VER_MAJOR) && defined(SPDLOG_VER_MINOR) \
+    && (SPDLOG_VER_MAJOR > 1 \
+        || (SPDLOG_VER_MAJOR == 1 && SPDLOG_VER_MINOR > 0))
+#  include <spdlog/sinks/stdout_color_sinks.h>
+#endif  /* SPDLOG > 1.0 */
       ]],
       [[
 auto logger = spdlog::stdout_color_mt("marc");
