@@ -122,37 +122,28 @@ namespace MaRC
         std::string
         read_fits_string_key(fitsfile * fptr, char const * key)
         {
-            int length = 0;  // CFITSIO wants 'int'.
             int status = 0;
-
-            if (fits_get_key_strlen(fptr,
-                                    key,
-                                    &length,
-                                    &status) != 0
-                && status != KEY_NO_EXIST) {
+            char value[FLEN_VALUE] = { '\0' };
+            std::string str;
+            /**
+             * @note @c fits_read_key() doesn't support the HEASARC
+             *       continued long string convention.  If needed, use
+             *       a combination of @c fits_get_key_strlen() and
+             *       @c fits_read_string_key(), both introduced in
+             *       CFITSIO 3.39.
+             */
+            if (fits_read_key(fptr,
+                              TSTRING,
+                              key,
+                              value,
+                              nullptr, // comment
+                              &status) == 0)
+                str = value;
+            else if (status != KEY_NO_EXIST) {
                 throw_on_cfitsio_error(status);
             }
 
-            std::string value;
-
-            if (status == 0) {  // key exists
-                value.resize(length + 1, '\0');
-                constexpr int firstchar = 1;
-
-                if (fits_read_string_key(fptr,
-                                         key,
-                                         firstchar,
-                                         length,
-                                         &value[0], // data() is const
-                                                    // until C++17
-                                         nullptr, // valuelen
-                                         nullptr, // comm
-                                         &status) != 0) {
-                    throw_on_cfitsio_error(status);
-                }
-            }
-
-            return value;
+            return str;
         }
     }
 }
@@ -373,7 +364,7 @@ MaRC::FITS::data::read(std::vector<double> & image) const
      *
      * @attention First pixel in CFITSIO is {1, 1} not {0, 0}.
      */
-    constexpr naxes_array_type fpixel{1, 1};
+    constexpr long fpixel[] = {1, 1};
 
     // For integer typed FITS images with a BLANK value, set the
     // "blank" value in our floating point converted copy of the image
@@ -387,7 +378,7 @@ MaRC::FITS::data::read(std::vector<double> & image) const
 
     if (fits_read_pix(this->fptr_,
                       traits<value_type>::datatype,
-                      const_cast<long *>(fpixel.data()),
+                      const_cast<long *>(fpixel),
                       nelements,
                       &nulval,  // "Blank" value in our image.
                       tmp.data(),
