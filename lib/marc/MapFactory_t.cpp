@@ -21,6 +21,9 @@
  * @author Ossama Othman
  */
 
+#ifndef MARC_MAP_FACTORY_T_CPP
+#define MARC_MAP_FACTORY_T_CPP
+
 #include "marc/MapFactory.h"
 #include "marc/Map_traits.h"
 #include "marc/SourceImage.h"
@@ -110,3 +113,6 @@ MaRC::MapFactory::plot(plot_info const & info,
     // Inform "observers" of mapping progress.
     info.notifier().notify_plotted(map.size());
 }
+
+
+#endif  // MARC_MAP_FACTORY_T_CPP
