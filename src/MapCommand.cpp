@@ -44,13 +44,31 @@
 
 namespace
 {
+    /// Obtain string representation of the given value.
     std::string double_to_string(double value)
     {
+        // Values in FITS headers go in columns 11 through 30,
+        // i.e. there is room for 20 characters;
+        constexpr int fits_width = 20;
+
+        // Maximum precision of a 64 bit floating value (double) in
+        // base 10, leaving room for characters used in scientific
+        // notation (e.g. 1.0e-03)
+        constexpr int double_width =
+            std::numeric_limits<double>::digits10 - 4;
+
+        constexpr int width = std::min(fits_width, double_width);
+
+        // Avoid writing "-0".  It's harmless but rather unsightly.
+        constexpr double ulps = 1;
+        if (MaRC::almost_zero(value, ulps))
+            value = 0;
+
         // Work around inability to change precision in
         // std::to_string().  Yes, this is ugly.
         std::ostringstream os;
 
-        os << std::setprecision(8) << value;
+        os << std::setprecision(width) << value;
 
         return os.str();
     }
