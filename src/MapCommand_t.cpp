@@ -20,12 +20,15 @@
  * @author Ossama Othman
  */
 
-#include "MapCommand_T.h"
+#ifndef MARC_MAP_COMMAND_T_CPP
+#define MARC_MAP_COMMAND_T_CPP
+
+#include "MapCommand.h"
 #include "FITS_traits.h"
 #include "ProgressConsole.h"
 
 #include <marc/MapFactory.h>
-#include <marc/VirtualImage.h>  // For scale_and_offset()
+#include <marc/SourceImage.h>  // For scale_and_offset()
 
 #include <cassert>
 #include <iostream>
@@ -34,51 +37,8 @@
 
 
 template <typename T>
-MaRC::MapCommand_T<T>::MapCommand_T(
-    std::string filename,
-    std::string body_name,
-    std::unique_ptr<MapFactory> factory,
-    long samples,
-    long lines)
-    : MapCommand(std::move(filename),
-                 std::move(body_name),
-                 samples,
-                 lines,
-                 std::move(factory))
-{
-}
-
-template <typename T>
 void
-MaRC::MapCommand_T<T>::initialize_FITS_image(fitsfile * fptr,
-                                             int & status)
-{
-    // The CFITSIO 'naxes' value is of type 'long'.  It is extremely
-    // unlikely that a map with more than LONG_MAX planes will ever be
-    // created, so this implicit conversion should be safe.
-    long const planes = this->image_factories_.size();
-
-    int const naxis =
-        (planes > 1
-         ? 3  /* 3 dimensions -- map "cube"  */
-         : 2  /* 2 dimensions -- map "plane" */);
-
-    // Specify map cube dimensions.  Note that in the two-dimensional
-    // map case, the third "planes" dimension will be ignored since
-    // the above "naxis" variable will be set to two, not three.
-    long naxes[] = { this->samples_, this->lines_, planes };
-
-    // Create the primary array.
-    (void) fits_create_img(fptr,
-                           FITS::traits<T>::bitpix,
-                           naxis,
-                           naxes,
-                           &status);
-}
-
-template <typename T>
-void
-MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
+MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
 {
     // First pixel/element in FITS array (1-based).
     //   Plane 1: fpixel =  1
@@ -125,7 +85,6 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
         this->write_virtual_image_facts(fptr,
                                         plane_count,
                                         num_planes,
-                                        FITS::traits<T>::bitpix,
                                         image.get(),
                                         status);
 
@@ -177,3 +136,6 @@ MaRC::MapCommand_T<T>::make_map_planes(fitsfile * fptr, int & status)
                         &status);
     }
 }
+
+
+#endif  // MARC_MAP_COMMAND_T_CPP

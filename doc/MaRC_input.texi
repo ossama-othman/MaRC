@@ -440,10 +440,12 @@ does @strong{NOT} modify the data being stored in the output file in
 anyway.  It may, however, cause other applications that read the
 output file to transform the data to their true/physical values.  The
 @code{DATA_OFFSET} entry must be entered immediately before the
-@code{DATA_SCALE} entry.  Immediately following these two keywords is
-the @code{DATA_TYPE} keyword.  The @code{DATA_TYPE} keyword is
-required.  It specifies the number format that the mapped data will be
-stored as.  Available data types are:
+@code{DATA_SCALE} entry.
+
+Immediately following these two keywords is the @code{DATA_TYPE}
+keyword.  The @code{DATA_TYPE} keyword is optional.  It specifies the
+number format that the mapped data will be stored as.  Available data
+types are:
 @cindex @code{DATA_TYPE}
 @cindex @code{BYTE}
 @cindex @code{SHORT}
@@ -476,15 +478,16 @@ stored as.  Available data types are:
 
 
 @noindent
-Be aware, for example, that a @code{DOUBLE} type map will occupy four
-times as much memory and storage space then a @code{SHORT} type map of
-the same dimensions.  An example of how all three keywords are used
-follows:
+A @code{DATA_TYPE} will be automatically chosen based on the type of
+images being mapped if one is not specified.  Be aware, for example,
+that a @code{DOUBLE} type map will occupy four times as much memory
+and storage space then a @code{SHORT} type map of the same dimensions.
+An example of how all three keywords are used follows:
 
 @example
 DATA_OFFSET:    -1.3        # This is optional.  The default is zero.
 DATA_SCALE:     0.0001      # This is optional.  The default is one.
-DATA_TYPE:      SHORT       # This is required.
+DATA_TYPE:      SHORT       # This is optional.
 @end example
 
 @node    Lat/Lon Grid,  Projections,  Output Data,  Input Files

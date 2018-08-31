@@ -56,7 +56,6 @@
 #include "lexer.hh"
 #include "calc.h"
 #include "MapCommand.h"
-#include "MapCommand_T.h"
 
 #include <stdexcept>
 #include <limits>
@@ -164,9 +163,7 @@ std::string map_origin;
 std::list<std::string> comment_list;
 std::list<std::string> xcomment_list;
 
-typedef enum { BYTE, SHORT, LONG, _LONGLONG, FLOAT, DOUBLE } data_type;
-
-data_type map_data_type;
+int map_bitpix = 0;
 
 using namespace MaRC;
 
@@ -459,73 +456,15 @@ map_setup:
                             num_planes);
                 YYERROR;
             } else {
-                std::unique_ptr<MaRC::MapCommand> map_command;
+                std::unique_ptr<MaRC::MapCommand> map_command =
+                    std::make_unique<MaRC::MapCommand>(
+                        std::move(map_filename),
+                        std::move(body_name),
+                        map_samples,
+                        map_lines,
+                        std::move(map_factory));
 
-                switch (map_data_type) {
-                case BYTE:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::byte_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case SHORT:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::short_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case LONG:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::long_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case _LONGLONG:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::longlong_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case FLOAT:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::float_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case DOUBLE:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::double_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                default:
-                    throw std::invalid_argument("Unrecognized map data type");
-                    break;
-                }
+                map_command->bitpix(map_bitpix);
 
                 map_command->author(map_author);
                 map_command->origin(map_origin);
@@ -642,36 +581,41 @@ data_scale:
 ;
 
 data_type:
-        _DATA_TYPE ':' BYTE_DATA       { map_data_type = BYTE;      }
-        | _DATA_TYPE ':' SHORT_DATA    { map_data_type = SHORT;     }
-        | _DATA_TYPE ':' LONG_DATA     { map_data_type = LONG;      }
-        | _DATA_TYPE ':' LONGLONG_DATA { map_data_type = _LONGLONG; }
-        | _DATA_TYPE ':' FLOAT_DATA    { map_data_type = FLOAT;     }
-        | _DATA_TYPE ':' DOUBLE_DATA   { map_data_type = DOUBLE;    }
+        %empty
+        | _DATA_TYPE ':' BYTE_DATA     { map_bitpix = BYTE_IMG;     }
+        | _DATA_TYPE ':' SHORT_DATA    { map_bitpix = SHORT_IMG;    }
+        | _DATA_TYPE ':' LONG_DATA     { map_bitpix = LONG_IMG;     }
+        | _DATA_TYPE ':' LONGLONG_DATA { map_bitpix = LONGLONG_IMG; }
+        | _DATA_TYPE ':' FLOAT_DATA    { map_bitpix = FLOAT_IMG;    }
+        | _DATA_TYPE ':' DOUBLE_DATA   { map_bitpix = DOUBLE_IMG;   }
 ;
 
 data_blank:
         %empty
         | DATA_BLANK ':' expr {
-            if (map_data_type == FLOAT || map_data_type == DOUBLE) {
+            if (map_bitpix < 0) {  // Negative bitpix for floating point.
                 throw std::invalid_argument(
                     "\"DATA_BLANK\" keyword not valid with "
                     "floating point types.");
             } else {
                 bool verified = false;
 
-                if (map_data_type == BYTE)
+                if (map_bitpix == BYTE_IMG)
                     verified =
                         verify_data_blank<FITS::byte_type>($3, "BYTE");
-                else if (map_data_type == SHORT)
+                else if (map_bitpix == SHORT_IMG)
                     verified =
                         verify_data_blank<FITS::short_type>($3, "SHORT");
-                else if (map_data_type == LONG)
+                else if (map_bitpix == LONG_IMG)
                     verified =
                         verify_data_blank<FITS::long_type>($3, "LONG");
-                else
+                else if (map_bitpix == LONGLONG_IMG)
                     verified =
-                        verify_data_blank<FITS::longlong_type>($3, "LONGLONG");
+                        verify_data_blank<FITS::longlong_type>($3,
+                                                               "LONGLONG");
+                else
+                    MaRC::warn("DATA_BLANK value specified without "
+                               "map data type.");
 
                 if (!verified)
                     YYERROR;

@@ -21,6 +21,8 @@
  */
 
 #include "MapCommand.h"
+#include "MapCommand_t.cpp"
+
 #include "FITS_traits.h"
 #include "FITS_memory.h"
 
@@ -72,6 +74,22 @@ namespace
 
         return os.str();
     }
+
+    /**
+     * @brief Validate given FITS BITBIX value.
+     *
+     * @retval true  Valid @a bitpix value.
+     * @retval false Invalid @a bitpix value.
+     */
+    bool valid_bitpix(int bitpix)
+    {
+        return bitpix == BYTE_IMG
+            || bitpix == SHORT_IMG
+            || bitpix == LONG_IMG
+            || bitpix == LONGLONG_IMG
+            || bitpix == FLOAT_IMG
+            || bitpix == DOUBLE_IMG;
+    }
 }
 
 
@@ -80,7 +98,8 @@ MaRC::MapCommand::MapCommand(std::string filename,
                              long samples,
                              long lines,
                              std::unique_ptr<MapFactory> factory)
-    : samples_(samples)
+    : bitpix_(0)
+    , samples_(samples)
     , lines_(lines)
     , factory_(std::move(factory))
     , image_factories_()
@@ -265,7 +284,30 @@ MaRC::MapCommand::execute()
     auto const start =  std::chrono::high_resolution_clock::now();
 
     // Create and write the map planes.
-    this->make_map_planes(fptr, status);
+    switch (this->bitpix()) {
+    case BYTE_IMG:
+        this->template make_map_planes<FITS::byte_type>(fptr, status);
+        break;
+    case SHORT_IMG:
+        this->template make_map_planes<FITS::short_type>(fptr, status);
+        break;
+    case LONG_IMG:
+        this->template make_map_planes<FITS::long_type>(fptr, status);
+        break;
+    case LONGLONG_IMG:
+        this->template make_map_planes<FITS::longlong_type>(fptr, status);
+        break;
+    case FLOAT_IMG:
+        this->template make_map_planes<FITS::float_type>(fptr, status);
+        break;
+    case DOUBLE_IMG:
+        this->template make_map_planes<FITS::double_type>(fptr, status);
+        break;
+    default:
+        // We should never get here.
+        MaRC::error("Unexpected BITPIX value\n");
+        return -1;
+    }
 
     auto const end =  std::chrono::high_resolution_clock::now();
 
@@ -487,10 +529,66 @@ MaRC::MapCommand::image_factories(image_factories_type factories)
 }
 
 void
+MaRC::MapCommand::initialize_FITS_image(fitsfile * fptr, int & status)
+{
+    // The CFITSIO 'naxes' value is of type 'long'.  It is extremely
+    // unlikely that a map with more than LONG_MAX planes will ever be
+    // created, so this implicit conversion should be safe.
+    long const planes = this->image_factories_.size();
+
+    int const naxis =
+        (planes > 1
+         ? 3  /* 3 dimensions -- map "cube"  */
+         : 2  /* 2 dimensions -- map "plane" */);
+
+    // Specify map cube dimensions.  Note that in the two-dimensional
+    // map case, the third "planes" dimension will be ignored since
+    // the above "naxis" variable will be set to two, not three.
+    long naxes[] = { this->samples_, this->lines_, planes };
+
+    // Create the primary array.
+    (void) fits_create_img(fptr,
+                           this->bitpix(),
+                           naxis,
+                           naxes,
+                           &status);
+}
+
+void
+MaRC::MapCommand::bitpix(int n)
+{
+    // Zero means choose bitpix automatically.
+    if (n != 0 && !valid_bitpix(n))
+        throw std::invalid_argument("Invalid FITS BITPIX value");
+
+    this->bitpix_ = n;
+}
+
+int
+MaRC::MapCommand::bitpix()
+{
+    /**
+     * @bug Choose BITPIX value based on SourceImage, such as the
+     *      BITPIX value in a PhotoImage, or a BITPIX for floating
+     *      point values for VirtualImages with floating point
+     *      values etc.  Fixes #62.
+     *
+     * @todo Warn the user if the their desired BITPIX (map data type)
+     *       is smaller than the data type in a photo.  (e.g. 16 bits
+     *       chosen vs 32 bits in photo).  Fixes #72.
+     */
+
+    // This should never happen!
+    if (!valid_bitpix(this->bitpix_))
+        throw std::runtime_error("Unable to determine BITPIX value.");
+
+    return this->bitpix_;
+}
+
+void
 MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
                                             std::size_t plane,
                                             std::size_t num_planes,
-                                            int bitpix,
                                             SourceImage const * image,
                                             int & status)
 {
@@ -512,7 +610,7 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
      */
     // bitpix > 0: integer data
     // bitpix < 0: floating point data
-    if (bitpix < 0)
+    if (this->bitpix() < 0)
         return;
 
     // The map contains integer type data meaning data was scaled to

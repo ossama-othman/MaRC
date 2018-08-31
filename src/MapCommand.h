@@ -84,7 +84,7 @@ namespace MaRC
         MapCommand & operator=(MapCommand const &) = delete;
 
         /// Destructor.
-        virtual ~MapCommand() = default;
+        ~MapCommand() = default;
 
         /// Execute the command.
         int execute();
@@ -94,6 +94,9 @@ namespace MaRC
 
         /// Get name of projection.
         char const * projection_name() const;
+
+        /// Set map bits per pixel code.
+        void bitpix(int bitpix);
 
         /// Set map author.
         void author(std::string author);
@@ -163,6 +166,26 @@ namespace MaRC
 
     protected:
 
+        /**
+         * @brief Get map FITS bits per pixel code.
+         *
+         * Obtain the bits per pixel "BITPIX" in the map FITS file, as
+         * defined by the FITS standard.  This value may either be
+         * supplied by the user or determined at run-time based on
+         * source image data being mapped.
+         *
+         * @retval   8  8 bit unsigned integer data.
+         * @retval  16 16 bit signed   integer data.
+         * @retval  32 32 bit signed   integer data.
+         * @retval  64 64 bit signed   integer data.
+         * @retval -32 32 bit floating point   data.
+         * @retval -64 64 bit floating point   data.
+         *
+         * @throw std::runtime_error Unable to determine bitpix
+         *                           value.
+         */
+        int bitpix();
+
         /// Write @c VirtualImage information to FITS file.
         /**
          * Write information specific to @c VirtualImage (e.g.
@@ -174,8 +197,6 @@ namespace MaRC
          *                        @c VirtualImage.
          * @param[in]  num_planes Number of map planes being written
          *                        to the FITS file.
-         * @param[in]  bitpix     Bits-per-pixel in the FITS file, as
-         *                        defined by the FITS standard.
          * @param[in]  image      @c SourceImage object that may be a
          *                        @c VirtualImage about which facts
          *                        are being written to the FITS file.
@@ -184,7 +205,6 @@ namespace MaRC
         void write_virtual_image_facts(fitsfile * fptr,
                                        std::size_t plane,
                                        std::size_t num_planes,
-                                       int bitpix,
                                        SourceImage const * image,
                                        int & status);
 
@@ -195,19 +215,15 @@ namespace MaRC
          * @param[in]  fptr   CFITSIO pointer to the map FITS file.
          * @param[out] status CFITSIO file operation status.
          */
-        virtual void initialize_FITS_image(fitsfile * fptr,
-                                           int & status) = 0;
+        void initialize_FITS_image(fitsfile * fptr, int & status);
 
-        /// Create and write map planes.
         /**
-         * This is a "template method" (the design pattern, not a C++
-         * class template member) that performs type-specific map
-         * plane creation.
-         *
+         * @brief Create and write map planes.
          * @param[in]  fptr   CFITSIO pointer to the map FITS file.
          * @param[out] status CFITSIO file operation status.
          */
-        virtual void make_map_planes(fitsfile * fptr, int & status) = 0;
+        template <typename T>
+        void make_map_planes(fitsfile * fptr, int & status);
 
         /// Create grid image.
         /**
@@ -236,6 +252,9 @@ namespace MaRC
         void write_grid(fitsfile * fptr, int & status);
 
     protected:
+
+        /// FITS bits per pixel (i.e. 8, 16, 32, 64, -32, or -64).
+        int bitpix_;
 
         /// Number of samples in map.
         long const samples_;

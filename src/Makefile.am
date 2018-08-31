@@ -72,8 +72,7 @@ noinst_HEADERS = \
   PhotoImageFactory.h \
   MosaicImageFactory.h \
   MapCommand.h \
-  MapCommand_T.h \
-  MapCommand_T.cpp \
+  MapCommand_t.cpp \
   calc.h \
   command_line.h \
   parse_scan.h \
