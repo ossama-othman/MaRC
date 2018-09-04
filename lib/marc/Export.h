@@ -34,9 +34,9 @@
 #  define MARC_DLL_LOCAL
 #else
 #  if __GNUC__ >= 4
-#    define MARC_DLL_IMPORT __attribute__((visibility ("default")))
-#    define MARC_DLL_EXPORT __attribute__((visibility ("default")))
-#    define MARC_DLL_LOCAL  __attribute__((visibility ("hidden")))
+#    define MARC_DLL_IMPORT [[gnu::visibility("default")]]
+#    define MARC_DLL_EXPORT [[gnu::visibility("default")]]
+#    define MARC_DLL_LOCAL  [[gnu::visibility("hidden")]]
 #  else
 #    define MARC_DLL_IMPORT
 #    define MARC_DLL_EXPORT

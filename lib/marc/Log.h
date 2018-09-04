@@ -71,7 +71,7 @@ namespace MaRC
      *       instance since it isn't meant to be part of the MaRC
      *       API.
      */
-    extern MARC_API logger_type const _logger;
+    MARC_API extern logger_type const _logger;
 
     /**
      * @brief Log debugging messages.

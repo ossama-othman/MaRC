@@ -43,7 +43,7 @@ namespace MaRC
      *
      * @return String containing the MaRC library version.
      */
-    MARC_API char const * library_version();
+    [[deprecated]] MARC_API char const * library_version();
 }
 
 
