@@ -59,7 +59,8 @@ namespace
         constexpr int double_width =
             std::numeric_limits<double>::digits10 - 4;
 
-        constexpr int width = std::min(fits_width, double_width);
+        constexpr int width =
+            fits_width < double_width ? fits_width : double_width;
 
         // Avoid writing "-0".  It's harmless but rather unsightly.
         constexpr double ulps = 1;
