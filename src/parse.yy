@@ -845,13 +845,13 @@ plane_setup:
 
 plane_size:
         PLANE ':' size  {
-          /**
-           * @deprecated It is no longer necessary to specify
-           *             the plane number.
-           *
-           * @todo Remove support for specifying the plane
-           *       number.
-           */
+            /**
+             * @deprecated It is no longer necessary to specify
+             *             the plane number.
+             *
+             * @todo Remove support for specifying the plane
+             *       number.
+             */
             if (num_planes == 0) {
                 yyerror(&yylloc,
                         scanner,

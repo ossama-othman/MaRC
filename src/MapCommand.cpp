@@ -77,7 +77,15 @@ namespace
     }
 
     /**
-     * @brief Validate given FITS BITBIX value.
+     * @brief Validate given FITS BITPIX value.
+     *
+     * @param[in] bitpix The bits-per-pixel value for data stored in a
+     *                   FITS file, as defined in the FITS standard.
+     *                   Valid values are 8, 16, 32, 64, -32, and
+     *                   -64.  The corresponding CFITSIO library
+     *                   symbolic constants are @c BYTE_IMG,
+     *                   @c SHORT_IMG, @c LONG_IMG, @c LONGLONG_IMG,
+     *                   @c FLOAT_IMG, @c DOUBLE_IMG.
      *
      * @retval true  Valid @a bitpix value.
      * @retval false Invalid @a bitpix value.
@@ -635,8 +643,8 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
      */
     if (num_planes == 1) {
         // We're the sole plane in the map meaning we can update
-        // actual FITS cards instead of writing freeform text in a
-        // FITS COMMENT or HISTORY card.
+        // actual FITS BSCALE and BZERO cards instead of writing
+        // freeform text in a COMMENT or HISTORY card.
 
         if (this->transform_data_)
             MaRC::warn("computed scale and offset will override "
