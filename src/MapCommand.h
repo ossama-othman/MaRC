@@ -164,7 +164,7 @@ namespace MaRC
         /// each of the planes in the map.
         void image_factories(image_factories_type factories);
 
-    protected:
+    private:
 
         /**
          * @brief Get map FITS bits per pixel code.
@@ -208,8 +208,6 @@ namespace MaRC
                                        SourceImage const * image,
                                        int & status);
 
-    private:
-
         /// Create FITS image array HDU.
         /**
          * @param[in]  fptr   CFITSIO pointer to the map FITS file.
@@ -251,7 +249,7 @@ namespace MaRC
          */
         void write_grid(fitsfile * fptr, int & status);
 
-    protected:
+    private:
 
         /// FITS bits per pixel (i.e. 8, 16, 32, 64, -32, or -64).
         int bitpix_;
@@ -276,8 +274,6 @@ namespace MaRC
          * @note This value is only valid for integer typed maps.
          */
         blank_type blank_;
-
-    private:
 
         /// Map filename.
         std::string const filename_;
