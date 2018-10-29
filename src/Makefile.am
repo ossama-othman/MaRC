@@ -93,4 +93,3 @@ lexer.hh: lexer.cc
 #	mv $@.new $@
 
 clean-local: code-coverage-clean
-dist-clean-local: code-coverage-dist-clean

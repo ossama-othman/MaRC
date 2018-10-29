@@ -28,14 +28,12 @@ AC_DEFUN([MARC_CODE_COVERAGE],[
   # Makefile.am file that listed code to be instrumented for code
   # coverage.  However, recent versions of that macro changed that to
   # instead require users to add:
-  ## #  include $(top_srcdir)/aminclude_static.am
+  #     include $(top_srcdir)/aminclude_static.am
   # to their Makefile.am files.  Work around that break in backward
   # compatibility by explicitly adding the @CODE_COVERAGE_RULES@ to
   # the `aminclude_static.am' file, and clearing out that substitution
   # variable if it exists.  It will only exist if the older
   # AX_CODE_COVERAGE macro is in use.  Otherwise it becomes a no-op.
   AX_ADD_AM_MACRO_STATIC([@CODE_COVERAGE_RULES@])
-  AC_CONFIG_COMMANDS_PRE([
-# AC_SUBST([CODE_COVERAGE_RULES])
-  ])
+  AC_CONFIG_COMMANDS_PRE([AC_SUBST([CODE_COVERAGE_RULES])])
 ])

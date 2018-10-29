@@ -137,4 +137,3 @@ nobase_pkginclude_HEADERS = \
 # noinst_HEADERS =
 
 clean-local: code-coverage-clean
-dist-clean-local: code-coverage-dist-clean
