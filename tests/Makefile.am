@@ -148,8 +148,6 @@ clean-local: code-coverage-clean
 	  $(RM) test.fits.gz link-stamp; \
 	fi
 
-dist-clean-local: code-coverage-dist-clean
-
 # The LD_LIBRARY_PATH environment variable may need to be explicitly
 # set when running `make installcheck' if the directory where the MaRC
 # library was installed is not be known to the dynamic linker, e.g.:

@@ -72,9 +72,7 @@ libMaRC_la_SOURCES = \
   PolarStereographic.cpp \
   SimpleCylindrical.cpp \
   \
-  root_find.cpp \
-  \
-  Version.cpp
+  root_find.cpp
 
 nobase_pkginclude_HEADERS = \
   Log.h \
@@ -131,8 +129,6 @@ nobase_pkginclude_HEADERS = \
   \
   Constants.h \
   \
-  Version.h \
-  \
   Export.h \
   \
   details/scale_and_offset.h \
@@ -141,4 +137,3 @@ nobase_pkginclude_HEADERS = \
 # noinst_HEADERS =
 
 clean-local: code-coverage-clean
-dist-clean-local: code-coverage-dist-clean

@@ -43,4 +43,3 @@ EXTRA_DIST =		\
 include $(top_srcdir)/aminclude_static.am
 
 clean-local: code-coverage-clean
-dist-clean-local: code-coverage-dist-clean

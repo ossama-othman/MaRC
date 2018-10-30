@@ -480,9 +480,9 @@ types are:
 @noindent
 A @code{DATA_TYPE} will be automatically chosen based on the type of
 images being mapped if one is not specified.  Be aware, for example,
-that a @code{DOUBLE} type map will occupy four times as much memory
-and storage space then a @code{SHORT} type map of the same dimensions.
-An example of how all three keywords are used follows:
+that a @code{DOUBLE} type map will occupy four times as much space
+then a @code{SHORT} type map of the same dimensions.  An example of
+how all three keywords are used follows:
 
 @example
 DATA_OFFSET:    -1.3        # This is optional.  The default is zero.
