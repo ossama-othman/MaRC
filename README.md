@@ -17,16 +17,16 @@ Transport System) format.
 
 ## Getting Started
 
-MaRC may either be built from a source tarball or from a clone of its
-source repository on GitHub.  If you're an end-user that just wants to
-run MaRC, building from the self-contained source tarball will get you
-up and running sooner.
+MaRC may either be built from a source `tar` archive or from a clone
+of its source repository on GitHub.  If you're an end-user that just
+wants to run MaRC, building from the self-contained source `tar`
+archive will get you up and running sooner.
 
-### Building From the Source Tarball
+### Building From the Source `tar` Archive
 
 The quickest way to get started with MaRC is to download the
-self-contained source tarball (e.g. `marc-0.9.11.tar.gz`) from the
-[releases page](https://github.com/ossama-othman/MaRC/releases).
+self-contained source `tar` archive (e.g. `marc-0.9.11.tar.gz`) from
+the [releases page](https://github.com/ossama-othman/MaRC/releases).
 Other than required third party programs and libraries it contains
 everything needed to build and install MaRC.  Once the prerequisites
 are installed, simply build MaRC as follows:
@@ -43,9 +43,9 @@ will be in the "doc" subdirectory if your system has the necessary
 text utilities to build them.
 
 Additional build details and instructions may be found in the
-`INSTALL` file shipped with the self-contained source tarball, as well
-as by passing the `--help` command line option to the `configure`
-script.
+`INSTALL` file shipped with the self-contained source `tar` archive,
+as well as by passing the `--help` command line option to the
+`configure` script.
 
 ### Building From Git
 If you plan on contributing to MaRC or want the latest unreleased
