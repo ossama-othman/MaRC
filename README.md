@@ -125,7 +125,7 @@ File | Location
 ---- | --------
 `marc` | `/usr/local/bin`
 `libmarc` | `/usr/local/lib`
-MaRC headers | `/usr/local/include/MaRC`
+MaRC headers | `/usr/local/include/marc`
 documentation | `/usr/local/share/marc`
 man pages | `/usr/local/share/man/`
 
