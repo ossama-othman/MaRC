@@ -146,10 +146,10 @@ namespace MaRC
         std::shared_ptr<BodyData> const body_;
 
         /// Lower latitude in simple cylindrical map.
-        double lo_lat_;
+        double const lo_lat_;
 
         /// Upper latitude in simple cylindrical map.
-        double hi_lat_;
+        double const hi_lat_;
 
         /// Lower longitude in simple cylindrical map.
         double lo_lon_;

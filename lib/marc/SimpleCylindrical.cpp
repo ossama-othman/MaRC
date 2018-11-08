@@ -32,6 +32,47 @@
 #include <algorithm>
 
 
+namespace
+{
+    /**
+     * @brief Get Simple Cylindrical map boundary latitude.
+     *
+     * Place supplied map boundary latitude in a form suitable for use
+     * by the MaRC Simple Cylindrical projection.  That entails
+     * converting it to radians, and potentially converting it to a
+     * planetographic latitude.
+     *
+     * This function is meant to be used during map initialization,
+     * and exists predominantly to allow for initialization of
+     * @c const map boundary latitude members.
+     *
+     * @param[in] degrees        Planetocentric latitude in degrees.
+     * @param[in] body           The body being mapped.
+     * @param[in] planetographic Whether or not latitude in the map
+     *                           will be planetographic.
+     *
+     * @return Latitude in radians.  The returned latitude will be
+     *         planetographic if the @a planetographic argument is
+     *         @c true.
+     */
+    double boundary_latitude(double degrees,
+                             MaRC::BodyData const * body,
+                             bool planetographic)
+    {
+        double latitude = MaRC::validate_latitude(degrees);
+
+        // All latitudes fed to SimpleCylindrical are
+        // planetoCENTRIC. Convert to planetoGRAPHIC latitude if
+        // requested.
+        if (planetographic)
+            latitude = body->graphic_latitude(latitude);
+
+        return latitude;
+    }
+}
+
+// -------------------------------------------------------------------
+
 MaRC::SimpleCylindrical::SimpleCylindrical(
     std::shared_ptr<BodyData> body,
     double lo_lat,
@@ -41,19 +82,12 @@ MaRC::SimpleCylindrical::SimpleCylindrical(
     bool graphic_lat)
     : MapFactory()
     , body_(body)
-    , lo_lat_(MaRC::validate_latitude(lo_lat))
-    , hi_lat_(MaRC::validate_latitude(hi_lat))
+    , lo_lat_(boundary_latitude(lo_lat, body_.get(), graphic_lat))
+    , hi_lat_(boundary_latitude(hi_lat, body_.get(), graphic_lat))
     , lo_lon_(MaRC::validate_longitude(lo_lon))
     , hi_lon_(MaRC::validate_longitude(hi_lon))
     , graphic_lat_(graphic_lat)
 {
-    // All latitudes are fed to SimpleCylindrical as CENTRIC.
-    // Convert to GRAPHIC latitude if requested.
-    if (graphic_lat) {
-        this->lo_lat_ = this->body_->graphic_latitude(this->lo_lat_);
-        this->hi_lat_ = this->body_->graphic_latitude(this->hi_lat_);
-    }
-
     // Set lower longitude to equivalent longitude less than upper
     // longitude or add 360 degrees to the upper longitude if it is
     // equal to the lower longitude (i.e. full 360 degree range) to
@@ -140,6 +174,12 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
     // Sample-to-longitude ratio.
     double const sr = samples / (hi_lon - lo_lon);
 
+    /**
+     * @todo Why do we count down grid longitudes from 360 instead of
+     *       counting up from 0?  As is, we are plotting longitude
+     *       lines in the half-open interval (0, 360] instead of
+     *       [0, 360).  Aren't they equivalent?
+     */
     // Draw longitude lines.
     for (double m = 360; m > 0; m -= lon_interval) {
         // lo_lon_2 is a work-around for lo_lon_ > hi_lon_ problems
