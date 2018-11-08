@@ -35,7 +35,7 @@
 #include <functional>
 #include <limits>
 #include <cmath>
-#include <sstream>
+// #include <sstream>
 
 
 namespace
@@ -110,8 +110,8 @@ MaRC::Mercator::plot_map(std::size_t samples,
      */
     /*
       Calculate the largest value of "X" along the axis perpendicular
-      to the longitude axis can be plotted on this map, X=0 on the
-      equator.  The greater the height of the map, the greater the
+      to the longitude axis that can be plotted on this map, X=0 on
+      the equator.  The greater the height of the map, the greater the
       latitude that can be plotted.
 
        lines    2 * xmax
@@ -130,8 +130,11 @@ MaRC::Mercator::plot_map(std::size_t samples,
     auto const map_equation =
         std::bind(mercator_x, std::cref(*this->body_), _1);
 
+    // Coefficient for conversion from line to Mercator "X".
+    double const to_x = xmax / lines * 2;
+
     for (std::size_t k = 0; k < lines; ++k) {
-        double const x = (k + 0.5) / lines * 2 * xmax - xmax;
+        double const x = (k + 0.5) * to_x - xmax;
 
         /**
          * @todo We shouldn't have to search from pole-to-pole for
@@ -190,7 +193,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
     double const xmax =
         static_cast<double>(lines) / samples * C::pi;
 
-    double const pix_conv_val = xmax / lines * 2;
+    double const to_line = lines / (xmax  * 2);
 
     static constexpr auto white =
         std::numeric_limits<typename grid_type::value_type>::max();
@@ -200,7 +203,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
         // Convert to planetographic latitude
         double const nn = this->body_->graphic_latitude(n * C::degree);
         double const k =
-            std::round(mercator_x(*this->body_, nn) / pix_conv_val
+            std::round(mercator_x(*this->body_, nn) * to_line
                        + lines / 2.0);
 
         if (k >= 0 && k < static_cast<double>(lines)) {
