@@ -38,6 +38,13 @@
 # pragma GCC diagnostic push
 #endif
 
+/**
+ * @bug We really shouldn't be exposing <MaRC/config.h> to the user
+ *      since it contains preprocessor symbols that pollute the global
+ *      namespace.
+ */
+#include "marc/config.h"  // For NDEBUG
+
 #ifdef NDEBUG
 # define MARC_DEBUG_ARGS(x)
 #else

@@ -27,9 +27,7 @@
  *       underlying MaRC logger shouldn't be exposed to the user.
  */
 #include "Export.h"  // For MARC_API
-
 #include "Log.h"
-#include "config.h"
 
 
 namespace
@@ -49,12 +47,7 @@ namespace
 MARC_API void
 MaRC::details::debug(char const * format, fmt::format_args args)
 {
-#ifndef NDEBUG
     marc_log("debug", format, args);
-#else
-    (void) format;
-    (void) args;
-#endif  // NDEBUG
 }
 
 MARC_API void
