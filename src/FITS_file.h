@@ -45,6 +45,9 @@ namespace MaRC
          * @brief Class that encapsulates standard FITS header
          *        keywords.
          *
+         * This class is a proxy that provides access to the FITS
+         * header.
+         *
          * @todo FITS keyword values are not cached during the first
          *       access.  Should they?
          */
@@ -106,6 +109,9 @@ namespace MaRC
          * @class data
          *
          * @brief Encapsulate FITS image read into memory.
+         *
+         * This class is a proxy that provides access to the FITS
+         * data.
          */
         class data
         {
@@ -180,6 +186,10 @@ namespace MaRC
             file(file const &) = delete;
             void operator=(file const &) = delete;
 
+            /// Get proxy that provides access to the FITS header.
+            FITS::header const & header() const { return this->header_; }
+
+            /// Get proxy that provides access to the FITS data.
             FITS::data const & data() const { return this->data_; }
 
         private:
@@ -187,8 +197,10 @@ namespace MaRC
             /// Underlying CFITSIO @c fitsfile object.
             file_unique_ptr fptr_;
 
-            header header_;
+            /// FITS header proxy.
+            FITS::header header_;
 
+            /// FITS data proxy.
             FITS::data data_;
 
         };
