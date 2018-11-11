@@ -33,10 +33,9 @@
 
 - Added command line option support.  Try "marc --help".
 
-- Improved logging by leveraging the spdlog library as the underling
+- Improved logging by leveraging the fmt library as the underlying
   logging framework.  This allows for faster logging, and log level
-  differentiated output (e.g. text color on terminals that support
-  ANSI colors), as well.
+  differentiated output.
 
 - Corrected progress output for the Orthographic map projection so
   that completion percentage is printed up to 100%.

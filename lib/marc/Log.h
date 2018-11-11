@@ -25,126 +25,121 @@
  */
 
 /**
- * @todo Ideally we shouldn't have to include this header since the
- *       underlying MaRC logger instance shouldn't be exposed to the
- *       user.
+ * @Todo Fix or at least report this issue to upstream fmt libary
+ *       maintainers.
  */
-#include "marc/Export.h"  // For MARC_API
+#ifdef __GNUG__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+#ifdef __GNUG__
+# pragma GCC diagnostic push
+#endif
 
-/**
- * @bug We really shouldn't be exposing <MaRC/config.h> to the user
- *      since it contains preprocessor symbols that pollute the global
- *      namespace.
- */
-#include "marc/config.h"  // For NDEBUG
-
-/**
- * Enable debug and trace level logging in spdlog.
- *
- * @note @c NDEBUG should be defined on the command line if debug
- *       logging should be disabled so that including "MaRC/config.h"
- *       and exposing as part of the user interface can be avoided.
- */
 #ifdef NDEBUG
 # define MARC_DEBUG_ARGS(x)
 #else
-# define SPDLOG_DEBUG_ON
 # define MARC_DEBUG_ARGS(x) x
 #endif  // NDEBUG
 
-#include <spdlog/spdlog.h>
-
-
 namespace MaRC
 {
-    /**
-     * @typedef Underlying logger type.
-     *
-     * @note Not meant for use outside of MaRC.
-     */
-    using logger_type = std::shared_ptr<spdlog::logger>;
-
-    /**
-     * @internal Pointer to the underlying MaRC logger.
-     *
-     * @todo This isn't a good way to expose the MaRC logger
-     *       instance since it isn't meant to be part of the MaRC
-     *       API.
-     */
-    MARC_API extern logger_type const _logger;
+    namespace details
+    {
+        void debug(char const * format, fmt::format_args args);
+        void info(char const * format, fmt::format_args args);
+        void warn(char const * format, fmt::format_args args);
+        void error(char const * format, fmt::format_args args);
+        void critical(char const * format, fmt::format_args args);
+    }
 
     /**
      * @brief Log debugging messages.
      *
-     * @param[in] args Log arguments formatted according to the @c fmt
-     *                 library.
+     * @param[in] format Format of the text being logged, where the
+     *                   syntax is defined by the @c fmt library.
+     * @param[in] args   Argument values corresponding to placeholder
+     *                   in the @a format string.
      *
      * @see http://fmtlib.net/latest/index.html
      */
     template <typename ... Args>
     void
-    debug(Args const & ... MARC_DEBUG_ARGS(args))
+    debug(char const * MARC_DEBUG_ARGS(format),
+          Args const & ... MARC_DEBUG_ARGS(args))
     {
-        SPDLOG_DEBUG(_logger, args ...);
+#ifndef NDEBUG
+        details::debug(format, fmt::make_format_args(args...));
+#endif  // NDEBUG
     }
 
     /**
      * @brief Log information messages.
      *
-     * @param[in] args Log arguments formatted according to the @c fmt
-     *                 library.
+     * @param[in] format Format of the text being logged, where the
+     *                   syntax is defined by the @c fmt library.
+     * @param[in] args   Argument values corresponding to placeholder
+     *                   in the @a format string.
      *
      * @see http://fmtlib.net/latest/index.html
      */
     template <typename ... Args>
     void
-    info(Args const & ... args)
+    info(char const * format, Args const & ... args)
     {
-        _logger->info(args ...);
+        details::info(format, fmt::make_format_args(args...));
     }
 
     /**
      * @brief Log warning messages.
      *
-     * @param[in] args Log arguments formatted according to the @c fmt
-     *                 library.
+     * @param[in] format Format of the text being logged, where the
+     *                   syntax is defined by the @c fmt library.
+     * @param[in] args   Argument values corresponding to placeholder
+     *                   in the @a format string.
      *
      * @see http://fmtlib.net/latest/index.html
      */
     template <typename ... Args>
     void
-    warn(Args const & ... args)
+    warn(char const * format, Args const & ... args)
     {
-        _logger->warn(args ...);
+        details::warn(format, fmt::make_format_args(args...));
     }
 
     /**
      * @brief Log error messages.
      *
-     * @param[in] args Log arguments formatted according to the @c fmt
-     *                 library.
+     * @param[in] format Format of the text being logged, where the
+     *                   syntax is defined by the @c fmt library.
+     * @param[in] args   Argument values corresponding to placeholder
+     *                   in the @a format string.
      *
      * @see http://fmtlib.net/latest/index.html
      */
     template <typename ... Args>
     void
-    error(Args const & ... args)
+    error(char const * format, Args const & ... args)
     {
-        _logger->error(args ...);
+        details::error(format, fmt::make_format_args(args...));
     }
 
     /**
      * @brief Log critical messages.
      *
-     * @param[in] args Log arguments formatted according to the @c fmt
-     *                 library.
+     * @param[in] format Format of the text being logged, where the
+     *                   syntax is defined by the @c fmt library.
+     * @param[in] args   Argument values corresponding to placeholder
+     *                   in the @a format string.
      *
      * @see http://fmtlib.net/latest/index.html
      */
     template <typename ... Args>
     void
-    critical(Args const & ... args)
+    critical(char const * format, Args const & ... args)
     {
-        _logger->critical(args ...);
+        details::critical(format, fmt::make_format_args(args...));
     }
 }

@@ -77,9 +77,6 @@ following build dependencies:
     Additional details are available on the [CFITSIO
     homepage](https://heasarc.gsfc.nasa.gov/fitsio/fitsio.html).
 
-* [spdlog](https://github.com/gabime/spdlog) logging library
-  * Prepackaged binaries are available for many platforms.
-
 * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/)
 
 #### Maintenance and Git Based Build Dependencies

@@ -61,10 +61,10 @@ AM_PROG_LEX
 
 MARC_CODE_COVERAGE
 
-# Check for pkg-config
+dnl Check for pkg-config
 PKG_PROG_PKG_CONFIG
 
-# Check for Doxygen
+dnl Check for Doxygen
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
 DX_HTML_FEATURE(ON)
@@ -140,47 +140,55 @@ AC_SUBST([CFITSIO_LIBS])
 AC_SUBST([CFITSIO_CFLAGS])
 
 dnl spdlog requires POSIX threads support.
-AX_CXX_PTHREAD
-LIBS="$PTHREAD_LIBS $LIBS"
-CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
-CXX="$PTHREAD_CXX"
+dnl AX_CXX_PTHREAD
+dnl LIBS="$PTHREAD_LIBS $LIBS"
+dnl CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
+dnl CXX="$PTHREAD_CXX"
 
 dnl Workaround AX_CXX_PTHREAD's inability to detect the need for
 dnl Clang's -Qunused-arguments command line option in some cases, such
 dnl as when building a shared library through Libtool.
-AS_IF([test "x$ax_pthread_clang" = "xyes"],
-      [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
-       AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
+dnl AS_IF([test "x$ax_pthread_clang" = "xyes"],
+dnl       [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
+dnl        AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
 
-AC_CACHE_CHECK([for spdlog library],
-  [marc_cv_lib_spdlog],
+AC_CACHE_CHECK([for fmt library],
+  [marc_cv_lib_fmt],
   [
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <spdlog/spdlog.h>
-#if defined(SPDLOG_VER_MAJOR) && defined(SPDLOG_VER_MINOR) \
-    && (SPDLOG_VER_MAJOR > 1 \
-        || (SPDLOG_VER_MAJOR == 1 && SPDLOG_VER_MINOR > 0))
-#  include <spdlog/sinks/stdout_color_sinks.h>
-#endif  /* SPDLOG > 1.0 */
+#include <fmt/format.h>
       ]],
       [[
-auto logger = spdlog::stdout_color_mt("marc");
+void vlog_info(char const * format, fmt::format_args args)
+{
+    fmt::print("INFO: ");
+    fmt::vprint(format, args);
+}
 
-logger->info("foo");
+template <typename ... Args>
+void log_info(char const * format, const Args & ... args)
+{
+    vlog_info(format, fmt::make_format_args(args...));
+}
+
+log_info("{}", "foo");
       ]])
     ],
     [
-     marc_cv_lib_spdlog=yes
+     marc_cv_lib_fmt=yes
     ],
     [
-     marc_cv_lib_spdlog=no
+     marc_cv_lib_fmt=no
     ])
   ])
 dnl  ])
 
-AS_IF([test "x$marc_cv_lib_spdlog" = "xyes"],
-      [AC_DEFINE([HAVE_SPDLOG], [1], [Define if you have spdlog.])],
-      [AC_MSG_FAILURE([spdlog library is required])])
+AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
+      [],
+      [AC_MSG_WARN([fmt library not found, or is it old - using fallback])
+       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.2.1/include"
+       AC_SUBST([FMTLIB_CPPFLAGS])
+      ])
 
 dnl Checks for header files.
 AC_HEADER_STDC

@@ -26,6 +26,7 @@ include $(top_srcdir)/aminclude_static.am
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
+  $(FMTLIB_CPPFLAGS)    \
   $(CODE_COVERAGE_CPPFLAGS)
 
 bin_PROGRAMS = marc

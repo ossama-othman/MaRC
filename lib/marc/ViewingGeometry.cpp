@@ -33,7 +33,7 @@
 /**
  * @todo Should this be an equivalent MaRC include directive?
  */
-#include <spdlog/fmt/ostr.h>
+#include <fmt/ostream.h>
 
 #include <cmath>
 #include <limits>

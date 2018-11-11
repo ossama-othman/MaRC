@@ -28,6 +28,7 @@ endif
 AM_CPPFLAGS =                   \
   -I$(top_builddir)/lib         \
   -I$(top_srcdir)/lib           \
+  $(FMTLIB_CPPFLAGS)            \
   $(CODE_COVERAGE_CPPFLAGS)     \
   $(DLL_CPPFLAGS)
 

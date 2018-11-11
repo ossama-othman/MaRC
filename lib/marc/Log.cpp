@@ -22,36 +22,61 @@
  * @author Ossama Othman
  */
 
+/**
+ * @todo Ideally we shouldn't have to include this header since the
+ *       underlying MaRC logger shouldn't be exposed to the user.
+ */
+#include "Export.h"  // For MARC_API
+
 #include "Log.h"
 #include "config.h"
 
-#include <spdlog/spdlog.h>
-#if defined(SPDLOG_VER_MAJOR) && defined(SPDLOG_VER_MINOR) \
-    && (SPDLOG_VER_MAJOR > 1 \
-        || (SPDLOG_VER_MAJOR == 1 && SPDLOG_VER_MINOR > 0))
-#  include <spdlog/sinks/stdout_color_sinks.h>
-#endif  /* SPDLOG > 1.0 */
 
-
-namespace {
-    auto init_marc_logger()
+namespace
+{
+    inline void marc_log(char const * level,
+                         char const * format,
+                         fmt::format_args args)
     {
-        auto logger = spdlog::stdout_color_mt(PACKAGE);
-
-        // No need for a date and time stamp for console logging at
-        // this point in time.
-        // [logger name] [log level] text to log
-        logger->set_pattern("[%n] [%l] %v");
-
-#ifndef NDEBUG
-        logger->set_level(spdlog::level::debug);
-#endif  // NDEBUG
-
-        return logger;
+        fmt::print("[" PACKAGE "][{}] ", level);
+        fmt::vprint(format, args);
+        fmt::print("\n");
     }
 }
 
-namespace MaRC
+// --------------------------------------------------------------
+
+MARC_API void
+MaRC::details::debug(char const * format, fmt::format_args args)
 {
-    logger_type const _logger = init_marc_logger();
+#ifndef NDEBUG
+    marc_log("debug", format, args);
+#else
+    (void) format;
+    (void) args;
+#endif  // NDEBUG
+}
+
+MARC_API void
+MaRC::details::info(char const * format, fmt::format_args args)
+{
+    marc_log("info", format, args);
+}
+
+MARC_API void
+MaRC::details::warn(char const * format, fmt::format_args args)
+{
+    marc_log("warn", format, args);
+}
+
+MARC_API void
+MaRC::details::error(char const * format, fmt::format_args args)
+{
+    marc_log("error", format, args);
+}
+
+MARC_API void
+MaRC::details::critical(char const * format, fmt::format_args args)
+{
+    marc_log("critical", format, args);
 }
