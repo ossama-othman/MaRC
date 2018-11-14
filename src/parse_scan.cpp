@@ -77,7 +77,7 @@ MaRC::Radii::validate()
 
     if (count < 2) {
         std::ostringstream s;
-        s << "< " << count << " > valid oblate spheroid "
+        s << count << " valid oblate spheroid "
           << "characteristic(s) specified:"
           << "\n  Equatorial radius: " << this->eq_rad
           << "\n  Polar radius:      " << this->pol_rad
