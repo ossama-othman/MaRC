@@ -25,7 +25,7 @@
  */
 
 /**
- * @Todo Fix or at least report this issue to upstream fmt libary
+ * @todo Fix or at least report this issue to upstream fmt libary
  *       maintainers.
  */
 #ifdef __GNUG__
