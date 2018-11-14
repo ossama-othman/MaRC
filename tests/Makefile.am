@@ -42,11 +42,11 @@ check_PROGRAMS =            \
   utility_test              \
   validate_test
 
-dist_check_SCRIPTS = marc_program_test.sh command_line_test.sh
+dist_check_SCRIPTS = command_line_test.sh
 
 nobase_dist_check_DATA = \
-  config/marc \
-  test_map.marc \
+  config/marc            \
+  test_map.marc          \
   test.fits.gz
 
 DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
@@ -116,11 +116,20 @@ validate_test_SOURCES = validate_test.cpp
 validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 
-TESTS = \
-  $(check_PROGRAMS) \
-  $(dist_check_SCRIPTS)
+TESTS =                 \
+  $(check_PROGRAMS)     \
+  $(dist_check_SCRIPTS) \
+  test_map.marc
 
-TESTS_ENVIRONMENT = top_builddir=$(top_builddir) top_srcdir=$(top_srcdir)
+TEST_EXTENSIONS = .marc
+
+MARC_LOG_COMPILER = $(top_builddir)/src/marc
+
+TESTS_ENVIRONMENT = \
+  XDG_CONFIG_HOME=$(srcdir)/config; \
+  top_builddir=$(top_builddir); \
+  top_srcdir=$(top_srcdir); \
+  export XDG_CONFIG_HOME top_builddir top_srcdir;
 
 ## Tests known to fail.
 XFAIL_TESTS =
