@@ -42,12 +42,45 @@ check_PROGRAMS =            \
   utility_test              \
   validate_test
 
-dist_check_SCRIPTS = command_line_test.sh
+dist_check_SCRIPTS = marc_program_test.sh command_line_test.sh
+
+## MaRC input files with intentionally invalid values.  These are used
+## to exercise error handling in the MaRC input file parser.
+BAD_MARC_FILES = \
+  bad/test_arcsec_per_pix.marc \
+  bad/test_blank.marc \
+  bad/test_data_min_max.marc \
+  bad/test_float_blank.marc \
+  bad/test_grid_interval.marc \
+  bad/test_km_per_pixel.marc \
+  bad/test_lat_grid_interval.marc \
+  bad/test_latitude.marc \
+  bad/test_latitude_n.marc \
+  bad/test_latitude_s.marc \
+  bad/test_lines.marc \
+  bad/test_longitude_e.marc \
+  bad/test_longitude.marc \
+  bad/test_longitude_w.marc \
+  bad/test_lon_grid_interval.marc \
+  bad/test_nibble_bottom.marc \
+  bad/test_nibble_left.marc \
+  bad/test_nibble.marc \
+  bad/test_nibble_right.marc \
+  bad/test_nibble_top.marc \
+  bad/test_plane_number.marc \
+  bad/test_planes_count.marc \
+  bad/test_planes_size.marc \
+  bad/test_position_angle_ccw.marc \
+  bad/test_position_angle_cw.marc \
+  bad/test_position_angle.marc \
+  bad/test_radius.marc \
+  bad/test_samples.marc
 
 nobase_dist_check_DATA = \
   config/marc            \
   test_map.marc          \
-  test.fits.gz
+  test.fits.gz           \
+  $(BAD_MARC_FILES)
 
 DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
 DefaultConfiguration_Test_LDADD   = $(CODE_COVERAGE_LIBS)
@@ -115,11 +148,11 @@ utility_test_LDADD   = $(CODE_COVERAGE_LIBS)
 validate_test_SOURCES = validate_test.cpp
 validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
 
-
 TESTS =                 \
   $(check_PROGRAMS)     \
   $(dist_check_SCRIPTS) \
-  test_map.marc
+  test_map.marc         \
+  $(BAD_MARC_FILES)
 
 TEST_EXTENSIONS = .marc
 
@@ -131,8 +164,9 @@ TESTS_ENVIRONMENT = \
   top_srcdir=$(top_srcdir); \
   export XDG_CONFIG_HOME top_builddir top_srcdir;
 
-## Tests known to fail.
-XFAIL_TESTS =
+## Tests expected to fail.
+XFAIL_TESTS = \
+  $(BAD_MARC_FILES)
 
 CLEANFILES = \
   test_map.fits \
@@ -148,7 +182,7 @@ CLEANFILES = \
 
 all-local:
 	@if test ! -r test.fits.gz; then \
-	  $(LN_S) $(top_srcdir)/tests/test.fits.gz test.fits.gz; \
+	  $(LN_S) $(srcdir)/test.fits.gz test.fits.gz; \
 	  touch link-stamp; \
 	fi
 
@@ -163,4 +197,4 @@ clean-local: code-coverage-clean
 #
 #     LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib make installcheck
 installcheck-local:
-	$(top_srcdir)/tests/marc_program_test.sh -p $(DESTDIR)$(bindir)/marc -t $(top_srcdir)/tests > /dev/null
+	$(srcdir)/marc_program_test.sh -p $(DESTDIR)$(bindir)/marc -t $(srcdir) > /dev/null

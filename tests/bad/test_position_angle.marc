@@ -1,0 +1,31 @@
+MAP:    test_bad_map.fits
+        BODY:   Jupiter
+        EQ_RAD:         71492
+        POL_RAD:        66854
+        ROTATION:       PROGRADE
+        DATA_TYPE:      BYTE
+        TYPE:           SIMPLE_C
+        OPTIONS:
+                CENTRIC
+        SAMPLES:        50
+        LINES:          25
+
+        PLANE:
+                IMAGE:  test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        INTERPOLATE:            NO
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2807.61
+                        LINE_CENTER:            1200.67
+                        GEOM_CORRECT:           NO
+                        TERMINATOR:             NO
+                        SUB_OBSERV_LAT:         10 N
+                        SUB_OBSERV_LON:         215.63
+                        POSITION_ANGLE:         1179.175
+                        SUB_SOLAR_LAT:          0.22 N
+                        SUB_SOLAR_LON:          284.67 E
+                        RANGE:                  0.00809057036933 AU
+                        ARCSEC_PER_PIX:         0.125

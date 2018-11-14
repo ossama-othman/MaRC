@@ -81,8 +81,8 @@ src/marc
 
 # Test Files
 test-driver
-tests/*.log
-tests/*.trs
+*.log
+*.trs
 tests/DefaultConfiguration_Test
 tests/Math_Test
 tests/Vector_Test
