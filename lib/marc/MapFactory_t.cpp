@@ -99,16 +99,8 @@ MaRC::MapFactory::plot(plot_info const & info,
          && datum >= info.minimum()
          && datum <= info.maximum());
 
-    if (found_data) {
-        T & data =
-#ifdef NDEBUG
-            map[offset];     // No bounds check.
-#else
-            map.at(offset);  // Perform bounds check.
-#endif
-
-        data = static_cast<T>(datum);
-    }
+    if (found_data)
+        map[offset] = static_cast<T>(datum);
 
     // Inform "observers" of mapping progress.
     info.notifier().notify_plotted(map.size());
