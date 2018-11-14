@@ -341,7 +341,8 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %token _DATA_TYPE "DATA_TYPE"
 %token DATA_OFFSET DATA_SCALE DATA_BLANK
 %token GRID GRID_INTERVAL LAT_GRID_INTERVAL LON_GRID_INTERVAL
-%token MAP_TYPE SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
+%token MAP_TYPE "TYPE"
+%token SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
 %token PROGRADE RETROGRADE FLATTENING
 %token AVERAGING  WEIGHTED UNWEIGHTED
 %token _NONE "NONE"
@@ -626,8 +627,9 @@ data_blank:
 ;
 
 grid:
-        grid_yes_or_no
-        grid_intervals
+        %empty
+        | grid_yes_or_no
+        | grid_yes_or_no grid_intervals
 ;
 
 grid_yes_or_no:
@@ -640,8 +642,7 @@ grid_yes_or_no:
 ;
 
 grid_intervals:
-        %empty
-        | grid_interval
+        grid_interval
         | lat_grid_interval
         | lon_grid_interval
         | lat_grid_interval lon_grid_interval
@@ -653,7 +654,7 @@ grid_interval:
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Grid interval value (" << $3 << ") "
-                  << "less than or equal to zero";
+                  << "must be greater than zero.";
 
                 throw std::invalid_argument(s.str ());
             } else {
@@ -668,7 +669,7 @@ lat_grid_interval:
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Latitude grid interval value (" << $3 << ") "
-                  << "less than or equal to zero";
+                  << "must be greater than zero.";
 
                 throw std::invalid_argument(s.str ());
             } else {
@@ -682,7 +683,7 @@ lon_grid_interval:
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Longitude grid interval value (" << $3 << ") "
-                  << "less than or equal to zero";
+                  << "must be greater than zero.";
 
                 throw std::invalid_argument(s.str ());
             } else {
@@ -1305,7 +1306,17 @@ image_geometry:
 ;
 
 arcsec_per_pix:
-        ARCSEC_PER_PIX ':' expr  { arcsec_per_pix_val = $3; }
+        ARCSEC_PER_PIX ':' expr {
+            if ($3 > 0) {
+                arcsec_per_pix_val = $3;
+            } else {
+                yyerror(&yylloc,
+                        scanner,
+                        pp,
+                        "ARCSEC_PER_PIX must be greater than zero.");
+                YYERROR;
+            }
+        }
 ;
 
 lens_geometry:

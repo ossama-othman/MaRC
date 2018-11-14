@@ -511,8 +511,8 @@ between grid points is 10 degrees (planetocentric where applicable
 @cindex @code{GRID_INTERVAL}
 
 @example
-GRID:           YES     # This is required.  Enter "YES" or "NO."
-GRID_INTERVAL:  5       # This is optional.
+GRID:         YES  # This is optional.  "YES" or "NO".  "NO" by default.
+GRID_INTERVAL:5    # This is optional.  Requires GRID.
 @end example
 
 @noindent
