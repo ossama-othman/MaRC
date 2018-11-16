@@ -196,21 +196,22 @@ namespace C
    */
   //@{
   /// velocity of light
-  static constexpr double c = 2.99792458e+08;
+  static constexpr double c = 299792458;
 
   /// Gravitational constant
   static constexpr double Gravity = 6.67259e-11;
 
   /// Planck's constant
-  static constexpr double Planck = 6.6260755e-34;
+  static constexpr double Planck = 6.62607015e-34;
 
   /// gas constant
-  static constexpr double GasConst = 8.314510;
+  static constexpr double GasConst = 8.3144598;
+
   /// Avogardo's constant
-  static constexpr double Avogadro = 6.0221367e+23;
+  static constexpr double Avogadro = 6.02214076e+23;
 
   /// electron charge
-  static constexpr double qe = 1.60217733e-19;
+  static constexpr double qe = 1.602176634e-19;
 
   /// proton mass
   static constexpr double mp = 1.6726231e-27;
@@ -488,7 +489,7 @@ namespace C
   static constexpr double pica = 12.0 * C::point;
 
   /// astronomical unit
-  static constexpr double astronomical_unit = 1.4959787066e+11 * C::metre;
+  static constexpr double astronomical_unit = 1.495978707e+11 * C::metre;
 
   /// light second
   static constexpr double light_second = C::c * C::metre;
