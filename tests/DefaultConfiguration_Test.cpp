@@ -36,6 +36,9 @@ namespace
  *       to use something like MaRC::almost_equal() instead.
  */
 
+/**
+ * @test Test default latitude configuration.
+ */
 bool test_latitude_configuration()
 {
     using namespace MaRC::default_configuration;
@@ -48,6 +51,9 @@ bool test_latitude_configuration()
         && MaRC::almost_equal(latitude_range, latitude_high - latitude_low, ulps);
 }
 
+/**
+ * @test Test default longitude configuration.
+ */
 bool test_longitude_configuration()
 {
     using namespace MaRC::default_configuration;
@@ -63,6 +69,10 @@ bool test_longitude_configuration()
                               ulps);
 }
 
+/**
+ * @test Test default &mu;, &mu;<SUB>0</SUB> and cos(&phi;) range
+ *       configuration.
+ */
 bool test_cosine_configuration()
 {
     using namespace MaRC::default_configuration;

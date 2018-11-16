@@ -40,7 +40,7 @@
 namespace MaRC
 {
     /**
-     * @typedef Type used to store a FITS @c BLANK integer value.
+     * @brief Type used to store a FITS @c BLANK integer value.
      *
      * @todo Use @c std::optional<> once MaRC requires C++17.
      */

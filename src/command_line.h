@@ -43,13 +43,13 @@ namespace MaRC
         /**
          * @class arguments
          *
-         * @brief Command line argument container
-         *
+         * @brief Command line argument container.
          */
         class arguments
         {
         public:
 
+            /// STL style iterator type.
             using const_iterator = char const * const *;
 
             /// Constructor.

@@ -1,5 +1,5 @@
 /**
- * @file BilinearInterpolationStrategy.cpp
+ * @file BilinearInterpolation.cpp
  *
  * Copyright (C) 2003-2004, 2017  Ossama Othman
  *

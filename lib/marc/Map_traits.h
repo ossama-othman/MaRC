@@ -80,7 +80,7 @@ namespace MaRC
          * integer set to -65000 results in a short integer value of
          * 536).
          *
-         * @param[in] min User configured minimum.
+         * @param[in] m User configured minimum.
          *
          * @return Minimum value that is greater than or equal to the
          *         minimum valid value for the given map data type.
@@ -104,7 +104,7 @@ namespace MaRC
          *
          * @see @c minimum()
          *
-         * @param max User configured maximum.
+         * @param[in] m User configured maximum.
          *
          * @return Maximum value that is less than or equal to the
          *         maximum valid value for the given map data type.

@@ -57,10 +57,10 @@ namespace MaRC
     {
     public:
 
-        /// @typedef Type returned from @c make_grid() method.
+        /// Type returned from @c make_grid() method.
         using typename MapFactory::grid_type;
 
-        /// @typedef Type of functor passed to @c plot_map() method.
+        /// Type of functor passed to @c plot_map() method.
         using typename MapFactory::plot_type;
 
         /// Constructor.

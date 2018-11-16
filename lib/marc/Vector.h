@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file Vector.h
+ * @file marc/Vector.h
  *
  * MaRC mathematical vector class and operations.
  *
@@ -58,6 +58,10 @@ namespace MaRC
     {
     public:
 
+        /**
+         * STL style container typedefs.
+         */
+        //@{
         typedef T            value_type;
         typedef T            element_type;
         typedef T &          reference;
@@ -65,6 +69,7 @@ namespace MaRC
         typedef Vector<T, M> vector_type;
         typedef T *          iterator;
         typedef T const *    const_iterator;
+        //@}
 
         /**
          * @brief Default constructor.

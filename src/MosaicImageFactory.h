@@ -51,6 +51,10 @@ namespace MaRC
     {
     public:
 
+        /**
+         * Type of list containing @c PhotoImageFactory instants that
+         * used to create individual mosaic contributors.
+         */
         using list_type = std::list<std::unique_ptr<PhotoImageFactory>>;
 
         /// Constructor.

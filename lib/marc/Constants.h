@@ -2,7 +2,7 @@
 /**
  *  @file Constants.h
  *
- *  Mathematical and physical constants and conversion factors
+ *  @brief Mathematical and physical constants and conversion factors
  *
  *  Copyright (C) 1993, 1994, 1995
  *  Associated Universities, Inc. Washington DC, USA.
@@ -98,7 +98,6 @@ namespace C
    * @name Irrationals
    */
   //@{
-
   /// sqrt(2)
   static constexpr double sqrt2 = 1.4142135623730950488;
 
@@ -110,7 +109,6 @@ namespace C
 
   /// 1/sqrt(3)
   static constexpr double _1_sqrt3 = 0.57735026918962576451;
-
   //@}
 
   /**
@@ -180,7 +178,7 @@ namespace C
 
 
   /*
-   *  Begin Physical constants, and quantities
+   * Begin Physical constants, and quantities
    *
    * References:
    *     "Explanatory Supplement to the Astronomical Almanac",

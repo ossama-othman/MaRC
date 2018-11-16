@@ -2,7 +2,7 @@
 /**
  * @file Log.h
  *
- * MaRC logging interface.
+ * @brief MaRC logging interface.
  *
  * Copyright (C) 2018  Ossama Othman
  *
@@ -55,11 +55,16 @@ namespace MaRC
 {
     namespace details
     {
+        /**
+         * @name Internal logging functions.
+         */
+        //@{
         void debug(char const * format, fmt::format_args args);
         void info(char const * format, fmt::format_args args);
         void warn(char const * format, fmt::format_args args);
         void error(char const * format, fmt::format_args args);
         void critical(char const * format, fmt::format_args args);
+        //@}
     }
 
     /**

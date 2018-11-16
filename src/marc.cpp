@@ -144,8 +144,6 @@ namespace MaRC
     };
 
     /**
-     * @typedef file_unique_ptr
-     *
      * Type alias of @c std::unique_ptr<> that automatically closes
      * the a @c FILE stream up on exiting the scope in which an
      * instance of this @c file_unique_ptr resides.
@@ -164,7 +162,7 @@ namespace MaRC
     struct scanner_destroyer
     {
         /**
-         * @param[in] stream Pointer to @c FILE stream.
+         * @param[in] scanner Pointer to reentrant scanner object.
          */
         void operator()(yyscan_t * scanner) const
         {
@@ -173,11 +171,9 @@ namespace MaRC
     };
 
     /**
-     * @typedef file_unique_ptr
-     *
-     * Type alias of @c std::unique_ptr<> that automatically closes
-     * the a @c FILE stream up on exiting the scope in which an
-     * instance of this @c file_unique_ptr resides.
+     * Type alias of @c std::unique_ptr<> that automatically destroys
+     * a reentrant Flex scanner up on exiting the scope in which an
+     * instance of this @c scanner_unique_ptr resides.
      */
     using scanner_unique_ptr =
         std::unique_ptr<yyscan_t, scanner_destroyer>;
@@ -287,6 +283,7 @@ namespace MaRC
 
 }
 
+/// The canonical main entry point to the MaRC process.
 int main(int argc, char *argv[])
 {
     MaRC::command_line cl;

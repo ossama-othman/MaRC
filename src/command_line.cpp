@@ -1,5 +1,5 @@
 /**
- * @file configuration.cpp
+ * @file command_line.cpp
  *
  * Copyright (C) 2018  Ossama Othman
  *
@@ -36,6 +36,7 @@
 # ifdef HAVE_SYSEXITS_H
 #   include <sysexits.h>
 # else
+/// Exit code that signifies incorrect invocation of a given command.
 #   define EX_USAGE 64
 # endif
 #endif  // HAVE_ARGP

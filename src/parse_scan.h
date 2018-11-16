@@ -30,6 +30,13 @@
 #include <list>
 #include <memory>
 
+/**
+ * @brief Scanner function prototype.
+ *
+ * A non-default scanner function prototype that allows additional
+ * parameters to be passed as part of the means to make the scanner
+ * reentrant.
+ */
 #define YY_DECL int yylex(YYSTYPE * yylval_param,       \
                           YYLTYPE * yylloc_param,       \
                           yyscan_t yyscanner,           \
@@ -57,6 +64,7 @@ namespace MaRC
         /// Constructor.
         ParseParameter();
 
+        /// Get list of @c MapCommand objects.
         command_list const & commands() const { return this->commands_; }
 
         /// Push a Command object on to the list of Commands to
@@ -134,6 +142,7 @@ namespace MaRC
         double lon;
     };
 
+    /// Sub-solar point latitude and longitude.
     typedef SubObserv SubSolar;
 
     /**

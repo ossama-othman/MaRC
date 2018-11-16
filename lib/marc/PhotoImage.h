@@ -120,9 +120,9 @@ namespace MaRC
          * @brief Obtain data weight for given image pixel.
          *
          * Obtain the data weight based on how close the pixel at
-         * sample @a i and line @k is to the edge of the image or the
-         * sky if sky removal is enabled.  For example, less weight is
-         * given to pixels close to an edge of the image.
+         * sample @a i and line @a k is to the edge of the image or
+         * the sky if sky removal is enabled.  For example, less
+         * weight is given to pixels close to an edge of the image.
          *
          * @param[in]  i      Image pixel sample.
          * @param[in]  k      Image pixel line.

@@ -152,8 +152,10 @@ namespace MaRC
             /// Underlying CFITSIO @c fitsfile object.
             fitsfile * const fptr_;
 
-            // Only two-dimensional FITS images are currently
-            // supported.
+            /**
+             * @note Only two-dimensional FITS images are currently
+             *       supported.
+             */
             using naxes_array_type = std::array<long, 2>;
 
             /// Array containing FITS image dimensions.

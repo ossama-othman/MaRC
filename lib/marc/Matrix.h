@@ -70,6 +70,10 @@ namespace MaRC
     {
     public:
 
+        /**
+         * STL style container typedefs.
+         */
+        //@{
         typedef T               value_type;
         typedef T               element_type;
         typedef T &             reference;
@@ -78,6 +82,7 @@ namespace MaRC
         typedef Matrix<T, N, M> transpose_type;
         typedef T *             iterator;
         typedef T const *       const_iterator;
+        //@}
 
         /// Constructor.
         Matrix()
@@ -160,7 +165,7 @@ namespace MaRC
          *
          * @note No bounds checking.
          *
-         * @param[[n] row    Zero-based matrix row.
+         * @param[in] row    Zero-based matrix row.
          * @param[in] column Zero-based matrix column.
          *
          * @return Reference to @c const element at given @c Matrix
@@ -198,7 +203,7 @@ namespace MaRC
          *
          * @note With bounds checking.
          *
-         * @param[[n] row    Zero-based matrix row.
+         * @param[in] row    Zero-based matrix row.
          * @param[in] column Zero-based matrix column.
          *
          * @return Reference to @c const element at given @c Matrix

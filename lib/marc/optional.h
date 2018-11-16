@@ -21,7 +21,7 @@
  * @author Ossama Othman
  *
  * @deprecated This header will be removed in favor of the C++17
- *             <optional> header once MaRC requires C++17.
+ *             @<optional@> header once MaRC requires C++17.
  */
 
 #ifndef MARC_OPTIONAL_H
@@ -39,10 +39,16 @@
 namespace MaRC
 {
 #if __cplusplus < 201703L
+    /**
+     * @struct nullopt_t
+     *
+     * @brief Null initialization type for @c optional.
+     */
     struct nullopt_t {
         explicit constexpr nullopt_t(int) {}
     };
 
+    /// Constant used to null initialize an @c optional object.
     constexpr nullopt_t nullopt{0};
 
     /**
@@ -448,6 +454,9 @@ namespace MaRC
 #if __cplusplus < 201703L
 namespace std
 {
+    /**
+     * @brief Swap contents of MaRC::optional objects.
+     */
     template<typename T>
     void swap(MaRC::optional<T> & lhs, MaRC::optional<T> & rhs) noexcept(
         noexcept(lhs.swap(rhs)))

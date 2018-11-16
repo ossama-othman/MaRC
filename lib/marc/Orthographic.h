@@ -35,6 +35,11 @@ namespace MaRC
     class OblateSpheroid;
     struct OrthographicCenter;
 
+    /**
+     * @enum GeometryType
+     *
+     * @brief Body center geometry type..
+     */
     enum GeometryType { DEFAULT, CENTER_GIVEN, LAT_LON_GIVEN };
 
     /**
@@ -53,10 +58,10 @@ namespace MaRC
     {
     public:
 
-        /// @typedef Type of grid passed to @c plot_grid() method.
+        /// Type of grid passed to @c plot_grid() method.
         using typename MapFactory::grid_type;
 
-        /// @typedef Type of functor passed to @c plot_map() method.
+        /// Type of functor passed to @c plot_map() method.
         using typename MapFactory::plot_type;
 
         /// Constructor.

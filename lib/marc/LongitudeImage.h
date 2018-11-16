@@ -65,7 +65,7 @@ namespace MaRC
          * @note "deg" is used is instead of "degree" per FITS
          *       standard recommendation for the BUNIT keyword.
          *
-         * @se https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html
+         * @see https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html
          */
         virtual char const * unit() const { return "deg"; }
 

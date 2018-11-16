@@ -49,11 +49,11 @@ namespace MaRC
     {
     public:
 
-        /// @typedef Type returned from @c make_map() method.
+        /// Type returned from @c make_map() method.
         template <typename T>
         using map_type = std::vector<T>;
 
-        /// @typedef Type returned from @c make_grid() method.
+        /// Type returned from @c make_grid() method.
         using grid_type = std::vector<uint8_t>;
 
         /**
@@ -160,26 +160,14 @@ namespace MaRC
          * @see @c plot_type type alias
          * @see @c plot_map()
          *
-         * @param[in]     source           SourceImage object
-         *                                 containing the data to be
-         *                                 mapped.
-         * @param[in]     minimum          Minimum allowed value on
-         *                                 map, i.e. all data greater
-         *                                 than or equal to
-         *                                 @a minimum.
-         * @param[in]     maximum          Maximum allowed value on
-         *                                 map, i.e. all data less
-         *                                 than or equal to
-         *                                 @a maximum.
-         * @param[in]     lat              Planetocentric latitude.
-         * @param[in]     lon              Planetocentric longitude.
-         * @param[in]     percent_complete Percent of map completed.
-         * @param[in]     offset           Map offset corresponding to
-         *                                 the location in the
-         *                                 underlying map array where
-         *                                 the data will be plotted.
-         * @param[in,out] map              Map container where data
-         *                                 will be plotted.
+         * @param[in]     info   Map plotting information.
+         * @param[in]     lat    Planetocentric latitude.
+         * @param[in]     lon    Planetocentric longitude.
+         * @param[in]     offset Map offset corresponding to the
+         *                       location in the underlying map array
+         *                       where the data will be plotted.
+         * @param[in,out] map    Map container where data will be
+         *                       plotted.
          *
          * @todo Currently subclasses must call this method in their
          *       @c plot_map() implementation.  That seems like a

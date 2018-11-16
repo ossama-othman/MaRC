@@ -41,11 +41,28 @@ namespace MaRC
      */
     namespace FITS
     {
-        typedef uint8_t byte_type;     // Unsigned
-        typedef int16_t short_type;    // Signed
+        /**
+         * @name Numerical Data Types
+         *
+         * Types suitable for storing the numerical data types listed
+         * in the FITS standard.
+         */
+        /// 8-bit unsigned integer type.
+        typedef uint8_t byte_type;
+
+        /// 16-bit signed integer type.
+        typedef int16_t short_type;
+
+        /// 32-bit signed integer type.
         typedef int32_t long_type;
+
+        /// 64-bit signed integer type.
         typedef int64_t longlong_type;
+
+        /// 32-bit floating point type.
         typedef float   float_type;
+
+        /// 64-bit floating point type.
         typedef double  double_type;
 
         /**

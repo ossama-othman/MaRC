@@ -46,10 +46,14 @@ namespace MaRC
     {
     public:
 
+        /**
+         * Type of list containing source images that comprise the
+         * mosaic.
+         */
         using list_type = std::vector<std::unique_ptr<SourceImage>>;
 
         /**
-         * @enum AverageType
+         * @enum average_type
          *
          * The type of averaging to be performed on physical data
          * retrieved from multiple images that contain data at the
