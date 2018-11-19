@@ -118,10 +118,21 @@ namespace MaRC
         }
     };
 
-    // Map_traits specializations.
+    /**
+     * @brief @c Map_traits specialization for maps with a @c double
+     *        data type.
+     *
+     * @see Map_traits
+     */
     template <>
     struct Map_traits<double>
     {
+        /**
+         * @name Specialized Members
+         *
+         * Members specialized for type @c double.
+         */
+        //@{
         static constexpr double empty_value()
         {
             return std::numeric_limits<double>::quiet_NaN();
@@ -140,6 +151,7 @@ namespace MaRC
             // same.
             return max;
         }
+        //@}
     };
 
 }

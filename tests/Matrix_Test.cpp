@@ -24,6 +24,9 @@
 #include <algorithm>
 
 
+/**
+ * @test Test MaRC::Matrix initialization.
+ */
 bool test_matrix_initialization()
 {
     static constexpr std::size_t ROWS = 2;
@@ -69,6 +72,9 @@ bool test_matrix_initialization()
                       std::cbegin(m3), std::cend(m3));
 }
 
+/**
+ * @test Test MaRC::Matrix element access.
+ */
 bool test_matrix_element_access()
 {
     static constexpr std::size_t ROWS = 2;
@@ -119,6 +125,9 @@ bool test_matrix_element_access()
         && caught_expected_exception;
 }
 
+/**
+ * @test Test MaRC::Matrix comparison.
+ */
 bool test_matrix_comparison()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
@@ -137,6 +146,9 @@ bool test_matrix_comparison()
     return m2 == m1 && m3 == m2 && m4 != m1;
 }
 
+/**
+ * @test Test MaRC::Matrix addition.
+ */
 bool test_matrix_addition()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
@@ -159,6 +171,9 @@ bool test_matrix_addition()
     return m3 == sum && m1 + m2 == sum;
 }
 
+/**
+ * @test Test MaRC::Matrix subtraction.
+ */
 bool test_matrix_subtraction()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
@@ -181,6 +196,9 @@ bool test_matrix_subtraction()
     return m3 == diff && m1 - m2 == diff;
 }
 
+/**
+ * @test Test MaRC::Matrix multiplication by scalars and vectors.
+ */
 bool test_matrix_multiplication()
 {
     using left_matrix_type  = MaRC::Matrix<int, 3, 2>;
@@ -216,6 +234,9 @@ bool test_matrix_multiplication()
         && s * prod == sprod;
 }
 
+/**
+ * @test Test the MaRC::transpose() function.
+ */
 bool test_matrix_transpose()
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
@@ -232,6 +253,7 @@ bool test_matrix_transpose()
     return t == expected_t;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

@@ -42,13 +42,13 @@ namespace MaRC
         /**
          * @class header
          *
-         * @brief Class that encapsulates standard FITS header
+         * @brief Class that encapsulates standard %FITS header
          *        keywords.
          *
-         * This class is a proxy that provides access to the FITS
+         * This class is a proxy that provides access to the %FITS
          * header.
          *
-         * @todo FITS keyword values are not cached during the first
+         * @todo %FITS keyword values are not cached during the first
          *       access.  Should they?
          */
         class header
@@ -66,15 +66,15 @@ namespace MaRC
             void operator=(header const &) = delete;
 
             /**
-             * @name Standard FITS Keyword Accessors
+             * @name Standard %FITS Keyword Accessors
              *
-             * @brief Retrieve values of standard FITS keywords.
+             * @brief Retrieve values of standard %FITS keywords.
              *
-             * These methods have corresponding standard FITS
+             * These methods have corresponding standard %FITS
              * keywords, e.g. @c author() corresponds to the standard
-             * FITS @c AUTHOR keyword.  Accessors for mandatory
+             * %FITS @c AUTHOR keyword.  Accessors for mandatory
              * keywords will always return a value.  Otherwise, a
-             * keyword doesn't exist in the FITS file will return an
+             * keyword doesn't exist in the %FITS file will return an
              * empty value, such as an empty @c std::string or a
              * @c MaRC::optional<> with no value.
              */
@@ -108,9 +108,9 @@ namespace MaRC
         /**
          * @class data
          *
-         * @brief Encapsulate FITS image read into memory.
+         * @brief Encapsulate %FITS image read into memory.
          *
-         * This class is a proxy that provides access to the FITS
+         * This class is a proxy that provides access to the %FITS
          * data.
          */
         class data
@@ -127,23 +127,23 @@ namespace MaRC
             data(data const &) = delete;
             void operator=(data const &) = delete;
 
-            /// The number of columns in the FITS image.
+            /// The number of columns in the %FITS image.
             std::size_t samples() const
             {
                 return static_cast<std::size_t>(this->naxes_[0]);
             }
 
-            /// The number of rows in the FITS image.
+            /// The number of rows in the %FITS image.
             std::size_t lines() const
             {
                 return static_cast<std::size_t>(this->naxes_[1]);
             }
 
             /**
-             * @brief Read the FITS image into the given @c vector.
+             * @brief Read the %FITS image into the given @c vector.
              *
              * @param[in,out] img Vector that will contain the read
-             *                    FITS image data.
+             *                    %FITS image data.
              */
             void read(std::vector<double> & img) const;
 
@@ -153,21 +153,21 @@ namespace MaRC
             fitsfile * const fptr_;
 
             /**
-             * @note Only two-dimensional FITS images are currently
+             * @note Only two-dimensional %FITS images are currently
              *       supported.
              */
             using naxes_array_type = std::array<long, 2>;
 
-            /// Array containing FITS image dimensions.
+            /// Array containing %FITS image dimensions.
             naxes_array_type naxes_;
 
         };
 
         /**
-         * @brief Encapsulate a FITS file containing an image.
+         * @brief Encapsulate a %FITS file containing an image.
          *
-         * This class encapsulates operations performed on a FITS file
-         * containing an image, such as opening, closing, image
+         * This class encapsulates operations performed on a %FITS
+         * file containing an image, such as opening, closing, image
          * parameter retrieval, etc.
          */
         class file
@@ -177,7 +177,7 @@ namespace MaRC
             /**
              * @brief Constructor
              *
-             * @param[in] filename Name of FITS file to opened.
+             * @param[in] filename Name of %FITS file to opened.
              */
             file(char const * filename);
 
@@ -188,10 +188,10 @@ namespace MaRC
             file(file const &) = delete;
             void operator=(file const &) = delete;
 
-            /// Get proxy that provides access to the FITS header.
+            /// Get proxy that provides access to the %FITS header.
             FITS::header const & header() const { return this->header_; }
 
-            /// Get proxy that provides access to the FITS data.
+            /// Get proxy that provides access to the %FITS data.
             FITS::data const & data() const { return this->data_; }
 
         private:
@@ -199,10 +199,10 @@ namespace MaRC
             /// Underlying CFITSIO @c fitsfile object.
             file_unique_ptr fptr_;
 
-            /// FITS header proxy.
+            /// %FITS header proxy.
             FITS::header header_;
 
-            /// FITS data proxy.
+            /// %FITS data proxy.
             FITS::data data_;
 
         };

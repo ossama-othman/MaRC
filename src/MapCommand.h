@@ -40,7 +40,7 @@
 namespace MaRC
 {
     /**
-     * @brief Type used to store a FITS @c BLANK integer value.
+     * @brief Type used to store a %FITS @c BLANK integer value.
      *
      * @todo Use @c std::optional<> once MaRC requires C++17.
      */
@@ -59,8 +59,13 @@ namespace MaRC
     {
     public:
 
+        /// Grid image type.
         using grid_type = MaRC::MapFactory::grid_type;
+
+        /// FITS file comment list type.
         using comment_list_type = std::list<std::string>;
+
+        /// Source image factories type.
         using image_factories_type =
             std::list<std::unique_ptr<MaRC::ImageFactory>>;
 
@@ -105,58 +110,62 @@ namespace MaRC
         /// map.
         void origin(std::string origin);
 
-        /// Set list of map comments to be written to FITS file.
+        /// Set list of map comments to be written to %FITS file.
         void comment_list (comment_list_type comments);
 
-        /// Set list of grid comments to be written to FITS file.
+        /// Set list of grid comments to be written to %FITS file.
         void xcomment_list(comment_list_type comments);
 
         /**
-         * Set the latitude and longitude grid intervals.
+         * @brief Set the latitude and longitude grid intervals.
          *
-         * @note Call this method implicitly enables grid creation.
+         * @note Calling this method implicitly enables grid
+         *       creation.
          */
          void grid_intervals(double lat_interval, double lon_interval);
 
-        /// Set the value for the map FITS @c BZERO keyword.
         /**
-         * The default value of the FITS @c BZERO keyword is zero.
+         * @brief Set the value for the map %FITS @c BZERO keyword.
+         *
+         * The default value of the %FITS @c BZERO keyword is zero.
          *
          * @param[in] zero @c BZERO keyword value.
          *
          * @note Setting this value will cause the data written to the
-         *       FITS file to be transformed according the equation:
-         * @code
+         *       %FITS file to be transformed according the equation:
+         * @code{.cpp}
          *            (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
         void data_zero(double zero);
 
-        /// Set the value for the map FITS @c BSCALE keyword.
         /**
-         * The default value of the FITS @c BSCALE keyword is one.
+         * @brief Set the value for the map %FITS @c BSCALE keyword.
+         *
+         * The default value of the %FITS @c BSCALE keyword is one.
          *
          * @param[in] scale @c BSCALE keyword value.
          *
          * @note Setting this value will cause the data written to the
-         *       FITS file to be transformed according the equation:
-         * @code
+         *       %FITS file to be transformed according the equation:
+         * @code{.cpp}
          *         (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
         void data_scale(double scale);
 
-        /// Set the value for the map FITS @c BLANK keyword.
         /**
-         * The FITS @c BLANK keyword only applies to FITS images
+         * @brief Set the value for the map %FITS @c BLANK keyword.
+         *
+         * The %FITS @c BLANK keyword only applies to FITS images
          * containing integer types.  The corresponding "blank" value
-         * for floating point FITS images is the IEEE "not-a-number"
+         * for floating point %FITS images is the IEEE "not-a-number"
          * constant.
          *
          * The @c BLANK keyword merely documents which physical (not
-         * FITS) values in the image array are undefined.
+         * %FITS) values in the image array are undefined.
          *
-         * @param[in] blank FITS @c BLANK keyword value.
+         * @param[in] blank %FITS @c BLANK keyword value.
          */
         void data_blank(blank_type blank);
 
@@ -167,10 +176,10 @@ namespace MaRC
     private:
 
         /**
-         * @brief Get map FITS bits per pixel code.
+         * @brief Get map %FITS bits per pixel code.
          *
-         * Obtain the bits per pixel "BITPIX" in the map FITS file, as
-         * defined by the FITS standard.  This value may either be
+         * Obtain the bits per pixel "BITPIX" in the map %FITS file,
+         * as defined by the %FITS standard.  This value may either be
          * supplied by the user or determined at run-time based on
          * source image data being mapped.
          *
@@ -186,20 +195,22 @@ namespace MaRC
          */
         int bitpix();
 
-        /// Write @c VirtualImage information to FITS file.
         /**
-         * Write information specific to @c VirtualImage (e.g.
-         * @c MuImage) based map planes to the map FITS file.
+         * @brief Write @c VirtualImage information to %FITS file.
          *
-         * @param[in]  fptr       CFITSIO pointer to the map FITS
+         * Write information specific to @c VirtualImage (e.g.
+         * @c MuImage) based map planes to the map %FITS file.
+         *
+         * @param[in]  fptr       CFITSIO pointer to the map %FITS
          *                        file.
          * @param[in]  plane      Map plane number of
          *                        @c VirtualImage.
          * @param[in]  num_planes Number of map planes being written
-         *                        to the FITS file.
+         *                        to the %FITS file.
          * @param[in]  image      @c SourceImage object that may be a
          *                        @c VirtualImage about which facts
-         *                        are being written to the FITS file.
+         *                        are being written to the %FITS
+         *                        file.
          * @param[out] status     CFITSIO file operation status.
          */
         void write_virtual_image_facts(fitsfile * fptr,
@@ -208,23 +219,26 @@ namespace MaRC
                                        SourceImage const * image,
                                        int & status);
 
-        /// Create FITS image array HDU.
         /**
-         * @param[in]  fptr   CFITSIO pointer to the map FITS file.
+         * @brief Create %FITS image array HDU.
+         *
+         * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
          * @param[out] status CFITSIO file operation status.
          */
         void initialize_FITS_image(fitsfile * fptr, int & status);
 
         /**
          * @brief Create and write map planes.
-         * @param[in]  fptr   CFITSIO pointer to the map FITS file.
+         *
+         * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
          * @param[out] status CFITSIO file operation status.
          */
         template <typename T>
         void make_map_planes(fitsfile * fptr, int & status);
 
-        /// Create grid image.
         /**
+         * @brief Create grid image.
+         *
          * This is a "template method" (the design pattern, not a C++
          * class template member) that calls back on the type-specific
          * @c MapFactory to create the grid.
@@ -242,16 +256,16 @@ namespace MaRC
                             double lon_interval);
 
         /**
-         * @brief Write map grid to the map FITS file.
+         * @brief Write map grid to the map %FITS file.
          *
-         * @param[in]  fptr   CFITSIO pointer to the map FITS file.
+         * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
          * @param[out] status CFITSIO file operation status.
          */
         void write_grid(fitsfile * fptr, int & status);
 
     private:
 
-        /// FITS bits per pixel (i.e. 8, 16, 32, 64, -32, or -64).
+        /// %FITS bits per pixel (i.e. 8, 16, 32, 64, -32, or -64).
         int bitpix_;
 
         /// Number of samples in map.
@@ -282,7 +296,7 @@ namespace MaRC
         std::string author_;
 
         /// Organization or institution responsible for creating this
-        /// FITS file.
+        /// %FITS file.
         std::string origin_;
 
         /// Map comments.
@@ -306,17 +320,18 @@ namespace MaRC
         /// Physical value corresponding to an array value of zero.
         double bzero_;
 
-        /// Flag that determines if data written to the FITS map file
-        /// is transformed using a linear equation.
         /**
+         * @brief Flag that determines if data written to the %FITS
+         *        map file is transformed using a linear equation.
+         *
          * The transformation equation used when writing data to a
-         * FITS file is:
-         * @code
+         * %FITS file is:
+         * @code{.cpp}
          *   FITS value = (physical value - BZERO) / BSCALE
          * @endcode
-         * Meaning that the data read from the FITS file will be
+         * Meaning that the data read from the %FITS file will be
          * transformed according to the linear equation:
-         * @code
+         * @code{.cpp}
          *   physical value = FITS value * BSCALE + BZERO
          * @endcode
          */

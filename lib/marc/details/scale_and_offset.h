@@ -21,7 +21,6 @@
  *
  * @author Ossama Othman
  */
-//==========================================================================
 
 #ifndef MARC_DETAILS_SCALE_AND_OFFSET_H
 #define MARC_DETAILS_SCALE_AND_OFFSET_H
@@ -45,11 +44,46 @@ namespace MaRC
          * @see MaRC::scale_and_offset()
          *
          * @note This functor is not part of the public MaRC library
-         *           API.
+         *       API.
          */
         template <typename T>
         struct scale_and_offset
         {
+            /**
+             * @brief Compute data scaling values.
+             *
+             * Given the source data range [@a min, @a max], determine
+             * the @a scale and @a offset values suitable for
+             * maximizing the number of significant digits retained
+             * when storing their floating point values in a
+             * destination of data type @c T.
+             *
+             * @param[in]  min    The minimum source value to be
+             *                    potentially stored in an integer of
+             *                    type @c T.
+             * @param[in]  max    The maximum source value to be
+             *                    potentially stored in an integer of
+             *                    type @c T.
+             * @param[out] scale  Factor by which to multiply the
+             *                    source value to bring it into
+             *                    destination data type @c T range.
+             *                    This will always be a power of 10
+             *                    for simplicity.
+             * @param[out] offset Value added to the source value to
+             *                    bring it into the destination data
+             *                    type @c T range.
+             *
+             * @retval true  Suitable @a scale and @a offset values were
+             *               found.
+             * @retval false Suitable @a scale and @a offset values were not
+             *               found, such as when a complete loss of
+             *               significant digits would occur when
+             *               scaled and offset values are assigned to
+             *               an integer due to trunctation (e.g.
+             *               @a scale < 1).
+             *
+             * @see MaRC::scale_and_offset() for further details.
+             */
             bool operator()(double min,
                             double max,
                             double & scale,
@@ -117,6 +151,19 @@ namespace MaRC
         template <>
         struct scale_and_offset<float>
         {
+            /**
+             * @brief @c float destination data type specialization.
+             *
+             * No scaling is needed for floating point types.
+             *
+             * @param[out] scale  This will always be 1.
+             * @param[out] offset This will always be 0.
+             *
+             * @return This specialization always returns @c true.
+             *
+             * @see MaRC::details::scale_and_offset
+             * @see MaRC::scale_and_offset()
+             */
             bool operator()(double /* min */,
                             double /* max */,
                             double & scale,
@@ -146,6 +193,19 @@ namespace MaRC
         template <>
         struct scale_and_offset<double>
         {
+            /**
+             * @brief @c double destination data type specialization.
+             *
+             * No scaling is needed for floating point types.
+             *
+             * @param[out] scale  This will always be 1.
+             * @param[out] offset This will always be 0.
+             *
+             * @return This specialization always returns @c true.
+             *
+             * @see MaRC::details::scale_and_offset
+             * @see MaRC::scale_and_offset()
+             */
             bool operator()(double /* min */,
                             double /* max */,
                             double & scale,

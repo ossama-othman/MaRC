@@ -89,6 +89,9 @@ namespace
     }
 }
 
+/**
+ * @test Test MaRC::OblateSpheroid initialization.
+ */
 bool test_initialization()
 {
     auto const o =
@@ -105,6 +108,10 @@ bool test_initialization()
         && MaRC::almost_equal(e, o->first_eccentricity(), ulps);
 }
 
+/**
+ * @test Test the MaRC::OblateSpheroid::centric_radius() method,
+ *       i.e. the radius at a given planetocentric latitude.
+ */
 bool test_centric_radius()
 {
     auto const o =
@@ -143,6 +150,10 @@ bool test_centric_radius()
         && MaRC::almost_equal(r, MaRC::hypot(x, y, z), ulps);
 }
 
+/**
+ * @test Test calculations of planetocentric and planetographic
+ *       latitudes in MaRC::OblateSpheroid.
+ */
 bool test_latitudes()
 {
     auto const o =
@@ -172,6 +183,10 @@ bool test_latitudes()
                                ulps);
 }
 
+/**
+ * @test Test cosine of emission angle (&mu;) calculations in
+ *       MaRC::OblateSpheroid.
+ */
 bool test_mu()
 {
     auto const o =
@@ -233,6 +248,10 @@ bool test_mu()
     return MaRC::almost_equal(mu, mu_2, ulps);
 }
 
+/**
+ * @test Test cosine of incidence angle (&mu;<SUB>0</SUB>)
+ *       calculations in MaRC::OblateSpheroid.
+ */
 bool test_mu0()
 {
     auto const o =
@@ -283,6 +302,10 @@ bool test_mu0()
     return MaRC::almost_equal(mu0, mu0_2, ulps);
 }
 
+/**
+ * @test Test cosine of phase angle (cos(&phi;)) calculations in
+ *       MaRC::OblateSpheroid.
+ */
 bool test_cos_phase()
 {
     auto const o =
@@ -346,6 +369,7 @@ bool test_cos_phase()
     return MaRC::almost_equal(cos_phase, cos_phase_2, ulps);
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

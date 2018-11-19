@@ -23,6 +23,9 @@
 #include <cstdint>
 
 
+/**
+ * @test Test the MaRC::almost_equal() function.
+ */
 bool test_almost_equal()
 {
     static_assert(sizeof(float) == sizeof(int32_t),
@@ -67,6 +70,9 @@ bool test_almost_equal()
                                2);
 }
 
+/**
+ * @test Test the MaRC::almost_zero() function.
+ */
 bool test_almost_zero()
 {
     constexpr float  w = 0;
@@ -81,6 +87,9 @@ bool test_almost_zero()
         && !MaRC::almost_zero(z, 100000);
 }
 
+/**
+ * @test Test the MaRC::signum() function.
+ */
 bool test_signum()
 {
     return
@@ -99,6 +108,9 @@ bool test_signum()
         && MaRC::signum( 7.0) ==  1;
 }
 
+/**
+ * @test Test the MaRC::quadratic_roots() function.
+ */
 bool test_quadratic_roots()
 {
     /*
@@ -154,6 +166,7 @@ bool test_quadratic_roots()
                                       ulp)));
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

@@ -59,6 +59,7 @@ namespace MaRC
     {
     public:
 
+        /// Map command list type.
         typedef std::list<std::unique_ptr<MapCommand>> command_list;
 
         /// Constructor.

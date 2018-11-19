@@ -54,6 +54,9 @@ namespace
                             { 0,      0,      1 } };
 }
 
+/**
+ * @test Test rotation of vectors to different coordinate system.
+ */
 bool test_vector_rotation()
 {
     MaRC::DVector const V{ 3, 4, 5 };
@@ -90,6 +93,9 @@ bool test_vector_rotation()
                       cmp);
 }
 
+/**
+ * @test Test creation of rotation matrices.
+ */
 bool test_rotation_matrices()
 {
     MaRC::DMatrix Mx = MaRC::Geometry::RotXMatrix(angle);
@@ -119,6 +125,7 @@ bool test_rotation_matrices()
                       cmp);
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

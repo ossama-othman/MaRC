@@ -46,6 +46,7 @@ namespace MaRC
     {
     public:
 
+        /// Convenience alias for the progress notifier type.
         using notifier_type = Progress::Notifier;
 
         /**

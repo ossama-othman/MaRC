@@ -65,6 +65,9 @@ namespace
 
 }
 
+/**
+ * @test Test the MaRC::Mercator::projection_name() method.
+ */
 bool test_projection_name()
 {
     static char const name[] = "Mercator";
@@ -72,6 +75,10 @@ bool test_projection_name()
     return std::strcmp(projection->projection_name(), name) == 0;
 }
 
+/**
+ * @test Test the MaRC::Mercator::make_map() method, i.e. Mercator map
+ *       image creation.
+ */
 bool test_make_map()
 {
     /**
@@ -144,6 +151,10 @@ bool test_make_map()
         && MaRC::almost_zero(equator_data, ulps);
 }
 
+/**
+ * @test Test the MaRC::Mercator::make_grid() method, i.e. Mercator
+ *       grid image creation.
+ */
 bool test_make_grid()
 {
     constexpr auto lat_interval = 10;
@@ -167,6 +178,10 @@ bool test_make_grid()
         && *minmax.second == white;
 }
 
+/**
+ * @test Test the MaRC::Mercator::distortion() method, i.e. scale
+ *       distortion in the Mercator map.
+ */
 bool test_distortion()
 {
     // Latitude at the center of the map.
@@ -191,6 +206,7 @@ bool test_distortion()
         && projection->distortion(not_equator) > equator_distortion;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

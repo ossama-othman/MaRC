@@ -43,7 +43,7 @@ namespace MaRC
      * @brief Factory class that create PhotoImage objects.
      *
      * This class creates PhotoImage objects.  It is designed to
-     * decouple FITS (for example) file and image operations from the
+     * decouple %FITS (for example) file and image operations from the
      * PhotoImage class.  It also exists to decouple the MaRC parser
      * grammar from the PhotoImage class.  This allows PhotoImage
      * object creation to be delayed until it is time for the data in

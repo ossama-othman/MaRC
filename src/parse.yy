@@ -123,13 +123,13 @@ namespace
     }
 
     /**
-     * @brief Verify that the provided FITS @c BLANK value actually
+     * @brief Verify that the provided %FITS @c BLANK value actually
      *        fits within the chosen map data type.
      *
-     * @param[in] blank     FITS @c BLANK value explicitly provided by
-     *                      the user.  While it is of type double
-     *                      here, it is ultimately stored as an
-     *                      integer.
+     * @param[in] blank     %FITS @c BLANK value explicitly provided
+     *                      by the user.  While it is of type
+     *                      @c double here, it is ultimately stored as
+     *                      an integer.
      * @param[in] data_type MaRC map data type name (e.g. "BYTE",
      *                      "SHORT", etc).
      */
@@ -293,9 +293,9 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %union
  {
      char * sval;
-     double val;        // For returning numbers
-     bool bval;         // For returning boolean values
-     MaRC::sym_entry * tptr;  // For returning symbol-table pointers
+     double val;        // For returning numbers.
+     bool bval;         // For returning boolean values.
+     MaRC::sym_entry * tptr;  // For returning symbol-table pointers.
      MaRC::SubObserv sub_observ_data; // Sub-observation point.
      MaRC::SubSolar sub_solar_data;   // Sub-solar point.
      MaRC::Radii radii_data;          // Oblate spheroid radii.

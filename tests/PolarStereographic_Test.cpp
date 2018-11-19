@@ -106,6 +106,10 @@ namespace
     }
 }
 
+
+/**
+ * @test Test the MaRC::PolarStereographic::projection_name() method.
+ */
 bool test_projection_name()
 {
     static char const name[] = "Polar Stereographic";
@@ -113,6 +117,10 @@ bool test_projection_name()
     return std::strcmp(projection->projection_name(), name) == 0;
 }
 
+/**
+ * @test Test the MaRC::PolarStereographic::make_map() method,
+ *       i.e. Polar Stereographic map image creation.
+ */
 bool test_make_map()
 {
     /**
@@ -268,6 +276,10 @@ bool test_make_map()
         && (percent_difference(max_lat_data[1], max_lat) < pdmax);
 }
 
+/**
+ * @test Test the MaRC::PolarStereographic::make_grid() method,
+ *       i.e. Polar Stereographic grid image creation.
+ */
 bool test_make_grid()
 {
     constexpr auto lat_interval = 10;
@@ -291,6 +303,10 @@ bool test_make_grid()
         && *minmax.second == white;
 }
 
+/**
+ * @test Test the MaRC::PolarStereographic::distortion() method,
+ *       i.e. scale distortion in the Polar Stereographic map.
+ */
 bool test_distortion()
 {
     // Latitude at the center of the map.
@@ -313,6 +329,7 @@ bool test_distortion()
         && projection->distortion(equator) > map_center_distortion;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

@@ -29,6 +29,9 @@ namespace
 }
 
 
+/**
+ * @test Test MaRC::Vector initialization.
+ */
 bool test_vector_initialization()
 {
     static constexpr std::size_t ROWS = 3;
@@ -76,6 +79,9 @@ bool test_vector_initialization()
                       std::cbegin(n),  std::cend(n));
 }
 
+/**
+ * @test Test MaRC::Vector element access.
+ */
 bool test_vector_element_access()
 {
     static constexpr std::size_t ROWS = 3;
@@ -102,6 +108,9 @@ bool test_vector_element_access()
         && caught_expected_exception;
 }
 
+/**
+ * @test Test MaRC::Vector comparison.
+ */
 bool test_vector_comparison()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -114,6 +123,9 @@ bool test_vector_comparison()
     return v2 == v1 && v3 == v2 && v4 != v1;
 }
 
+/**
+ * @test Test MaRC::Vector addition.
+ */
 bool test_vector_addition()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -128,6 +140,9 @@ bool test_vector_addition()
     return v3 == sum && v1 + v2 == sum;
 }
 
+/**
+ * @test Test MaRC::Vector subtraction.
+ */
 bool test_vector_subtraction()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -142,6 +157,9 @@ bool test_vector_subtraction()
     return v3 == diff && v1 - v2 == diff;
 }
 
+/**
+ * @test Test MaRC::Vector multiplication by a scalar value.
+ */
 bool test_vector_multiplication()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -159,6 +177,9 @@ bool test_vector_multiplication()
 }
 
 
+/**
+ * @test Test MaRC::Vector magnitude (norm) calculation.
+ */
 bool test_vector_magnitude()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -170,6 +191,9 @@ bool test_vector_magnitude()
     return MaRC::almost_equal(v.magnitude(), mag, ulps);
 }
 
+/**
+ * @test Test MaRC::Vector conversion to a unit vector.
+ */
 bool test_unit_vector()
 {
     using vector_type = MaRC::Vector<double, 3>;
@@ -188,6 +212,9 @@ bool test_unit_vector()
                               ulps);
 }
 
+/**
+ * @test Test the dot product on two MaRC::Vector objects.
+ */
 bool test_dot_product()
 {
     using vector_type = MaRC::Vector<int, 3>;
@@ -200,6 +227,7 @@ bool test_dot_product()
     return MaRC::dot_product(a, b) == dp;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

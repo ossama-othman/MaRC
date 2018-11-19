@@ -45,7 +45,10 @@
  */
 #include "marc/config.h"  // For NDEBUG
 
-#ifdef NDEBUG
+// DXGEN is define when building MaRC's Doxygen based documentation.
+// We want the MaRC::debug() arguments to be expanded in that case so
+// that Doxygen generates documentation for them.
+#if defined(NDEBUG) && !defined(DXGEN)
 # define MARC_DEBUG_ARGS(x)
 #else
 # define MARC_DEBUG_ARGS(x) x

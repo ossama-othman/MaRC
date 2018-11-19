@@ -34,13 +34,13 @@ namespace MaRC
      */
     namespace GLL
     {
-        // The distortion constant must be a positive number.
+        /// The distortion constant must be a positive number.
         static constexpr double DISTORTION = 0.00000000658;
 
-        // Default optical axis line.
+        /// Default optical axis line.
         static constexpr double OA_LINE = 400;
 
-        // Default optical axis sample.
+        /// Default optical axis sample.
         static constexpr double OA_SAMPLE = 400;
     }
 }

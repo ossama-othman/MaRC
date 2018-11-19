@@ -83,9 +83,9 @@ namespace MaRC
          *       offset accordingly.  Ideally, different physical data
          *       types shouldn't be mixed and matched in such a data
          *       cube, and should instead be stored in a cube
-         *       containing matching physical data types with a map.
-         *       Appropriate scale and offset values could then be
-         *       applied to the data cube as a whole, rather than
+         *       containing matching physical data types within a
+         *       map.  Appropriate scale and offset values could then
+         *       be applied to the data cube as a whole, rather than
          *       having to worry about applying a different scale and
          *       offset for each cube "plane".
          *

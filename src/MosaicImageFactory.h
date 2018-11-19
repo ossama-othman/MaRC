@@ -40,7 +40,7 @@ namespace MaRC
      * @brief Factory class that create MosaicImage objects.
      *
      * This class creates MosaicImage objects.  It is designed to
-     * decouple FITS (for example) file and image operations from the
+     * decouple %FITS (for example) file and image operations from the
      * MosaicImage class.  It also exists to decouple the MaRC parser
      * grammar from the MosaicImage class.  This allows MosaicImage
      * object creation to be delayed until it is time for the data in
@@ -52,7 +52,7 @@ namespace MaRC
     public:
 
         /**
-         * Type of list containing @c PhotoImageFactory instants that
+         * Type of list containing @c PhotoImageFactory instances that
          * used to create individual mosaic contributors.
          */
         using list_type = std::list<std::unique_ptr<PhotoImageFactory>>;
@@ -67,7 +67,7 @@ namespace MaRC
 
     private:
 
-        /// List of PhotoImageFactorys
+        /// List of PhotoImageFactory objects.
         list_type factories_;
 
         /// The type of averaging to be performed when multiple images

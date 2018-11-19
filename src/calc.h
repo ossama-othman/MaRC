@@ -30,8 +30,14 @@
 namespace MaRC
 {
 
+    /**
+     * @struct sym_entry
+     *
+     * @brief Calculator symbol table value.
+     */
     struct sym_entry
     {
+        // Disable default construction.
         sym_entry() = delete;
 
         /// Construct a function @c sym_entry.
@@ -41,14 +47,17 @@ namespace MaRC
         explicit sym_entry(double var);
 
         /**
+         * @brief The underlying symbol table value, either a variable
+         *        or a function.
+         *
          * @todo This should be private
          */
         union
         {
-            /// Value of a VAR.
+            /// Value of a @c VAR.
             double var;
 
-            /// Value of a FNCT.
+            /// Value of a @c FNCT.
             double (*fnctptr)(double);
         } value;
 
@@ -58,20 +67,45 @@ namespace MaRC
 
     // ---------------------------------------------------------------
 
+    /**
+     * @struct symrec
+     *
+     * @brief Calculator symbol table.
+     */
     class symrec
     {
     public:
 
+        /// Underlying calculator symbol map.
         typedef std::map<std::string, sym_entry> table_type;
 
+        /// Constructor
         symrec();
 
-        void putsym(char const * sym_name, int sym_type);
+        symrec(symrec const &) = delete;
+        void operator=(symrec const &) = delete;
 
-        sym_entry * getsym(char const * sym_name);
+        /**
+         * @brief Add symbol to the table.
+         *
+         * @param[in] name The symbol name.
+         * @param[in] type The symbol type, either @c VAR or @c FNCT.
+         */
+        void putsym(char const * name, int type);
+
+        /**
+         * @brief Get symbol from the table.
+         *
+         * @param[in] name The symbol name.
+         *
+         * @return Pointer to the symbol table entry corresponding to
+         *         symbol @a name.
+         */
+        sym_entry * getsym(char const * name);
 
     private:
 
+        /// The underlying symbol map.
         table_type table_;
 
     };

@@ -237,7 +237,7 @@ MaRC::Mercator::get_longitude(std::size_t i, std::size_t samples) const
 
     /**
      * @todo Verify that the shift by @c lo_lon below works as
-     *       expected when it is non-zero (e.g. -C::pi).
+     *       expected when it is non-zero (e.g. &pi;).
      */
 
     // Compute longitude at center of pixel.

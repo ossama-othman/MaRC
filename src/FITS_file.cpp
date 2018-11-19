@@ -49,9 +49,9 @@ namespace MaRC
         }
 
         /**
-         * @brief Open a FITS file for reading.
+         * @brief Open a %FITS file for reading.
          *
-         * Open FITS file in read-only mode.  This function exists
+         * Open %FITS file in read-only mode.  This function exists
          * solely to make it easy to return a CFITSIO @c fitsfile
          * object as an rvalue.
          *
@@ -60,7 +60,7 @@ namespace MaRC
          * @return CFITSIO @c fitsfile object corresponding to the
          *         opened file.
          *
-         * @throw std::runtime_error FITS file could not be opened.
+         * @throw std::runtime_error %FITS file could not be opened.
          */
         fitsfile *
         open_fits_file(char const * filename)
@@ -77,13 +77,13 @@ namespace MaRC
         }
 
         /**
-         * @brief Get the value of the given FITS keyword.
+         * @brief Get the value of the given %FITS keyword.
          *
          * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
-         * @param[in] key  FITS keyword.
+         * @param[in] key  %FITS keyword.
          *
          * @return Value corresponding to @a key.  If no such key
-         *         exists in the FITS file the
+         *         exists in the %FITS file the
          *         @c MaRC::optional<>::has_value() method of the
          *         returned value will return @c false.
          */
@@ -110,14 +110,14 @@ namespace MaRC
         }
 
         /**
-         * @brief Get the string value of the given FITS keyword.
+         * @brief Get the string value of the given %FITS keyword.
          *
          * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
-         * @param[in] key  FITS keyword.
+         * @param[in] key  %FITS keyword.
          *
          * @return String value corresponding to @a key.  The returned
          *         string will be empty if no such key exists in the
-         *         FITS file.
+         *         %FITS file.
          */
         std::string
         read_fits_string_key(fitsfile * fptr, char const * key)

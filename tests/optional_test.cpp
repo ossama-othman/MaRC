@@ -25,6 +25,9 @@
 #include <iostream>
 
 
+/**
+ * @test Test the MaRC::bad_optional_access exception.
+ */
 bool test_bad_optional_access()
 {
     try {
@@ -40,6 +43,9 @@ bool test_bad_optional_access()
     return true;
 }
 
+/**
+ * @test Test the MaRC::optional class exception.
+ */
 bool test_optional()
 {
     constexpr MaRC::optional<int> no_value;
@@ -105,6 +111,7 @@ bool test_optional()
         &&   ov1 >= MaRC::nullopt  && !(MaRC::nullopt >= ov1);
 }
 
+/// The canonical main entry point.
 int main()
 {
     return test_bad_optional_access() && test_optional() ? 0 : -1;

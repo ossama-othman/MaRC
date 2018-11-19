@@ -45,6 +45,7 @@ namespace MaRC
      * @brief Null initialization type for @c optional.
      */
     struct nullopt_t {
+        /// Constructor.
         explicit constexpr nullopt_t(int) {}
     };
 
@@ -68,6 +69,8 @@ namespace MaRC
     public:
         bad_optional_access() = default;
         virtual ~bad_optional_access() = default;
+
+        /// Return description of this exception.
         virtual char const * what () const noexcept
         {
             return "bad optional access";
@@ -95,6 +98,13 @@ namespace MaRC
     {
     public:
 
+        /**
+         * @name Members Found in the C++17 std::optional Class
+         *
+         * These are members found in the C++17 @c std::optional<>
+         * class template, implemented for @c MaRC::optional<>.
+         */
+        //@{
         using value_type = T;
 
         constexpr optional() = default;
@@ -212,9 +222,14 @@ namespace MaRC
         {
             this->value_ = decltype(this->value_)();
         }
+        //@}
 
     private:
 
+        /**
+         * @brief Member that tracks the existence of an %optional
+         *        value, and the value itself.
+         */
         std::pair<T, bool> value_;
 
     };

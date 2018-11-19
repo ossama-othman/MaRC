@@ -53,6 +53,9 @@ MaRC::symrec::symrec()
         double (*fnct)(double);
     };
 
+    /**
+     * @todo Add other useful functions like @c pow(), etc.
+     */
     static init const arith_fncts[] =
     {
         { "sin",  sin  },
@@ -86,9 +89,9 @@ MaRC::symrec::putsym(char const * name, int /* type */)
 }
 
 MaRC::sym_entry *
-MaRC::symrec::getsym(char const * sym_name)
+MaRC::symrec::getsym(char const * name)
 {
-    auto const i(this->table_.find(sym_name));
+    auto const i(this->table_.find(name));
 
     if (i != this->table_.end())
         return &(*i).second;

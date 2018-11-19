@@ -50,6 +50,7 @@ namespace MaRC
         {
         public:
 
+            /// Convenience alias for the progress observer type.
             using observer_type = std::unique_ptr<Observer>;
 
             /// Constructor

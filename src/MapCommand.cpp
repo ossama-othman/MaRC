@@ -77,13 +77,13 @@ namespace
     }
 
     /**
-     * @brief Validate given FITS BITPIX value.
+     * @brief Validate given %FITS BITPIX value.
      *
      * @param[in] bitpix The bits-per-pixel value for data stored in a
-     *                   FITS file, as defined in the FITS standard.
-     *                   Valid values are 8, 16, 32, 64, -32, and
-     *                   -64.  The corresponding CFITSIO library
-     *                   symbolic constants are @c BYTE_IMG,
+     *                   %FITS file, as defined in the %FITS
+     *                   standard.  Valid values are 8, 16, 32, 64,
+     *                   -32, and -64.  The corresponding CFITSIO
+     *                   library symbolic constants are @c BYTE_IMG,
      *                   @c SHORT_IMG, @c LONG_IMG, @c LONGLONG_IMG,
      *                   @c FLOAT_IMG, @c DOUBLE_IMG.
      *
@@ -129,7 +129,7 @@ MaRC::MapCommand::MapCommand(std::string filename,
     // Compile-time FITS data type sanity check.
     static_assert(
         /**
-         * Make sure the MaRC FITS types satisfy standard FITS data
+         * Make sure the MaRC %FITS types satisfy standard %FITS data
          * type requirements, as well ensuring they match CFITSIO
          * expectations.
          *
@@ -192,12 +192,12 @@ MaRC::MapCommand::execute()
     this->initialize_FITS_image(fptr, status);
 
     /**
-     * Establish that MaRC created this FITS files, e.g. "MaRC 1.0".
+     * Establish that MaRC created this %FITS files, e.g. "MaRC 1.0".
      *
      * @note The @c CREATOR keyword is commonly used, but not part of
-     *       the FITS standard.
+     *       the %FITS standard.
      * @note We could also use the @c PROGRAM keyword here instead.
-     *       It is also commonly used but not in the FITS standard.
+     *       It is also commonly used but not in the %FITS standard.
      */
     fits_update_key(fptr,
                     TSTRING,
@@ -288,7 +288,7 @@ MaRC::MapCommand::execute()
     }
 
     /**
-     * @todo Map timing should not include FITS operations.
+     * @todo Map timing should not include %FITS file operations.
      */
     auto const start =  std::chrono::high_resolution_clock::now();
 
@@ -604,7 +604,7 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
     /**
      * @todo This entire method seems is a bit of hack.  Come up with
      *       a better design for writing map plane-specific
-     *       information to the FITS file.
+     *       information to the %FITS file.
      */
 
     VirtualImage const * const v =
@@ -706,7 +706,7 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
         comment_list_type facts;
 
         /**
-         * @todo Improve appearance of map plane facts in FITS file.
+         * @todo Improve appearance of map plane facts in %FITS file.
          */
         facts.emplace_back("Plane "
                            + std::to_string(plane)
