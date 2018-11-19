@@ -31,6 +31,7 @@
 #include <marc/SourceImage.h>  // For scale_and_offset()
 
 #include <cassert>
+#include <type_traits>
 #include <iostream>
 
 #include <fitsio.h>
@@ -95,7 +96,7 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
 
         // Create the map plane.
         /**
-         * @todo Pass the FITS @c BLANK value (@see @c this->blank_)
+         * @todo Pass the %FITS @c BLANK value (@see @c this->blank_)
          *       if one was supplied (@see @c this->blank_set_) to
          *       @c make_map() so that the map may be initialized with
          *       that value in the integer data typed map case.
@@ -127,7 +128,7 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
     }
 
     // Write the BLANK keyword and value into the map FITS file.
-    if (FITS::traits<T>::supports_blank_keyword && this->blank_) {
+    if (std::is_integral<T>() && this->blank_) {
         fits_update_key(fptr,
                         FITS::traits<blank_type::value_type>::datatype,
                         "BLANK",
