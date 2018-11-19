@@ -35,6 +35,9 @@
  * Use of C++11 constexpr keyword introduced by Ossama Othman
  * in July 2017.
  *
+ * Several constants updated from corresponding revised BIPM and IAU
+ * values by Ossama Othman in November 2018.
+ *
  *  @author Associated Universities, Inc. Washington DC, USA
  *  @author Ossama Othman
  */
