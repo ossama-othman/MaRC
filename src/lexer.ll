@@ -2,7 +2,8 @@
 /**
  * @file lexer.ll
  *
- * Scanner for MaRC input files.  Requires GNU Flex 2.5.4a or greater.
+ * Scanner for %MaRC input files.  Requires GNU Flex 2.5.4a or
+ * greater.
  *
  * Copyright (C) 1996-1999, 2004, 2017-2018  Ossama Othman
  *

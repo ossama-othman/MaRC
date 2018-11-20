@@ -2,7 +2,7 @@
 /**
  * @file Log.h
  *
- * @brief MaRC logging interface.
+ * @brief %MaRC logging interface.
  *
  * Copyright (C) 2018  Ossama Othman
  *
@@ -45,7 +45,7 @@
  */
 #include "marc/config.h"  // For NDEBUG
 
-// DXGEN is define when building MaRC's Doxygen based documentation.
+// DXGEN is defined when building MaRC's Doxygen based documentation.
 // We want the MaRC::debug() arguments to be expanded in that case so
 // that Doxygen generates documentation for them.
 #if defined(NDEBUG) && !defined(DXGEN)

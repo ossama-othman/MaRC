@@ -1,7 +1,7 @@
 /**
  * @file root_find.cpp
  *
- * MaRC root finding related functions
+ * %MaRC root finding related functions
  *
  * Copyright (C) 2004, 2017-2018  Ossama Othman
  *

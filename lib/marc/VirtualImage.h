@@ -73,9 +73,9 @@ namespace MaRC
          *       constructor.  This behavior differs from behavior
          *       documented in the @c SourceImage abstract base class
          *       where the data is expected to be physical data.  The
-         *       reason for this is historical.  MaRC virtual images,
+         *       reason for this is historical.  %MaRC virtual images,
          *       such as &mu;, &mu;<SUB>0</SUB> and cos(&phi;), were
-         *       originally embedded in FITS files with potentially
+         *       originally embedded in %FITS files with potentially
          *       different kinds of physical data stored in an integer
          *       typed map "cube".  To retain significant digits,
          *       floating point physical data values, such as the

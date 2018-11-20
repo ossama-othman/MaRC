@@ -24,7 +24,7 @@
 
 /**
  * @todo Ideally we shouldn't have to include this header since the
- *       underlying MaRC logger shouldn't be exposed to the user.
+ *       underlying %MaRC logger shouldn't be exposed to the user.
  */
 #include "Export.h"  // For MARC_API
 #include "Log.h"

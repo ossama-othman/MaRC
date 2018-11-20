@@ -2,7 +2,7 @@
 /**
  * @file Matrix.h
  *
- * MaRC matrix class and operations.
+ * %MaRC matrix class and operations.
  *
  * Copyright (C) 2004, 2017-2018  Ossama Othman
  *

@@ -55,7 +55,7 @@ namespace MaRC
          * solely to make it easy to return a CFITSIO @c fitsfile
          * object as an rvalue.
          *
-         * @param[in] filename Name of FITS file to opened.
+         * @param[in] filename Name of %FITS file to opened.
          *
          * @return CFITSIO @c fitsfile object corresponding to the
          *         opened file.

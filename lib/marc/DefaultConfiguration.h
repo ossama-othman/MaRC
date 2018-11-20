@@ -32,9 +32,9 @@ namespace MaRC
     /**
      * @namespace default_configuration
      *
-     * @brief Default MaRC configuration constants.
+     * @brief Default %MaRC configuration constants.
      *
-     * These constants are used throughout MaRC when a corresponding
+     * These constants are used throughout %MaRC when a corresponding
      * user-supplied value is not available.
      */
     namespace default_configuration

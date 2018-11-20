@@ -41,7 +41,7 @@ namespace MaRC
      *
      * This class creates MosaicImage objects.  It is designed to
      * decouple %FITS (for example) file and image operations from the
-     * MosaicImage class.  It also exists to decouple the MaRC parser
+     * MosaicImage class.  It also exists to decouple the %MaRC parser
      * grammar from the MosaicImage class.  This allows MosaicImage
      * object creation to be delayed until it is time for the data in
      * the MosaicImage to be mapped, which reduces run-time memory

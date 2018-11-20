@@ -71,7 +71,7 @@ bool test_vector_rotation()
     MaRC::Geometry::RotZ(angle, V, Wz);
 
     /**
-     * @todo Switch to the MaRC Vector equality operator once it
+     * @todo Switch to the %MaRC Vector equality operator once it
      *       correctly supports comparison of floating point types.
      */
     auto cmp =
@@ -103,7 +103,7 @@ bool test_rotation_matrices()
     MaRC::DMatrix Mz = MaRC::Geometry::RotZMatrix(angle);
 
     /**
-     * @todo Switch to the MaRC Vector equality operator once it
+     * @todo Switch to the %MaRC Vector equality operator once it
      *       correctly supports comparison of floating point types.
      */
     auto cmp =

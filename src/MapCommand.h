@@ -42,18 +42,14 @@ namespace MaRC
     /**
      * @brief Type used to store a %FITS @c BLANK integer value.
      *
-     * @todo Use @c std::optional<> once MaRC requires C++17.
+     * @todo Use @c std::optional once %MaRC requires C++17.
      */
     using blank_type = MaRC::optional<FITS::longlong_type>;
 
     /**
      * @class MapCommand
      *
-     * @brief Abstract base class to be subclassed by concrete MaRC
-     *        Command classes.
-     *
-     * All concrete MaRC Command classes must implement the interface
-     * dictated by this abstract base class.
+     * @brief Drive creation of a single map and grid.
      */
     class MapCommand
     {

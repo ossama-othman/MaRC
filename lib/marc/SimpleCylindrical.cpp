@@ -38,7 +38,7 @@ namespace
      * @brief Get Simple Cylindrical map boundary latitude.
      *
      * Place supplied map boundary latitude in a form suitable for use
-     * by the MaRC Simple Cylindrical projection.  That entails
+     * by the %MaRC Simple Cylindrical projection.  That entails
      * converting it to radians, and potentially converting it to a
      * planetographic latitude.
      *

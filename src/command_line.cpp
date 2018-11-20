@@ -140,8 +140,8 @@ MaRC::command_line::parse(int argc, char * argv[])
              * @bug This command line option parser doesn't correctly
              *      handle multiple short options grouped as one,
              *      e.g. "-a -c" grouped as "-ac".  This will become a
-             *      problem if MaRC supports multiple short options in
-             *      the future.
+             *      problem if %MaRC supports multiple short options
+             *      in the future.
              */
 
             if (strcmp(*arg, "--") == 0) {

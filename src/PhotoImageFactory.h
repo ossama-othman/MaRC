@@ -44,7 +44,7 @@ namespace MaRC
      *
      * This class creates PhotoImage objects.  It is designed to
      * decouple %FITS (for example) file and image operations from the
-     * PhotoImage class.  It also exists to decouple the MaRC parser
+     * PhotoImage class.  It also exists to decouple the %MaRC parser
      * grammar from the PhotoImage class.  This allows PhotoImage
      * object creation to be delayed until it is time for the data in
      * the PhotoImage to be mapped, which reduces run-time memory

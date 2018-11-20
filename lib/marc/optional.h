@@ -21,7 +21,7 @@
  * @author Ossama Othman
  *
  * @deprecated This header will be removed in favor of the C++17
- *             @<optional@> header once MaRC requires C++17.
+ *             @<optional@> header once %MaRC requires C++17.
  */
 
 #ifndef MARC_OPTIONAL_H
@@ -60,7 +60,7 @@ namespace MaRC
      *
      * @deprecated This is an implementation of the C++17
      *             @c std::bad_optional_access exception.  It will be
-     *             removed when MaRC requires C++17.
+     *             removed when %MaRC requires C++17.
      *
      * @see https://en.cppreference.com/w/cpp/utility/optional/bad_optional_access
      */
@@ -89,7 +89,7 @@ namespace MaRC
      *
      * @deprecated This is an implementation of a subset of the C++17
      *             @c std::optional<> class template.  It will be
-     *             removed when MaRC requires C++17.
+     *             removed when %MaRC requires C++17.
      *
      * @see https://en.cppreference.com/w/cpp/utility/optional
      */

@@ -68,8 +68,8 @@ namespace MaRC
              * @param[in] argc Argument count.
              * @param[in] argv Argument vector.
              *
-             * @internal This method is meant to be used internally by
-             *           @c command_line.
+             * @note This method is meant to be used internally by
+             *       @c command_line.
              */
             void args(int argc, char const * const * argv);
 

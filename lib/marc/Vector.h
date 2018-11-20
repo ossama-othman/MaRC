@@ -2,7 +2,7 @@
 /**
  * @file marc/Vector.h
  *
- * MaRC mathematical vector class and operations.
+ * %MaRC mathematical vector class and operations.
  *
  * Copyright (C) 2004, 2017-2018  Ossama Othman
  *

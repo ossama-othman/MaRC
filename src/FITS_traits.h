@@ -74,7 +74,7 @@ namespace MaRC
          *        type-specific %FITS parameters.
          *
          * This class template must be fully specialized for each
-         * %FITS numerical data type supported by both MaRC and
+         * %FITS numerical data type supported by both %MaRC and
          * CFITSIO.  Each specialization should contain the following
          * type-specific traits:
          *

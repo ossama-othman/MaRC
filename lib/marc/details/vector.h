@@ -2,7 +2,7 @@
 /**
  * @file details/vector.h
  *
- * MaRC mathematical vector class implementation details.
+ * %MaRC mathematical vector class implementation details.
  *
  * Copyright (C) 2004, 2017-2018  Ossama Othman
  *
@@ -35,9 +35,9 @@ namespace MaRC
     /**
      * @namespace details
      *
-     * @brief Internal MaRC implementation details.
+     * @brief Internal %MaRC implementation details.
      *
-     * Implement details that are not part of the MaRC public API.
+     * Implement details that are not part of the %MaRC public API.
      */
     namespace details
     {

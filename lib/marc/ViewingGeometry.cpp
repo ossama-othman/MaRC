@@ -31,7 +31,7 @@
 #include "config.h"  // For NDEBUG
 
 /**
- * @todo Should this be an equivalent MaRC include directive?
+ * @todo Should this be an equivalent %MaRC include directive?
  */
 #include <fmt/ostream.h>
 

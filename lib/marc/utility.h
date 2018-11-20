@@ -2,7 +2,7 @@
 /**
  * @file utility.h
  *
- * MaRC utility functions.
+ * %MaRC utility functions.
  *
  * Copyright (C) 2017, 2018  Ossama Othman
  *

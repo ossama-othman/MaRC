@@ -36,7 +36,7 @@ MaRC::MapFactory::make_grid(std::size_t samples,
      *       [0, 180) (always positive!), and similarly for the
      *       @c lon_interval and the longitude range [0, 360).  The
      *       values should be large enough to ensure that data is
-     *       always "behind" the grid, otherwise. MaRC and the MaRC
+     *       always "behind" the grid, otherwise. %MaRC and the %MaRC
      *       library should not allow the invalid lat/lon grid
      *       intervals to be set to begin with.  Such inputs should be
      *       validated beyond the existing negative value checks.

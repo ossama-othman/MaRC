@@ -129,7 +129,7 @@ MaRC::MapCommand::MapCommand(std::string filename,
     // Compile-time FITS data type sanity check.
     static_assert(
         /**
-         * Make sure the MaRC %FITS types satisfy standard %FITS data
+         * Make sure the %MaRC %FITS types satisfy standard %FITS data
          * type requirements, as well ensuring they match CFITSIO
          * expectations.
          *
@@ -192,7 +192,8 @@ MaRC::MapCommand::execute()
     this->initialize_FITS_image(fptr, status);
 
     /**
-     * Establish that MaRC created this %FITS files, e.g. "MaRC 1.0".
+     * Establish that %MaRC created this %FITS files, e.g.
+     * "MaRC 1.0".
      *
      * @note The @c CREATOR keyword is commonly used, but not part of
      *       the %FITS standard.

@@ -32,7 +32,7 @@
 /**
  * @namespace MaRC
  *
- * @brief Code specific to the MaRC library and program.
+ * @brief Code specific to the %MaRC library and program.
  */
 namespace MaRC
 {
@@ -53,7 +53,7 @@ namespace MaRC
          *
          * The initial/empty map data value for integer typed maps
          * will be zero, but the value for floating point typed maps
-         * in MaRC is the Not-a-Number constant, not zero.  This
+         * in %MaRC is the Not-a-Number constant, not zero.  This
          * allows for easy disambiguation between actual data and
          * areas of the map that contain no data.
          */

@@ -2,7 +2,7 @@
 /**
  * @file parse.yy
  *
- * Parser for MaRC input files.  Requires GNU Bison 1.35 or greater.
+ * Parser for %MaRC input files.  Requires GNU Bison 1.35 or greater.
  *
  * Copyright (C) 1999, 2004, 2017-2018  Ossama Othman
  *
@@ -130,7 +130,7 @@ namespace
      *                      by the user.  While it is of type
      *                      @c double here, it is ultimately stored as
      *                      an integer.
-     * @param[in] data_type MaRC map data type name (e.g. "BYTE",
+     * @param[in] data_type %MaRC map data type name (e.g. "BYTE",
      *                      "SHORT", etc).
      */
     template <typename T>

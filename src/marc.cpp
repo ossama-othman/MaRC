@@ -54,7 +54,7 @@ namespace MaRC
         /**
          * @brief Return error string for XSI-compliant case.
          *
-         * @internal Not part of the MaRC API.
+         * @note Not part of the %MaRC API.
          */
         MARC_UNUSED
         inline char const * strerror_helper(int /* result */,
@@ -74,7 +74,7 @@ namespace MaRC
         /**
          * @brief Return error string for the GNU case.
          *
-         * @internal Not part of the MaRC API.
+         * @note Not part of the %MaRC API.
          */
         MARC_UNUSED
         inline char const * strerror_helper(char const * result,
@@ -112,7 +112,7 @@ namespace MaRC
          * @return Null terminated string containing the error
          *         description.
          *
-         * @internal Not part of the MaRC API.
+         * @note Not part of the %MaRC API.
          */
         inline char const * strerror(int errnum,
                                      char * buf,
@@ -181,10 +181,11 @@ namespace MaRC
     // --------------------------------------------------------------
 
     /**
-     * @brief Parse a MaRC configuration or input file.
+     * @brief Parse a %MaRC configuration or input file.
      *
-     * @param[in]     filename MaRC configuration or input file to parse.
-     * @param[in,out] pp       MaRC configuration parameters.
+     * @param[in]     filename %MaRC configuration or input file to
+     *                         parse.
+     * @param[in,out] pp       %MaRC configuration parameters.
      *
      * @return @c true if file parsing succeded.  @c false otherwise.
      */
@@ -234,12 +235,12 @@ namespace MaRC
     }
 
     /**
-     * @brief Get the MaRC configuration filename.
+     * @brief Get the %MaRC configuration filename.
      *
-     * Get the MaRC configuration filename, conforming to the XDG
-     * Base Directory specification.  The MaRC configuration file will
-     * be @c ~/.config/marc by default, assuming the user hasn't
-     * changed the MaRC package name at build-time.
+     * Get the %MaRC configuration filename, conforming to the XDG
+     * Base Directory specification.  The %MaRC configuration file
+     * will be @c ~/.config/marc by default, assuming the user hasn't
+     * changed the %MaRC package name at build-time.
      *
      * @see https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
      */
@@ -283,7 +284,7 @@ namespace MaRC
 
 }
 
-/// The canonical main entry point to the MaRC process.
+/// The canonical main entry point to the %MaRC process.
 int main(int argc, char *argv[])
 {
     MaRC::command_line cl;
