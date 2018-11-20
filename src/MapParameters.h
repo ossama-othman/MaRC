@@ -40,7 +40,7 @@ namespace MaRC
     /**
      * Type used to store a %FITS @c BLANK integer value.
      *
-     * @todo Use @c std::optional<> once %MaRC requires C++17.
+     * @todo Use @c std::optional once %MaRC requires C++17.
      */
     using blank_type = MaRC::optional<FITS::longlong_type>;
 
@@ -90,20 +90,25 @@ namespace MaRC
         MapParameters(MapParameters const &) = delete;
         void operator=(MapParameters const &) = delete;
 
-        /*
+        /**
          * @brief Populate map parameters from the give source.
-         *
-         * @param[in] source
          *
          * Populate optional parameters automatically, such as from
          * @c SourceImage parameters, where possible.
+         *
+         * @param[in] sources List of source factories used for
+         *                    providing the data to be mapped.
+         *
+         * @return @c true if map parameter population succeded, and
+         *         @c false otherwise.
          */
-        bool populate_from();
+        bool populate_from(image_factories_type const & sources);
 
         /// Set map author.
         void author(std::string author);
 
-        std::string author() const { return this->author_; }
+        /// Get map author.
+        std::string const & author() const { return this->author_; }
 
         /// Set map bits per pixel code.
         void bitpix(int bitpix);
@@ -143,6 +148,7 @@ namespace MaRC
          */
         void bzero(double zero);
 
+        /// Get the value for the map %FITS @c BZERO keyword.
         double bzero() const { return this->bzero_; }
 
         /**
@@ -160,6 +166,7 @@ namespace MaRC
          */
         void bscale(double scale);
 
+        /// Get the value for the map %FITS @c BSCALE keyword.
         double bscale() const { return this->bscale_; }
 
         /**
@@ -177,18 +184,30 @@ namespace MaRC
          */
         void blank(blank_type blank);
 
-
+        /// Get the value for the map %FITS @c BLANK keyword.
         blank_type blank() const { return this->blank_; }
 
+        /// Set name of object being mapped.
         void object(std::string object);
 
-        std::string object() const { return this->object_; }
+        /// Get name of object being mapped.
+        std::string const & object() const { return this->object_; }
 
-        /// Set organization or institution responsible for creating
-        /// map.
+        /**
+         * @brief Set organization or institution responsible for
+         *        creating the map.
+         */
         void origin(std::string origin);
 
-        std::string origin() const { return this->origin_; }
+        /**
+         * @brief Get organization or institution responsible for
+         *        creating the map.
+         *
+         * @todo We may not want to automatically pull this value from
+         *       the source %FITS file since that "origin" may not be
+         *       the same as the one creating the map.
+         */
+        std::string const & origin() const { return this->origin_; }
 
     private:
 
@@ -219,7 +238,11 @@ namespace MaRC
          */
         blank_type blank_;
 
-        /// Coefficient of linear term in the scaling equation.
+        /**
+         * @brief Coefficient of linear term in the scaling equation.
+         *
+         * @note This value corresponds to the %FITS "BSCALE" keyword.
+         */
         double bscale_;
 
         /**
@@ -239,28 +262,95 @@ namespace MaRC
          * @see https://www.iau.org/publications/proceedings_rules/units/
          *
          * @return Unit of physical data in the source image.
+         *
+         * @note This value corresponds to the %FITS "BUNIT" keyword.
          */
         std::string bunit_;
 
-        /// Physical value corresponding to an array value of zero.
+        /**
+         * @brief Physical value corresponding to an array value of
+         *        zero.
+         *
+         * @note This value corresponds to the %FITS "BZERO" keyword.
+         */
         double bzero_;
 
+        /**
+         * @brief Maximum valid physical value.
+         *
+         * @note This value corresponds to the %FITS "DATAMAX"
+         *       keyword.
+         */
+        double datamax_;
 
-        double data_max_;
-        double data_min_;
+        /**
+         * @brief Minimum valid physical value.
+         *
+         * @note This value corresponds to the %FITS "DATAMIN"
+         *       keyword.
+         */
+        double datamin_;
+
+        /**
+         * @brief Epoch of the mean equator and equinox in years.
+         *
+         * @note This value must be non-negative.
+         * @note This value corresponds to the %FITS "EQUINOX"
+         *       keyword.
+         */
         double equinox_;
+
+        /**
+         * @brief Instrument used to acquire the data.
+         *
+         * @note This value corresponds to the %FITS "INSTRUME"
+         *       keyword.
+         */
         std::string instrument_;
 
-        /// Name of object to be mapped.
+        /**
+         * @brief Name of observed object.
+         *
+         * @note This value corresponds to the %FITS "OBJECT"
+         *       keyword.
+         */
         std::string object_;
 
+        /**
+         * @brief Name of person who acquired the source data.
+         *
+         * @note This value corresponds to the %FITS "OBSERVER"
+         *       keyword.
+         */
         std::string observer_;
 
-        /// Organization or institution responsible for creating this
-        /// %FITS file.
+        /**
+         * @brief Organization or institution responsible for creating
+         *        the map %FITS file.
+         *
+         * @note This value corresponds to the %FITS "ORIGIN" keyword.
+         */
         std::string origin_;
 
+        /**
+         * @brief Reference to where the source data was published.
+         *
+         * @note The %FITS standard recommends that this be the
+         *       19-digit bibliographic indentifier used in the
+         *       Astrophysics Data System bibliographic databases or
+         *       the Digital Object Identifier.
+         *
+         * @note This value corresponds to the %FITS "REFERENC"
+         *       keyword.
+         */
         std::string reference_;
+
+        /**
+         * @brief Telescope used to acquire the source data.
+         *
+         * @note This value corresponds to the %FITS "TELESCOP"
+         *       keyword.
+         */
         std::string telescope_;
 
     };

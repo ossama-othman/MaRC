@@ -24,8 +24,14 @@
 
 #include "MapParameters.h"
 
+#include <limits>
+
+
 namespace
 {
+    static constexpr double not_a_number =
+        std::numeric_limits<double>::signaling_NaN();
+
     /**
      * @brief Validate given %FITS BITPIX value.
      *
@@ -75,14 +81,14 @@ TELESCOP
 
 MaRC::MapParameters::MapParameters()
     : author_()
-    , bitpix_()
+    , bitpix_(0)
     , blank_()
-    , bscale_()
+    , bscale_(1)
     , bunit_()
-    , bzero_()
-    , data_max_()
-    , data_min_()
-    , equinox_()
+    , bzero_(0)
+    , datamax_(not_a_number)
+    , datamin_(not_a_number)
+    , equinox_(not_a_number)
     , instrument_()
     , object_()
     , observer_()
@@ -93,7 +99,8 @@ MaRC::MapParameters::MapParameters()
 }
 
 bool
-MaRC::MapParameters::populate_from()
+MaRC::MapParameters::populate_from(
+    image_factories_type const & /* sources */)
 {
     return false;
 }
