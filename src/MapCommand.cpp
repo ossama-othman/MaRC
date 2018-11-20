@@ -111,7 +111,7 @@ MaRC::MapCommand::MapCommand(std::string filename,
          * @todo Find a better place to put this static assertion.
          *
          * @note We could achieve a similar affect in a simpler manner
-         *       through @c std::is_same<> but the below approach
+         *       through @c std::is_same but the below approach
          *       doesn't make assumptions of the underlying types.
          */
         sizeof(FITS::byte_type) == 1
@@ -324,6 +324,10 @@ MaRC::MapCommand::execute()
     std::cout << "Completed mapping data in " << seconds.count()
               << " seconds.\n";
 
+    /**
+     * @todo Set map DATAMIN and DATAMAX automatically based actual
+     *       mapped data.
+     */
 //   // Write DATAMIN and DATAMAX keywords.
 //   fits_update_key(fptr,
 //                   TFLOAT,

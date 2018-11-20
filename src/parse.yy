@@ -239,7 +239,7 @@ MaRC::OrthographicCenter ortho_center;
  * @brief Functor used for calling @c free() on pointers.
  *
  * This functor is used as the @c Deleter template parameter to the
- * type alias of @c std::unique_ptr<> below used for automatically
+ * type alias of @c std::unique_ptr below used for automatically
  * freeing string values created by the parser.
  */
 struct deallocate_with_free

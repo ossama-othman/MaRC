@@ -130,7 +130,7 @@ namespace MaRC
      * @brief @c FILE stream close functor.
      *
      * This functor closes a @c FILE stream.  It is meant for use as
-     * the @c std::unique_ptr<> @c Deleter template parameter.
+     * the @c std::unique_ptr @c Deleter template parameter.
      */
     struct FILE_closer
     {
@@ -144,7 +144,7 @@ namespace MaRC
     };
 
     /**
-     * Type alias of @c std::unique_ptr<> that automatically closes
+     * Type alias of @c std::unique_ptr that automatically closes
      * the a @c FILE stream up on exiting the scope in which an
      * instance of this @c file_unique_ptr resides.
      */
@@ -156,7 +156,7 @@ namespace MaRC
      * @brief @c Flex reentrant scanner destroyer.
      *
      * This functor destroys a reentrant Flex scanner.  It is meant
-     * for use as the @c std::unique_ptr<> @c Deleter template
+     * for use as the @c std::unique_ptr @c Deleter template
      * parameter.
      */
     struct scanner_destroyer
@@ -171,7 +171,7 @@ namespace MaRC
     };
 
     /**
-     * Type alias of @c std::unique_ptr<> that automatically destroys
+     * Type alias of @c std::unique_ptr that automatically destroys
      * a reentrant Flex scanner up on exiting the scope in which an
      * instance of this @c scanner_unique_ptr resides.
      */

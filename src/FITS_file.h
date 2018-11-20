@@ -76,7 +76,7 @@ namespace MaRC
              * keywords will always return a value.  Otherwise, a
              * keyword doesn't exist in the %FITS file will return an
              * empty value, such as an empty @c std::string or a
-             * @c MaRC::optional<> with no value.
+             * @c MaRC::optional with no value.
              */
             //@{
             std::string author() const;

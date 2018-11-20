@@ -43,13 +43,19 @@ namespace MaRC
      * @struct nullopt_t
      *
      * @brief Null initialization type for @c optional.
+     *
+     * @deprecated This is an implementation of the C++17
+     *             @c std::nullopt_t type.  It will be removed when
+     *             %MaRC requires C++17.
      */
     struct nullopt_t {
         /// Constructor.
         explicit constexpr nullopt_t(int) {}
     };
 
-    /// Constant used to null initialize an @c optional object.
+    /**
+     * @brief Constant used to null initialize an @c optional object.
+     */
     constexpr nullopt_t nullopt{0};
 
     /**
@@ -83,12 +89,12 @@ namespace MaRC
      * @brief Contain an optional value.
      *
      * @note This class only implements a subset of the C++17
-     *       optional<> class template interface.  In particular, it
-     *       missing several constructors, the @c emplace() method,
-     *       the @c std::hash() specialization, etc.
+     *       std::optional class template interface.  In particular,
+     *       it is missing several constructors, the @c emplace()
+     *       method, the @c std::hash() specialization, etc.
      *
      * @deprecated This is an implementation of a subset of the C++17
-     *             @c std::optional<> class template.  It will be
+     *             @c std::optional class template.  It will be
      *             removed when %MaRC requires C++17.
      *
      * @see https://en.cppreference.com/w/cpp/utility/optional
@@ -101,8 +107,8 @@ namespace MaRC
         /**
          * @name Members Found in the C++17 std::optional Class
          *
-         * These are members found in the C++17 @c std::optional<>
-         * class template, implemented for @c MaRC::optional<>.
+         * These are members found in the C++17 @c std::optional
+         * class template, implemented for @c MaRC::optional.
          */
         //@{
         using value_type = T;
@@ -241,6 +247,8 @@ namespace MaRC
      *                      @c optional object.
      *
      * @return @c optional object containing the provided @a value.
+     *
+     * @relates MaRC::optional
      */
     template<typename T>
     constexpr optional<std::decay_t<T>> make_optional(T && value)
@@ -250,6 +258,8 @@ namespace MaRC
 
     /**
      * @name Comparison Operators
+     *
+     * @relates MaRC::optional
      */
     //@{
     template<typename T, typename U>
@@ -471,6 +481,8 @@ namespace std
 {
     /**
      * @brief Swap contents of MaRC::optional objects.
+     *
+     * @relates MaRC::optional
      */
     template<typename T>
     void swap(MaRC::optional<T> & lhs, MaRC::optional<T> & rhs) noexcept(

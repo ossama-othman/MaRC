@@ -110,7 +110,7 @@ namespace MaRC
      * @return @c true @a x and @a y are essentially equal.  @c false
      *         otherwise.
      *
-     * @see The @c std::numeric_limits<>::epsilon() discussion on
+     * @see The @c std::numeric_limits::epsilon() discussion on
      *      cppreference.com for the original implementation of this
      *      function:
      *      http://en.cppreference.com/w/cpp/types/numeric_limits/epsilon
