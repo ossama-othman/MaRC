@@ -67,6 +67,11 @@ namespace
         if (MaRC::almost_zero(value, ulps))
             value = 0;
 
+        /**
+         * @todo Replace this std::ostringstream based conversion with
+         *       a fmt library based approach using, such as one that
+         *       leverages @c fmt::memory_buffer.
+         */
         // Work around inability to change precision in
         // std::to_string().  Yes, this is ugly.
         std::ostringstream os;
@@ -75,56 +80,26 @@ namespace
 
         return os.str();
     }
-
-    /**
-     * @brief Validate given %FITS BITPIX value.
-     *
-     * @param[in] bitpix The bits-per-pixel value for data stored in a
-     *                   %FITS file, as defined in the %FITS
-     *                   standard.  Valid values are 8, 16, 32, 64,
-     *                   -32, and -64.  The corresponding CFITSIO
-     *                   library symbolic constants are @c BYTE_IMG,
-     *                   @c SHORT_IMG, @c LONG_IMG, @c LONGLONG_IMG,
-     *                   @c FLOAT_IMG, @c DOUBLE_IMG.
-     *
-     * @retval true  Valid @a bitpix value.
-     * @retval false Invalid @a bitpix value.
-     */
-    bool valid_bitpix(int bitpix)
-    {
-        return bitpix == BYTE_IMG
-            || bitpix == SHORT_IMG
-            || bitpix == LONG_IMG
-            || bitpix == LONGLONG_IMG
-            || bitpix == FLOAT_IMG
-            || bitpix == DOUBLE_IMG;
-    }
 }
 
 
 MaRC::MapCommand::MapCommand(std::string filename,
-                             std::string body_name,
                              long samples,
                              long lines,
-                             std::unique_ptr<MapFactory> factory)
-    : bitpix_(0)
-    , samples_(samples)
+                             std::unique_ptr<MapFactory> factory,
+                             std::unique_ptr<MapParameters> params)
+    : samples_(samples)
     , lines_(lines)
     , factory_(std::move(factory))
     , image_factories_()
-    , blank_()
     , filename_(std::move(filename))
-    , author_()
-    , origin_()
     , comments_()
     , xcomments_()
-    , body_name_(std::move(body_name))
     , lat_interval_(0)
     , lon_interval_(0)
-    , bscale_(1)
-    , bzero_(0)
     , transform_data_(false)
     , create_grid_(false)
+    , parameters_(std::move(params))
 {
     // Compile-time FITS data type sanity check.
     static_assert(
@@ -174,6 +149,11 @@ MaRC::MapCommand::MapCommand(std::string filename,
 int
 MaRC::MapCommand::execute()
 {
+    // All necessary map configuration parameters should now be in
+    // place.  Populate other parameters automatically, if possible.
+    if (!populate_map_parameters())
+        return -1;
+
     std::cout << "\nCreating map: " << this->filename_ << '\n';
 
     (void) unlink(this->filename_.c_str());
@@ -208,24 +188,24 @@ MaRC::MapCommand::execute()
                     &status);
 
     // Write the author name if supplied.
-    if (!this->author_.empty()) {
-        char const * const author = this->author_.c_str();
+    auto const author = this->parameters_->author();
+    if (!author.empty()) {
         fits_update_key(fptr,
                         TSTRING,
                         "AUTHOR",
-                        const_cast<char *>(author),
+                        const_cast<char *>(author.c_str()),
                         "who compiled original data that was mapped",
                         &status);
     }
 
     // Write the name of the organization or institution responsible
     // for creating the FITS file, if supplied.
-    if (!this->origin_.empty()) {
-        char const * const origin = this->origin_.c_str();
+    auto const origin = this->parameters_->origin();
+    if (!origin.empty()) {
         fits_update_key(fptr,
                         TSTRING,
                         "ORIGIN",
-                        const_cast<char *>(origin),
+                        const_cast<char *>(origin.c_str()),
                         "map creator organization",
                         &status);
     }
@@ -235,13 +215,22 @@ MaRC::MapCommand::execute()
     fits_write_date(fptr, &status);
 
     // Write the name of the object being mapped.
-    char const * const object = this->body_name_.c_str();
-    fits_update_key(fptr,
-                    TSTRING,
-                    "OBJECT",
-                    const_cast<char *>(object),
-                    "name of observed object",
-                    &status);
+    auto const object = this->parameters_->object();
+    if (!object.empty()) {
+        fits_update_key(fptr,
+                        TSTRING,
+                        "OBJECT",
+                        const_cast<char *>(object.c_str()),
+                        "name of observed object",
+                        &status);
+    } else {
+        /**
+         * @todo s/BODY/OBJECT/ once MaRC supports mapping objects on
+         *       the Celestial Sphere.
+         */
+        MaRC::error("BODY not specified.");
+        return -1;
+    }
 
     // Write the map comments.
     for (auto const & comment : this->comments_) {
@@ -250,7 +239,7 @@ MaRC::MapCommand::execute()
 
     std::string const history =
         std::string(this->projection_name())
-        + " projection created by MaRC " PACKAGE_VERSION ".";
+        + " projection created by " PACKAGE_STRING ".";
 
     // Write some MaRC-specific HISTORY comments.
     fits_write_history(fptr,
@@ -261,21 +250,30 @@ MaRC::MapCommand::execute()
     // file.
     if (this->transform_data_) {
         /**
+         * @bug This code is never called since @c transform_data_ is
+         *      always false.  Support for allowing the user to
+         *      specify the BSCALE and BZERO values has been broken
+         *      for years so it is better to leave this code disabled
+         *      until that is corrected.
+         *
          * @todo Should we disable CFITSIO automatic scaling via
          *       @c fits_set_bscale() as we do for @c VirtualImage map
          *       planes?
          */
+        double bscale = this->parameters_->bscale();
+        double bzero  = this->parameters_->bzero();
+
         fits_update_key(fptr,
                         TDOUBLE,
                         "BSCALE",
-                        &this->bscale_,
+                        &bscale,
                         "linear data scaling coefficient",
                         &status);
 
         fits_update_key(fptr,
                         TDOUBLE,
                         "BZERO",
-                        &this->bzero_,
+                        &bzero,
                         "physical value corresponding to zero in the map",
                         &status);
     }
@@ -294,7 +292,7 @@ MaRC::MapCommand::execute()
     auto const start =  std::chrono::high_resolution_clock::now();
 
     // Create and write the map planes.
-    switch (this->bitpix()) {
+    switch (this->parameters_->bitpix()) {
     case BYTE_IMG:
         this->template make_map_planes<FITS::byte_type>(fptr, status);
         break;
@@ -397,7 +395,7 @@ MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
                     TSTRING,
                     "EXTNAME",
                     const_cast<char *>(extname),
-                    "MaRC grid extension name",
+                    PACKAGE_NAME " grid extension name",
                     &status);
 
     // Write the grid comments.
@@ -441,12 +439,13 @@ MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
                     "value of off-grid pixels",
                     &status);
 
-    auto const start =  std::chrono::high_resolution_clock::now();
+    auto const start = std::chrono::high_resolution_clock::now();
 
     grid_type grid(this->make_grid(this->samples_,
                                    this->lines_,
                                    this->lat_interval_,
                                    this->lon_interval_));
+
     auto const end =  std::chrono::high_resolution_clock::now();
 
     std::chrono::duration<double> const seconds = end - start;
@@ -477,18 +476,6 @@ MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
 }
 
 void
-MaRC::MapCommand::author(std::string author)
-{
-    this->author_ = std::move(author);
-}
-
-void
-MaRC::MapCommand::origin(std::string origin)
-{
-    this->origin_ = std::move(origin);
-}
-
-void
 MaRC::MapCommand::comment_list(comment_list_type comments)
 {
     this->comments_= std::move(comments);
@@ -510,26 +497,6 @@ MaRC::MapCommand::grid_intervals(double lat_interval, double lon_interval)
     this->create_grid_  = true;
     this->lat_interval_ = lat_interval;
     this->lon_interval_ = lon_interval;
-}
-
-void
-MaRC::MapCommand::data_zero(double zero)
-{
-    this->bzero_ = zero;
-    this->transform_data_ = true;
-}
-
-void
-MaRC::MapCommand::data_scale(double scale)
-{
-    this->bscale_ = scale;
-    this->transform_data_ = true;
-}
-
-void
-MaRC::MapCommand::data_blank(blank_type blank)
-{
-    this->blank_ = blank;
 }
 
 void
@@ -558,41 +525,10 @@ MaRC::MapCommand::initialize_FITS_image(fitsfile * fptr, int & status)
 
     // Create the primary array.
     (void) fits_create_img(fptr,
-                           this->bitpix(),
+                           this->parameters_->bitpix(),
                            naxis,
                            naxes,
                            &status);
-}
-
-void
-MaRC::MapCommand::bitpix(int n)
-{
-    // Zero means choose bitpix automatically.
-    if (n != 0 && !valid_bitpix(n))
-        throw std::invalid_argument("Invalid FITS BITPIX value");
-
-    this->bitpix_ = n;
-}
-
-int
-MaRC::MapCommand::bitpix()
-{
-    /**
-     * @bug Choose BITPIX value based on SourceImage, such as the
-     *      BITPIX value in a PhotoImage, or a BITPIX for floating
-     *      point values for VirtualImages with floating point
-     *      values etc.  Fixes #62.
-     *
-     * @todo Warn the user if the their desired BITPIX (map data type)
-     *       is smaller than the data type in a photo.  (e.g. 16 bits
-     *       chosen vs 32 bits in photo).  Fixes #72.
-     */
-
-    // This should never happen!
-    if (!valid_bitpix(this->bitpix_))
-        throw std::runtime_error("Unable to determine BITPIX value.");
-
-    return this->bitpix_;
 }
 
 void
@@ -620,7 +556,7 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
      */
     // bitpix > 0: integer data
     // bitpix < 0: floating point data
-    if (this->bitpix() < 0)
+    if (this->parameters_->bitpix() < 0)
         return;
 
     // The map contains integer type data meaning data was scaled to
@@ -728,4 +664,33 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
                                &status);
         }
     }
+}
+
+bool
+MaRC::MapCommand::populate_map_parameters()
+{
+    bool populated = true;
+
+    /**
+     * @todo Populate the following parameters from source image
+     *       factories if they exist, and if possible:
+     * @li AUTHOR
+     * @li BITPIX
+     * @li BLANK
+     * @li BSCALE
+     * @li BUNIT
+     * @li BZERO
+     * @li DATAMAX
+     * @li DATAMIN
+     * @li EQUINOX
+     * @li INSTRUME
+     * @li NAXES
+     * @li OBJECT
+     * @li OBSERVER
+     * @li ORIGIN
+     * @li REFERENC
+     * @li TELESCOP
+     */
+
+    return populated;
 }

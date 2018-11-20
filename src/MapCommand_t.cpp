@@ -41,6 +41,18 @@ template <typename T>
 void
 MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
 {
+    auto blank = this->parameters_->blank();
+
+    // Write the BLANK keyword and value into the map FITS file.
+    if (std::is_integral<T>() && blank) {
+        fits_update_key(fptr,
+                        FITS::traits<blank_type::value_type>::datatype,
+                        "BLANK",
+                        &blank,
+                        "value of pixels with undefined physical value",
+                        &status);
+    }
+
     // First pixel/element in FITS array (1-based).
     //   Plane 1: fpixel =  1
     //   Plane 2: fpixel += nelements
@@ -89,18 +101,15 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
                                         image.get(),
                                         status);
 
-        plot_info info(*image, i->minimum(), i->maximum(), this->blank_);
+        plot_info info(*image,
+                       i->minimum(),
+                       i->maximum(),
+                       blank);
 
         using namespace MaRC::Progress;
         info.notifier().subscribe(std::make_unique<Console>());
 
         // Create the map plane.
-        /**
-         * @todo Pass the %FITS @c BLANK value (@see @c this->blank_)
-         *       if one was supplied (@see @c this->blank_set_) to
-         *       @c make_map() so that the map may be initialized with
-         *       that value in the integer data typed map case.
-         */
         auto map(this->factory_->template make_map<T>(info,
                                                       this->samples_,
                                                       this->lines_));
@@ -125,16 +134,6 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
         fpixel += nelements;
 
         ++plane_count;
-    }
-
-    // Write the BLANK keyword and value into the map FITS file.
-    if (std::is_integral<T>() && this->blank_) {
-        fits_update_key(fptr,
-                        FITS::traits<blank_type::value_type>::datatype,
-                        "BLANK",
-                        &this->blank_,
-                        "value of pixels with undefined physical value",
-                        &status);
     }
 }
 

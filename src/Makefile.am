@@ -45,6 +45,7 @@ marc_SOURCES = \
   PhotoImageFactory.cpp \
   MosaicImageFactory.cpp \
   MapCommand.cpp \
+  MapParameters.cpp \
   command_line.cpp \
   marc.cpp \
   parse_scan.cpp \
@@ -74,6 +75,7 @@ noinst_HEADERS = \
   MosaicImageFactory.h \
   MapCommand.h \
   MapCommand_t.cpp \
+  MapParameters.h \
   calc.h \
   command_line.h \
   parse_scan.h \

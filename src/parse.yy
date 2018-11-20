@@ -154,16 +154,12 @@ namespace
 
 std::string map_filename;
 
-std::string body_name;
 std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
-std::string map_author;
-std::string map_origin;
+std::unique_ptr<MaRC::MapParameters> map_params;
 
 std::list<std::string> comment_list;
 std::list<std::string> xcomment_list;
-
-int map_bitpix = 0;
 
 using namespace MaRC;
 
@@ -172,12 +168,6 @@ std::unique_ptr<MapFactory> map_factory;
 // CFITSIO's "naxes" parameter is an array of long values.
 long map_samples = 0;
 long map_lines = 0;
-
-bool   transform_data = false;
-double fits_bzero     = 0;
-double fits_bscale    = 1;
-
-MaRC::blank_type fits_blank;
 
 // To create a grid or not to create a grid?  That is the question.
 bool create_grid = false;
@@ -208,10 +198,6 @@ std::size_t num_planes = 0;
 // Used to ensure num_planes are defined in sequence
 std::size_t expected_plane = 1;
 
-std::size_t nibble_left_val   = 0;
-std::size_t nibble_right_val  = 0;
-std::size_t nibble_top_val    = 0;
-std::size_t nibble_bottom_val = 0;
 double minimum = not_a_number;
 double maximum = not_a_number;
 
@@ -402,19 +388,14 @@ user_file_parse:
           // Reset defaults to those chosen by the user.  If none were
           // chosen by the user, the values will remain unchanged.
 
-          pp.lat_interval  = lat_interval;
-          pp.lon_interval  = lon_interval;
+          pp.lat_interval = lat_interval;
+          pp.lon_interval = lon_interval;
 
           if (!std::isnan(minimum))
               pp.minimum = minimum;
 
           if (!std::isnan(maximum))
               pp.maximum = maximum;
-
-          pp.nibble_left   = nibble_left_val;
-          pp.nibble_right  = nibble_right_val;
-          pp.nibble_top    = nibble_top_val;
-          pp.nibble_bottom = nibble_bottom_val;
         }
 ;
 
@@ -457,35 +438,23 @@ map_setup:
                             num_planes);
                 YYERROR;
             } else {
-                std::unique_ptr<MaRC::MapCommand> map_command =
+                auto command =
                     std::make_unique<MaRC::MapCommand>(
                         std::move(map_filename),
-                        std::move(body_name),
                         map_samples,
                         map_lines,
-                        std::move(map_factory));
+                        std::move(map_factory),
+                        std::move(map_params));
 
-                map_command->bitpix(map_bitpix);
-
-                map_command->author(map_author);
-                map_command->origin(map_origin);
-
-                map_command->comment_list(comment_list);
-                map_command->xcomment_list(xcomment_list);
+                command->comment_list(comment_list);
+                command->xcomment_list(xcomment_list);
 
                 if (create_grid)
-                    map_command->grid_intervals(lat_interval, lon_interval);
+                    command->grid_intervals(lat_interval, lon_interval);
 
-                if (transform_data) {
-                    map_command->data_zero(fits_bzero);
-                    map_command->data_scale(fits_bscale);
-                }
+                command->image_factories(std::move(image_factories));
 
-                map_command->data_blank(fits_blank);
-
-                map_command->image_factories(std::move(image_factories));
-
-                pp.push_command(std::move(map_command));
+                pp.push_command(std::move(command));
             }
         }
 ;
@@ -495,17 +464,14 @@ map_entry:
             auto_free<char> str($3);
             map_filename = $3;
 
+            map_params = std::make_unique<MaRC::MapParameters>();
+
             // Reset items that may have been set for the previous
             // map.
-            map_author.clear();
-            map_origin.clear();
-
             comment_list.clear();
             xcomment_list.clear();
 
             create_grid = false;
-            transform_data = false;
-            fits_blank.reset();
 
             image_factories.clear();
 
@@ -521,12 +487,18 @@ map_entry:
 
 author:
         %empty
-        | AUTHOR ':' _STRING { auto_free<char> str($3); map_author = $3; }
+        | AUTHOR ':' _STRING {
+            auto_free<char> str($3);
+            map_params->author($3);
+        }
 ;
 
 origin:
         %empty
-        | ORIGIN ':' _STRING { auto_free<char> str($3); map_origin = $3; }
+        | ORIGIN ':' _STRING {
+            auto_free<char> str($3);
+            map_params->origin($3);
+        }
 ;
 
 comments:
@@ -567,50 +539,45 @@ data_info:
 
 data_offset:
         %empty
-        | DATA_OFFSET ':' size  {
-            fits_bzero = $3;
-            transform_data = true;
-        }
+        | DATA_OFFSET ':' size  { map_params->bzero($3); }
 ;
 
 data_scale:
         %empty
-        | DATA_SCALE ':' size   {
-            fits_bscale = $3;
-            transform_data = true;
-        }
+        | DATA_SCALE ':' size   { map_params->bscale($3); }
 ;
 
 data_type:
         %empty
-        | _DATA_TYPE ':' BYTE_DATA     { map_bitpix = BYTE_IMG;     }
-        | _DATA_TYPE ':' SHORT_DATA    { map_bitpix = SHORT_IMG;    }
-        | _DATA_TYPE ':' LONG_DATA     { map_bitpix = LONG_IMG;     }
-        | _DATA_TYPE ':' LONGLONG_DATA { map_bitpix = LONGLONG_IMG; }
-        | _DATA_TYPE ':' FLOAT_DATA    { map_bitpix = FLOAT_IMG;    }
-        | _DATA_TYPE ':' DOUBLE_DATA   { map_bitpix = DOUBLE_IMG;   }
+        | _DATA_TYPE ':' BYTE_DATA     { map_params->bitpix(BYTE_IMG);     }
+        | _DATA_TYPE ':' SHORT_DATA    { map_params->bitpix(SHORT_IMG);    }
+        | _DATA_TYPE ':' LONG_DATA     { map_params->bitpix(LONG_IMG);     }
+        | _DATA_TYPE ':' LONGLONG_DATA { map_params->bitpix(LONGLONG_IMG); }
+        | _DATA_TYPE ':' FLOAT_DATA    { map_params->bitpix(FLOAT_IMG);    }
+        | _DATA_TYPE ':' DOUBLE_DATA   { map_params->bitpix(DOUBLE_IMG);   }
 ;
 
 data_blank:
         %empty
         | DATA_BLANK ':' expr {
-            if (map_bitpix < 0) {  // Negative bitpix for floating point.
+            auto const bitpix = map_params->bitpix();
+            if (bitpix < 0) {  // Negative bitpix for floating point.
                 throw std::invalid_argument(
                     "\"DATA_BLANK\" keyword not valid with "
                     "floating point types.");
             } else {
                 bool verified = false;
 
-                if (map_bitpix == BYTE_IMG)
+                if (bitpix == BYTE_IMG)
                     verified =
                         verify_data_blank<FITS::byte_type>($3, "BYTE");
-                else if (map_bitpix == SHORT_IMG)
+                else if (bitpix == SHORT_IMG)
                     verified =
                         verify_data_blank<FITS::short_type>($3, "SHORT");
-                else if (map_bitpix == LONG_IMG)
+                else if (bitpix == LONG_IMG)
                     verified =
                         verify_data_blank<FITS::long_type>($3, "LONG");
-                else if (map_bitpix == LONGLONG_IMG)
+                else if (bitpix == LONGLONG_IMG)
                     verified =
                         verify_data_blank<FITS::longlong_type>($3,
                                                                "LONGLONG");
@@ -621,7 +588,8 @@ data_blank:
                 if (!verified)
                     YYERROR;
 
-                fits_blank = static_cast<blank_type::value_type>($3);
+                map_params->blank(
+                    static_cast<blank_type::value_type>($3));
             }
         }
 ;
@@ -757,7 +725,7 @@ body:   BODY ':' _STRING
         radii
         rotation {
           auto_free<char> str($3);
-          body_name = $3;
+          map_params->object($3);
 
           ($4).validate();
 
@@ -977,16 +945,6 @@ image_setup:
         sub_solar
         range
         image_geometry {
-          photo_parameters->nibble_left(nibble_left_val);
-          photo_parameters->nibble_right(nibble_right_val);
-          photo_parameters->nibble_top(nibble_top_val);
-          photo_parameters->nibble_bottom(nibble_bottom_val);
-
-          nibble_left_val   = pp.nibble_left;
-          nibble_right_val  = pp.nibble_right;
-          nibble_top_val    = pp.nibble_top;
-          nibble_bottom_val = pp.nibble_bottom;
-
           viewing_geometry->sub_observ(($13).lat, ($13).lon);
           viewing_geometry->position_angle($14);
           viewing_geometry->sub_solar(($15).lat, ($15).lon);
@@ -1045,7 +1003,7 @@ image_initialize:
             photo_parameters =
                 std::make_unique<MaRC::PhotoImageParameters>();
 
-            // Set user default nibbling values.
+            // Set default user configured nibbling values.
             photo_parameters->nibble_left  (pp.nibble_left);
             photo_parameters->nibble_right (pp.nibble_right);
             photo_parameters->nibble_top   (pp.nibble_top);
@@ -1074,10 +1032,15 @@ nibbling:
 nibble:
         NIBBLE ':' size {
           if ($3 >= 0) {
-              nibble_left_val   = static_cast<std::size_t>($3);
-              nibble_right_val  = static_cast<std::size_t>($3);
-              nibble_top_val    = static_cast<std::size_t>($3);
-              nibble_bottom_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_left   = $3;
+                  pp.nibble_right  = $3;
+                  pp.nibble_top    = $3;
+                  pp.nibble_bottom = $3;
+              }
           } else {
               /**
                * @todo Call yyerror() here instead, e.g.:
@@ -1107,7 +1070,12 @@ nibble_lines:
 nibble_left:
         NIBBLE_LEFT ':' size {
           if ($3 >= 0) {
-              nibble_left_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_left($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_left = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_LEFT entered: {}",
                           $3);
@@ -1119,7 +1087,12 @@ nibble_left:
 nibble_right:
         NIBBLE_RIGHT ':' size {
           if ($3 >= 0) {
-              nibble_right_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_right($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_right = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_RIGHT entered: {}",
                           $3);
@@ -1131,7 +1104,12 @@ nibble_right:
 nibble_top:
         NIBBLE_TOP ':' size {
           if ($3 >= 0) {
-              nibble_top_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_top($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_top = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_TOP entered: {}",
                           $3);
@@ -1143,7 +1121,12 @@ nibble_top:
 nibble_bottom:
         NIBBLE_BOTTOM ':' size {
           if ($3 >= 0) {
-              nibble_bottom_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_bottom($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_bottom = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_BOTTOM entered: {}",
                           $3);
