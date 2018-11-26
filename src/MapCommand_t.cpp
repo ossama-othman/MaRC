@@ -28,7 +28,7 @@
 #include "ProgressConsole.h"
 
 #include <marc/MapFactory.h>
-#include <marc/SourceImage.h>  // For scale_and_offset()
+#include <marc/scale_and_offset.h>
 
 #include <cassert>
 #include <type_traits>

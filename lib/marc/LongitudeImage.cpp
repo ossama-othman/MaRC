@@ -25,6 +25,8 @@
 #include "Constants.h"
 #include "DefaultConfiguration.h"
 
+#include <cmath>
+
 
 MaRC::LongitudeImage::LongitudeImage(double scale, double offset)
     : VirtualImage(scale, offset)

@@ -22,6 +22,7 @@
 #include <marc/DefaultConfiguration.h>
 #include <marc/Mathematics.h>
 #include <marc/Constants.h>
+#include <marc/scale_and_offset.h>
 
 #include <memory>
 #include <cstdint>

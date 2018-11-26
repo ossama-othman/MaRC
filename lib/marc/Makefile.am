@@ -126,6 +126,7 @@ nobase_pkginclude_HEADERS = \
   optional.h \
   plot_info.h \
   root_find.h \
+  scale_and_offset.h \
   utility.h \
   \
   Constants.h \

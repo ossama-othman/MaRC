@@ -23,6 +23,7 @@
 #include <marc/LatitudeImage.h>
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
+#include <marc/scale_and_offset.h>
 
 #include <memory>
 #include <cstring>

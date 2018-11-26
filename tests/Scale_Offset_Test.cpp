@@ -18,7 +18,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <marc/VirtualImage.h>
+#include <marc/scale_and_offset.h>
 #include <marc/DefaultConfiguration.h>
 
 #include <limits>
