@@ -30,7 +30,7 @@
 
 #include "marc/config.h"  // For NDEBUG
 
-// See https://github.com/fmtlib/fmt/issues/
+// See https://github.com/fmtlib/fmt/issues/947
 #ifdef __GNUG__
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wformat-nonliteral"
