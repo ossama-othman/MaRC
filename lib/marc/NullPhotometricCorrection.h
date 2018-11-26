@@ -32,7 +32,7 @@ namespace MaRC
 {
 
     /**
-     * @class NullPhotometricCorrection
+     * @class NullPhotometricCorrection NullPhotometricCorrection.h <marc/NullPhotometricCorrection.h>
      *
      * @brief Null (no-op) photometric correction strategy.
      *

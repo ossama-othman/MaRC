@@ -94,6 +94,8 @@ namespace MaRC
          * static constexpr int datatype = ...;
          * @endcode
          *
+         * @tparam T Data type.
+         *
          * @note The traits in this class are specific to the CFITSIO
          *       library API.
          */

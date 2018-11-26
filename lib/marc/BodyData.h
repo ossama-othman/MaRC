@@ -32,7 +32,7 @@ namespace MaRC
 {
 
     /**
-     * @class BodyData
+     * @class BodyData BodyData.h <marc/BodyData.h>
      *
      * @brief Class representing the body under observation.
      *

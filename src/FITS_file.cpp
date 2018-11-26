@@ -79,6 +79,7 @@ namespace MaRC
         /**
          * @brief Get the value of the given %FITS keyword.
          *
+         * @tparam    T    Value type.
          * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
          * @param[in] key  %FITS keyword.
          *

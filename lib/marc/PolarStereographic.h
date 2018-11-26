@@ -35,7 +35,7 @@ namespace MaRC
     class OblateSpheroid;
 
     /**
-     * @class PolarStereographic
+     * @class PolarStereographic PolarStereographic.h <marc/PolarStereographic.h>
      *
      * @brief Polar Stereographic concrete map factory.
      *

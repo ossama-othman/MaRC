@@ -36,7 +36,7 @@ namespace MaRC
 {
 
     /**
-     * @class SimpleCylindrical
+     * @class SimpleCylindrical SimpleCylindrical.h <marc/SimpleCylindrical.h>
      *
      * @brief Simple cylindrical concrete map factory.
      *

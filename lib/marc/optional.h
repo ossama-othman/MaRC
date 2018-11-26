@@ -40,7 +40,7 @@ namespace MaRC
 {
 #if __cplusplus < 201703L
     /**
-     * @struct nullopt_t
+     * @struct nullopt_t optional.h <marc/optional.h>
      *
      * @brief Null initialization type for @c optional.
      *
@@ -59,7 +59,7 @@ namespace MaRC
     constexpr nullopt_t nullopt{0};
 
     /**
-     * @class bad_optional_access
+     * @class bad_optional_access optional.h <marc/optional.h>
      *
      * @brief Exception thrown when an accessing a @c optional object
      *        doesn't contain a value.
@@ -84,7 +84,7 @@ namespace MaRC
     };
 
     /**
-     * @class optional
+     * @class optional optional.h <marc/optional.h>
      *
      * @brief Contain an optional value.
      *

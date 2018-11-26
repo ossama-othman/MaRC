@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file SourceImage.h
+ * @file details/scale_and_offset.h
  *
  * Copyright (C) 2017-2018  Ossama Othman
  *
@@ -34,12 +34,16 @@ namespace MaRC
     namespace details
     {
         /**
+         * @struct scale_and_offset details/scale_and_offset.h <marc/scale_and_offset.h>
+         *
          * @brief Integer data scale and offset calculation functor.
          *
          * Determine the best scale and offset parameters applied to
          * floating point data read from source images to retain as
          * many significant digits as possible when storing that data
          * in integer typed maps.
+         *
+         * @tparam T Destination data type.
          *
          * @see MaRC::scale_and_offset()
          *
@@ -56,7 +60,7 @@ namespace MaRC
              * the @a scale and @a offset values suitable for
              * maximizing the number of significant digits retained
              * when storing their floating point values in a
-             * destination of data type @c T.
+             * destination of data type @a T.
              *
              * @param[in]  min    The minimum source value to be
              *                    potentially stored in an integer of
@@ -136,6 +140,8 @@ namespace MaRC
         };
 
         /**
+         * @struct scale_and_offset<float> details/scale_and_offset.h <marc/scale_and_offset.h>
+
          * @brief @c float typed data scale and offset calculation
          *        functor.
          *
@@ -179,6 +185,8 @@ namespace MaRC
         };
 
         /**
+         * @struct scale_and_offset<double> details/scale_and_offset.h <marc/scale_and_offset.h>
+         *
          * @brief @c double typed data scale and offset calculation
          *        functor.
          *

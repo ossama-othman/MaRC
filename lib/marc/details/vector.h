@@ -37,22 +37,21 @@ namespace MaRC
      *
      * @brief Internal %MaRC implementation details.
      *
-     * Implement details that are not part of the %MaRC public API.
+     * Implementation details that are not part of the %MaRC public
+     * API.
      */
     namespace details
     {
         /**
-         * @brief Obtain magnitude of vector.
+         * @brief Obtain magnitude of a vector.
          *
          * This generalized implementation can return the magnitude of
          * a vector with an arbitrary number of rows.
          *
-         * @param[in] v Vector for which the magnitude will be
-         *              calculated.
+         * @param[in] v Vector, represented as a simple array, for
+         *              which the magnitude will be calculated.
          *
          * @return Magnitude of vector @a v.
-         *
-         * @relates MaRC::Vector
          */
         template <typename T, std::size_t M>
         auto magnitude(T const (&v)[M])
@@ -70,17 +69,15 @@ namespace MaRC
         }
 
         /**
-         * @brief Obtain magnitude of vector with three rows.
+         * @brief Obtain magnitude of a vector with three rows.
          *
          * This implementation avoids overflow and underflow when
          * calculating the magnitude of vectors with three rows.
          *
-         * @param[in] v Vector for which the magnitude will be
-         *              calculated.
+         * @param[in] v Vector, represented as an array, for which the
+         *              magnitude will be calculated.
          *
          * @return Magnitude of vector @a v.
-         *
-         * @relates MaRC::Vector
          */
         template <typename T>
         constexpr auto magnitude(T const (&v)[3])
@@ -94,12 +91,10 @@ namespace MaRC
          * This implementation avoids overflow and underflow when
          * calculating the magnitude of vectors with two rows.
          *
-         * @param[in] v Vector for which the magnitude will be
-         *              calculated.
+         * @param[in] v Vector, represented as an array, for which the
+         *              magnitude will be calculated.
          *
          * @return Magnitude of vector @a v.
-         *
-         * @relates MaRC::Vector
          */
         template <typename T>
         constexpr auto magnitude(T const (&v)[2])
@@ -112,12 +107,10 @@ namespace MaRC
          * This implementation returns the magnitude of vector with
          * one row.
          *
-         * @param[in] v Vector for which the magnitude will be
-         *              calculated.
+         * @param[in] v Vector, represented as an array, for which the
+         *              magnitude will be calculated.
          *
          * @return Magnitude of vector @a v.
-         *
-         * @relates MaRC::Vector
          */
         template <typename T>
         constexpr auto magnitude(T const (&v)[1])

@@ -38,12 +38,17 @@ namespace MaRC
 {
 
     /**
-     * @struct Map_traits
+     * @struct Map_traits Map_traits.h <marc/Map_traits.h>
      *
-     * @brief @c Map traits template structure.
+     * @brief @c Traits specific to a map data type.
      *
-     * The @c Map template class delegates some operations to this
-     * template traits structure.
+     * These traits are used making a map projection to obtain map
+     * data type-specific characteristics, such as the default empty
+     * (blank) value, and map data "clipping" values.
+     *
+     * @tparam T Map data type.
+     *
+     * @see MapFactory
      */
     template <typename T>
     struct Map_traits
@@ -119,6 +124,8 @@ namespace MaRC
     };
 
     /**
+     * @struct Map_traits<double> Map_traits.h <marc/Map_traits.h>
+     *
      * @brief @c Map_traits specialization for maps with a @c double
      *        data type.
      *

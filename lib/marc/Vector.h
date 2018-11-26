@@ -41,7 +41,7 @@
 namespace MaRC
 {
     /**
-     * @class Vector
+     * @class Vector Vector.h <marc/Vector.h>
      *
      * @brief Zero-based index mathematical vector implementation.
      *

@@ -22,37 +22,53 @@
  * 02110-1301  USA
  *
  * @author Ossama Othman
- */
-
-/**
- * @todo Fix or at least report this issue to upstream fmt libary
- *       maintainers.
- */
-#ifdef __GNUG__
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wformat-nonliteral"
-#endif
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
-#ifdef __GNUG__
-# pragma GCC diagnostic push
-#endif
-
-/**
+ *
  * @bug We really shouldn't be exposing <MaRC/config.h> to the user
  *      since it contains preprocessor symbols that pollute the global
  *      namespace.
  */
+
 #include "marc/config.h"  // For NDEBUG
 
-// DXGEN is defined when building MaRC's Doxygen based documentation.
-// We want the MaRC::debug() arguments to be expanded in that case so
-// that Doxygen generates documentation for them.
+// See https://github.com/fmtlib/fmt/issues/
+#ifdef __GNUG__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+/// Avoid having to link the fmt library.
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
+#ifdef __GNUG__
+# pragma GCC diagnostic pop
+#endif
+
+/**
+ * @def MARC_DEBUG_ARGS(x)
+ *
+ * @brief Mark MaRC::debug() parameters as unused as needed.
+ *
+ * The MaRC::debug() function parameters are only used when debugging
+ * is enabled (@c NDEBUG preprocessor symbol is undefined), or when
+ * Doxygen documentation is being generated.  Mark as unused them by the
+ * standard C++ method of doing so when debugging is disabled, i.e. by
+ * preventing the parameter name @a x from expanding in that case.
+ *
+ * @param x MaRC::debug() parameter name.
+ *
+ * @note @c DXGEN is defined when building MaRC's Doxygen based
+ *       documentation.  We want the MaRC::debug() arguments to be
+ *       expanded in that case so that Doxygen generates documentation
+ *       for them.
+ *
+ * @note This is an internal macro that is not meant for use outside
+ *       of %MaRC.
+ */
 #if defined(NDEBUG) && !defined(DXGEN)
 # define MARC_DEBUG_ARGS(x)
 #else
 # define MARC_DEBUG_ARGS(x) x
 #endif  // NDEBUG
+
 
 namespace MaRC
 {

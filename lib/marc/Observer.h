@@ -36,7 +36,7 @@ namespace MaRC
     {
 
         /**
-         * @class Observer
+         * @class Observer Observer.h <marc/Observer.h>
          *
          * @brief Map progress observer.
          *

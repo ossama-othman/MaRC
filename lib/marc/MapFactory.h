@@ -39,7 +39,7 @@ namespace MaRC
     class plot_info;
 
     /**
-     * @class MapFactory
+     * @class MapFactory MapFactory.h <marc/MapFactory.h>
      *
      * @brief Map Abstract Factory
      *
@@ -62,7 +62,7 @@ namespace MaRC
          * Concrete map factories will call a function of this type in
          * their @c plot_map() implementation.
          *
-         * @see @c plot() for parameter details.
+         * @see @c plot()
          *
          */
         using plot_type =
@@ -83,12 +83,14 @@ namespace MaRC
         /// Return the name of the map projection.
         virtual char const * projection_name() const = 0;
 
-        /// Create the desired map projection.
         /**
+         * @brief Create the map projection.
+         *
          * This method takes care of allocating and initializing the
          * underlying map array, and delegates actual mapping to the
          * subclass implementation of @c plot_map().
          *
+         * @tparam        T       Map element data type.
          * @param[in,out] info    Map plotting information, such as
          *                        the source image, min/max allowed
          *                        data values, etc.  Some fields, such
@@ -108,9 +110,10 @@ namespace MaRC
                              std::size_t samples,
                              std::size_t lines);
 
-        /// Create the latitude/longitude grid for the desired map
-        /// projection.
         /**
+         * @brief Create the latitude/longitude grid for the map
+         *        projection.
+         *
          * This method takes care of allocating and initializing the
          * underlying grid array, and delegates actual grid generation
          * to the subclass implementation of @c plot_grid().
@@ -139,7 +142,7 @@ namespace MaRC
     private:
 
         /**
-         * Create the desired map projection.
+         * @brief Create the desired map projection.
          *
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
@@ -150,16 +153,18 @@ namespace MaRC
                               std::size_t lines,
                               plot_type plot) const = 0;
 
-        /// Plot the data on the map.
         /**
+         * @brief Plot the data on the map.
+         *
          * Plot the data at given latitude and longitude on the map.
          * Map implementation end up calling this function indirectly
          * through a function object that shields the caller from most
          * of these parameters.
          *
-         * @see @c plot_type type alias
+         * @see @c plot_type
          * @see @c plot_map()
          *
+         * @tparam        T       Map element data type.
          * @param[in]     info   Map plotting information.
          * @param[in]     lat    Planetocentric latitude.
          * @param[in]     lon    Planetocentric longitude.
@@ -182,9 +187,9 @@ namespace MaRC
                   std::size_t offset,
                   map_type<T> & map);
 
-        /// Create the latitude/longitude grid for the desired map
-        /// projection.
         /**
+         * @brief Plot latitude/longitude grid for the map.
+         *
          * @param[in]     samples      Number of samples in grid.
          * @param[in]     lines        Number of lines   in grid.
          * @param[in]     lat_interval Number of degrees between each

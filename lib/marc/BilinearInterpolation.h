@@ -35,7 +35,7 @@ namespace MaRC
 {
 
   /**
-   * @class BilinearInterpolation
+   * @class BilinearInterpolation BilinearInterpolation.h <marc/BilinearInterpolation.h>
    *
    * @brief Bilinear interpolation strategy.
    *

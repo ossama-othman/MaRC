@@ -35,7 +35,7 @@ namespace MaRC
     class SourceImage;
 
     /**
-     * @class plot_info
+     * @class plot_info plot_info.h <marc/plot_info.h>
      *
      * @brief Map plotting information.
      *

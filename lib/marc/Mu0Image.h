@@ -36,7 +36,7 @@ namespace MaRC
     class BodyData;
 
     /**
-     * @class Mu0Image
+     * @class Mu0Image Mu0Image.h <marc/Mu0Image.h>
      *
      * @brief Cosine of the incidence angle (i.e. &mu;<SUB>0</SUB>)
      *        virtual image.

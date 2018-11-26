@@ -43,7 +43,7 @@ namespace MaRC
     enum GeometryType { DEFAULT, CENTER_GIVEN, LAT_LON_GIVEN };
 
     /**
-     * @class Orthographic
+     * @class Orthographic Orthographic.h <marc/Orthographic.h>
      *
      * @brief Orthographic concrete map factory.
      *
@@ -184,7 +184,7 @@ namespace MaRC
     };
 
     /**
-     * @struct OrthographicCenter
+     * @struct OrthographicCenter Orthographic.h <marc/Orthographic.h>
      *
      * @brief Center of body in orthographic projection.
      *
@@ -203,7 +203,6 @@ namespace MaRC
 
         /// Line or longitude at center of body.
         double line_lon_center;
-
     };
 
 }

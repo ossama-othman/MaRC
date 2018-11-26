@@ -38,7 +38,7 @@ namespace MaRC
     class ViewingGeometry;
 
     /**
-     * @class PhotoImage
+     * @class PhotoImage PhotoImage.h <marc/PhotoImage.h>
      *
      * @brief Concrete SourceImage strategy for mapping bodies in
      *        photos.

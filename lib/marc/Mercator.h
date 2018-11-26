@@ -35,7 +35,7 @@ namespace MaRC
     class OblateSpheroid;
 
     /**
-     * @class Mercator
+     * @class Mercator Mercator.h <marc/Mercator.h>
      *
      * @brief Mercator concrete map factory.
      *

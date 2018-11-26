@@ -32,7 +32,7 @@
 namespace MaRC
 {
     /**
-     * @class NullGeometricCorrection
+     * @class NullGeometricCorrection NullGeometricCorrection.h <marc/NullGeometricCorrection.h>
      *
      * @brief Null (no-op) geometric correction strategy.
      *

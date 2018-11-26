@@ -32,10 +32,11 @@
 
 namespace MaRC
 {
+    /// Internal convenience type.
     typedef Vector<double, 3> DVector;
 
     /**
-     * @class OblateSpheroid
+     * @class OblateSpheroid OblateSpheroid.h <marc/OblateSpheroid.h>
      *
      * @brief Representation of a body modeled as an oblate spheroid.
      *

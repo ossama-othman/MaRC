@@ -126,6 +126,7 @@ namespace
      * @brief Verify that the provided %FITS @c BLANK value actually
      *        fits within the chosen map data type.
      *
+     * @tparam    T         Map data type.
      * @param[in] blank     %FITS @c BLANK value explicitly provided
      *                      by the user.  While it is of type
      *                      @c double here, it is ultimately stored as

@@ -37,7 +37,7 @@ namespace MaRC
 {
 
     /**
-     * @class PhotoImageParameters
+     * @class PhotoImageParameters PhotoImageParameters.h <marc/PhotoImageParameters.h>
      *
      * @brief Configuration parameters specific to @c PhotoImage.
      */

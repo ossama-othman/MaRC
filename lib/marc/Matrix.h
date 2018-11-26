@@ -40,7 +40,7 @@ namespace MaRC
 {
 
     /**
-     * @class Matrix
+     * @class Matrix Matrix.h <marc/Matrix.h>
      *
      * @brief Simple zero-based index matrix implementation.
      *

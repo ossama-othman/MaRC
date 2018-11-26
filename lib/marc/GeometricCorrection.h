@@ -32,7 +32,7 @@ namespace MaRC
 {
 
     /**
-     * @class GeometricCorrection
+     * @class GeometricCorrection GeometricCorrection.h <marc/GeometricCorrection.h>
      *
      * @brief Abstract base class for all geometric correction
      *        strategies.

@@ -33,7 +33,7 @@ namespace MaRC
 {
 
     /**
-     * @class VirtualImage
+     * @class VirtualImage VirtualImage.h <marc/VirtualImage.h>
      *
      * @brief Base class for virtual source images.
      *

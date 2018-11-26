@@ -33,7 +33,7 @@ namespace MaRC
 {
 
     /**
-     * @class NullInterpolation
+     * @class NullInterpolation NullInterpolation.h <marc/NullInterpolation.h>
      *
      * @brief Null (no-op) interpolation strategy.
      *

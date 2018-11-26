@@ -32,7 +32,7 @@ namespace MaRC
 {
 
     /**
-     * @class InterpolationStrategy
+     * @class InterpolationStrategy InterpolationStrategy.h <marc/InterpolationStrategy.h>
      *
      * @brief Abstract base class for all interpolation strategies.
      *

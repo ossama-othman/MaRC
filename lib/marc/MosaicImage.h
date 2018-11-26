@@ -35,7 +35,7 @@
 namespace MaRC
 {
     /**
-     * @class MosaicImage
+     * @class MosaicImage MosaicImage.h <marc/MosaicImage.h>
      *
      * @brief Source image comprised of multiple @c PhotoImages.
      *

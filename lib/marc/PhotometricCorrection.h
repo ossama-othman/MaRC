@@ -33,7 +33,7 @@ namespace MaRC
     class ViewingGeometry;
 
     /**
-     * @class PhotometricCorrection
+     * @class PhotometricCorrection PhotometricCorrection.h <marc/PhotometricCorrection.h>
      *
      * @brief Photometric correction strategy abstract base class.
      *

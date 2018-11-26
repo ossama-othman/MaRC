@@ -36,7 +36,7 @@ namespace MaRC
     class BodyData;
 
     /**
-     * @class CosPhaseImage
+     * @class CosPhaseImage CosPhaseImage.h <marc/CosPhaseImage.h>
      *
      * @brief Cosine of phase angle (i.e. cos(&phi;)) virtual
      *        image.

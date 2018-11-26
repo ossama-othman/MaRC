@@ -44,7 +44,7 @@
 namespace MaRC
 {
     /**
-     * @class GLLGeometricCorrection
+     * @class GLLGeometricCorrection GLLGeometricCorrection.h <marc/GLLGeometricCorrection.h>
      *
      * @brief Galileo Spacecraft lens aberration correction strategy.
      *

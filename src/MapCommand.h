@@ -143,6 +143,7 @@ namespace MaRC
         /**
          * @brief Create and write map planes.
          *
+         * @tparam     T      Map data type.
          * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
          * @param[out] status CFITSIO file operation status.
          */

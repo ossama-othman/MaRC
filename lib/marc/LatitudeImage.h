@@ -36,7 +36,7 @@ namespace MaRC
     class BodyData;
 
     /**
-     * @class LatitudeImage
+     * @class LatitudeImage LatitudeImage.h <marc/LatitudeImage.h>
      *
      * @brief Latitude virtual image.
      *

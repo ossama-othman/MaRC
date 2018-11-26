@@ -40,7 +40,7 @@ namespace MaRC
     class GeometricCorrection;
 
     /**
-     * @class ViewingGeometry
+     * @class ViewingGeometry ViewingGeometry.h <marc/ViewingGeometry.h>
      *
      * @brief Viewing geometry necessary to go from latitude/longitude
      *        to image pixel.

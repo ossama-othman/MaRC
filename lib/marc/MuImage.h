@@ -36,7 +36,7 @@ namespace MaRC
     class BodyData;
 
     /**
-     * @class MuImage
+     * @class MuImage MuImage.h <marc/MuImage.h>
      *
      * @brief Cosine of emission angle (i.e. &mu;) virtual image.
      *

@@ -68,6 +68,8 @@ bool test_read_data(
 
 /**
  * @test Test the MaRC::LatitudeImage class.
+ *
+ * @tparam T Map data type.
  */
 template <typename T>
 bool test_latitude_image()

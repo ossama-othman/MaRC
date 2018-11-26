@@ -38,7 +38,7 @@ namespace MaRC
     {
 
         /**
-         * @class Notifier
+         * @class Notifier Notifier.h <marc/Notifier.h>
          *
          * @brief Map progress notifier.
          *

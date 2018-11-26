@@ -33,7 +33,7 @@ namespace MaRC
 {
 
     /**
-     * @class LongitudeImage
+     * @class LongitudeImage LongitudeImage.h <marc/LongitudeImage.h>
      *
      * @brief Longitude virtual image.
      *
