@@ -42,7 +42,7 @@ check_PROGRAMS =            \
   utility_test              \
   validate_test
 
-dist_check_SCRIPTS = marc_program_test.sh command_line_test.sh
+dist_check_SCRIPTS = command_line_test.sh
 
 ## MaRC input files with intentionally invalid values.  These are used
 ## to exercise error handling in the MaRC input file parser.
@@ -197,4 +197,4 @@ clean-local: code-coverage-clean
 #
 #     LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib make installcheck
 installcheck-local:
-	$(srcdir)/marc_program_test.sh -p $(DESTDIR)$(bindir)/marc -t $(srcdir) > /dev/null
+	$(DESTDIR)$(bindir)/marc$(EXEEXT) $(srcdir)/test_map.marc > /dev/null
