@@ -54,11 +54,12 @@ namespace MaRC
          *
          * @param[in] source   @c SourceImage object containing the
          *                     data to be mapped.
-         * @param[in] minimum  Minimum allowed value on map, i.e. all
-         *                     data greater than or equal to
-         *                     @a minimum.
-         * @param[in] maximum  Maximum allowed value on map, i.e. all
-         *                     data less than or equal to @a maximum.
+         * @param[in] minimum  Minimum allowed physical data value on
+         *                     map, i.e. all data greater than or
+         *                     equal to @a minimum.
+         * @param[in] maximum  Maximum allowed physical data value on
+         *                     map, i.e. all data less than or equal
+         *                     to @a maximum.
          * @param[in] blank    Blank map array value for integer typed
          *                     maps.  The blank map array value
          *                     corresponds to undefined "blank"
@@ -86,13 +87,13 @@ namespace MaRC
         /// Set minimum allowed value on map.
         void minimum(double m) { this->minimum_ = m; }
 
-        /// Get minimum allowed value on map.
+        /// Get minimum allowed physical data value on map.
         double minimum() const { return this->minimum_; }
 
-        /// Set maximum allowed value on map.
+        /// Set maximum allowed physical data value on map.
         void maximum(double m) { this->maximum_ = m; }
 
-        /// Get maximum allowed value on map.
+        /// Get maximum allowed physical data value on map.
         double maximum() const { return this->maximum_; }
 
         /// Get blank map array value.
@@ -116,10 +117,16 @@ namespace MaRC
         /// @c SourceImage object containing the data to be mapped.
         SourceImage const & source_;
 
-        /// Minimum allowed value on map, i.e. data >= @c minimum_.
+        /**
+         * @brief Minimum allowed physical data value on the map,
+         *        i.e. data >= @c minimum_.
+         */
         double minimum_;
 
-        /// Maximum allowed value on map, i.e. data <= @c maximum_.
+        /**
+         * @brief Maximum allowed physical data value on the map,
+         *         i.e. data <= @c maximum_.
+         */
         double maximum_;
 
         /**

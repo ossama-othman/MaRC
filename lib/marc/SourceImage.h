@@ -99,7 +99,7 @@ namespace MaRC
         /**
          * @brief Unit of physical data.
          *
-         * Get the units of the physical data, i.e. image data that
+         * Get the unit of the physical data, i.e. image data that
          * has been scaled and offset according to the following
          * equation:
          *

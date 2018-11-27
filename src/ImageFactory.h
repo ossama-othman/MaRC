@@ -115,12 +115,16 @@ namespace MaRC
 
     private:
 
-        /// Minimum allowed physical data value in map plane.
-        /// (data >= minimum)
+        /**
+         * @brief Minimum allowed physical data value in map plane
+         *        (data >= minimum).
+         */
         double minimum_;
 
-        /// Maximum allowed physical data value in map plane.
-        /// (data =< maximum)
+        /**
+         * @brief Maximum allowed physical data value in map plane
+         *        (data =< maximum)
+         */
         double maximum_;
 
     };
