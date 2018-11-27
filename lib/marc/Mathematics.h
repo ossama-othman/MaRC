@@ -79,7 +79,7 @@ namespace MaRC
         */
         return std::hypot(std::hypot(x, y), z);
     }
-#endif  // __cplusplus >= 201703L
+#endif  // __cplusplus < 201703L
 
     using std::hypot;
 
