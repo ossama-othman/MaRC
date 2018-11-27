@@ -35,6 +35,7 @@
 #include <cstring>
 #include <cstdlib>
 
+
 // Check if we can use the C++17 [[maybe_unused]] attribute.
 // Otherwise fall back on the equivalent attribute in a
 // compiler-specific attribute namespace if one exists.
@@ -187,10 +188,14 @@ namespace MaRC
      *                         parse.
      * @param[in,out] pp       %MaRC configuration parameters.
      *
-     * @return @c true if file parsing succeded.  @c false otherwise.
+     * @retval  0 Parsing succeded.
+     * @retval  1 Parsing failed due to invalid input.
+     * @retval  2 Parsing failed due to memory exhaustion.
+     * @retval -1 Error occurred.  Check @c errno.
      */
-    bool parse_file(char const * filename, MaRC::ParseParameter & pp)
+    int parse_file(char const * filename, MaRC::ParseParameter & pp)
     {
+        errno = 0;
         MaRC::FILE_unique_ptr const file(std::fopen(filename, "r"));
 
         if (!file) {
@@ -206,13 +211,13 @@ namespace MaRC
                         error);
 #endif
 
-            return false;
+            return -1;
         }
 
         yyscan_t scanner;
 
         if (yylex_init(&scanner) != 0)
-            return 1;
+            return -1;
 
         MaRC::scanner_unique_ptr safe_scanner(&scanner);
 
@@ -224,14 +229,12 @@ namespace MaRC
         // Parse user defaults/MaRC initialization file.
         int const parsed = ::yyparse(scanner, pp);
 
-        if (parsed != 0) {
-            return false;  // Failure
+        if (parsed == 0) {
+            // Successful parse
+            MaRC::debug("MaRC input file '{}' parsed", filename);
         }
 
-        // Successful parse
-        MaRC::debug("MaRC input file '{}' parsed", filename);
-
-        return true;
+        return parsed;
     }
 
     /**
@@ -299,11 +302,16 @@ int main(int argc, char *argv[])
 
         std::string const config_file(MaRC::get_config_filename());
 
-        MaRC::parse_file(config_file.c_str(), parse_parameter);
+        // Parse user configuration file, if it exists.
+        if (MaRC::parse_file(config_file.c_str(), parse_parameter) != 0
+            && errno != ENOENT) {
+            // Scanner or parser error.
+            return -1;
+        }
 
         // Parse MaRC input files give on command line.
         for (auto const filename : cl.files())
-            if (!MaRC::parse_file(filename, parse_parameter))
+            if (MaRC::parse_file(filename, parse_parameter) != 0)
                 return -1;;
 
         // Create the map(s).
