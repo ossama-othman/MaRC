@@ -179,7 +179,7 @@ MaRC::PhotoImage::read_data(double lat,
 char const *
 MaRC::PhotoImage::unit() const
 {
-    return this->config_->unit().c_str();
+    return this->config_->unit();
 }
 
 void

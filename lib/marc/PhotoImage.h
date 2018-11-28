@@ -111,7 +111,12 @@ namespace MaRC
                                std::size_t & weight,
                                bool scan = true) const;
 
-
+        /**
+         * @brief Get unit of physical data in the photo.
+         *
+         * @return Unit name, or empty string (@c "") if no unit is
+         *         available.
+         */
         virtual char const * unit() const;
 
     private:

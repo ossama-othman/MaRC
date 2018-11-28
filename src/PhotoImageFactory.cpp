@@ -72,29 +72,23 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     {
         FITS::file f(this->filename_.c_str());
 
-#if 0
         // Get the image data unit name (FITS standard BUNIT).
-        char bunit[FLEN_VALUE] = { '\0' };
-        char bunit_comment[FLEN_COMMENT] = { '\0' };
-
-        int status = 0;
-        fits_read_key_str(fptr, "BUNIT", bunit, bunit_comment, &status);
-        if (status == 0) {
-            this->config_->unit(bunit, bunit_comment);
-        } else if (status != KEY_NO_EXIST) {
-            throw std::logic_error("Problem reading FITS BUNIT value.");
-        } else {
-            status = 0;
-        }
-#endif
+        /**
+         * @todo Make unit related members consistent.  Right
+         *       now we have a mix of char const * and std::string
+         *       typed unit members.
+         */
+        std::string const & bunit = f.header().bunit();
+        this->config_->unit(bunit);
 
         f.data().read(img);
         samples = f.data().samples();
         lines = f.data().lines();
 
         /**
-         * @todo Get the minimum and maximum data values if available
-         *       in the source image FITS file.
+         * @todo Get the minimum (@c DATAMIN) and maximum (@c DATAMAX)
+         *       physical data values if available in the source image
+         *       FITS file.
          */
     }
 

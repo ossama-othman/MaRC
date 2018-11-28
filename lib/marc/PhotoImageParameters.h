@@ -132,24 +132,13 @@ namespace MaRC
          * @brief Set the unit for the physical data in the image.
          *
          * @param[in] u Unit for the physical data in the image.
-         * @param[in] c Comment for the physical data unit.
          *
          * @see SourceImage::unit()
          */
-        void unit(char const * u, char const * c);
+        void unit(std::string const & u);
 
         /// Get the unit for the physical data in the image.
-        std::string const & unit() const { return this->unit_; }
-
-        /// Get the comment for the physical data unit.
-        std::string const & unit_comment() const
-        {
-            /**
-             * @todo The unit comment is currently unused.  Do
-             *       something with it, or remove it.
-             */
-            return this->unit_comment_;
-        }
+        char const * unit() const { return this->unit_.c_str(); }
 
         /**
          * @brief Set sky removal variable
@@ -204,9 +193,6 @@ namespace MaRC
 
         /// Unit of physical data in the image.
         std::string unit_;
-
-        /// Physical data unit comment.
-        std::string unit_comment_;
 
         /// Should the sky removal mask be generated.
         bool remove_sky_;
