@@ -57,7 +57,7 @@ namespace MaRC
         using grid_type = std::vector<uint8_t>;
 
         /**
-         * Map plot functor type.
+         * @brief Map plot functor type.
          *
          * Concrete map factories will call a function of this type in
          * their @c plot_map() implementation.
@@ -179,6 +179,10 @@ namespace MaRC
          *       rather roundabout way of mapping the data.  Ideally
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
+         *
+         * @todo This method has too many parameters.  Move most,
+         *       if not all, of the parameters to a structure that
+         *       will be passed in as a single parameter instead.
          */
         template <typename T>
         void plot(plot_info const & info,

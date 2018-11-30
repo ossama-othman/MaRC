@@ -61,11 +61,6 @@ MaRC::MapFactory::make_map(plot_info & info,
 
     using namespace std::placeholders;
 
-    /**
-     * @todo This is an absurd amount of parameters.  Move most, if
-     *       not all, of the parameters to a structure that will be
-     *       passed in as a single parameter instead.
-     */
     auto plot = std::bind(&MapFactory::plot<T>,
                           this,
                           std::cref(info),
@@ -87,7 +82,6 @@ void
 MaRC::MapFactory::plot(plot_info const & info,
                        double lat,
                        double lon,
-                       // unsigned char percent_complete,
                        std::size_t offset,
                        map_type<T> & map)
 {
