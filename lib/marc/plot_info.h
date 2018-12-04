@@ -29,6 +29,8 @@
 #include <marc/Notifier.h>
 #include <marc/optional.h>
 
+#include <cstdint>
+
 
 namespace MaRC
 {
@@ -49,6 +51,9 @@ namespace MaRC
         /// Convenience alias for the progress notifier type.
         using notifier_type = Progress::Notifier;
 
+        /// Convenience alias for the blank integer type.
+        using blank_type = MaRC::optional<std::intmax_t>;
+
         /**
          * @brief Constructor
          *
@@ -68,7 +73,7 @@ namespace MaRC
         plot_info(SourceImage const & source,
                   double minimum,
                   double maximum,
-                  MaRC::optional<int64_t> blank = MaRC::nullopt)
+                  blank_type blank = MaRC::nullopt)
             : source_(source)
             , minimum_(minimum)
             , maximum_(maximum)
@@ -97,7 +102,7 @@ namespace MaRC
         double maximum() const { return this->maximum_; }
 
         /// Get blank map array value.
-        MaRC::optional<int64_t> const & blank() const
+        blank_type const & blank() const
         {
             return this->blank_;
         }
@@ -134,7 +139,7 @@ namespace MaRC
          *
          * @note This value is only valid for integer typed maps.
          */
-        MaRC::optional<int64_t> const blank_;
+        blank_type const blank_;
 
         /// Map progress notifier.
         mutable notifier_type notifier_;

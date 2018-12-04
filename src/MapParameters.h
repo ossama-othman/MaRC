@@ -24,9 +24,7 @@
 #ifndef MARC_MAP_PARAMETERS_H
 #define MARC_MAP_PARAMETERS_H
 
-#include "FITS_traits.h"
-
-#include <marc/optional.h>
+#include <marc/plot_info.h>
 
 #include <list>
 #include <string>
@@ -42,7 +40,7 @@ namespace MaRC
      *
      * @todo Use @c std::optional once %MaRC requires C++17.
      */
-    using blank_type = MaRC::optional<FITS::longlong_type>;
+    using blank_type = MaRC::plot_info::blank_type;
 
     /**
      * @class MapParameters

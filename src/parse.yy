@@ -56,6 +56,7 @@
 #include "lexer.hh"
 #include "calc.h"
 #include "MapCommand.h"
+#include "FITS_traits.h"
 
 #include <stdexcept>
 #include <limits>

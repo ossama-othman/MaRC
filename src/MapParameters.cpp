@@ -26,6 +26,8 @@
 
 #include <limits>
 
+#include <fitsio.h>
+
 
 namespace
 {
