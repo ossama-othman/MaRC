@@ -48,9 +48,13 @@ dist_check_SCRIPTS = command_line_test.sh
 ## to exercise error handling in the MaRC input file parser.
 BAD_MARC_FILES = \
   bad/test_arcsec_per_pix.marc \
-  bad/test_blank.marc \
-  bad/test_data_min_max.marc \
+  bad/test_byte_blank.marc \
+  bad/test_short_blank.marc \
+  bad/test_long_blank.marc \
+  bad/test_longlong_blank.marc \
   bad/test_float_blank.marc \
+  bad/test_double_blank.marc \
+  bad/test_data_min_max.marc \
   bad/test_grid_interval.marc \
   bad/test_km_per_pixel.marc \
   bad/test_lat_grid_interval.marc \
@@ -169,6 +173,7 @@ XFAIL_TESTS = \
   $(BAD_MARC_FILES)
 
 CLEANFILES = \
+  test_bad_map.fits \
   test_map.fits \
   test_map2.fits \
   test_map3.fits \

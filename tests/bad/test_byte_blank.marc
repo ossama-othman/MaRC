@@ -4,7 +4,7 @@ MAP:    test_bad_map.fits
         POL_RAD:        66854
         ROTATION:       PROGRADE
         DATA_TYPE:      BYTE
-	DATA_BLANK:	-1000
+        DATA_BLANK:     -1000    # < UINT8_MIN (0)
         TYPE:           SIMPLE_C
         OPTIONS:
                 CENTRIC

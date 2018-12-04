@@ -3,7 +3,7 @@ MAP:    test_bad_map.fits
         EQ_RAD:         71492
         POL_RAD:        66854
         ROTATION:       PROGRADE
-        DATA_TYPE:      FLOAT
+        DATA_TYPE:      DOUBLE
         DATA_BLANK:     -32768  # BLANK not valid for floating point data!
         TYPE:           SIMPLE_C
         OPTIONS:

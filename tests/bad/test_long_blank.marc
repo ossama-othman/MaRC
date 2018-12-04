@@ -3,8 +3,8 @@ MAP:    test_bad_map.fits
         EQ_RAD:         71492
         POL_RAD:        66854
         ROTATION:       PROGRADE
-        DATA_TYPE:      FLOAT
-        DATA_BLANK:     -32768  # BLANK not valid for floating point data!
+        DATA_TYPE:      LONG
+        DATA_BLANK:     3000000000  # > INT32_MAX (2147483647)
         TYPE:           SIMPLE_C
         OPTIONS:
                 CENTRIC
