@@ -138,8 +138,8 @@ bool test_latitude_image()
 int main()
 {
     return
-        test_latitude_image<int16_t>()
-        && test_latitude_image<uint32_t>()
+        test_latitude_image<std::int16_t>()
+        && test_latitude_image<std::uint32_t>()
         && test_latitude_image<float>()
         && test_latitude_image<double>()
         ? 0 : -1;

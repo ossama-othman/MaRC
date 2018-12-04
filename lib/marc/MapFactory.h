@@ -54,7 +54,7 @@ namespace MaRC
         using map_type = std::vector<T>;
 
         /// Type returned from @c make_grid() method.
-        using grid_type = std::vector<uint8_t>;
+        using grid_type = std::vector<std::uint8_t>;
 
         /**
          * @brief Map plot functor type.

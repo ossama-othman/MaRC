@@ -152,6 +152,8 @@ int main()
     // The fixed width integer types used here correspond to the
     // integer data types specified in the FITS standard.
 
+    using namespace std;
+
     return
         test_extreme_value_scaling<uint8_t>()
         && test_extreme_value_scaling<int16_t>()

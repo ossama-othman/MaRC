@@ -146,8 +146,8 @@ bool test_longitude_image()
 int main()
 {
     return
-        test_longitude_image<int16_t>()
-        && test_longitude_image<uint32_t>()
+        test_longitude_image<std::int16_t>()
+        && test_longitude_image<std::uint32_t>()
         && test_longitude_image<float>()
         && test_longitude_image<double>()
         ? 0 : -1;

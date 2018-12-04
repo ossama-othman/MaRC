@@ -49,22 +49,22 @@ namespace MaRC
          */
         //@{
         /// 8-bit unsigned integer type.
-        typedef uint8_t byte_type;
+        using byte_type     = std::uint8_t;
 
         /// 16-bit signed integer type.
-        typedef int16_t short_type;
+        using short_type    = std::int16_t;
 
         /// 32-bit signed integer type.
-        typedef int32_t long_type;
+        using long_type     = std::int32_t;
 
         /// 64-bit signed integer type.
-        typedef int64_t longlong_type;
+        using longlong_type = std::int64_t;
 
         /// 32-bit floating point type.
-        typedef float   float_type;
+        using float_type    = float;
 
         /// 64-bit floating point type.
-        typedef double  double_type;
+        using double_type   = double;
         //@}
 
         /**

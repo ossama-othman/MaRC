@@ -28,6 +28,8 @@
  */
 bool test_almost_equal()
 {
+    using namespace std;
+
     static_assert(sizeof(float) == sizeof(int32_t),
                   "Cannot run almost_equal() with different size types.");
 
