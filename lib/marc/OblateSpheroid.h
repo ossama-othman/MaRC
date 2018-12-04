@@ -97,22 +97,22 @@ namespace MaRC
          * class.
          */
         //@{
-        virtual double centric_radius(double lat) const;
+        virtual double centric_radius(double lat) const override;
 
-        virtual double centric_latitude(double latg) const;
+        virtual double centric_latitude(double latg) const override;
 
-        virtual double graphic_latitude(double lat) const;
+        virtual double graphic_latitude(double lat) const override;
 
         virtual double mu(double sub_observ_lat,
                           double sub_observ_lon,
                           double lat,
                           double lon,
-                          double range) const;
+                          double range) const override;
 
         virtual double mu0(double sub_solar_lat,
                            double sub_solar_lon,
                            double lat,
-                           double lon) const;
+                           double lon) const override;
 
         virtual double cos_phase(double sub_observ_lat,
                                  double sub_observ_lon,
@@ -120,7 +120,7 @@ namespace MaRC
                                  double sub_solar_lon,
                                  double lat,
                                  double lon,
-                                 double range) const;
+                                 double range) const override;
         //@}
 
         /// Radius of curvature of the meridian.

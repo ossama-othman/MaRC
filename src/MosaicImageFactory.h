@@ -61,9 +61,12 @@ namespace MaRC
         MosaicImageFactory(list_type && factories,
                            MosaicImage::average_type type);
 
+        /// Destructor.
+        virtual ~MosaicImageFactory() = default;
+
         /// Create a @c MosaicImage.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
     private:
 

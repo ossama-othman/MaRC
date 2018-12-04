@@ -44,8 +44,9 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
         /**
+         * @brief Constructor.
+         *
          * @param[in] body           Body being mapped.
          * @param[in] sub_observ_lat Planetocentric sub-observer
          *                           latitude  in degrees.
@@ -64,9 +65,12 @@ namespace MaRC
                              double sub_solar_lon,
                              double range);
 
+        /// Destructor.
+        virtual ~CosPhaseImageFactory() = default;
+
         /// Create a @c CosPhaseImage.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
   private:
 

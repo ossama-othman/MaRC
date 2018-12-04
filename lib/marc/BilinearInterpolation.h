@@ -74,7 +74,7 @@ namespace MaRC
       virtual bool interpolate(double const * data,
                                double x,
                                double z,
-                               double & datum) const;
+                               double & datum) const override;
 
   private:
 

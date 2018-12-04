@@ -45,8 +45,9 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
         /**
+         * @brief Constructor.
+         *
          * @param[in] s Linear scaling coefficient applied to computed
          *              data.
          * @param[in] o Linear offset value applied to all (scaled)
@@ -54,8 +55,12 @@ namespace MaRC
          */
         VirtualImage(double s = 1, double o = 0);
 
-        /// Retrieve data from virtual image.
+        /// Destructor.
+        virtual ~VirtualImage() = default;
+
         /**
+         * @brief Retrieve data from virtual image.
+         *
          * Retrieve data from virtual image and apply configured data
          * transformations, if any.  Raw physical data is
          * computed/retrieved from the @c read_data_i() template
@@ -93,7 +98,7 @@ namespace MaRC
          */
         virtual bool read_data(double lat,
                                double lon,
-                               double & data) const;
+                               double & data) const override;
 
         /**
          * @name Linear Data Transformation
@@ -112,8 +117,9 @@ namespace MaRC
          * transformation to occur.
          */
         //@{
-        /// Data scale.
         /**
+         * @brief Data scale.
+         *
          * Linear scaling coefficient that should be applied to map
          * data to transform that data to true physical data.
          *
@@ -121,8 +127,8 @@ namespace MaRC
          */
         double scale() const { return 1 / this->scale_; }
 
-        /// Data offset
         /**
+         * @brief Data offset
          * Offset value that should be applied to all (scaled)
          * computed data.  This value corresponds to zero in the
          * virtual image.
@@ -134,8 +140,10 @@ namespace MaRC
 
     private:
 
-        /// Compute physical data specific to a given virtual image.
         /**
+         * @brief Compute physical data specific to a given virtual
+         *        image.
+         *
          * This template method is the core implementation of the
          * @c read_data() method.
          *
@@ -154,8 +162,10 @@ namespace MaRC
 
     private:
 
-        /// Linear scaling coefficient applied to physical data.
         /**
+         * @brief Linear scaling coefficient applied to physical
+         *        data.
+         *
          * Linear scaling coefficient applied to physical data to
          * allow data to fit in map array element of specific type
          * with the most amount of significant digits.
@@ -167,8 +177,9 @@ namespace MaRC
          */
         double const scale_;
 
-        /// Offset value applied to scaled physical data.
         /**
+         * @brief Offset value applied to scaled physical data.
+         *
          * This offset is applied to scaled physical data to allow
          * data fit in a map array element of specific type with the
          * most amount of significant digits.

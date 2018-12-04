@@ -39,7 +39,8 @@ namespace MaRC
      * This geometric correction strategy is a no-op.  It performs no
      * geometric correction.
      */
-    class MARC_API NullGeometricCorrection : public GeometricCorrection
+    class MARC_API NullGeometricCorrection final
+        : public GeometricCorrection
     {
     public:
 
@@ -53,8 +54,10 @@ namespace MaRC
          * abstract base class.
          */
         //@{
-        void image_to_object(double & line, double & sample) const;
-        void object_to_image(double & line, double & sample) const;
+        void image_to_object(double & line,
+                             double & sample) const override;
+        void object_to_image(double & line,
+                             double & sample) const override;
       //@}
 
     };

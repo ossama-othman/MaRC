@@ -80,7 +80,7 @@ namespace MaRC
          *
          * @see https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html
          */
-        virtual char const * unit() const { return "deg"; }
+        virtual char const * unit() const override { return "deg"; }
 
     private:
 
@@ -90,7 +90,7 @@ namespace MaRC
          */
         virtual bool read_data_i(double lat,
                                  double lon,
-                                 double & data) const;
+                                 double & data) const override;
 
     private:
 

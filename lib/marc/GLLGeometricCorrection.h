@@ -70,8 +70,10 @@ namespace MaRC
          * base class.
          */
         //@{
-        void image_to_object(double & line, double & sample) const;
-        void object_to_image(double & line, double & sample) const;
+        void image_to_object(double & line,
+                             double & sample) const override;
+        void object_to_image(double & line,
+                             double & sample) const override;
         //@}
 
         /// Return current summation mode

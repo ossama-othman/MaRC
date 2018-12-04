@@ -77,6 +77,9 @@ namespace MaRC
                       double scale,
                       double offset);
 
+        /// Destructor.
+        virtual ~CosPhaseImage() = default;
+
     private:
 
         /// Compute cosine of phase angle, @c cos(&phi;).
@@ -85,7 +88,7 @@ namespace MaRC
          */
         virtual bool read_data_i(double lat,
                                  double lon,
-                                 double & data) const;
+                                 double & data) const override;
 
     private:
 

@@ -39,7 +39,7 @@ namespace MaRC
      * This photometric correction strategy is a no-op.  It performs
      * no photometric correction.
      */
-    class MARC_API NullPhotometricCorrection
+    class MARC_API NullPhotometricCorrection final
         : public PhotometricCorrection
     {
     public:
@@ -56,14 +56,15 @@ namespace MaRC
          * @see @c PhotometricCorrection::correct()
          */
         //@{
-        /// Perform photometric correction.
         /**
+         * @brief Perform photometric correction.
+         *
          * This particular implementation is a no-op.
          *
          * @return @c true in all cases.
          */
         virtual bool correct(ViewingGeometry const & geometry,
-                             double & data);
+                             double & data) override;
         //@}
 
     };

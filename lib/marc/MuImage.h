@@ -71,6 +71,9 @@ namespace MaRC
                 double scale,
                 double offset);
 
+        /// Destructor.
+        virtual ~MuImage() = default;
+
     private:
 
         /// Compute cosine of emission angle, &mu;.
@@ -79,7 +82,7 @@ namespace MaRC
          */
         virtual bool read_data_i(double lat,
                                  double lon,
-                                 double & data) const;
+                                 double & data) const override;
 
     private:
 

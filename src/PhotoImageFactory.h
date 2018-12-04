@@ -54,15 +54,19 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
         /**
+         * @brief Constructor.
+         *
          * @param[in] filename Name of file containing image.
          */
         PhotoImageFactory(char const * filename);
 
+        /// Destructor.
+        virtual ~PhotoImageFactory() = default;
+
         /// Create a @c PhotoImage.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
         /// Set the flat field image filename.
         void flat_field(char const * name);

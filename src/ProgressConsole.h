@@ -62,7 +62,7 @@ namespace MaRC
              * @see MaRC::MapProgress::notify()
              */
             virtual void notify(std::size_t map_size,
-                                std::size_t plot_count);
+                                std::size_t plot_count) override;
 
         private:
 

@@ -85,7 +85,7 @@ namespace MaRC
          * @see @c MapFactory
          */
         //@{
-        virtual char const * projection_name() const;
+        virtual char const * projection_name() const override;
         //@}
 
         ///
@@ -105,7 +105,7 @@ namespace MaRC
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              plot_type plot) const;
+                              plot_type plot) const override;
 
         /**
          * Create the Polar Stereographic map latitude/longitude
@@ -117,7 +117,7 @@ namespace MaRC
                                std::size_t lines,
                                double lat_interval,
                                double lon_interval,
-                               grid_type & grid) const;
+                               grid_type & grid) const override;
 
     private:
 

@@ -51,7 +51,7 @@ namespace MaRC
         virtual bool interpolate(double const *,
                                  double,
                                  double,
-                                 double &) const;
+                                 double &) const override;
 
     };
 

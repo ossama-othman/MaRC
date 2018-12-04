@@ -84,7 +84,7 @@ namespace MaRC
          */
         virtual bool read_data(double lat,
                                double lon,
-                               double & data) const;
+                               double & data) const override;
 
         /// Retrieve physical data and weight from source image.
         /**
@@ -109,7 +109,7 @@ namespace MaRC
                                double lon,
                                double & data,
                                std::size_t & weight,
-                               bool scan = true) const;
+                               bool scan = true) const override;
 
         /**
          * @brief Get unit of physical data in the photo.
@@ -117,7 +117,7 @@ namespace MaRC
          * @return Unit name, or empty string (@c "") if no unit is
          *         available.
          */
-        virtual char const * unit() const;
+        virtual char const * unit() const override;
 
     private:
 

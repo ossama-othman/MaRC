@@ -69,6 +69,9 @@ namespace MaRC
                  double scale,
                  double offset);
 
+        /// Destructor.
+        virtual ~Mu0Image() = default;
+
     private:
 
         /// Compute cosine of the incidence angle, &mu;<SUB>0</SUB>.
@@ -77,7 +80,7 @@ namespace MaRC
          */
         virtual bool read_data_i(double lat,
                                  double lon,
-                                 double & Data) const;
+                                 double & Data) const override;
 
     private:
 
