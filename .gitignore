@@ -100,7 +100,7 @@ tests/root_find_test
 tests/utility_test
 tests/validate_test
 tests/test-suite.log
-tests/test_map*.fits
+tests/test_*map*.fits
 
 # Core Dump Files
 core*
