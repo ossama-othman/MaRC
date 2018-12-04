@@ -128,9 +128,15 @@ void yyset_column(int, yyscan_t);
         "CW"                            { return CW;  }
         "CCW"                           { return CCW; }
         [[:digit:]]*("."[[:digit:]]*)?(E[-+]?[[:digit:]]{1,3})?  {
-            // Numbers will be handled in double precision
+            // In case strtod() conversion underflows or overflows.
+            errno = 0;
+
+            // Numbers will be handled in double precision.  The
+            // negative sign for a negative number, if it exists, is
+            // handled in the parser.
             yyget_lval(yyscanner)->val =
                 std::strtod(yyget_text(yyscanner), nullptr);
+
             return NUM;
         }
         [[:alpha:]]+[[:digit:]]*          {

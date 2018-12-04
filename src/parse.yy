@@ -279,9 +279,9 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 
 %union
  {
-     char * sval;
-     double val;        // For returning numbers.
-     bool bval;         // For returning boolean values.
+     bool bval;           // For returning boolean values.
+     char * sval;         // For returning string values.
+     double val;          // For returning floating point values.
      MaRC::sym_entry * tptr;  // For returning symbol-table pointers.
      MaRC::SubObserv sub_observ_data; // Sub-observation point.
      MaRC::SubSolar sub_solar_data;   // Sub-solar point.
@@ -828,6 +828,7 @@ plane_size:
                         pp,
                         "number of planes not entered prior to "
                         "plane definition");
+                YYERROR;
             } else {
                 // MaRC::info("specifying the map plane number is no "
                 //            "longer necessary.)";
@@ -1972,7 +1973,17 @@ longitude:
 
 /* --------------- Multifunction Infix Notation Calculator ----------------- */
 /* All numbers will be handled with double precision here. */
-expr:     NUM                   { $$ = $1;                         }
+expr:   NUM {
+            if (errno == ERANGE) {
+                yyerror(&yylloc,
+                        scanner,
+                        pp,
+                        "number out of range");
+                YYERROR;
+            } else {
+                $$ = $1;
+            }
+        }
         | VAR                   { $$ = $1->value.var;              }
         | VAR '=' expr          { $$ = $3; $1->value.var = $3;     }
         | FNCT '(' expr ')'     { $$ = (*($1->value.fnctptr))($3); }
@@ -1983,15 +1994,13 @@ expr:     NUM                   { $$ = $1;                         }
             if ($3 != 0)
                 $$ = $1 / $3;
             else {
-                $$ = $1;
-
-                MaRC::error("{}.{}-{}.{}: division by zero",
-                            @3.first_line,
-                            @3.first_column,
-                            @3.last_line,
-                            @3.last_column);
+                yyerror(&yylloc,
+                        scanner,
+                        pp,
+                        "division by zero");
+                YYERROR;
             }
-                                }
+        }
         | '-' expr  %prec NEG   { $$ = -$2;                        }
         | expr '^' expr         { $$ = std::pow($1, $3);           }
         | '(' expr ')'          { $$ = $2;                         }
