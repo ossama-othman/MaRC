@@ -45,10 +45,16 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
 
     // Write the BLANK keyword and value into the map FITS file.
     if (std::is_integral<T>() && blank) {
+        T blank_value = *blank;
+
+        // Don't bother checking if the blank value fits within the
+        // range of type T.  The make_map() call below already does
+        // that.
+
         fits_update_key(fptr,
-                        FITS::traits<blank_type::value_type>::datatype,
+                        FITS::traits<T>::datatype,
                         "BLANK",
-                        &blank,
+                        &blank_value,
                         "value of pixels with undefined physical value",
                         &status);
     }
