@@ -152,10 +152,10 @@ utility_test_LDADD   = $(CODE_COVERAGE_LIBS)
 validate_test_SOURCES = validate_test.cpp
 validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
 
-TESTS =                 \
-  $(check_PROGRAMS)     \
-  $(dist_check_SCRIPTS) \
-  test_map.marc         \
+TESTS =                  \
+  $(check_PROGRAMS)      \
+  $(dist_check_SCRIPTS)  \
+  test_map.marc          \
   $(BAD_MARC_FILES)
 
 TEST_EXTENSIONS = .marc
