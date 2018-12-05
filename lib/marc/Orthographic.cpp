@@ -113,7 +113,7 @@ MaRC::Orthographic::Orthographic (
             MaRC::validate_latitude(center.sample_lat_center);
 
         this->lon_at_center_ =
-            MaRC::validate_latitude(center.line_lon_center);
+            MaRC::validate_longitude(center.line_lon_center);
 
         // Check if longitude at center (if supplied) is visible.
 
@@ -128,7 +128,7 @@ MaRC::Orthographic::Orthographic (
 
         if (cosine < -1) {
             std::ostringstream s;
-            s << "Desired LATITUDE (" << this->lat_at_center_ / C::degree
+            s << "Desired LATITUDE (" << center.sample_lat_center
               << ") at center of image is not visible.";
 
             throw std::invalid_argument(s.str());
@@ -153,7 +153,7 @@ MaRC::Orthographic::Orthographic (
         if (this->lon_at_center_ < lower
             || this->lon_at_center_ > upper) {
             std::ostringstream s;
-            s << "Desired LONGITUDE (" << this->lon_at_center_ / C::degree
+            s << "Desired LONGITUDE (" << center.line_lon_center
               << ") at center of image is not visible.";
 
             throw std::invalid_argument(s.str());
