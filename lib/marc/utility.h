@@ -56,7 +56,7 @@ namespace MaRC
      *             %MaRC requires C++17.
      */
     template <class T, std::size_t N>
-    constexpr std::size_t size(T const (&array)[N]) noexcept
+    constexpr std::size_t size(T const (& /* array */)[N]) noexcept
     {
         return N;
     }
