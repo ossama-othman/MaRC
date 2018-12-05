@@ -227,12 +227,9 @@ double hi_lon = MaRC::default_configuration::longitude_high;
 // Orthographic and Perspective projection options
 
 // Sub-observer latitude and longitude.
-MaRC::SubObserv sub_observation_data = {
-    not_a_number,
-    not_a_number
-};
+MaRC::SubObserv sub_observation_data = { 0, 0 };
 
-double position_angle_val = not_a_number;   // Position (north) angle
+double position_angle_val = 0;   // Position (north) angle
 MaRC::OrthographicCenter ortho_center;
 
 /**
@@ -1471,7 +1468,7 @@ ortho:  MAP_TYPE ':' _ORTHO
             sub_observation_data.lat = 0;
             sub_observation_data.lon = 0;
             km_per_pixel_val = -1;
-            position_angle_val = not_a_number;
+            position_angle_val = 0;
             ortho_center.geometry = MaRC::DEFAULT;
         }
 ;

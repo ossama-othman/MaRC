@@ -31,6 +31,7 @@
 #include "marc/Constants.h"
 
 #include <stdexcept>
+#include <cmath>
 
 
 namespace MaRC
@@ -50,7 +51,7 @@ namespace MaRC
      */
     inline double validate_latitude(double lat)
     {
-        if (lat < -90 || lat > 90)
+        if (std::isnan(lat) || lat < -90 || lat > 90)
             throw std::invalid_argument("invalid latitude");
 
         return lat * C::degree;
@@ -70,7 +71,7 @@ namespace MaRC
      */
     inline double validate_longitude(double lon)
     {
-        if (lon < -360 || lon > 360)
+        if (std::isnan(lon) || lon < -360 || lon > 360)
             throw std::invalid_argument("invalid longitude");
 
         // We don't shift negative longitudes to the equivalent
@@ -95,7 +96,7 @@ namespace MaRC
      */
     inline double validate_position_angle(double north)
     {
-        if (north < -360 || north > 360)
+        if (std::isnan(north) || north < -360 || north > 360)
             throw std::invalid_argument("invalid position angle");
 
         return north * C::degree;

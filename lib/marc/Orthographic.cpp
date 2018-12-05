@@ -45,9 +45,9 @@ MaRC::Orthographic::Orthographic (
     OrthographicCenter const & center)
     : MapFactory()
     , body_(body)
-    , sub_observ_lat_(0)
-    , sub_observ_lon_(0)
-    , PA_(0)
+    , sub_observ_lat_(MaRC::validate_latitude(sub_observ_lat))
+    , sub_observ_lon_(MaRC::validate_longitude(sub_observ_lon))
+    , PA_(MaRC::validate_position_angle(PA))
     , km_per_pixel_(-1)
     , sample_center_(std::numeric_limits<double>::signaling_NaN())
     , line_center_(std::numeric_limits<double>::signaling_NaN())
@@ -55,50 +55,34 @@ MaRC::Orthographic::Orthographic (
     , lon_at_center_(std::numeric_limits<double>::signaling_NaN())
     , polar_(false)
 {
-    if (sub_observ_lat >= -90 && sub_observ_lat <= 90)
-        this->sub_observ_lat_ = sub_observ_lat;
+    if (this->sub_observ_lon_ < 0)
+        this->sub_observ_lon_ += C::_2pi;
 
-    if (sub_observ_lon >= -360 && sub_observ_lon <= 360) {
-        this->sub_observ_lon_ = sub_observ_lon;
-
-        if (this->sub_observ_lon_ < 0)
-            this->sub_observ_lon_ += 360;
-    }
-
-    if (PA >= -360 && PA <= 360)
-        this->PA_ = PA;
-
-    /**
-     * @todo Leverage @c MaRC::almost_equal() here.
-     */
-    if (std::abs(std::abs(this->sub_observ_lat_) - 90) < 1e-5) {
+    constexpr int ulps = 4;
+    if (MaRC::almost_equal(std::abs(sub_observ_lat), 90., ulps)) {
         MaRC::info("assuming POLAR ORTHOGRAPHIC projection");
 
-        if ((this->sub_observ_lat_ > 0 && this->body_->prograde())
-            || (this->sub_observ_lat_ < 0 && !this->body_->prograde())) {
+        if ((sub_observ_lat > 0 && this->body_->prograde())
+            || (sub_observ_lat < 0 && !this->body_->prograde())) {
             if (this->body_->prograde())
-                this->PA_ = 180;
+                this->PA_ = C::pi;
             else
                 this->PA_ = 0;
         } else {
             if (this->body_->prograde())
                 this->PA_ = 0;
             else
-                this->PA_ = 180;
+                this->PA_ = C::pi;
         }
 
-        if (this->sub_observ_lat_ > 0)
-            this->sub_observ_lat_ = 90;
+        if (sub_observ_lat > 0)
+            this->sub_observ_lat_ = C::pi_2;
         else
-            this->sub_observ_lat_ = -90;
+            this->sub_observ_lat_ = -C::pi_2;
 
         this->sub_observ_lon_ = 0;
         this->polar_ = true;
     }
-
-    this->sub_observ_lat_  *= C::degree; // Convert to radians
-    this->sub_observ_lon_  *= C::degree;
-    this->PA_              *= C::degree;
 
     if (km_per_pixel > 0)
         this->km_per_pixel_ = km_per_pixel;
@@ -122,9 +106,9 @@ MaRC::Orthographic::Orthographic (
         //  std::tan(this->sub_observ_lat_);
 
         double const cosine =
-            this->body_->eq_rad() * this->body_->eq_rad()
-            / this->body_->pol_rad() / this->body_->pol_rad() *
-        std::tan(this->lat_at_center_) * std::tan(this->sub_observ_lat_);
+            std::pow(this->body_->eq_rad() / this->body_->pol_rad(), 2)
+            * std::tan(this->lat_at_center_)
+            * std::tan(this->sub_observ_lat_);
 
         if (cosine < -1) {
             std::ostringstream s;
@@ -160,25 +144,22 @@ MaRC::Orthographic::Orthographic (
         }
 
         double const shift = this->sub_observ_lon_ - this->lon_at_center_;
+        double const radius =
+            this->body_->centric_radius(this->lat_at_center_);
 
-        double pos[3];
+        double pos[] = {
+            // X
+            radius * std::cos(this->lat_at_center_) * std::sin(shift),
 
-        if (this->body_->prograde())
-            pos[0] =
-                this->body_->centric_radius(this->lat_at_center_) *
-                std::cos(this->lat_at_center_) * std::sin(shift); // X
-        else
-            pos[0] =
-                -this->body_->centric_radius(this->lat_at_center_) *
-                std::cos(this->lat_at_center_) * std::sin(shift); // X
+            // Y
+            -radius * std::cos(this->lat_at_center_) * std::cos(shift),
 
-        pos[1] =
-            -this->body_->centric_radius(this->lat_at_center_)
-            * std::cos(this->lat_at_center_) * std::cos(shift);   // Y
+            // Z
+            radius * std::sin(this->lat_at_center_)
+        };
 
-        pos[2] =
-            this->body_->centric_radius(this->lat_at_center_)
-            * std::sin(this->lat_at_center_);                  // Z
+        if (!this->body_->prograde())
+            pos[0] = -pos[0];
 
         // Centers in kilometers.
         this->sample_center_ =
