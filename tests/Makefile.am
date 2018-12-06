@@ -20,7 +20,10 @@ include $(top_srcdir)/aminclude_static.am
 
 MARC_LIB = $(top_builddir)/lib/marc/libMaRC.la
 
-AM_CPPFLAGS = -I$(top_srcdir)/lib $(CODE_COVERAGE_CPPFLAGS)
+AM_CPPFLAGS =               \
+  -I$(top_srcdir)/lib       \
+  $(FMTLIB_CPPFLAGS)        \
+  $(CODE_COVERAGE_CPPFLAGS)
 AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
 AM_LIBS = $(CODE_COVERAGE_LIBS)
 
@@ -36,6 +39,7 @@ check_PROGRAMS =            \
   LongitudeImage_Test       \
   ViewingGeometry_Test      \
   Mercator_Test             \
+  Orthographic_Test         \
   PolarStereographic_Test   \
   optional_test             \
   root_find_test            \
@@ -128,6 +132,11 @@ ViewingGeometry_Test_LDADD = \
 
 Mercator_Test_SOURCES = Mercator_Test.cpp
 Mercator_Test_LDADD = \
+  $(top_builddir)/lib/marc/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
+
+Orthographic_Test_SOURCES = Orthographic_Test.cpp
+Orthographic_Test_LDADD = \
   $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 

@@ -94,6 +94,7 @@ tests/LatitudeImage_Test
 tests/LongitudeImage_Test
 tests/ViewingGeometry_Test
 tests/Mercator_Test
+tests/Orthographic_Test
 tests/PolarStereographic_Test
 tests/optional_test
 tests/root_find_test
