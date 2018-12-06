@@ -8,17 +8,17 @@ XCOMMENT: Orthographic map grid test.
         ROTATION:       PROGRADE
 
         DATA_TYPE:      SHORT
+        DATA_BLANK:     -32768
         GRID:           YES
         GRID_INTERVAL:  2
         TYPE:           ORTHO
-        		OPTIONS:
-				SUB_OBSERV_LAT:	-5
-				SUB_OBSERV_LON: 215 E
-				POSITION_ANGLE: 20
-
+                        OPTIONS:
+                                SUB_OBSERV_LAT: -5
+                                SUB_OBSERV_LON: 215 E
+                                POSITION_ANGLE: 45
         PLANES:         9
-        SAMPLES:        60
-        LINES:          50
+        SAMPLES:        101
+        LINES:          101
 
         PLANE:  1       #410nm
 
@@ -67,7 +67,7 @@ XCOMMENT: Orthographic map grid test.
                         NIBBLE_RIGHT:           8
                         NIBBLE_BOTTOM:          4
                         NIBBLE_TOP:             4
-                        INTERPOLATE:		YES
+                        INTERPOLATE:            YES
                         REMOVE_SKY:             NO
                         SAMPLE_CENTER:          2833.21
                         LINE_CENTER:            1201.89
