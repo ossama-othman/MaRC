@@ -38,7 +38,9 @@ namespace MaRC
     /**
      * @enum GeometryType
      *
-     * @brief Body center geometry type..
+     * @brief Body center geometry type.
+     *
+     * @todo Improve the orthographic center API.
      */
     enum GeometryType { DEFAULT, CENTER_GIVEN, LAT_LON_GIVEN };
 
@@ -194,6 +196,14 @@ namespace MaRC
     struct MARC_API OrthographicCenter
     {
         OrthographicCenter();
+        constexpr OrthographicCenter(GeometryType type,
+                                     double sample_lat,
+                                     double line_lon) noexcept
+            : geometry(type)
+            , sample_lat_center(sample_lat)
+            , line_lon_center(line_lon)
+        {
+        }
 
         /// Type of body center geometry.
         GeometryType geometry;
