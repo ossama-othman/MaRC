@@ -49,7 +49,7 @@ namespace
       map falls on the center of a pixel.  This allows us to
       accurately locate the body's equator in the Mercator projection
       since MaRC maps data at the center of map pixel.  For example,
-      the pixel (line, sample) = (0, 0) MaRC maps data at pixel
+      for the pixel (line, sample) = (0, 0) MaRC maps data at pixel
       coordinate (0.5, 0.5), i.e. the center of the pixel.
      */
     constexpr std::size_t samples = 50;
@@ -78,7 +78,7 @@ bool test_projection_name()
 
 /**
  * @test Test the MaRC::Mercator::make_map() method, i.e. Mercator map
- *       image creation.
+ *       projection image creation.
  */
 bool test_make_map()
 {
