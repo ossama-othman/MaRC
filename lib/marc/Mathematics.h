@@ -227,10 +227,34 @@ namespace MaRC
         if (discriminant < 0)
             return false;  // Roots are not real.
 
-        double const q = -(b + signum(b) * std::sqrt(discriminant)) / 2;
+        /**
+         * @todo Can we achieve the same affect without a branch?
+         */
+        if (b == 0) {
+            /*
+              signum(0) == 0 so we can't use the stable form of the
+              quadratic formula below but we can easily solve for x
+              when b is zero:
 
-        roots.first  = q / a;
-        roots.second = c / q;
+                       2
+                     ax  + c = 0
+
+              meaning the roots are:
+
+                     x = -sqrt(-c / a) and x = +sqrt(-c / a)
+
+              since both satisfy the above quadratic equation without
+              the "b" term.
+            */
+            roots.first  = std::sqrt(-c / a);
+            roots.second = -roots.first;
+        } else {
+            double const q =
+                -(b + signum(b) * std::sqrt(discriminant)) / 2;
+
+            roots.first  = q / a;
+            roots.second = c / q;
+        }
 
         return true;
     }
