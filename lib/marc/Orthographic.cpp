@@ -206,7 +206,14 @@ MaRC::Orthographic::plot_map(std::size_t samples,
 
     double const a2   = this->body_->eq_rad() * this->body_->eq_rad();
     double const c2   = this->body_->pol_rad() * this->body_->pol_rad();
-    double const diff = a2 - c2;
+
+    /*
+      Reduce cancellation due to subtraction from being catastrophic
+      to benign by using the form (a-c)(a+c) instead of (a*a - c*c).
+     */
+    double const diff =
+        (this->body_->eq_rad() - this->body_->pol_rad())
+        * (this->body_->eq_rad() + this->body_->pol_rad());
 
     // "a" coefficient of the Quadratic Formula.
     double const CA =

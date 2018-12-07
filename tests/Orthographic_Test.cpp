@@ -105,7 +105,15 @@ bool test_make_map()
 {
     using namespace MaRC::default_configuration;
 
-    using data_type = short;
+    // Data type should be floating point or a 64 bit (or more)
+    // integer.  Otherwise the equality comparison at the end of this
+    // function will fail due to lack of precision.
+    using data_type = float;
+
+    static_assert(std::is_floating_point<data_type>()
+                  || (std::is_integral<data_type>()
+                      && sizeof(data_type) > 4),
+                  "Use floating point or larger integer type.");
 
     // Scale and offset used to make physical data (latitudes) fit in
     // map data type.
@@ -135,7 +143,8 @@ bool test_make_map()
     auto const minimum = -90 * scale + offset;
     auto const maximum =  90 * scale + offset;
 
-    constexpr auto blank = std::numeric_limits<data_type>::lowest();
+    // Ignored in the floating point data type case.
+    auto const blank = std::numeric_limits<data_type>::lowest();
 
     MaRC::plot_info info(*image, minimum, maximum, blank);
 
@@ -148,7 +157,13 @@ bool test_make_map()
     auto const non_blank =
         std::find_if_not(std::cbegin(map),
                          std::cend(map),
-                         [blank](auto v){ return v != blank; });
+                         [blank](auto v)
+                         {
+                             return
+                                 std::is_integral<data_type>()
+                                 ? v != blank
+                                 : !std::isnan(v);
+                         });
 
     if (non_blank == std::cend(map))
         return false;  // All blank!

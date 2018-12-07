@@ -55,7 +55,10 @@ namespace MaRC
         using blank_type = MaRC::optional<std::intmax_t>;
 
         /**
-         * @brief Constructor
+         * @brief Constructor for integer blank types.
+         *
+         * Constructor used when supplying an integer typed @a blank
+         * value.
          *
          * @param[in] source   @c SourceImage object containing the
          *                     data to be mapped.
@@ -70,14 +73,79 @@ namespace MaRC
          *                     corresponds to undefined "blank"
          *                     physical values.
          */
+        template <typename T>
         plot_info(SourceImage const & source,
                   double minimum,
                   double maximum,
-                  blank_type blank = MaRC::nullopt)
+                  T blank)
             : source_(source)
             , minimum_(minimum)
             , maximum_(maximum)
             , blank_(blank)
+            , notifier_()
+        {
+        }
+
+        /**
+         * @brief Constructor for floating point blank types.
+         *
+         * Constructor used when supplying a floating point typed
+         * @a blank value.  In this case, the floating point value is
+         * actually ignored since the @c NaN constant is expected to
+         * be used as the blank value in %MaRC generated floating
+         * point typed map projections.
+         *
+         * This constructor exists to prevent implicit conversions
+         * from a floating point blank value to the integer based
+         * @c blank_type used by this class.  For example, this
+         * constructor prevents attempts to assign
+         * std::numeric_limits<float>::lowest() as the blank
+         * value since that would result in an overflow.
+         *
+         * @param[in] source   @c SourceImage object containing the
+         *                     data to be mapped.
+         * @param[in] minimum  Minimum allowed physical data value on
+         *                     map, i.e. all data greater than or
+         *                     equal to @a minimum.
+         * @param[in] maximum  Maximum allowed physical data value on
+         *                     map, i.e. all data less than or equal
+         *                     to @a maximum.
+         */
+        plot_info(SourceImage const & source,
+                  double minimum,
+                  double maximum,
+                  double /* unused */)
+            : source_(source)
+            , minimum_(minimum)
+            , maximum_(maximum)
+            , blank_()
+            , notifier_()
+        {
+        }
+
+        /**
+         * @brief Constructor used when no blank value is provided.
+         *
+         * By default, %MaRC will use @c 0 as the blank value for
+         * integer typed maps, and always use %c NaN for floating
+         * point typed maps.
+         *
+         * @param[in] source   @c SourceImage object containing the
+         *                     data to be mapped.
+         * @param[in] minimum  Minimum allowed physical data value on
+         *                     map, i.e. all data greater than or
+         *                     equal to @a minimum.
+         * @param[in] maximum  Maximum allowed physical data value on
+         *                     map, i.e. all data less than or equal
+         *                     to @a maximum.
+         */
+        plot_info(SourceImage const & source,
+                  double minimum,
+                  double maximum)
+            : source_(source)
+            , minimum_(minimum)
+            , maximum_(maximum)
+            , blank_()
             , notifier_()
         {
         }

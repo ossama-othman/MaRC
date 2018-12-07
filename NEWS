@@ -1,3 +1,7 @@
+- Fixed a regression in quadratic roots calculations that caused some
+  areas of an Orthographic projection to incorrectly have data of
+  value zero, as well as other coordinate calculations.
+
 - Blank areas of integer typed maps now contain the user-supplied
   DATA_BLANK value, if specified in the MaRC input file.  This allows
   FITS image readers to easily identify areas of integer typed maps
