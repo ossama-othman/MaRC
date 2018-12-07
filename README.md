@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ossama-othman/MaRC.svg?branch=master)](https://travis-ci.org/ossama-othman/MaRC)
+[![Build Status](https://travis-ci.com/ossama-othman/MaRC.svg?branch=master)](https://travis-ci.com/ossama-othman/MaRC)
 [![Coverity Status](https://scan.coverity.com/projects/13233/badge.svg)](https://scan.coverity.com/projects/ossama-othman-marc)
 [![Coverage Status](https://coveralls.io/repos/github/ossama-othman/MaRC/badge.svg?branch=master&service=github)](https://coveralls.io/github/ossama-othman/MaRC?branch=master&service=github)
 
