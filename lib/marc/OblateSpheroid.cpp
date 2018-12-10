@@ -216,25 +216,23 @@ MaRC::OblateSpheroid::cos_phase(double sub_observ_lat,
 double
 MaRC::OblateSpheroid::M(double lat)
 {
-    double const fe2 =
-        this->first_eccentricity_ * this->first_eccentricity_;
-    double const sin_latg = std::sin(this->graphic_latitude(lat));
+    double const fe2       = std::pow(this->first_eccentricity_, 2);
+    double const latg      = this->graphic_latitude(lat);
+    double const sin2_latg = std::pow(std::sin(latg), 2);
 
-  return
-    this->eq_rad_ * (1 - fe2)
-      / std::pow(1 - fe2 * sin_latg * sin_latg, 1.5);
+    return
+        this->eq_rad_ * (1 - fe2) / std::pow(1 - fe2 * sin2_latg, 1.5);
 }
 
 double
 MaRC::OblateSpheroid::N(double lat)
 {
-    double const sin_latg = std::sin(this->graphic_latitude(lat));
+    double const latg = this->graphic_latitude(lat);
 
     return
         this->eq_rad_
-        / std::sqrt(1 - this->first_eccentricity_
-                        * this->first_eccentricity_
-                        * sin_latg * sin_latg);
+        / std::sqrt(1 - std::pow(this->first_eccentricity_, 2)
+                    * std::pow(std::sin(latg), 2));
 }
 
 int
