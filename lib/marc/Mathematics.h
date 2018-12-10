@@ -192,6 +192,24 @@ namespace MaRC
     }
 
     /**
+     * @brief Return sign of a real number.
+     *
+     * This function differs from the @c signum() function in that it
+     * interprets the value zero (@a x == 0) as having a positive
+     * sign, i.e. @c 1, instead of @c 0.
+     *
+     * @retval -1 if @a x <  0
+     * @retval  1 if @a x >= 0
+     */
+    template <typename T>
+    int
+    sgn(T x)
+    {
+        // Iverson bracket notation of the sgn function.
+        return (x >= T(0)) - (x < T(0));
+    }
+
+    /**
      * @brief Solve the quadratic formula in a numerically stable
      *        manner.
      *
@@ -228,33 +246,17 @@ namespace MaRC
             return false;  // Roots are not real.
 
         /**
-         * @todo Can we achieve the same affect without a branch?
+         * @note We do not use signum() here since @c signum(b) when
+         *       @c b is zero would return @c 0, resulting in
+         *       incorrect root results @c (0, &infin;) due to the
+         *       square root of the discrimant term being dropped from
+         *       the calculation.
          */
-        if (b == 0) {
-            /*
-              signum(0) == 0 so we can't use the stable form of the
-              quadratic formula below but we can easily solve for x
-              when b is zero:
+        double const q =
+            -(b + sgn(b) * std::sqrt(discriminant)) / 2;
 
-                       2
-                     ax  + c = 0
-
-              meaning the roots are:
-
-                     x = -sqrt(-c / a) and x = +sqrt(-c / a)
-
-              since both satisfy the above quadratic equation without
-              the "b" term.
-            */
-            roots.first  = std::sqrt(-c / a);
-            roots.second = -roots.first;
-        } else {
-            double const q =
-                -(b + signum(b) * std::sqrt(discriminant)) / 2;
-
-            roots.first  = q / a;
-            roots.second = c / q;
-        }
+        roots.first  = q / a;
+        roots.second = c / q;
 
         return true;
     }

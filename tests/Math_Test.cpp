@@ -163,6 +163,27 @@ bool test_signum()
 }
 
 /**
+ * @test Test the MaRC::sgn() function.
+ */
+bool test_sgn()
+{
+    return
+        // Signed intger
+        MaRC::sgn   ( -3L) == -1
+        && MaRC::sgn(  0L) ==  1
+        && MaRC::sgn(  5L) ==  1
+
+        // Unsigned integer
+        && MaRC::sgn(  0U) ==  1
+        && MaRC::sgn(  2U) ==  1
+
+        // Floating point number
+        && MaRC::sgn(-2.0) == -1
+        && MaRC::sgn( 0.0) ==  1
+        && MaRC::sgn( 7.0) ==  1;
+}
+
+/**
  * @test Test the MaRC::quadratic_roots() function.
  */
 bool test_quadratic_roots()
@@ -224,5 +245,6 @@ int main()
         test_almost_equal()
         && test_almost_zero()
         && test_signum()
+        && test_sgn()
         && test_quadratic_roots() ? 0 : -1;
 }
