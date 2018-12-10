@@ -65,30 +65,32 @@
 #include <cmath>
 #include <sstream>
 
-YY_DECL;
 
-void yyerror(YYLTYPE * locp,
-             yyscan_t /* scanner */,
-             MaRC::ParseParameter & pp,
-             char const * msg)
-{
-    /**
-     * @bug The line number is off when the parser explicitly calls
-     *      @c yyerror().  For example, if a negative KM_PER_PIXEL
-     *      value is set in an input file the reported line is
-     *      actually the first line that isn't solely whitespace after
-     *      the line containing the invalid KM_PER_PIXEL value.  Line
-     *      numbers in syntax errors, on the other hand, are correct
-     */
-    MaRC::error("{}:{}:{}: {}",
-                pp.filename,
-                locp->first_line,
-                locp->first_column,
-                msg);
-}
+YY_DECL;
 
 namespace
 {
+    void yyerror(YYLTYPE * locp,
+                 yyscan_t /* scanner */,
+                 MaRC::ParseParameter & pp,
+                 char const * msg)
+    {
+        /**
+         * @bug The line number is off when the parser explicitly
+         *      calls @c yyerror().  For example, if a negative
+         *      KM_PER_PIXEL value is set in an input file the
+         *      reported line is actually the first line that isn't
+         *      solely whitespace after the line containing the
+         *      invalid KM_PER_PIXEL value.  Line numbers in syntax
+         *      errors, on the other hand, are correct
+         */
+        MaRC::error("{}:{}:{}: {}",
+                    pp.filename,
+                    locp->first_line,
+                    locp->first_column,
+                    msg);
+    }
+
     static constexpr double not_a_number =
         std::numeric_limits<double>::signaling_NaN();
 
@@ -828,8 +830,8 @@ plane_size:
                         "plane definition");
                 YYERROR;
             } else {
-                // MaRC::info("specifying the map plane number is no "
-                //            "longer necessary.)";
+                MaRC::debug("specifying the map plane number is no "
+                            "longer necessary.");
             }
 
             std::size_t const map_plane = static_cast<std::size_t>($3);
