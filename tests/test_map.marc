@@ -330,6 +330,7 @@ MAP:    test_map5.fits
                 POL_RAD:        66854
                 ROTATION:       PROGRADE
         DATA_TYPE:              LONGLONG
+        DATA_BLANK:             -9223372036854775808  # INT64_MIN
         GRID:                   NO
         TYPE:                   SIMPLE_C
         SAMPLES:        25
