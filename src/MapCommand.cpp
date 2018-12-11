@@ -263,19 +263,22 @@ MaRC::MapCommand::execute()
         double bscale = this->parameters_->bscale();
         double bzero  = this->parameters_->bzero();
 
-        fits_update_key(fptr,
-                        TDOUBLE,
-                        "BSCALE",
-                        &bscale,
-                        "linear data scaling coefficient",
-                        &status);
+        if (!std::isnan(bscale))
+            fits_update_key(fptr,
+                            TDOUBLE,
+                            "BSCALE",
+                            &bscale,
+                            "linear data scaling coefficient",
+                            &status);
 
-        fits_update_key(fptr,
-                        TDOUBLE,
-                        "BZERO",
-                        &bzero,
-                        "physical value corresponding to zero in the map",
-                        &status);
+        if (!std::isnan(bzero))
+            fits_update_key(fptr,
+                            TDOUBLE,
+                            "BZERO",
+                            &bzero,
+                            "physical value corresponding to "
+                            "zero in the map",
+                            &status);
     }
 
     if (status != 0) {
