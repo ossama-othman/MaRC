@@ -162,18 +162,17 @@ namespace
     /**
      * @brief Convert string to integer.
      *
-     * @brief param[in]  str String containing integer to be
-     *                       converted.
-     * @brief param[out] end Pointer to first invalid character.
-     * @brief param[out] num Integer converted from string @a str.
+     * @param[in]  str String containing integer to be converted.
+     * @param[out] end Pointer to first invalid character.
+     * @param[out] num Integer converted from string @a str.
      *
      * @see strtoll()
      *
      * @note Result must be verified by checking @c errno.
-     * @note This is an implementation detail.  Use @c strtonum().
+     * @note This is an implementation detail.  Use @c from_string().
      */
     void
-    strtonum(char const * str, char ** end, std::intmax_t & num)
+    from_string(char const * str, char ** end, std::intmax_t & num)
     {
         constexpr int base = 10;
 
@@ -183,19 +182,19 @@ namespace
     /**
      * @brief Convert string to floating point value (@c double).
      *
-     * @brief param[in]  str String containing floating point value to
-     *                       be converted.
-     * @brief param[out] end Pointer to first invalid character.
-     * @brief param[out] num Floating point value converted from
-     *                       string @a str.
+     * @param[in]  str String containing floating point value to be
+     *                 converted.
+     * @param[out] end Pointer to first invalid character.
+     * @param[out] num Floating point value converted from string
+     *                 @a str.
      *
      * @see strtod()
      *
      * @note Result must be verified by checking @c errno.
-     * @note This is an implementation detail.  Use @c strtonum().
+     * @note This is an implementation detail.  Use @c from_string().
      */
     void
-    strtonum(char const * str, char ** end, double & num)
+    from_string(char const * str, char ** end, double & num)
     {
         num = std::strtod(str, end);
     }
@@ -203,28 +202,37 @@ namespace
     /**
      * @brief Convert string to a number.
      *
-     * @brief param[in]  scanner
-     * @brief param[in]  str String containing number to be
-     *                       converted.
-     * @brief param[out] num Number converted from string @a str.
+     * @note This implementation relies on C++ library functions like
+     *       @c std::strtoll() and @c std::strtod() rather than
+     *       @c std::stoll() and @c std::stod() to avoid having an
+     *       exception thrown on conversion error.
+     *
+     * @tparam     T   Integer or floating point type the string
+     *                 to which the string @a str converted.
+     * @param[in]  str String containing number to be converted.
+     * @param[out] num Number converted from string @a str.
      *
      * @return Number converted from string.
      *
      * @see strtoll()
      * @see strtod()
-     * @see strtonum_helper()
+     * @see from_string_helper()
      */
     template <typename T>
     bool
-    strtonum(char const * str, T & num)
+    from_string(char const * str, T & num)
     {
+        static_assert(std::is_arithmetic<T>(),
+                      "Type of number converted from a string must "
+                      "be an integer or floating point type.");
+
         // errno will be non-zero on string-to-number conversion
         // failure.
         errno = 0;
 
         char * end = nullptr;
 
-        strtonum(str, &end, num);
+        from_string(str, &end, num);
 
         if (errno == ERANGE || (errno != 0 && num == 0)) {
             constexpr std::size_t BUFLEN = 80;
@@ -812,7 +820,7 @@ lines:  LINES ':' size  {
 ;
 
 integer: NUM {
-            if (!strtonum<std::intmax_t>($1, $$))
+            if (!from_string($1, $$))
                 YYERROR;
         }
 
@@ -2074,7 +2082,7 @@ longitude:
 /* --------------- Multifunction Infix Notation Calculator ----------------- */
 /* All numbers will be handled with double precision here. */
 expr:   NUM {
-            if (!strtonum<double>($1, $$))
+            if (!from_string($1, $$))
                 YYERROR;
         }
         | VAR                   { $$ = $1->value.var;              }
