@@ -50,11 +50,13 @@
 #include <marc/DefaultConfiguration.h>
 
 #include <marc/Log.h>
+#include <marc/utility.h>
 
 #include "parse_scan.h"
 #include "parse.hh"
 #include "lexer.hh"
 #include "calc.h"
+#include "strerror.h"
 #include "MapCommand.h"
 #include "FITS_traits.h"
 
@@ -62,6 +64,7 @@
 #include <limits>
 #include <memory>
 #include <cstring>
+#include <cerrno>
 #include <cmath>
 #include <sstream>
 
@@ -153,6 +156,94 @@ namespace
                         data_type);
 
         return verified;
+    }
+
+    /**
+     * @brief Convert string to integer.
+     *
+     * @brief param[in]  str String containing integer to be
+     *                       converted.
+     * @brief param[out] end Pointer to first invalid character.
+     * @brief param[out] num Integer converted from string @a str.
+     *
+     * @see strtoll()
+     *
+     * @note Result must be verified by checking @c errno.
+     * @note This is an implementation detail.  Use @c strtonum().
+     */
+    void
+    strtonum(char const * str, char ** end, std::intmax_t & num)
+    {
+        constexpr int base = 10;
+
+        num = std::strtoll(str, end, base);
+    }
+
+    /**
+     * @brief Convert string to floating point value (@c double).
+     *
+     * @brief param[in]  str String containing floating point value to
+     *                       be converted.
+     * @brief param[out] end Pointer to first invalid character.
+     * @brief param[out] num Floating point value converted from
+     *                       string @a str.
+     *
+     * @see strtod()
+     *
+     * @note Result must be verified by checking @c errno.
+     * @note This is an implementation detail.  Use @c strtonum().
+     */
+    void
+    strtonum(char const * str, char ** end, double & num)
+    {
+        num = std::strtod(str, end);
+    }
+
+    /**
+     * @brief Convert string to a number.
+     *
+     * @brief param[in]  scanner
+     * @brief param[in]  str String containing number to be
+     *                       converted.
+     * @brief param[out] num Number converted from string @a str.
+     *
+     * @return Number converted from string.
+     *
+     * @see strtoll()
+     * @see strtod()
+     * @see strtonum_helper()
+     */
+    template <typename T>
+    bool
+    strtonum(char const * str, T & num)
+    {
+        // errno will be non-zero on string-to-number conversion
+        // failure.
+        errno = 0;
+
+        char * end = nullptr;
+
+        strtonum(str, &end, num);
+
+        if (errno == ERANGE || (errno != 0 && num == 0)) {
+            constexpr std::size_t BUFLEN = 80;
+            char buf[BUFLEN] = {};
+
+            char const * const err =
+                MaRC::strerror(errno, buf, MaRC::size(buf));
+
+            errno = 0;
+
+            MaRC::error("invalid number ({}): {}", str, err);
+            return false;
+        }
+
+        if (end == str) {
+            MaRC::error("no digits were found in number ({})", str);
+            return false;
+        }
+
+        return true;
     }
 }
 
@@ -281,6 +372,7 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
  {
      bool bval;           // For returning boolean values.
      char * sval;         // For returning string values.
+     std::intmax_t ival;  // For returning integer values.
      double val;          // For returning floating point values.
      MaRC::sym_entry * tptr;  // For returning symbol-table pointers.
      MaRC::SubObserv sub_observ_data; // Sub-observation point.
@@ -288,18 +380,17 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
      MaRC::Radii radii_data;          // Oblate spheroid radii.
 }
 
-%token <val> NUM
+%token <sval> NUM
 %token <tptr> VAR FNCT
 %token <sval> _STRING
 %type <val> latitude latitude_sub longitude
-%type <val> position_angle range size expr
+%type <val> position_angle range expr
+%type <ival> integer size
 %type <bval> rotation
 %type <sub_observ_data> sub_observ
 %type <sub_solar_data> sub_solar
 %type <radii_data> radii
-%type <val> eq_rad
-%type <val> pol_rad
-%type <val> flattening
+%type <val> eq_rad pol_rad flattening
 %right '='
 %left '-' '+'
 %left '*' '/'
@@ -540,12 +631,12 @@ data_info:
 
 data_offset:
         %empty
-        | DATA_OFFSET ':' size  { map_params->bzero($3); }
+        | DATA_OFFSET ':' expr  { map_params->bzero($3); }
 ;
 
 data_scale:
         %empty
-        | DATA_SCALE ':' size   { map_params->bscale($3); }
+        | DATA_SCALE ':' expr   { map_params->bscale($3); }
 ;
 
 data_type:
@@ -560,7 +651,7 @@ data_type:
 
 data_blank:
         %empty
-        | DATA_BLANK ':' expr {
+        | DATA_BLANK ':' integer {
             auto const bitpix = map_params->bitpix();
             if (bitpix < 0) {  // Negative bitpix for floating point.
                 throw std::invalid_argument(
@@ -619,7 +710,7 @@ grid_intervals:
 ;
 
 grid_interval:
-        GRID_INTERVAL ':' size {
+        GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Grid interval value (" << $3 << ") "
@@ -634,7 +725,7 @@ grid_interval:
 ;
 
 lat_grid_interval:
-        LAT_GRID_INTERVAL ':' size {
+        LAT_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Latitude grid interval value (" << $3 << ") "
@@ -648,7 +739,7 @@ lat_grid_interval:
 ;
 
 lon_grid_interval:
-        LON_GRID_INTERVAL ':' size {
+        LON_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Longitude grid interval value (" << $3 << ") "
@@ -719,7 +810,12 @@ lines:  LINES ':' size  {
         }
 ;
 
-size:   expr { $$ = $1; }
+integer: NUM {
+            if (!strtonum<std::intmax_t>($1, $$))
+                YYERROR;
+        }
+
+size:   integer { $$ = $1; }
 ;
 
 body:   BODY ':' _STRING
@@ -868,10 +964,10 @@ plane_size:
 
 plane_data_range:
         %empty
-        | DATA_MIN ':' size { minimum = $3; }
-        | DATA_MAX ':' size { maximum = $3; }
-        | DATA_MIN ':' size
-          DATA_MAX ':' size {
+        | DATA_MIN ':' expr { minimum = $3; }
+        | DATA_MAX ':' expr { maximum = $3; }
+        | DATA_MIN ':' expr
+          DATA_MAX ':' expr {
             if ($3 < $6) {
                 minimum = $3;
                 maximum = $6;
@@ -886,8 +982,8 @@ plane_data_range:
                 YYERROR;
             }
         }
-        | DATA_MAX ':' size
-          DATA_MIN ':' size {
+        | DATA_MAX ':' expr
+          DATA_MIN ':' expr {
             if ($6 < $3) {
                 minimum = $6;
                 maximum = $3;
@@ -1974,15 +2070,8 @@ longitude:
 /* --------------- Multifunction Infix Notation Calculator ----------------- */
 /* All numbers will be handled with double precision here. */
 expr:   NUM {
-            if (errno == ERANGE) {
-                yyerror(&yylloc,
-                        scanner,
-                        pp,
-                        "number out of range");
+            if (!strtonum<double>($1, $$))
                 YYERROR;
-            } else {
-                $$ = $1;
-            }
         }
         | VAR                   { $$ = $1->value.var;              }
         | VAR '=' expr          { $$ = $3; $1->value.var = $3;     }
