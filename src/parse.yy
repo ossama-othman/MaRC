@@ -142,7 +142,8 @@ namespace
      */
     template <typename T>
     bool
-    verify_data_blank(double blank, char const * data_type)
+    verify_data_blank(MaRC::blank_type::value_type blank,
+                      char const * data_type)
     {
         constexpr auto minimum = std::numeric_limits<T>::lowest();
         constexpr auto maximum = std::numeric_limits<T>::max();
