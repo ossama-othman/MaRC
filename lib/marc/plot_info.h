@@ -30,7 +30,7 @@
 #include <marc/optional.h>
 
 #include <cstdint>
-
+#include <cmath>
 
 namespace MaRC
 {
@@ -53,6 +53,33 @@ namespace MaRC
 
         /// Convenience alias for the blank integer type.
         using blank_type = MaRC::optional<std::intmax_t>;
+
+        /**
+         * @brief Constructor used when no blank value is provided.
+         *
+         * By default, %MaRC will use @c 0 as the blank value for
+         * integer typed maps, and always use %c NaN for floating
+         * point typed maps.
+         *
+         * @param[in] source   @c SourceImage object containing the
+         *                     data to be mapped.
+         * @param[in] minimum  Minimum allowed physical data value on
+         *                     map, i.e. all data greater than or
+         *                     equal to @a minimum.
+         * @param[in] maximum  Maximum allowed physical data value on
+         *                     map, i.e. all data less than or equal
+         *                     to @a maximum.
+         */
+        plot_info(SourceImage const & source,
+                  double minimum,
+                  double maximum)
+            : source_(source)
+            , minimum_(validate_extremum(minimum))
+            , maximum_(validate_extremum(maximum))
+            , blank_()
+            , notifier_()
+        {
+        }
 
         /**
          * @brief Constructor for integer blank types.
@@ -79,8 +106,8 @@ namespace MaRC
                   double maximum,
                   T blank)
             : source_(source)
-            , minimum_(minimum)
-            , maximum_(maximum)
+            , minimum_(validate_extremum(minimum))
+            , maximum_(validate_extremum(maximum))
             , blank_(blank)
             , notifier_()
         {
@@ -115,38 +142,7 @@ namespace MaRC
                   double minimum,
                   double maximum,
                   double /* unused */)
-            : source_(source)
-            , minimum_(minimum)
-            , maximum_(maximum)
-            , blank_()
-            , notifier_()
-        {
-        }
-
-        /**
-         * @brief Constructor used when no blank value is provided.
-         *
-         * By default, %MaRC will use @c 0 as the blank value for
-         * integer typed maps, and always use %c NaN for floating
-         * point typed maps.
-         *
-         * @param[in] source   @c SourceImage object containing the
-         *                     data to be mapped.
-         * @param[in] minimum  Minimum allowed physical data value on
-         *                     map, i.e. all data greater than or
-         *                     equal to @a minimum.
-         * @param[in] maximum  Maximum allowed physical data value on
-         *                     map, i.e. all data less than or equal
-         *                     to @a maximum.
-         */
-        plot_info(SourceImage const & source,
-                  double minimum,
-                  double maximum)
-            : source_(source)
-            , minimum_(minimum)
-            , maximum_(maximum)
-            , blank_()
-            , notifier_()
+            : plot_info(source, minimum, maximum)
         {
         }
 
@@ -158,13 +154,13 @@ namespace MaRC
         SourceImage const & source() const { return this->source_; }
 
         /// Set minimum allowed value on map.
-        void minimum(double m) { this->minimum_ = m; }
+        void minimum(double m) { this->minimum_ = validate_extremum(m); }
 
         /// Get minimum allowed physical data value on map.
         double minimum() const { return this->minimum_; }
 
         /// Set maximum allowed physical data value on map.
-        void maximum(double m) { this->maximum_ = m; }
+        void maximum(double m) { this->maximum_ = validate_extremum(m); }
 
         /// Get maximum allowed physical data value on map.
         double maximum() const { return this->maximum_; }
@@ -184,6 +180,29 @@ namespace MaRC
          * @see Notifier
          */
         notifier_type & notifier() const { return this->notifier_; }
+
+    private:
+
+        /**
+         * @brief Verify extremum (minimum or maxium) is valid.
+         *
+         * Verify that the given extremum @a value is valid, i.e. not
+         * @c NaN.
+         *
+         * @param[in] value Physical data extremum to be validated.
+         *
+         * @return @a value if it is valid.
+         *
+         * @throw std::invalid_argument @a value is @c NaN.
+         */
+        static double validate_extremum(double value)
+        {
+            if (std::isnan(value))
+                throw std::invalid_argument(
+                    "plot_info minimum/maximum should not be NaN.");
+
+            return value;
+        }
 
     private:
 
