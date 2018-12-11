@@ -28,6 +28,9 @@
  *      namespace.
  */
 
+#ifndef MARC_LOG_H
+#define MARC_LOG_H
+
 #include "marc/config.h"  // For NDEBUG
 
 // See https://github.com/fmtlib/fmt/issues/947
@@ -174,3 +177,6 @@ namespace MaRC
         details::critical(format, fmt::make_format_args(args...));
     }
 }
+
+
+#endif  // MARC_LOG_H
