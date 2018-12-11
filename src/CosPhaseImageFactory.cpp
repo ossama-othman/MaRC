@@ -26,6 +26,7 @@
 #include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
+#include <cmath>
 
 
 MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
@@ -43,9 +44,6 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
     , sub_solar_lon_(sub_solar_lon)
     , range_(range)
 {
-    using namespace MaRC::default_configuration;
-    this->minimum(cos_phase_low);
-    this->maximum(cos_phase_high);
 }
 
 std::unique_ptr<MaRC::SourceImage>
@@ -60,6 +58,14 @@ MaRC::CosPhaseImageFactory::make(scale_offset_functor calc_so)
         throw std::range_error("Cannot store cosine of phase angles in "
                                "map of chosen datatype.");
     }
+
+    // Scale the default minimum and maximum to match the physical
+    // data scaling.
+    if (std::isnan(this->minimum()))
+        this->minimum(cos_phase_low  * scale + offset);
+
+    if (std::isnan(this->maximum()))
+        this->maximum(cos_phase_high * scale + offset);
 
     return std::make_unique<MaRC::CosPhaseImage>(this->body_,
                                                  this->sub_observ_lat_,

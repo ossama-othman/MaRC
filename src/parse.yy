@@ -900,12 +900,15 @@ plane_setup:
         plane_size
         plane_data_range
         plane_type      {
-          image_factory->minimum(minimum);
-          image_factory->maximum(maximum);
+            if (!std::isnan(minimum))
+                image_factory->minimum(minimum);
 
-          image_factories.push_back(std::move(image_factory));
+            if (!std::isnan(maximum))
+                image_factory->maximum(maximum);
 
-          photo_factories.clear();
+            image_factories.push_back(std::move(image_factory));
+
+            photo_factories.clear();
         }
 ;
 

@@ -26,14 +26,12 @@
 #include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
+#include <cmath>
 
 
 MaRC::LongitudeImageFactory::LongitudeImageFactory()
     : ImageFactory()
 {
-    using namespace MaRC::default_configuration;
-    this->minimum(longitude_low);
-    this->maximum(longitude_high);
 }
 
 std::unique_ptr<MaRC::SourceImage>
@@ -48,12 +46,21 @@ MaRC::LongitudeImageFactory::make(scale_offset_functor calc_so)
      * @todo Do we really want to throw an exception here?  Why not
      *       just return a default constructed
      *       @c std::unique_ptr<MaRC::SourceImage> instead?  The same
-     *       go for the other @c VirtualImage factory implementations.
+     *       goes for the other @c VirtualImage factory
+     *       implementations.
      */
     if (!calc_so(longitude_low, longitude_high, scale, offset)) {
         throw std::range_error("Cannot store longitudes in map of "
                                "chosen data type.");
     }
+
+    // Scale the default minimum and maximum to match the physical
+    // data scaling.
+    if (std::isnan(this->minimum()))
+        this->minimum(longitude_low  * scale + offset);
+
+    if (std::isnan(this->maximum()))
+        this->maximum(longitude_high * scale + offset);
 
     return std::make_unique<MaRC::LongitudeImage>(scale, offset);
 }

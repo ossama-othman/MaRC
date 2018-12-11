@@ -28,8 +28,8 @@
 
 
 MaRC::ImageFactory::ImageFactory()
-    : minimum_(std::numeric_limits<double>::lowest())
-    , maximum_(std::numeric_limits<double>::max())
+    : minimum_(std::numeric_limits<double>::signaling_NaN())
+    , maximum_(std::numeric_limits<double>::signaling_NaN())
 {
 }
 

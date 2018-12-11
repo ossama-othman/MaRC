@@ -107,10 +107,22 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
                                         image.get(),
                                         status);
 
-        plot_info info(*image,
-                       i->minimum(),
-                       i->maximum(),
-                       blank);
+        /**
+         * @bug These @c ImageFactory methods return a @c double
+         *      value, which is not appropriate for 64 bit integer
+         *      values greater than 2^53, i.e. the width of the
+         *      significand in 64 bit IEEE 754 floating point values.
+         */
+        auto minimum = i->minimum();
+        auto maximum = i->maximum();
+
+        if (std::isnan(minimum))
+            minimum = std::numeric_limits<T>::lowest();
+
+        if (std::isnan(maximum))
+            maximum = std::numeric_limits<T>::max();
+
+        plot_info info(*image, minimum, maximum, blank);
 
         using namespace MaRC::Progress;
         info.notifier().subscribe(std::make_unique<Console>());
