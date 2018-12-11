@@ -79,6 +79,7 @@ noinst_HEADERS = \
   calc.h \
   command_line.h \
   parse_scan.h \
+  strerror.h \
   lexer.hh
 
 BUILT_SOURCES = parse.hh lexer.hh
