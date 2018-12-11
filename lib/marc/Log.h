@@ -58,7 +58,7 @@
  *
  * @param x MaRC::debug() parameter name.
  *
- * @note @c DXGEN is defined when building MaRC's Doxygen based
+ * @note @c DXGEN is defined when building %MaRC's Doxygen based
  *       documentation.  We want the MaRC::debug() arguments to be
  *       expanded in that case so that Doxygen generates documentation
  *       for them.

@@ -50,7 +50,7 @@ namespace MaRC
         /// Grid image type.
         using grid_type = MaRC::MapFactory::grid_type;
 
-        /// FITS file comment list type.
+        /// %FITS file comment list type.
         using comment_list_type = std::list<std::string>;
 
         /// Source image factories type.
@@ -229,12 +229,12 @@ namespace MaRC
          * The transformation equation used when writing data to a
          * %FITS file is:
          * @code{.cpp}
-         *   FITS value = (physical value - BZERO) / BSCALE
+         *   %FITS value = (physical value - BZERO) / BSCALE
          * @endcode
          * Meaning that the data read from the %FITS file will be
          * transformed according to the linear equation:
          * @code{.cpp}
-         *   physical value = FITS value * BSCALE + BZERO
+         *   physical value = %FITS value * BSCALE + BZERO
          * @endcode
          */
         bool transform_data_;
@@ -242,7 +242,7 @@ namespace MaRC
         /// Flag that determines if a grid is created.
         bool create_grid_;
 
-        /// FITS related map parameters.
+        /// %FITS related map parameters.
         std::unique_ptr<MapParameters> parameters_;
 
     };

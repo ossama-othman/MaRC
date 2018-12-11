@@ -77,16 +77,16 @@ namespace MaRC
         }
 
         /**
-         * @brief Get the value of the given %FITS keyword.
+         * @brief Get the value for the given %FITS keyword.
          *
          * @tparam    T    Value type.
          * @param[in] fptr Pointer to CFITSIO @c fitsfile object.
          * @param[in] key  %FITS keyword.
          *
          * @return Value corresponding to @a key.  If no such key
-         *         exists in the %FITS file the @c
-         *         MaRC::optional::has_value() method of the returned
-         *         value will return @c false.
+         *         exists in the %FITS file the
+         *         @c MaRC::optional::has_value() method of the
+         *         returned value will return @c false.
          */
         template <typename T>
         MaRC::optional<T>

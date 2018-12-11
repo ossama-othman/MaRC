@@ -31,10 +31,10 @@ namespace MaRC
     /**
      * @class command_line
      *
-     * @brief Parse MaRC command line arguments.
+     * @brief Parse %MaRC command line arguments.
      *
-     * This class parses MaRC command line arguments, and implements
-     * the MaRC usage and help messages.
+     * This class parses %MaRC command line arguments, and implements
+     * the %MaRC usage and help messages.
      */
     class command_line
     {
@@ -130,13 +130,13 @@ namespace MaRC
         /// Parse command line arguments.
         bool parse(int argc, char * argv[]);
 
-        /// Get container of MaRC input filenames.
+        /// Get container of %MaRC input filenames.
         auto const & files() const { return this->files_; }
 
     private:
 
         /**
-         * @brief Names of input files to be processed by MaRC.
+         * @brief Names of input files to be processed by %MaRC.
          */
         arguments files_;
 

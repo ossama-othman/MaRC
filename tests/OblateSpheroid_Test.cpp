@@ -61,7 +61,7 @@ namespace
 #ifdef MARC_USE_CROSS_PRODUCT
         /**
          * @todo There doesn't appear to be a real need to use this
-         *       approach in MaRC since we only need to know the
+         *       approach in %MaRC since we only need to know the
          *       cosine of the angle between the vectors, not the
          *       angle itself.  Confirm.
          */

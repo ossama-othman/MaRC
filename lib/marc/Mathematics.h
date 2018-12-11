@@ -59,7 +59,7 @@ namespace MaRC
      *
      * @deprecated This implementation of the three-parameter
      *             @c std::hypot() will be dropped once we start
-     *             using C++17 features in MaRC.
+     *             using C++17 features in %MaRC.
      */
     template <typename T>
     auto hypot(T x, T y, T z)

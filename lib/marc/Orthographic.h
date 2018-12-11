@@ -195,7 +195,18 @@ namespace MaRC
      */
     struct MARC_API OrthographicCenter
     {
+        /// Default Constructor.
         OrthographicCenter();
+
+        /**
+         * @brief Constructor.
+         *
+         * @param[in] type       Orthographic projection geometry
+         *                       type, e.g. @c LAT_LON_GIVEN.
+         * @param[in] sample_lat Sample or latitude at center of
+         *                       body.
+         * @param[in] line_lon   Line or longitude at center of body.
+         */
         constexpr OrthographicCenter(GeometryType type,
                                      double sample_lat,
                                      double line_lon) noexcept

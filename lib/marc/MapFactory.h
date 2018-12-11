@@ -43,7 +43,7 @@ namespace MaRC
      *
      * @brief Map Abstract Factory
      *
-     * Abstract Factory class for map projections supported by MaRC.
+     * Abstract Factory class for map projections supported by %MaRC.
      */
     class MARC_API MapFactory
     {

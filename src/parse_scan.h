@@ -1,7 +1,7 @@
 /**
  * @file parse_scan.h
  *
- * MaRC Parser and Scanner Declarations
+ * %MaRC Parser and Scanner Declarations
  *
  * Copyright (C) 1999, 2004, 2017  Ossama Othman
  *
@@ -167,7 +167,7 @@ namespace MaRC
 
         /**
          * Make sure at least two of the three fields are set, and
-         * verify that the values are suitable for use by MaRC.
+         * verify that the values are suitable for use by %MaRC.
          */
         void validate();
 

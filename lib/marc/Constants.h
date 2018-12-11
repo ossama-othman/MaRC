@@ -94,7 +94,7 @@
  * @todo Some of these constants are outdated, and should be updated
  *       with the latest values, such as those found on the NIST Web
  *       site (https://physics.nist.gov/cuu/Constants/index.html).
- *       We may also want to remove those that aren't used by MaRC,
+ *       We may also want to remove those that aren't used by %MaRC,
  *       which is the majority of them.
  */
 namespace C

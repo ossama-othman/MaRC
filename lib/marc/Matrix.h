@@ -50,7 +50,7 @@ namespace MaRC
      * This matrix implementation is designed to be fast (e.g. no
      * dynamic memory allocations when initializing or copying).  It
      * is not super-optimized like some existing implementations but
-     * it is good enough for MaRC's purposes.  Furthermore, it is
+     * it is good enough for %MaRC's purposes.  Furthermore, it is
      * really only optimized for small matrices (e.g. 3x3).  Much
      * larger matrices will still incur large matrix element copying
      * overhead.
