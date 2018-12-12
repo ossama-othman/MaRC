@@ -106,6 +106,25 @@ namespace MaRC
 
     private:
 
+        /**
+         * @brief Verify that @a latitude and @a longitude are
+         *        visible.
+         *
+         * Verify that the given @a latitude and @a longitude are
+         * visible in the orthographic projection with the configured
+         * sub-observation point, i.e. on the near side of the body
+         * being mapped.
+         *
+         * @param[in] latitude  Latitude of point being checked for
+         *                      visibility.
+         * @param[in] longitude Longitude of point being checked for
+         *                      visibility.
+         *
+         * @return @c true if point at @a latitude and @a longitude is
+         *         visible, @c false otherwise.
+         */
+        bool is_visible(double latitude, double longitude) const;
+
         /// Retrieve map size dependent parameters.
         /**
          * Retrieve map parameters that may depend on the map
