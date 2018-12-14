@@ -186,27 +186,25 @@ MaRC::Orthographic::Orthographic (
         if (!this->body_->prograde())
             shift = -shift;
 
-        // Body Coordinates
+        DMatrix const body2obs(Geometry::RotYMatrix(this->PA_) *
+                               Geometry::RotXMatrix(-this->sub_observ_lat_));
+
+        // Body coordinates.
         MaRC::DVector const pos(
              radius * std::cos(this->lat_at_center_) * std::sin(shift),
             -radius * std::cos(this->lat_at_center_) * std::cos(shift),
              radius * std::sin(this->lat_at_center_));
 
+        // Observer coordinates.
+        MaRC::DVector const obs(body2obs * pos);
+
         // Centers in kilometers.
-        this->sample_center_ =
-              pos[0] * std::cos(this->PA_)
-            + pos[1] * std::sin(this->PA_) * std::sin(-this->sub_observ_lat_)
-            - pos[2] * std::sin(this->PA_) * std::cos(-this->sub_observ_lat_);
+        this->sample_center_ = obs[0];
 
         // Drop the Y Center (not needed).
-        // YCenter =
-        //       pos[1] * std::cos(-this->sub_observ_lat_)
-        //     + pos[2] * std::sin(-this->sub_observ_lat_);
+        // YCenter = obs[1]
 
-        this->line_center_ =
-              pos[0] * std::sin(this->PA_)
-            - pos[1] * std::sin(-this->sub_observ_lat_) * std::cos(this->PA_)
-            + pos[2] * std::cos(-this->sub_observ_lat_) * std::cos(this->PA_);
+        this->line_center_ = obs[2];
     }
 }
 
