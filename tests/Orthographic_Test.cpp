@@ -42,16 +42,16 @@ namespace
     constexpr double sub_observ_lon = 160;
     constexpr double position_angle = 35;
     constexpr double km_per_pixel   = -1;  // Choose automatically.
+    constexpr double lat_at_center  = 20;
+    constexpr double lon_at_center  = 130;
 
     // Place the sub-observation point at the center of the map.
-    constexpr MaRC::OrthographicCenter center(MaRC::LAT_LON_GIVEN,
-                                              sub_observ_lat,
-                                              sub_observ_lon);
+    MaRC::OrthographicCenter const center;
 
     std::shared_ptr<MaRC::OblateSpheroid> body =
         std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
 
-    auto projection =
+    auto const projection =
         std::make_unique<MaRC::Orthographic>(body,
                                              sub_observ_lat,
                                              sub_observ_lon,
@@ -148,7 +148,15 @@ bool test_make_map()
 
     MaRC::plot_info info(*image, minimum, maximum, blank);
 
-    auto const map =
+    constexpr auto center_sample = samples / 2;
+    constexpr auto center_line   = lines / 2;
+    constexpr auto center_offset = center_line * samples + center_sample;
+
+    // -----------------------------------------------------------------
+    // Case 1: Sub-observeration point at center of image (the default).
+    // -----------------------------------------------------------------
+
+    auto map =
         projection->template make_map<data_type>(info, samples, lines);
 
     if (map.empty())
@@ -168,19 +176,38 @@ bool test_make_map()
     if (non_blank == std::cend(map))
         return false;  // All blank!
 
-    constexpr auto sub_observation_sample = samples / 2;
-    constexpr auto sub_observation_line   = lines / 2;
-    constexpr auto sub_observation_offset =
-        sub_observation_line * samples + sub_observation_sample;
+    auto const sub_observation_data =
+        map[center_offset] * image->scale() + image->offset();
 
-    auto const     sub_observation_data   =
-        map[sub_observation_offset] * image->scale() + image->offset();
+    // -----------------------------------------------------------------
+    // Case 2: Latitude and longitude at center of image provided.
+    // -----------------------------------------------------------------
+
+    // Place the chosen latitude and longitue at the center of the
+    // map translating the body in the projection, accordingly.
+    constexpr MaRC::OrthographicCenter center2(MaRC::LAT_LON_GIVEN,
+                                               lat_at_center,
+                                               lon_at_center);
+
+    auto const p =
+        std::make_unique<MaRC::Orthographic>(body,
+                                             sub_observ_lat,
+                                             sub_observ_lon,
+                                             position_angle,
+                                             km_per_pixel,
+                                             center2);
+
+    map = p->template make_map<data_type>(info, samples, lines);
+
+    auto const lat_at_center_data =
+        map[center_offset] * image->scale() + image->offset();
 
     constexpr int ulps = 2;
 
     return
         !map.empty()
-        && MaRC::almost_equal(sub_observation_data, sub_observ_lat, ulps);
+        && MaRC::almost_equal(sub_observation_data, sub_observ_lat, ulps)
+        && MaRC::almost_equal(lat_at_center_data, lat_at_center, ulps);
 }
 
 /**
