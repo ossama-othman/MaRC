@@ -2,7 +2,8 @@
 /**
  * @file lexer.ll
  *
- * Scanner for MaRC input files.  Requires GNU Flex 2.5.4a or greater.
+ * Scanner for %MaRC input files.  Requires GNU Flex 2.5.4a or
+ * greater.
  *
  * Copyright (C) 1996-1999, 2004, 2017-2018  Ossama Othman
  *
@@ -31,20 +32,35 @@
 
 #include <cstdlib>
 
-#pragma GCC diagnostic ignored "-Wunused-function"
+#ifdef __GNUG__
+# pragma GCC diagnostic ignored "-Wunused-function"
+# pragma GCC diagnostic ignored "-Wunused-parameter"
+#endif
 
-#define YY_USER_ACTION {                                             \
-        YYLTYPE * const loc = yyget_lloc(yyscanner);                 \
-        loc->first_line   = yyget_lineno(yyscanner);                 \
-        loc->last_line    = loc->first_line;                         \
-        loc->first_column = yycolumn;                                \
-        loc->last_column  = yycolumn + yyget_leng(yyscanner) - 1;    \
-        /* yycolumn += yyget_leng(yyscanner); */}
-        /**<
-         * @bug This isn't reentrant!  Global variable being set.
-         */
+#ifdef __clang__
+# pragma clang diagnostic ignored "-Wdeprecated-register"
+#endif
 
-    // int yycolumn = 1;
+#if YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION < 6
+# if YY_FLEX_MINOR_VERSION != 5 || YY_FLEX_SUBMINOR_VERSION < 36
+// The yy{get,set}_column() prototypes were missing prior to Flex 2.5.36.
+int yyget_column(yyscan_t);
+void yyset_column(int, yyscan_t);
+# endif
+#endif
+
+#define YY_USER_ACTION {                                                \
+    auto const loc    = yyget_lloc(yyscanner);                          \
+                                                                        \
+    loc->first_line   = yyget_lineno(yyscanner);                        \
+    loc->last_line    = loc->first_line;                                \
+                                                                        \
+    auto const column = yyget_column(yyscanner);                        \
+    loc->first_column = column == 0 ? 1 : column - 1;                   \
+    loc->last_column  = column + yyget_leng(yyscanner);                 \
+    yyset_column(loc->last_column, yyscanner);                          \
+    }
+
 %}
 
 %option noyywrap
@@ -111,10 +127,10 @@
         "KM"                            { return KM;  }
         "CW"                            { return CW;  }
         "CCW"                           { return CCW; }
-        [[:digit:]]*("."[[:digit:]]*)?(E[-+]?[[:digit:]]{1,3})?  {
-            // Numbers will be handled in double precision
-            yyget_lval(yyscanner)->val =
-                std::strtod(yyget_text(yyscanner), nullptr);
+        [-+]?[[:digit:]]*("."[[:digit:]]*)?(E[-+]?[[:digit:]]{1,3})?  {
+            // String to number conversion occurs in the parser.
+            yyget_lval(yyscanner)->sval = strdup(yyget_text(yyscanner));
+
             return NUM;
         }
         [[:alpha:]]+[[:digit:]]*          {

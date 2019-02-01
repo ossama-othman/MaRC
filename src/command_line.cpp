@@ -1,5 +1,5 @@
 /**
- * @file configuration.cpp
+ * @file command_line.cpp
  *
  * Copyright (C) 2018  Ossama Othman
  *
@@ -22,7 +22,7 @@
 
 #include "command_line.h"
 
-#include <MaRC/config.h>
+#include <marc/config.h>
 
 #include <cassert>
 
@@ -36,6 +36,7 @@
 # ifdef HAVE_SYSEXITS_H
 #   include <sysexits.h>
 # else
+/// Exit code that signifies incorrect invocation of a given command.
 #   define EX_USAGE 64
 # endif
 #endif  // HAVE_ARGP
@@ -139,8 +140,8 @@ MaRC::command_line::parse(int argc, char * argv[])
              * @bug This command line option parser doesn't correctly
              *      handle multiple short options grouped as one,
              *      e.g. "-a -c" grouped as "-ac".  This will become a
-             *      problem if MaRC supports multiple short options in
-             *      the future.
+             *      problem if %MaRC supports multiple short options
+             *      in the future.
              */
 
             if (strcmp(*arg, "--") == 0) {

@@ -18,8 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/VirtualImage.h>
-#include <MaRC/DefaultConfiguration.h>
+#include <marc/scale_and_offset.h>
+#include <marc/DefaultConfiguration.h>
 
 #include <limits>
 #include <type_traits>
@@ -27,6 +27,19 @@
 #include <cassert>
 
 
+/**
+ * Verify that the given @a minimum and @a maximum fit within the data
+ * type @a T.
+ *
+ * @tparam    T       Destination data type.
+ * @param[in] minimum Minimum value to be potentially scaled and
+ *                    offset.
+ * @param[in] maximum Maximum value to be potentially scaled and
+ *                    offset.
+ *
+ * @retval true  Test succeeded.
+ * @retval false Test failed.
+ */
 template <typename T>
 bool test_scaling(double minimum, double maximum)
 {
@@ -44,6 +57,13 @@ bool test_scaling(double minimum, double maximum)
         && (maximum * scale + offset <= T_max);
 }
 
+/**
+ * @test Test scaling of values that can't possibly fit into integer
+ *       types or 32 bit floating point types without complete loss of
+ *       precision.
+ *
+ * @tparam T Destination data type.
+ */
 template <typename T>
 bool test_extreme_value_scaling()
 {
@@ -66,6 +86,11 @@ bool test_extreme_value_scaling()
         || !test_scaling<T>(minimum, maximum);
 }
 
+/**
+ * @test Test scaling of cosine values.
+ *
+ * @tparam T Destination data type.
+ */
 template <typename T>
 bool test_cosine_scaling()
 {
@@ -76,6 +101,11 @@ bool test_cosine_scaling()
     return test_scaling<T>(minimum, maximum);
 }
 
+/**
+ * @test Test scaling of latitude values.
+ *
+ * @tparam T Destination data type.
+ */
 template <typename T>
 bool test_latitude_scaling()
 {
@@ -86,6 +116,11 @@ bool test_latitude_scaling()
     return test_scaling<T>(latitude_low, latitude_high);
 }
 
+/**
+ * @test Test scaling of longitude values.
+ *
+ * @tparam T Destination data type.
+ */
 template <typename T>
 bool test_longitude_scaling()
 {
@@ -111,11 +146,13 @@ bool test_longitude_scaling()
         || test_scaling<T>(longitude_low, longitude_high);
 }
 
-
+/// The canonical main entry point.
 int main()
 {
     // The fixed width integer types used here correspond to the
     // integer data types specified in the FITS standard.
+
+    using namespace std;
 
     return
         test_extreme_value_scaling<uint8_t>()

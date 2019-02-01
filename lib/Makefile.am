@@ -17,6 +17,6 @@
 
 ##  Process this file with automake to create Makefile.in
 
-SUBDIRS = MaRC
+SUBDIRS = marc
 
-DIST_SUBDIRS = MaRC
+DIST_SUBDIRS = marc

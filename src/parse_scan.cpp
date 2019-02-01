@@ -32,8 +32,8 @@ MaRC::ParseParameter::ParseParameter()
     : filename(nullptr)
     , lat_interval(10)
     , lon_interval(10)
-    , minimum(std::numeric_limits<decltype(this->minimum)>::lowest())
-    , maximum(std::numeric_limits<decltype(this->maximum)>::max())
+    , minimum(std::numeric_limits<decltype(this->minimum)>::signaling_NaN())
+    , maximum(std::numeric_limits<decltype(this->maximum)>::signaling_NaN())
     , nibble_left  (0)
     , nibble_right (0)
     , nibble_top   (0)
@@ -77,7 +77,7 @@ MaRC::Radii::validate()
 
     if (count < 2) {
         std::ostringstream s;
-        s << "< " << count << " > valid oblate spheroid "
+        s << count << " valid oblate spheroid "
           << "characteristic(s) specified:"
           << "\n  Equatorial radius: " << this->eq_rad
           << "\n  Polar radius:      " << this->pol_rad

@@ -440,10 +440,12 @@ does @strong{NOT} modify the data being stored in the output file in
 anyway.  It may, however, cause other applications that read the
 output file to transform the data to their true/physical values.  The
 @code{DATA_OFFSET} entry must be entered immediately before the
-@code{DATA_SCALE} entry.  Immediately following these two keywords is
-the @code{DATA_TYPE} keyword.  The @code{DATA_TYPE} keyword is
-required.  It specifies the number format that the mapped data will be
-stored as.  Available data types are:
+@code{DATA_SCALE} entry.
+
+Immediately following these two keywords is the @code{DATA_TYPE}
+keyword.  The @code{DATA_TYPE} keyword is optional.  It specifies the
+number format that the mapped data will be stored as.  Available data
+types are:
 @cindex @code{DATA_TYPE}
 @cindex @code{BYTE}
 @cindex @code{SHORT}
@@ -476,15 +478,16 @@ stored as.  Available data types are:
 
 
 @noindent
-Be aware, for example, that a @code{DOUBLE} type map will occupy four
-times as much memory and storage space then a @code{SHORT} type map of
-the same dimensions.  An example of how all three keywords are used
-follows:
+A @code{DATA_TYPE} will be automatically chosen based on the type of
+images being mapped if one is not specified.  Be aware, for example,
+that a @code{DOUBLE} type map will occupy four times as much space
+then a @code{SHORT} type map of the same dimensions.  An example of
+how all three keywords are used follows:
 
 @example
 DATA_OFFSET:    -1.3        # This is optional.  The default is zero.
 DATA_SCALE:     0.0001      # This is optional.  The default is one.
-DATA_TYPE:      SHORT       # This is required.
+DATA_TYPE:      SHORT       # This is optional.
 @end example
 
 @node    Lat/Lon Grid,  Projections,  Output Data,  Input Files
@@ -508,8 +511,8 @@ between grid points is 10 degrees (planetocentric where applicable
 @cindex @code{GRID_INTERVAL}
 
 @example
-GRID:           YES     # This is required.  Enter "YES" or "NO."
-GRID_INTERVAL:  5       # This is optional.
+GRID:         YES  # This is optional.  "YES" or "NO".  "NO" by default.
+GRID_INTERVAL:5    # This is optional.  Requires GRID.
 @end example
 
 @noindent
@@ -1291,17 +1294,17 @@ similarly for longitudes.  It is possible to map data using either
 planetocentric or planetographic latitudes.  Also, latitude and
 longitude ranges to be mapped can also be specified.
 @cindex @code{LATITUDE_TYPE}
-@cindex @code{CENTRIC_LAT}
-@cindex @code{GRAPHIC_LAT}
+@cindex @code{CENTRIC}
+@cindex @code{GRAPHIC}
 @cindex @code{LO_LAT}
 @cindex @code{HI_LAT}
 @cindex @code{LO_LON}
 @cindex @code{HI_LON}
 The latitude type is set using the @code{LATITUDE_TYPE} keyword.  To
 choose a planetocentric latitude map, the keyword token
-@code{@w{CENTRIC_LAT}} is used.  Planetographic latitudes are selected by
-using the @code{GRAPHIC_LAT} keyword token. The latitude range is set
-by using the @code{LO_LAT} and @code{HI_LAT} keywords, while the
+@code{@w{CENTRIC}} is used.  Planetographic latitudes are selected by
+using the @code{GRAPHIC} keyword token. The latitude range is set by
+using the @code{LO_LAT} and @code{HI_LAT} keywords, while the
 longitude range is set by using the @code{LO_LON} and @code{HI_LON}
 keywords.  The latitude and longitude options as described earlier
 (@pxref{Angle & Range}) also hold for these latitude/longitude range
@@ -1318,7 +1321,7 @@ a MaRC input file:
 TYPE:   SIMPLE_C
         OPTIONS:
                         AVERAGING:      UNWEIGHTED
-                        LATITUDE_TYPE:  GRAPHIC_LAT # or CENTRIC_LAT
+                        LATITUDE_TYPE:  GRAPHIC # or CENTRIC
                         LO_LAT:         38 S  # CENTRIC lat. by default
                         HI_LAT:         8 S
                         LO_LON:         282 W
@@ -1383,16 +1386,18 @@ plane entry immediately following the previous entry.  Each map plane
 entry contains an optional range of valid values that can be mapped
 and a description of what is being mapped.  A plane entry begins with
 the @code{PLANE} keyword.  Following this is the optional entry for
-the valid data range.  The data range is specified by the
-@code{DATA_MIN} and @code{DATA_MAX} keywords.  All data greater than
-or equal to @code{DATA_MIN} and less than or equal to @code{DATA_MAX}
-will be mapped.  If one or both of these keywords are not specified
-then they are assigned the lowest and highest possible values a given
+the valid physical data range.  The physical data range is specified
+by the @code{DATA_MIN} and @code{DATA_MAX} keywords.  All physical
+data greater than or equal to @code{DATA_MIN} and less than or equal
+to @code{DATA_MAX} will be mapped.  If one or both of these keywords
+are not specified, and an appropriate default cannot be chosen, then
+they are assigned the lowest and highest possible values a given
 platform may have for double precision floating point numbers (usually
-on the order of 1E+300 or more), respectively.  ``Data'' in this case
-refers to values being mapped @emph{after} any scaling and offsets
-have been applied.  Here is an example of the beginning of a plane
-entry:
+on the order of 1E+300 or more), respectively.  ``Physical data'' in
+this case refers to values being mapped @emph{after} any scaling and
+offsets have been applied, i.e. physical values (e.g. degrees) as
+opposed to array values.  Here is an example of the beginning of a
+plane entry:
 
 @example
 PLANE:
@@ -2000,7 +2005,7 @@ In cases where course-grained map grids (@pxref{Lat/Lon Grid}) are not
 suitable, MaRC can create maps of the latitudes and longitudes in
 degrees for each valid pixel on the chosen map projection.  Unlike map
 grids that are considered image extensions, latitude and longitude
-planes will placed in the primary map itself.
+planes will be placed in the primary map itself.
 
 To create a map of latitudes a map plane entry such as the following can
 be used:
@@ -2024,34 +2029,38 @@ LONGITUDE
 @cindex emission angle
 @cindex incidence angle
 @cindex phase angle
-The emission angle is the angle between the observer and the normal at a
-given point on the body.  The incidence angle is the angle between the
-sun and the normal at a given point on the body.  The phase angle is the
-angle between the observer and the sun, where a given point on the
-surface of the body is the vertex.  All computations involving these
-angles take into account the distance between the observer and the body.
-The sun is assumed to be an infinite distance away.  Here is an example
-of how to specify the use of the cosines of the incidence angles in the
-plane entry:
+The emission angle is the angle between the observer and the normal at
+a given point on the body.  The incidence angle is the angle between
+the sun and the normal at a given point on the body.  The phase angle
+is the angle between the observer and the sun, where a given point on
+the surface of the body is the vertex.  Emission and phase angle
+calculations take into account the distance between the observer and
+the point on the body.  The sun is assumed to be an infinite distance
+away when calculating incidence and phase angles.
+
+Rather than map the angles themselves, MaRC will instead map the
+corresponding cosines of the emission, incidence and phase angles,
+@emph{mu}, @emph{mu0}, and @emph{cos(phi)}, respectively.  Here
+is an example of how to specify each of the cosine map plane entries:
 
 @example
-MU0:    SUB_OBSERV_LAT:         3.62 S
-        SUB_OBSERV_LON:         14.45 E
-        RANGE:                  1819712.917 KM
-        SUB_SOLAR_LAT:          -1.80
-        SUB_SOLAR_LON:          65.07 E
+# Cosines of emission angles
+MU:     SUB_OBSERV_LAT:    -3.62
+        SUB_OBSERV_LON:    14.45 E
+        RANGE:             1819712.917 KM
+
+# Cosines of incidence angles
+MU0:    SUB_SOLAR_LAT:     -1.80
+        SUB_SOLAR_LON:     65.07 E
+
+# Cosines of phase angles
+PHASE:  SUB_OBSERV_LAT:    3.62 S
+        SUB_OBSERV_LON:    14.45 E
+        RANGE:             1819712.917 KM
+        SUB_SOLAR_LAT:     -1.80
+        SUB_SOLAR_LON:     65.07 E
 @end example
 
-@noindent
-To specify one of the other angles, simply replace @code{MU0} with
-@code{MU} or @code{PHASE}.  Note that all three types of angle entries
-require the sub-observation point, the observer range and the sub-solar
-point to be specified.  This is more for the sake of consistency rather
-than necessity (e.g. the observer range isn't need to compute incidence
-angles). These were described in the image entry section (@pxref{Image
-Geometry}).  Although the sub-observer point and the observer range are
-not needed to compute the incidence angles, they are used to force the
-user to be consistent when entering other angle entries.
 
 @node    Plane Entry,    ,  Virtual Images,  Map Planes
 @comment node-name,     next,           previous, up
@@ -2110,7 +2119,7 @@ or:
 
 @example
         PLANE:
-                LATITUDE:       LATITUDE_TYPE:          GRAPHIC_LAT
+                LATITUDE:       LATITUDE_TYPE:          GRAPHIC
         PLANE:
                 LONGITUDE
         PLANE:
@@ -2141,7 +2150,7 @@ XCOMMENT:Latitude/Longitude grid for this map.
         TYPE:   SIMPLE_C
                 OPTIONS:
                                 AVERAGING:     UNWEIGHTED
-                                LATITUDE_TYPE: GRAPHIC_LAT
+                                LATITUDE_TYPE: GRAPHIC
                                 LO_LAT:        -38 # CENTRIC is default
                                 HI_LAT:        -8
                                 LO_LON:        282 # West since prograde
@@ -2245,14 +2254,9 @@ XCOMMENT:Latitude/Longitude grid for this map.
                                 SUB_OBSERV_LON:         14.45 E
                 # RANGE defaults to units of Kilometers
                                 RANGE:                  1819712.917
-                                SUB_SOLAR_LAT:          -1.80
-                                SUB_SOLAR_LON:          65.07 E
 
         PLANE:
-                MU0:            SUB_OBSERV_LAT:         3.62 S
-                                SUB_OBSERV_LON:         14.45 E
-                                RANGE:                  1819712.917 KM
-                                SUB_SOLAR_LAT:          -1.80
+                MU0:            SUB_SOLAR_LAT:          -1.80
                                 SUB_SOLAR_LON:          65.07 E
 
 # The next map in the input file follows.
@@ -2281,13 +2285,8 @@ XCOMMENT:Latitude / Longitude grid for primary array (the cube)
                 MU:             SUB_OBSERV_LAT:         -2.83
                                 SUB_OBSERV_LON:         56.46 E
                                 RANGE:                  1555114.417 KM
-                                SUB_SOLAR_LAT:          -1.80
-                                SUB_SOLAR_LON:          65.07 E
         PLANE:
-                MU0:            SUB_OBSERV_LAT:         -2.83
-                                SUB_OBSERV_LON:         56.46 E
-                                RANGE:                  1555114.417
-                                SUB_SOLAR_LAT:          -1.80
+                MU0:            SUB_SOLAR_LAT:          -1.80
                                 SUB_SOLAR_LON:          65.07 E
         PLANE:
                 PHASE:          SUB_OBSERV_LAT:         -2.83

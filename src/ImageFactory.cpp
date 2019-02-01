@@ -23,10 +23,30 @@
 #include "ImageFactory.h"
 
 #include <limits>
+#include <cmath>
+#include <stdexcept>
 
 
 MaRC::ImageFactory::ImageFactory()
-    : minimum_(std::numeric_limits<double>::lowest())
-    , maximum_(std::numeric_limits<double>::max())
+    : minimum_(std::numeric_limits<double>::signaling_NaN())
+    , maximum_(std::numeric_limits<double>::signaling_NaN())
 {
+}
+
+void
+MaRC::ImageFactory::minimum(double m)
+{
+    if (std::isnan(m) || this->maximum_ < m)
+        throw std::invalid_argument("invalid source image minimum");
+
+    this->minimum_ = m;
+}
+
+void
+MaRC::ImageFactory::maximum(double m)
+{
+    if (std::isnan(m) || this->minimum_ > m)
+        throw std::invalid_argument("invalid source image maximum");
+
+    this->maximum_ = m;
 }

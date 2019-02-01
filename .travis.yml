@@ -46,11 +46,6 @@ matrix:
         - MATRIX_EVAL="CC=clang && CXX=clang++"
 
 before_script:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        wget https://github.com/gabime/spdlog/archive/v0.17.0.tar.gz -O /tmp/spdlog.tar.gz;
-        tar xf /tmp/spdlog.tar.gz spdlog-0.17.0/include/;
-        export CPPFLAGS="$CPPFLAGS -I$PWD/spdlog-0.17.0/include";
-      fi
     - ./bootstrap
 
 script:
@@ -68,7 +63,7 @@ before_install:
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          brew install cfitsio bison flex texinfo autoconf-archive spdlog;
+          brew install cfitsio bison flex texinfo autoconf-archive fmt;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
           for p in bison gettext flex texinfo; do
@@ -78,5 +73,5 @@ before_install:
 
 after_success:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
-          cpp-coveralls --exclude src/parse.hh --exclude src/parse.cc --exclude src/lexer.cc --exclude spdlog-0.17.0 --exclude tests --gcov-options '\-lp';
+          cpp-coveralls --exclude src/parse.hh --exclude src/parse.cc --exclude src/lexer.cc --exclude opt --exclude tests --gcov-options '\-lp';
       fi

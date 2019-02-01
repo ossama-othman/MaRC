@@ -18,17 +18,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/LatitudeImage.h>
-#include <MaRC/OblateSpheroid.h>
-#include <MaRC/DefaultConfiguration.h>
-#include <MaRC/Mathematics.h>
-#include <MaRC/Constants.h>
+#include <marc/LatitudeImage.h>
+#include <marc/OblateSpheroid.h>
+#include <marc/DefaultConfiguration.h>
+#include <marc/Mathematics.h>
+#include <marc/Constants.h>
+#include <marc/scale_and_offset.h>
 
 #include <memory>
 #include <cstdint>
 #include <cstring>
 
 
+/**
+ * @brief Validate latitude values obtained from MaRC::LatitudeImage.
+ *
+ * @param[in] latitude_image MaRC::LatitudeImage object.
+ * @param[in] expected_lat   Latitude in degrees expected to be
+ *                           returned from
+ *                           MaRC::LatitudeImage::read_data().
+ * @param[in] test_lat       Latitude in radians that was passed as
+ *                           the latitude argument to
+ *                           MaRC::LatitudeImage::read_data().
+ *
+ * @retval true  Test succeeded.
+ * @retval false Test failed.
+ */
 bool test_read_data(
     std::unique_ptr<MaRC::VirtualImage> const & latitude_image,
     double expected_lat,  // degrees
@@ -51,8 +66,11 @@ bool test_read_data(
                               ulps);
 }
 
-
-
+/**
+ * @test Test the MaRC::LatitudeImage class.
+ *
+ * @tparam T Map data type.
+ */
 template <typename T>
 bool test_latitude_image()
 {
@@ -116,11 +134,12 @@ bool test_latitude_image()
         && std::strcmp(latitude_image->unit(), unit) == 0;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return
-        test_latitude_image<int16_t>()
-        && test_latitude_image<uint32_t>()
+        test_latitude_image<std::int16_t>()
+        && test_latitude_image<std::uint32_t>()
         && test_latitude_image<float>()
         && test_latitude_image<double>()
         ? 0 : -1;

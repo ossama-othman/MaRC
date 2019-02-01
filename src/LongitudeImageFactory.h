@@ -41,9 +41,15 @@ namespace MaRC
     {
     public:
 
+        /// Constructor.
+        LongitudeImageFactory();
+
+        /// Destructor.
+        virtual ~LongitudeImageFactory() = default;
+
         /// Create a @c LongitudeImage.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
     };
 

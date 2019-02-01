@@ -26,6 +26,7 @@ include $(top_srcdir)/aminclude_static.am
 AM_CPPFLAGS =           \
   -I$(top_builddir)/lib \
   -I$(top_srcdir)/lib   \
+  $(FMTLIB_CPPFLAGS)    \
   $(CODE_COVERAGE_CPPFLAGS)
 
 bin_PROGRAMS = marc
@@ -33,6 +34,7 @@ bin_PROGRAMS = marc
 AM_YFLAGS = -d
 
 marc_SOURCES = \
+  FITS_file.cpp \
   ProgressConsole.cpp \
   ImageFactory.cpp \
   MuImageFactory.cpp \
@@ -43,6 +45,7 @@ marc_SOURCES = \
   PhotoImageFactory.cpp \
   MosaicImageFactory.cpp \
   MapCommand.cpp \
+  MapParameters.cpp \
   command_line.cpp \
   marc.cpp \
   parse_scan.cpp \
@@ -54,10 +57,13 @@ marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
 marc_LDADD    = \
   $(CFITSIO_LIBS) \
   $(ARGP_LIBS) \
-  $(top_builddir)/lib/MaRC/libMaRC.la \
+  $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \
+  FITS_memory.h \
+  FITS_traits.h \
+  FITS_file.h \
   ProgressConsole.h \
   ImageFactory.h \
   MuImageFactory.h \
@@ -68,13 +74,12 @@ noinst_HEADERS = \
   PhotoImageFactory.h \
   MosaicImageFactory.h \
   MapCommand.h \
-  MapCommand_T.h \
-  MapCommand_T.cpp \
-  FITS_memory.h \
-  FITS_traits.h \
+  MapCommand_t.cpp \
+  MapParameters.h \
   calc.h \
   command_line.h \
   parse_scan.h \
+  strerror.h \
   lexer.hh
 
 BUILT_SOURCES = parse.hh lexer.hh
@@ -92,4 +97,3 @@ lexer.hh: lexer.cc
 #	mv $@.new $@
 
 clean-local: code-coverage-clean
-dist-clean-local: code-coverage-dist-clean

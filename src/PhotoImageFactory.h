@@ -26,8 +26,8 @@
 
 #include "ImageFactory.h"
 
-#include "MaRC/PhotoImageParameters.h"
-#include "MaRC/ViewingGeometry.h"
+#include "marc/PhotoImageParameters.h"
+#include "marc/ViewingGeometry.h"
 
 #include <vector>
 #include <string>
@@ -43,8 +43,8 @@ namespace MaRC
      * @brief Factory class that create PhotoImage objects.
      *
      * This class creates PhotoImage objects.  It is designed to
-     * decouple FITS (for example) file and image operations from the
-     * PhotoImage class.  It also exists to decouple the MaRC parser
+     * decouple %FITS (for example) file and image operations from the
+     * PhotoImage class.  It also exists to decouple the %MaRC parser
      * grammar from the PhotoImage class.  This allows PhotoImage
      * object creation to be delayed until it is time for the data in
      * the PhotoImage to be mapped, which reduces run-time memory
@@ -54,15 +54,19 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
         /**
+         * @brief Constructor.
+         *
          * @param[in] filename Name of file containing image.
          */
         PhotoImageFactory(char const * filename);
 
+        /// Destructor.
+        virtual ~PhotoImageFactory() = default;
+
         /// Create a @c PhotoImage.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
         /// Set the flat field image filename.
         void flat_field(char const * name);
@@ -95,14 +99,15 @@ namespace MaRC
          * corresponding flat-field image elements from the photo
          * image.
          *
-         * @param[in] naxes Photo image dimensions retrieved from its
-         *                  FITS file.
-         *
-         * @return 0 on success.
+         * @param[in,out] img     Image to be flat-field corrected.
+         * @param[in]     samples Number of samples in the image to be
+         *                        flat-field corrected.
+         * @param[in]     lines   Number of samples in the image to be
+         *                        flat-field corrected.
          */
-        int flat_field_correct(long const naxes[2],
-                               std::vector<double> & img) const;
-
+        void flat_field_correct(std::vector<double> & img,
+                                std::size_t samples,
+                                std::size_t lines) const;
 
     private:
 

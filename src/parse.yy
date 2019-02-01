@@ -2,7 +2,7 @@
 /**
  * @file parse.yy
  *
- * Parser for MaRC input files.  Requires GNU Bison 1.35 or greater.
+ * Parser for %MaRC input files.  Requires GNU Bison 1.35 or greater.
  *
  * Copyright (C) 1999, 2004, 2017-2018  Ossama Othman
  *
@@ -24,9 +24,6 @@
  */
 
 %{
-// BodyData strategies
-#include <MaRC/OblateSpheroid.h>
-
 // SourceImage factories
 #include "PhotoImageFactory.h"
 #include "MosaicImageFactory.h"
@@ -36,73 +33,82 @@
 #include "LatitudeImageFactory.h"
 #include "LongitudeImageFactory.h"
 
+// BodyData strategies
+#include <marc/OblateSpheroid.h>
+
 // Image parameters
-#include <MaRC/PhotoImageParameters.h>
-#include <MaRC/ViewingGeometry.h>
+#include <marc/PhotoImageParameters.h>
+#include <marc/ViewingGeometry.h>
 
 // Map Strategies
-#include <MaRC/Mercator.h>
-#include <MaRC/Orthographic.h>
-#include <MaRC/PolarStereographic.h>
-#include <MaRC/SimpleCylindrical.h>
+#include <marc/Mercator.h>
+#include <marc/Orthographic.h>
+#include <marc/PolarStereographic.h>
+#include <marc/SimpleCylindrical.h>
 
-#include <MaRC/Constants.h>
-#include <MaRC/DefaultConfiguration.h>
+#include <marc/Constants.h>
+#include <marc/DefaultConfiguration.h>
 
-#include <MaRC/Log.h>
+#include <marc/Log.h>
+#include <marc/utility.h>
 
 #include "parse_scan.h"
 #include "parse.hh"
 #include "lexer.hh"
 #include "calc.h"
+#include "strerror.h"
 #include "MapCommand.h"
-#include "MapCommand_T.h"
+#include "FITS_traits.h"
 
 #include <stdexcept>
 #include <limits>
 #include <memory>
 #include <cstring>
+#include <cerrno>
 #include <cmath>
 #include <sstream>
 
-YY_DECL;
 
-void yyerror(YYLTYPE * locp,
-             yyscan_t /* scanner */,
-             MaRC::ParseParameter & pp,
-             char const * msg)
-{
-    /**
-     * @bug The line number is off when the parser explicitly calls
-     *      @c yyerror().  For example, if a negative KM_PER_PIXEL
-     *      value is set in an input file the reported line is
-     *      actually the first line that isn't solely whitespace after
-     *      the line containing the invalid KM_PER_PIXEL value.  Line
-     *      numbers in syntax errors, on the other hand, are correct
-     */
-    MaRC::error("{}:{}: {}",
-                pp.filename,
-                locp->first_line,
-                msg);
-}
+YY_DECL;
 
 namespace
 {
+    void yyerror(YYLTYPE * locp,
+                 yyscan_t /* scanner */,
+                 MaRC::ParseParameter & pp,
+                 char const * msg)
+    {
+        /**
+         * @bug The line number is off when the parser explicitly
+         *      calls @c yyerror().  For example, if a negative
+         *      KM_PER_PIXEL value is set in an input file the
+         *      reported line is actually the first line that isn't
+         *      solely whitespace after the line containing the
+         *      invalid KM_PER_PIXEL value.  Line numbers in syntax
+         *      errors, on the other hand, are correct
+         */
+        MaRC::error("{}:{}:{}: {}",
+                    pp.filename,
+                    locp->first_line,
+                    locp->first_column,
+                    msg);
+    }
+
     static constexpr double not_a_number =
         std::numeric_limits<double>::signaling_NaN();
 
     /**
      * @brief Get angle within 360 degree (circle) range.
      *
-     * Determine the angle in the [0,360] (circle) range equivalent to
+     * Determine the angle in the [0,360) (circle) range equivalent to
      * the provided @a angle.  For example, given an @a angle of -365
-     * degrees, the equivalent angle in the [0,360] range would be 355
+     * degrees, the equivalent angle in the [0,360) range would be 355
      * degrees.
      *
      * @param[in] angle Angle in degrees to be placed in 360 degree
      *                  range.
      *
-     * @return Angle in [0,360] degree range equivalent to the
+     * @return Angle in [0,360) degree range equivalent to the
      *         provided @a angle.
      *
      * @todo Merge this function with similar generalized code used in
@@ -121,22 +127,143 @@ namespace
         // negative.
         return angle >= 0 ? angle : angle + circle;
     }
+
+    /**
+     * @brief Verify that the provided %FITS @c BLANK value actually
+     *        fits within the chosen map data type.
+     *
+     * @tparam    T         Map data type.
+     * @param[in] blank     %FITS @c BLANK value explicitly provided
+     *                      by the user.  While it is of type
+     *                      @c double here, it is ultimately stored as
+     *                      an integer.
+     * @param[in] data_type %MaRC map data type name (e.g. "BYTE",
+     *                      "SHORT", etc).
+     */
+    template <typename T>
+    bool
+    verify_data_blank(MaRC::blank_type::value_type blank,
+                      char const * data_type)
+    {
+        constexpr auto minimum = std::numeric_limits<T>::lowest();
+        constexpr auto maximum = std::numeric_limits<T>::max();
+
+        bool const verified = (blank >= minimum && blank <= maximum);
+
+        if (!verified)
+            MaRC::error("DATA_BLANK {} does not fit within "
+                        "map data type {}",
+                        blank,
+                        data_type);
+
+        return verified;
+    }
+
+    /**
+     * @brief Convert string to integer.
+     *
+     * @param[in]  str String containing integer to be converted.
+     * @param[out] end Pointer to first invalid character.
+     * @param[out] num Integer converted from string @a str.
+     *
+     * @see strtoll()
+     *
+     * @note Result must be verified by checking @c errno.
+     * @note This is an implementation detail.  Use @c from_string().
+     */
+    void
+    from_string(char const * str, char ** end, std::intmax_t & num)
+    {
+        constexpr int base = 10;
+
+        num = std::strtoll(str, end, base);
+    }
+
+    /**
+     * @brief Convert string to floating point value (@c double).
+     *
+     * @param[in]  str String containing floating point value to be
+     *                 converted.
+     * @param[out] end Pointer to first invalid character.
+     * @param[out] num Floating point value converted from string
+     *                 @a str.
+     *
+     * @see strtod()
+     *
+     * @note Result must be verified by checking @c errno.
+     * @note This is an implementation detail.  Use @c from_string().
+     */
+    void
+    from_string(char const * str, char ** end, double & num)
+    {
+        num = std::strtod(str, end);
+    }
+
+    /**
+     * @brief Convert string to a number.
+     *
+     * @note This implementation relies on C++ library functions like
+     *       @c std::strtoll() and @c std::strtod() rather than
+     *       @c std::stoll() and @c std::stod() to avoid having an
+     *       exception thrown on conversion error.
+     *
+     * @tparam     T   Integer or floating point type the string
+     *                 to which the string @a str converted.
+     * @param[in]  str String containing number to be converted.
+     * @param[out] num Number converted from string @a str.
+     *
+     * @return Number converted from string.
+     *
+     * @see strtoll()
+     * @see strtod()
+     * @see from_string_helper()
+     */
+    template <typename T>
+    bool
+    from_string(char const * str, T & num)
+    {
+        static_assert(std::is_arithmetic<T>(),
+                      "Type of number converted from a string must "
+                      "be an integer or floating point type.");
+
+        // errno will be non-zero on string-to-number conversion
+        // failure.
+        errno = 0;
+
+        char * end = nullptr;
+
+        from_string(str, &end, num);
+
+        if (errno == ERANGE || (errno != 0 && num == 0)) {
+            constexpr std::size_t BUFLEN = 80;
+            char buf[BUFLEN] = {};
+
+            char const * const err =
+                MaRC::strerror(errno, buf, MaRC::size(buf));
+
+            errno = 0;
+
+            MaRC::error("invalid number ({}): {}", str, err);
+            return false;
+        }
+
+        if (end == str) {
+            MaRC::error("no digits were found in number ({})", str);
+            return false;
+        }
+
+        return true;
+    }
 }
 
 std::string map_filename;
 
-std::string body_name;
 std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
-std::string map_author;
-std::string map_origin;
+std::unique_ptr<MaRC::MapParameters> map_params;
 
 std::list<std::string> comment_list;
 std::list<std::string> xcomment_list;
-
-typedef enum { BYTE, SHORT, LONG, _LONGLONG, FLOAT, DOUBLE } data_type;
-
-data_type map_data_type;
 
 using namespace MaRC;
 
@@ -145,13 +272,6 @@ std::unique_ptr<MapFactory> map_factory;
 // CFITSIO's "naxes" parameter is an array of long values.
 long map_samples = 0;
 long map_lines = 0;
-
-bool   transform_data = false;
-double fits_bzero     = 0;
-double fits_bscale    = 1;
-
-bool blank_set   = false;
-int  fits_blank  = 0;
 
 // To create a grid or not to create a grid?  That is the question.
 bool create_grid = false;
@@ -182,10 +302,6 @@ std::size_t num_planes = 0;
 // Used to ensure num_planes are defined in sequence
 std::size_t expected_plane = 1;
 
-std::size_t nibble_left_val   = 0;
-std::size_t nibble_right_val  = 0;
-std::size_t nibble_top_val    = 0;
-std::size_t nibble_bottom_val = 0;
 double minimum = not_a_number;
 double maximum = not_a_number;
 
@@ -213,12 +329,9 @@ double hi_lon = MaRC::default_configuration::longitude_high;
 // Orthographic and Perspective projection options
 
 // Sub-observer latitude and longitude.
-MaRC::SubObserv sub_observation_data = {
-    not_a_number,
-    not_a_number
-};
+MaRC::SubObserv sub_observation_data = { 0, 0 };
 
-double position_angle_val = not_a_number;   // Position (north) angle
+double position_angle_val = 0;   // Position (north) angle
 MaRC::OrthographicCenter ortho_center;
 
 /**
@@ -227,7 +340,7 @@ MaRC::OrthographicCenter ortho_center;
  * @brief Functor used for calling @c free() on pointers.
  *
  * This functor is used as the @c Deleter template parameter to the
- * type alias of @c std::unique_ptr<> below used for automatically
+ * type alias of @c std::unique_ptr below used for automatically
  * freeing string values created by the parser.
  */
 struct deallocate_with_free
@@ -256,35 +369,37 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %param { void * scanner } { MaRC::ParseParameter & pp }
 
 %locations
-%error-verbose
+
+%define parse.lac full
+%define parse.error verbose
 
 /* Generate reentrant parser */
-%pure-parser
+%define api.pure full
 
 
 %union
  {
-     char * sval;
-     double val;        // For returning numbers
-     bool bval;         // For returning boolean values
-     MaRC::sym_entry * tptr;  // For returning symbol-table pointers
+     bool bval;           // For returning boolean values.
+     char * sval;         // For returning string values.
+     std::intmax_t ival;  // For returning integer values.
+     double val;          // For returning floating point values.
+     MaRC::sym_entry * tptr;  // For returning symbol-table pointers.
      MaRC::SubObserv sub_observ_data; // Sub-observation point.
      MaRC::SubSolar sub_solar_data;   // Sub-solar point.
      MaRC::Radii radii_data;          // Oblate spheroid radii.
 }
 
-%token <val> NUM
+%token <sval> NUM
 %token <tptr> VAR FNCT
 %token <sval> _STRING
 %type <val> latitude latitude_sub longitude
-%type <val> position_angle range size expr
+%type <val> position_angle range expr
+%type <ival> integer size
 %type <bval> rotation
 %type <sub_observ_data> sub_observ
 %type <sub_solar_data> sub_solar
 %type <radii_data> radii
-%type <val> eq_rad
-%type <val> pol_rad
-%type <val> flattening
+%type <val> eq_rad pol_rad flattening
 %right '='
 %left '-' '+'
 %left '*' '/'
@@ -292,35 +407,74 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 %right '^'    // Exponentiation
 
 // Map Projections
-%token _ALBEQV1 _ALBEQV2 _LAMCNF1 _LAMCNF2 _LAMCYLEQ _LAMPOLEQ
-%token _MERCATOR _ORTHO _P_STEREO _PERSPECTIVE _SIMPLE_C _SINUSOID
+%token _ALBEQV1 "ALBEQV1"
+%token _ALBEQV2 "ALBEQV2"
+%token _LAMCNF1 "LAMCNF1"
+%token _LAMCNF2 "LAMCNF2"
+%token _LAMCYLEQ "LAMCYLEQ"
+%token _LAMPOLEQ "LAMPOLEQ"
+%token _MERCATOR
+%token _ORTHO "ORTHO"
+%token _P_STEREO "P_STEREO"
+%token _PERSPECTIVE "PERSPECTIVE"
+%token _SIMPLE_C "SIMPLE_C"
+%token _SINUSOID "SINUSOID"
 %token _IDENTITY
 
 // Reserved input file keywords
-%token _MAP AUTHOR ORIGIN _COMMENT XCOMMENT
-%token _DATA_TYPE DATA_OFFSET DATA_SCALE DATA_BLANK
+%token _MAP "MAP"
+%token AUTHOR ORIGIN XCOMMENT
+%token _COMMENT "COMMENT"
+%token _DATA_TYPE "DATA_TYPE"
+%token DATA_OFFSET DATA_SCALE DATA_BLANK
 %token GRID GRID_INTERVAL LAT_GRID_INTERVAL LON_GRID_INTERVAL
-%token MAP_TYPE SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
+%token MAP_TYPE "TYPE"
+%token SAMPLES LINES BODY PLANE DATA_MIN DATA_MAX
 %token PROGRADE RETROGRADE FLATTENING
-%token AVERAGING _NONE WEIGHTED UNWEIGHTED
-%token OPTIONS EQ_RAD POL_RAD ROTATION _IMAGE _PHOTO _MU _MU0 _PHASE
+%token AVERAGING  WEIGHTED UNWEIGHTED
+%token _NONE "NONE"
+%token OPTIONS EQ_RAD POL_RAD ROTATION
+%token _IMAGE "IMAGE"
+%token _PHOTO "PHOTO"
+%token _MU "MU"
+%token _MU0 "MU0"
+%token _PHASE "PHASE"
 %token PLANES LO_LAT HI_LAT LO_LON HI_LON
 %token LATITUDE LONGITUDE
 %token LATITUDE_TYPE CENTRIC GRAPHIC
 %token LAT_AT_CENTER LON_AT_CENTER
 %token SAMPLE_OA LINE_OA STD_LAT STD_LAT_1 STD_LAT_2 MAX_LAT POLE
 %token NIBBLE NIBBLE_LEFT NIBBLE_RIGHT NIBBLE_TOP NIBBLE_BOTTOM
-%token INVERT HORIZONTAL VERTICAL BOTH _INTERPOLATE SAMPLE_CENTER LINE_CENTER
-%token FLAT_FIELD MINNAERT AUTO TABLE GEOM_CORRECT _EMI_ANG_LIMIT TERMINATOR
+%token INVERT HORIZONTAL VERTICAL BOTH
+%token _INTERPOLATE "INTERPOLATE"
+%token SAMPLE_CENTER LINE_CENTER
+%token FLAT_FIELD MINNAERT AUTO TABLE GEOM_CORRECT TERMINATOR
+%token _EMI_ANG_LIMIT "EMI_ANG_LIMIT"
 %token SUB_OBSERV_LAT SUB_OBSERV_LON POSITION_ANGLE
-%token SUB_SOLAR_LAT SUB_SOLAR_LON RANGE _REMOVE_SKY
+%token SUB_SOLAR_LAT SUB_SOLAR_LON RANGE
+%token _REMOVE_SKY "REMOVE_SKY"
 %token FOCAL_LENGTH PIXEL_SCALE ARCSEC_PER_PIX KM_PER_PIXEL
-%token BYTE_DATA SHORT_DATA LONG_DATA LONGLONG_DATA FLOAT_DATA DOUBLE_DATA
+%token BYTE_DATA "BYTE"
+%token SHORT_DATA "SHORT"
+%token LONG_DATA "LONG"
+%token LONGLONG_DATA "LONGLONG"
+%token FLOAT_DATA "FLOAT"
+%token DOUBLE_DATA "DOUBLE"
 %token CW CCW
-%token YES NO UNMATCHED
+%token YES NO
 
 // Unit tokens
 %token AU KM
+
+ /**
+  * @todo Is there a way to get Bison's verbose error output to print
+  *       the actual unmatched text rather than "UNMATCHED" or "text"
+  *       as we define below?
+  */
+%token UNMATCHED "text"
+
+// End of file
+%token END 0 "end of file"
 
 // Grammar follows
 %%
@@ -335,19 +489,14 @@ user_file_parse:
           // Reset defaults to those chosen by the user.  If none were
           // chosen by the user, the values will remain unchanged.
 
-          pp.lat_interval  = lat_interval;
-          pp.lon_interval  = lon_interval;
+          pp.lat_interval = lat_interval;
+          pp.lon_interval = lon_interval;
 
           if (!std::isnan(minimum))
               pp.minimum = minimum;
 
           if (!std::isnan(maximum))
               pp.maximum = maximum;
-
-          pp.nibble_left   = nibble_left_val;
-          pp.nibble_right  = nibble_right_val;
-          pp.nibble_top    = nibble_top_val;
-          pp.nibble_bottom = nibble_bottom_val;
         }
 ;
 
@@ -390,94 +539,23 @@ map_setup:
                             num_planes);
                 YYERROR;
             } else {
-                std::unique_ptr<MaRC::MapCommand> map_command;
+                auto command =
+                    std::make_unique<MaRC::MapCommand>(
+                        std::move(map_filename),
+                        map_samples,
+                        map_lines,
+                        std::move(map_factory),
+                        std::move(map_params));
 
-                switch (map_data_type) {
-                case BYTE:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::byte_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case SHORT:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::short_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case LONG:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::long_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case _LONGLONG:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::longlong_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case FLOAT:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::float_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                case DOUBLE:
-                    map_command =
-                        std::make_unique<MaRC::MapCommand_T<FITS::double_type>>(
-                            std::move(map_filename),
-                            std::move(body_name),
-                            std::move(map_factory),
-                            map_samples,
-                            map_lines);
-                    break;
-
-                default:
-                    throw std::invalid_argument("Unrecognized map data type");
-                    break;
-                }
-
-                map_command->author(map_author);
-                map_command->origin(map_origin);
-
-                map_command->comment_list(comment_list);
-                map_command->xcomment_list(xcomment_list);
+                command->comment_list(comment_list);
+                command->xcomment_list(xcomment_list);
 
                 if (create_grid)
-                    map_command->grid_intervals(lat_interval, lon_interval);
+                    command->grid_intervals(lat_interval, lon_interval);
 
-                if (transform_data) {
-                    map_command->data_zero(fits_bzero);
-                    map_command->data_scale(fits_bscale);
-                }
+                command->image_factories(std::move(image_factories));
 
-                if (blank_set)
-                    map_command->data_blank(fits_blank);
-
-                map_command->image_factories(std::move(image_factories));
-
-                pp.push_command(std::move(map_command));
+                pp.push_command(std::move(command));
             }
         }
 ;
@@ -487,17 +565,14 @@ map_entry:
             auto_free<char> str($3);
             map_filename = $3;
 
+            map_params = std::make_unique<MaRC::MapParameters>();
+
             // Reset items that may have been set for the previous
             // map.
-            map_author.clear();
-            map_origin.clear();
-
             comment_list.clear();
             xcomment_list.clear();
 
             create_grid = false;
-            transform_data = false;
-            blank_set = false;
 
             image_factories.clear();
 
@@ -512,11 +587,19 @@ map_entry:
 ;
 
 author:
-        | AUTHOR ':' _STRING { auto_free<char> str($3); map_author = $3; }
+        %empty
+        | AUTHOR ':' _STRING {
+            auto_free<char> str($3);
+            map_params->author($3);
+        }
 ;
 
 origin:
-        | ORIGIN ':' _STRING { auto_free<char> str($3); map_origin = $3; }
+        %empty
+        | ORIGIN ':' _STRING {
+            auto_free<char> str($3);
+            map_params->origin($3);
+        }
 ;
 
 comments:
@@ -525,6 +608,7 @@ comments:
 ;
 
 comment:
+        %empty
         | comment comment_setup
 ;
 
@@ -536,7 +620,8 @@ comment_setup:
 ;
 
 xcomment:
-        |  xcomment xcomment_setup
+        %empty
+        | xcomment xcomment_setup
 ;
 
 xcomment_setup:
@@ -554,44 +639,66 @@ data_info:
 ;
 
 data_offset:
-        | DATA_OFFSET ':' size  {
-            fits_bzero = $3;
-            transform_data = true;
-        }
+        %empty
+        | DATA_OFFSET ':' expr  { map_params->bzero($3); }
 ;
 
 data_scale:
-        | DATA_SCALE ':' size   {
-            fits_bscale = $3;
-            transform_data = true;
-        }
+        %empty
+        | DATA_SCALE ':' expr   { map_params->bscale($3); }
 ;
 
 data_type:
-        _DATA_TYPE ':' BYTE_DATA       { map_data_type = BYTE;      }
-        | _DATA_TYPE ':' SHORT_DATA    { map_data_type = SHORT;     }
-        | _DATA_TYPE ':' LONG_DATA     { map_data_type = LONG;      }
-        | _DATA_TYPE ':' LONGLONG_DATA { map_data_type = _LONGLONG; }
-        | _DATA_TYPE ':' FLOAT_DATA    { map_data_type = FLOAT;     }
-        | _DATA_TYPE ':' DOUBLE_DATA   { map_data_type = DOUBLE;    }
+        %empty
+        | _DATA_TYPE ':' BYTE_DATA     { map_params->bitpix(BYTE_IMG);     }
+        | _DATA_TYPE ':' SHORT_DATA    { map_params->bitpix(SHORT_IMG);    }
+        | _DATA_TYPE ':' LONG_DATA     { map_params->bitpix(LONG_IMG);     }
+        | _DATA_TYPE ':' LONGLONG_DATA { map_params->bitpix(LONGLONG_IMG); }
+        | _DATA_TYPE ':' FLOAT_DATA    { map_params->bitpix(FLOAT_IMG);    }
+        | _DATA_TYPE ':' DOUBLE_DATA   { map_params->bitpix(DOUBLE_IMG);   }
 ;
 
 data_blank:
-        | DATA_BLANK ':' expr {
-            if (map_data_type == FLOAT || map_data_type == DOUBLE) {
+        %empty
+        | DATA_BLANK ':' integer {
+            auto const bitpix = map_params->bitpix();
+            if (bitpix < 0) {  // Negative bitpix for floating point.
                 throw std::invalid_argument(
-                    "\"BLANK\" keyword not valid with "
+                    "\"DATA_BLANK\" keyword not valid with "
                     "floating point types.");
             } else {
-              fits_blank = static_cast<int>($3);
-              blank_set = true;
+                bool verified = false;
+
+                if (bitpix == BYTE_IMG)
+                    verified =
+                        verify_data_blank<FITS::byte_type>($3, "BYTE");
+                else if (bitpix == SHORT_IMG)
+                    verified =
+                        verify_data_blank<FITS::short_type>($3, "SHORT");
+                else if (bitpix == LONG_IMG)
+                    verified =
+                        verify_data_blank<FITS::long_type>($3, "LONG");
+                else if (bitpix == LONGLONG_IMG)
+                    verified =
+                        verify_data_blank<FITS::longlong_type>($3,
+                                                               "LONGLONG");
+                else
+                    MaRC::warn("DATA_BLANK value specified without "
+                               "map data type.");
+
+                if (!verified)
+                    YYERROR;
+
+                map_params->blank(
+                    static_cast<blank_type::value_type>($3));
             }
         }
 ;
 
 grid:
-        grid_yes_or_no
-        grid_intervals
+        %empty
+        | grid_yes_or_no
+        | grid_yes_or_no grid_intervals
 ;
 
 grid_yes_or_no:
@@ -604,7 +711,7 @@ grid_yes_or_no:
 ;
 
 grid_intervals:
-        | grid_interval
+        grid_interval
         | lat_grid_interval
         | lon_grid_interval
         | lat_grid_interval lon_grid_interval
@@ -612,11 +719,11 @@ grid_intervals:
 ;
 
 grid_interval:
-        GRID_INTERVAL ':' size {
+        GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Grid interval value (" << $3 << ") "
-                  << "less than or equal to zero";
+                  << "must be greater than zero.";
 
                 throw std::invalid_argument(s.str ());
             } else {
@@ -627,11 +734,11 @@ grid_interval:
 ;
 
 lat_grid_interval:
-        LAT_GRID_INTERVAL ':' size {
+        LAT_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Latitude grid interval value (" << $3 << ") "
-                  << "less than or equal to zero";
+                  << "must be greater than zero.";
 
                 throw std::invalid_argument(s.str ());
             } else {
@@ -641,11 +748,11 @@ lat_grid_interval:
 ;
 
 lon_grid_interval:
-        LON_GRID_INTERVAL ':' size {
+        LON_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
                 std::ostringstream s;
                 s << "Longitude grid interval value (" << $3 << ") "
-                  << "less than or equal to zero";
+                  << "must be greater than zero.";
 
                 throw std::invalid_argument(s.str ());
             } else {
@@ -672,7 +779,7 @@ projection_type:
         | simple_c
 ;
 
-planes: | PLANES ':' size         {
+planes: %empty | PLANES ':' size {
           /**
            * @deprecated The "PLANES" keyword is no longer necessary.
            *             The number of planes is set dynamically as
@@ -712,14 +819,19 @@ lines:  LINES ':' size  {
         }
 ;
 
-size:   expr { $$ = $1; }
+integer: NUM {
+            if (!from_string($1, $$))
+                YYERROR;
+        }
+
+size:   integer { $$ = $1; }
 ;
 
 body:   BODY ':' _STRING
         radii
         rotation {
           auto_free<char> str($3);
-          body_name = $3;
+          map_params->object($3);
 
           ($4).validate();
 
@@ -797,33 +909,37 @@ plane_setup:
         plane_size
         plane_data_range
         plane_type      {
-          image_factory->minimum(minimum);
-          image_factory->maximum(maximum);
+            if (!std::isnan(minimum))
+                image_factory->minimum(minimum);
 
-          image_factories.push_back(std::move(image_factory));
+            if (!std::isnan(maximum))
+                image_factory->maximum(maximum);
 
-          photo_factories.clear();
+            image_factories.push_back(std::move(image_factory));
+
+            photo_factories.clear();
         }
 ;
 
 plane_size:
         PLANE ':' size  {
-          /**
-           * @deprecated It is no longer necessary to specify
-           *             the plane number.
-           *
-           * @todo Remove support for specifying the plane
-           *       number.
-           */
+            /**
+             * @deprecated It is no longer necessary to specify
+             *             the plane number.
+             *
+             * @todo Remove support for specifying the plane
+             *       number.
+             */
             if (num_planes == 0) {
                 yyerror(&yylloc,
                         scanner,
                         pp,
                         "number of planes not entered prior to "
                         "plane definition");
+                YYERROR;
             } else {
-                // MaRC::info("specifying the map plane number is no "
-                //            "longer necessary.)";
+                MaRC::debug("specifying the map plane number is no "
+                            "longer necessary.");
             }
 
             std::size_t const map_plane = static_cast<std::size_t>($3);
@@ -859,10 +975,11 @@ plane_size:
 ;
 
 plane_data_range:
-        | DATA_MIN ':' size { minimum = $3; }
-        | DATA_MAX ':' size { maximum = $3; }
-        | DATA_MIN ':' size
-          DATA_MAX ':' size {
+        %empty
+        | DATA_MIN ':' expr { minimum = $3; }
+        | DATA_MAX ':' expr { maximum = $3; }
+        | DATA_MIN ':' expr
+          DATA_MAX ':' expr {
             if ($3 < $6) {
                 minimum = $3;
                 maximum = $6;
@@ -877,8 +994,8 @@ plane_data_range:
                 YYERROR;
             }
         }
-        | DATA_MAX ':' size
-          DATA_MIN ':' size {
+        | DATA_MAX ':' expr
+          DATA_MIN ':' expr {
             if ($6 < $3) {
                 minimum = $6;
                 maximum = $3;
@@ -938,16 +1055,6 @@ image_setup:
         sub_solar
         range
         image_geometry {
-          photo_parameters->nibble_left(nibble_left_val);
-          photo_parameters->nibble_right(nibble_right_val);
-          photo_parameters->nibble_top(nibble_top_val);
-          photo_parameters->nibble_bottom(nibble_bottom_val);
-
-          nibble_left_val   = pp.nibble_left;
-          nibble_right_val  = pp.nibble_right;
-          nibble_top_val    = pp.nibble_top;
-          nibble_bottom_val = pp.nibble_bottom;
-
           viewing_geometry->sub_observ(($13).lat, ($13).lon);
           viewing_geometry->position_angle($14);
           viewing_geometry->sub_solar(($15).lat, ($15).lon);
@@ -1006,7 +1113,7 @@ image_initialize:
             photo_parameters =
                 std::make_unique<MaRC::PhotoImageParameters>();
 
-            // Set user default nibbling values.
+            // Set default user configured nibbling values.
             photo_parameters->nibble_left  (pp.nibble_left);
             photo_parameters->nibble_right (pp.nibble_right);
             photo_parameters->nibble_top   (pp.nibble_top);
@@ -1024,6 +1131,7 @@ image_initialize:
 ;
 
 nibbling:
+        %empty
         | nibble
         | nibble_samples
         | nibble_lines
@@ -1034,10 +1142,15 @@ nibbling:
 nibble:
         NIBBLE ':' size {
           if ($3 >= 0) {
-              nibble_left_val   = static_cast<std::size_t>($3);
-              nibble_right_val  = static_cast<std::size_t>($3);
-              nibble_top_val    = static_cast<std::size_t>($3);
-              nibble_bottom_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_left   = $3;
+                  pp.nibble_right  = $3;
+                  pp.nibble_top    = $3;
+                  pp.nibble_bottom = $3;
+              }
           } else {
               /**
                * @todo Call yyerror() here instead, e.g.:
@@ -1067,7 +1180,12 @@ nibble_lines:
 nibble_left:
         NIBBLE_LEFT ':' size {
           if ($3 >= 0) {
-              nibble_left_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_left($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_left = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_LEFT entered: {}",
                           $3);
@@ -1079,7 +1197,12 @@ nibble_left:
 nibble_right:
         NIBBLE_RIGHT ':' size {
           if ($3 >= 0) {
-              nibble_right_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_right($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_right = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_RIGHT entered: {}",
                           $3);
@@ -1091,7 +1214,12 @@ nibble_right:
 nibble_top:
         NIBBLE_TOP ':' size {
           if ($3 >= 0) {
-              nibble_top_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_top($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_top = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_TOP entered: {}",
                           $3);
@@ -1103,7 +1231,12 @@ nibble_top:
 nibble_bottom:
         NIBBLE_BOTTOM ':' size {
           if ($3 >= 0) {
-              nibble_bottom_val = static_cast<std::size_t>($3);
+              if (photo_parameters) {
+                  photo_parameters->nibble_bottom($3);
+              } else {
+                  // Nibble value from user config file.
+                  pp.nibble_bottom = $3;
+              }
           } else {
               MaRC::error("incorrect value for NIBBLE_BOTTOM entered: {}",
                           $3);
@@ -1113,26 +1246,26 @@ nibble_bottom:
 ;
 
 inversion:
+        %empty
         | INVERT ':' VERTICAL   { photo_factory->invert(true,  false); }
         | INVERT ':' HORIZONTAL { photo_factory->invert(false, true);  }
         | INVERT ':' BOTH       { photo_factory->invert(true,  true);  }
 ;
 
 image_interpolate:
+        %empty
         /* If INTERPOLATE is not found, use the program default */
         | _INTERPOLATE ':' YES { photo_factory->interpolate(true);  }
         | _INTERPOLATE ':' NO  { photo_factory->interpolate(false); }
 ;
 
 remove_sky:
+        %empty
         | _REMOVE_SKY ':' YES { photo_parameters->remove_sky(true);  }
         | _REMOVE_SKY ':' NO  { photo_parameters->remove_sky(false); }
 ;
 
-mu:     _MU ':'
-        sub_observ
-        range
-        sub_solar       {
+mu:    _MU ':' sub_observ range {
             // Mu (potentially scaled to increase significant digits)
             image_factory =
                 std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
@@ -1140,9 +1273,29 @@ mu:     _MU ':'
                                                        ($3).lon,
                                                        $4);
         }
+        | _MU ':'
+          sub_observ
+          range
+          sub_solar /* Unused */ {
+            // Mu (potentially scaled to increase significant digits)
+            image_factory =
+                std::make_unique<MaRC::MuImageFactory>(oblate_spheroid,
+                                                       ($3).lat,
+                                                       ($3).lon,
+                                                       $4);
+
+            MaRC::info("sub-solar point is no longer needed for MU planes");
+        }
 ;
 
-mu0:    _MU0 ':'
+mu0:    _MU0 ':' sub_solar {
+          // Mu0 (potentially scaled to increase significant digits)
+          image_factory =
+              std::make_unique<MaRC::Mu0ImageFactory>(oblate_spheroid,
+                                                      ($3).lat,
+                                                      ($3).lon);
+        }
+        | _MU0 ':'
         sub_observ      /* Unused */
         range           /* Unused */
         sub_solar       {
@@ -1151,13 +1304,13 @@ mu0:    _MU0 ':'
               std::make_unique<MaRC::Mu0ImageFactory>(oblate_spheroid,
                                                       ($5).lat,
                                                       ($5).lon);
+
+          MaRC::info("sub-observer point and range are no longer "
+                     "needed for MU0 planes");
         }
 ;
 
-phase:  _PHASE ':'
-        sub_observ
-        range
-        sub_solar       {
+phase:  _PHASE ':' sub_observ range sub_solar {
           // cos(phase angle) (potentially scaled to increase
           //                   significant digits)
           image_factory =
@@ -1190,6 +1343,7 @@ lon_plane: LONGITUDE {
 ;
 
 flat_field:
+        %empty
         | FLAT_FIELD ':' _STRING {
             auto_free<char> str($3);
             photo_factory->flat_field($3);
@@ -1197,6 +1351,7 @@ flat_field:
 ;
 
 photo_correct:
+        %empty
         | MINNAERT ':' expr { /* Image->setMinnaertExponent($3); */ }
         | MINNAERT ':' AUTO {
             /* Image->setLimbCorrect(SourceImage::MINNAERT_AUTO); */ }
@@ -1205,6 +1360,7 @@ photo_correct:
 ;
 
 geom_correct:
+        %empty
         /* Do not perform geometric abberation correction if
            GEOM_CORRECT keyword not present */
         | GEOM_CORRECT ':' YES  {
@@ -1217,10 +1373,12 @@ geom_correct:
 ;
 
 emi_ang_limit:
+        %empty
         | _EMI_ANG_LIMIT ':' expr { viewing_geometry->emi_ang_limit($3); }
 ;
 
 terminator:
+        %empty
         | TERMINATOR ':' YES { viewing_geometry->use_terminator(true);  }
         | TERMINATOR ':' NO  { viewing_geometry->use_terminator(false); }
 ;
@@ -1241,7 +1399,17 @@ image_geometry:
 ;
 
 arcsec_per_pix:
-        ARCSEC_PER_PIX ':' expr  { arcsec_per_pix_val = $3; }
+        ARCSEC_PER_PIX ':' expr {
+            if ($3 > 0) {
+                arcsec_per_pix_val = $3;
+            } else {
+                yyerror(&yylloc,
+                        scanner,
+                        pp,
+                        "ARCSEC_PER_PIX must be greater than zero.");
+                YYERROR;
+            }
+        }
 ;
 
 lens_geometry:
@@ -1292,10 +1460,10 @@ albeqv2_type:
 ;
 
 albeqv2_options:
-        |
-        options
-        pole
-        two_std_lats
+        %empty
+        | options
+          pole
+          two_std_lats
 ;
 */
 
@@ -1324,11 +1492,11 @@ lamcnf1_type:
 ;
 
 lamcnf1_options:
-        |
-        options
-        pole
-        one_std_lat
-        max_latitude
+        %empty
+        | options
+          pole
+          one_std_lat
+          max_latitude
 ;
 */
 
@@ -1345,11 +1513,11 @@ lamcnf2_type:
 ;
 
 lamcnf2_options:
-        |
-        options
-        pole
-        two_std_lats
-        max_latitude
+        %empty
+        | options
+          pole
+          two_std_lats
+          max_latitude
 ;
 */
 
@@ -1374,9 +1542,9 @@ lampoleq_type:
 ;
 
 lampoleq_options:
-        |
-        options
-        pole
+        %empty
+        | options
+          pole
 ;
 */
 
@@ -1390,6 +1558,7 @@ mercator:
 ;
 
 mercator_options:
+        %empty
         | options
 ;
 
@@ -1409,16 +1578,18 @@ ortho:  MAP_TYPE ':' _ORTHO
             sub_observation_data.lat = 0;
             sub_observation_data.lon = 0;
             km_per_pixel_val = -1;
-            position_angle_val = not_a_number;
+            position_angle_val = 0;
             ortho_center.geometry = MaRC::DEFAULT;
         }
 ;
 
 ortho_options:
+        %empty
         | options ortho_optsub
 ;
 
 ortho_optsub:
+        %empty
         | sub_observ {
           sub_observation_data.lat = ($1).lat;
           sub_observation_data.lon = ($1).lon;
@@ -1595,6 +1766,7 @@ lat_lon_given:
 ;
 
 optical_axis:
+        %empty
         | SAMPLE_OA ':' expr
           LINE_OA   ':' expr  { viewing_geometry->optical_axis($3, $6); }
         | LINE_OA   ':' expr
@@ -1614,12 +1786,13 @@ perspective_type:
 ;
 
 perspective_options:
-        |
-        options { in_perspective_options = true; }
-        perspective_optsub
+        %empty
+        | options { in_perspective_options = true; }
+          perspective_optsub
 ;
 
 perspective_optsub:
+        %empty
         | centers
         | sub_observ {}
         | position_angle {}
@@ -1649,10 +1822,8 @@ p_stereo:
 ;
 
 p_stereo_options:
-        |
-        options
-        pole
-        max_latitude
+        %empty
+        | options pole max_latitude
 ;
 
 /* -------------- Simple Cylindrical (Rectangular ?) Projection ------------ */
@@ -1678,14 +1849,13 @@ simple_c:
 ;
 
 simple_c_options:
-        |
-        options
-        lat_type
-        simple_c_latlonrange
+        %empty
+        | options lat_type simple_c_latlonrange
 ;
 
 lat_type:
-        | LATITUDE_TYPE ':' CENTRIC   { graphic_lat = false; }
+        %empty
+        | LATITUDE_TYPE ':' CENTRIC { graphic_lat = false; }
         | LATITUDE_TYPE ':' GRAPHIC { graphic_lat = true;  }
         /**
          * @deprecated The following are only for backward
@@ -1696,6 +1866,7 @@ lat_type:
 ;
 
 simple_c_latlonrange:
+        %empty
         | lat_range
         | lon_range
         | lat_range lon_range
@@ -1756,6 +1927,7 @@ sinusoid_type:
 ;
 
 sinusoid_options:
+        %empty
         | options
 ;
 */
@@ -1775,6 +1947,7 @@ options_common:
 ;
 
 averaging:
+        %empty
         | AVERAGING ':' UNWEIGHTED {
               averaging_type = MaRC::MosaicImage::AVG_UNWEIGHTED; }
         | AVERAGING ':' WEIGHTED {
@@ -1786,6 +1959,7 @@ averaging:
 /* ----------------------- General Subroutines ---------------------------- */
 /*
 one_std_lat:
+        %empty
         | STD_LAT ':' latitude {
           if ((north_pole && $3 > 0 && $3 < 90) ||
               (!north_pole && $3 < 0 && $3 > -90)) {
@@ -1803,6 +1977,7 @@ one_std_lat:
 ;
 
 two_std_lats:
+        %empty
         | STD_LAT_1 ':' latitude
           STD_LAT_2 ':' latitude {
             if (std::abs($6) < std::abs($3) &&
@@ -1827,6 +2002,7 @@ two_std_lats:
 */
 
 max_latitude:
+        %empty
         | MAX_LAT ':' latitude { max_lat = $3; }
 ;
 
@@ -1905,7 +2081,10 @@ longitude:
 
 /* --------------- Multifunction Infix Notation Calculator ----------------- */
 /* All numbers will be handled with double precision here. */
-expr:     NUM                   { $$ = $1;                         }
+expr:   NUM {
+            if (!from_string($1, $$))
+                YYERROR;
+        }
         | VAR                   { $$ = $1->value.var;              }
         | VAR '=' expr          { $$ = $3; $1->value.var = $3;     }
         | FNCT '(' expr ')'     { $$ = (*($1->value.fnctptr))($3); }
@@ -1916,15 +2095,13 @@ expr:     NUM                   { $$ = $1;                         }
             if ($3 != 0)
                 $$ = $1 / $3;
             else {
-                $$ = $1;
-
-                MaRC::error("{}.{}-{}.{}: division by zero",
-                            @3.first_line,
-                            @3.first_column,
-                            @3.last_line,
-                            @3.last_column);
+                yyerror(&yylloc,
+                        scanner,
+                        pp,
+                        "division by zero");
+                YYERROR;
             }
-                                }
+        }
         | '-' expr  %prec NEG   { $$ = -$2;                        }
         | expr '^' expr         { $$ = std::pow($1, $3);           }
         | '(' expr ')'          { $$ = $2;                         }

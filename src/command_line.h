@@ -31,10 +31,10 @@ namespace MaRC
     /**
      * @class command_line
      *
-     * @brief Parse MaRC command line arguments.
+     * @brief Parse %MaRC command line arguments.
      *
-     * This class parses MaRC command line arguments, and implements
-     * the MaRC usage and help messages.
+     * This class parses %MaRC command line arguments, and implements
+     * the %MaRC usage and help messages.
      */
     class command_line
     {
@@ -43,13 +43,13 @@ namespace MaRC
         /**
          * @class arguments
          *
-         * @brief Command line argument container
-         *
+         * @brief Command line argument container.
          */
         class arguments
         {
         public:
 
+            /// STL style iterator type.
             using const_iterator = char const * const *;
 
             /// Constructor.
@@ -68,8 +68,8 @@ namespace MaRC
              * @param[in] argc Argument count.
              * @param[in] argv Argument vector.
              *
-             * @internal This method is meant to be used internally by
-             *           @c command_line.
+             * @note This method is meant to be used internally by
+             *       @c command_line.
              */
             void args(int argc, char const * const * argv);
 
@@ -130,13 +130,13 @@ namespace MaRC
         /// Parse command line arguments.
         bool parse(int argc, char * argv[]);
 
-        /// Get container of MaRC input filenames.
+        /// Get container of %MaRC input filenames.
         auto const & files() const { return this->files_; }
 
     private:
 
         /**
-         * @brief Names of input files to be processed by MaRC.
+         * @brief Names of input files to be processed by %MaRC.
          */
         arguments files_;
 

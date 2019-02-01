@@ -22,126 +22,46 @@
 
 #include "command_line.h"
 #include "parse_scan.h"
+#include "strerror.h"
 #include "parse.hh"
 #include "lexer.hh"
 #include "MapCommand.h"
 
-#include <MaRC/config.h>
-#include <MaRC/Log.h>
+#include <marc/config.h>
+#include <marc/Log.h>
+#include <marc/utility.h>
 
 #include <string>
-#include <iostream>
-#include <list>
+#include <cstdio>
 #include <cerrno>
-#include <cstring>
 #include <cstdlib>
-
-#include <unistd.h>
 
 
 namespace MaRC
 {
-
-    namespace
-    {
-        /**
-         * @brief Return error string for XSI-compliant case.
-         *
-         * @internal Not part of the MaRC API.
-         */
-        inline char const * strerror_helper(int /* result */,
-                                            char const * buf)
-        {
-            /**
-             * @note We lose the ability to report specific errors in
-             *       the underlying C library  @c ::strerror_r() call
-             *       itself with this approach, but we're not too
-             *       worried about that in this case since we're only
-             *       using actual @c errno values, meaning
-             *       @c ::strerror_r() should never fail.
-             */
-            return buf;
-        }
-
-        /**
-         * @brief Return error string for the GNU case.
-         *
-         * @internal Not part of the MaRC API.
-         */
-        inline char const * strerror_helper(char const * result,
-                                            char const * /* buf */)
-        {
-            return result;
-        }
-
-        /**
-         * @brief Get error description for the given error number.
-         *
-         * Obtain a short description of the error corresponding to
-         * the @c errno value @a errnum.  This function exists to work
-         * around the case where the GNU C library version of the
-         * @c strerror_r() function ends up being used instead of the
-         * XSI-compliant version, since both of have the same name and
-         * parameter types.  In the GNU case, the @a buf argument is
-         * not populated, and the error description string is found in
-         * the return value.  Implement that behavior for
-         * XSI-compliant platforms as well.
-         *
-         * @param[in]     errnum The error number, i.e. an @c errno
-         *                       value.
-         * @param[in,out] buf    Buffer that may end up containing the
-         *                       description corresponding to the
-         *                       error number @a errnum.  Whether or
-         *                       not this buffer is populated depends
-         *                       on the platform.  Do not rely on this
-         *                       buffer being populated.  Use the
-         *                       return value of this function
-         *                       instead.
-         * @param[in]     buflen The length of the buffer @a buf
-         *                       passed to this function.
-         *
-         * @return Null terminated string containing the error
-         *         description.
-         *
-         * @internal Not part of the MaRC API.
-         */
-        inline char const * strerror(int errnum,
-                                     char * buf,
-                                     std::size_t buflen)
-        {
-            auto const result = ::strerror_r(errnum, buf, buflen);
-
-            return strerror_helper(result, buf);
-        }
-    }
-
-    // --------------------------------------------------------------
-
     /**
      * @brief @c FILE stream close functor.
      *
      * This functor closes a @c FILE stream.  It is meant for use as
-     * the @c std::unique_ptr<> @c Deleter template parameter.
+     * the @c std::unique_ptr @c Deleter template parameter.
      */
     struct FILE_closer
     {
         /**
          * @param[in] stream Pointer to @c FILE stream.
          */
-        void operator()(FILE * stream) const
+        void operator()(std::FILE * stream) const
         {
-            fclose(stream);
+            std::fclose(stream);
         }
     };
 
     /**
-     * @typedef file_unique_ptr
-     *
-     * Type alias of @c std::unique_ptr<> that automatically closes
+     * Type alias of @c std::unique_ptr that automatically closes
      * the a @c FILE stream up on exiting the scope in which an
      * instance of this @c file_unique_ptr resides.
      */
-    using FILE_unique_ptr = std::unique_ptr<FILE, FILE_closer>;
+    using FILE_unique_ptr = std::unique_ptr<std::FILE, FILE_closer>;
 
     // --------------------------------------------------------------
 
@@ -149,13 +69,13 @@ namespace MaRC
      * @brief @c Flex reentrant scanner destroyer.
      *
      * This functor destroys a reentrant Flex scanner.  It is meant
-     * for use as the @c std::unique_ptr<> @c Deleter template
+     * for use as the @c std::unique_ptr @c Deleter template
      * parameter.
      */
     struct scanner_destroyer
     {
         /**
-         * @param[in] stream Pointer to @c FILE stream.
+         * @param[in] scanner Pointer to reentrant scanner object.
          */
         void operator()(yyscan_t * scanner) const
         {
@@ -164,11 +84,9 @@ namespace MaRC
     };
 
     /**
-     * @typedef file_unique_ptr
-     *
-     * Type alias of @c std::unique_ptr<> that automatically closes
-     * the a @c FILE stream up on exiting the scope in which an
-     * instance of this @c file_unique_ptr resides.
+     * Type alias of @c std::unique_ptr that automatically destroys
+     * a reentrant Flex scanner up on exiting the scope in which an
+     * instance of this @c scanner_unique_ptr resides.
      */
     using scanner_unique_ptr =
         std::unique_ptr<yyscan_t, scanner_destroyer>;
@@ -176,16 +94,21 @@ namespace MaRC
     // --------------------------------------------------------------
 
     /**
-     * @brief Parse a MaRC configuration or input file.
+     * @brief Parse a %MaRC configuration or input file.
      *
-     * @param[in]     filename MaRC configuration or input file to parse.
-     * @param[in,out] pp       MaRC configuration parameters.
+     * @param[in]     filename %MaRC configuration or input file to
+     *                         parse.
+     * @param[in,out] pp       %MaRC configuration parameters.
      *
-     * @return @c true if file parsing succeded.  @c false otherwise.
+     * @retval  0 Parsing succeded.
+     * @retval  1 Parsing failed due to invalid input.
+     * @retval  2 Parsing failed due to memory exhaustion.
+     * @retval -1 Error occurred.  Check @c errno.
      */
-    bool parse_file(char const * filename, MaRC::ParseParameter & pp)
+    int parse_file(char const * filename, MaRC::ParseParameter & pp)
     {
-        MaRC::FILE_unique_ptr const file(fopen(filename, "r"));
+        errno = 0;
+        MaRC::FILE_unique_ptr const file(std::fopen(filename, "r"));
 
         if (!file) {
 #ifndef NDEBUG
@@ -193,20 +116,20 @@ namespace MaRC
             char buf[BUFLEN] = {};
 
             char const * const error =
-                MaRC::strerror(errno, buf, sizeof(buf) / sizeof(buf[0]));
+                MaRC::strerror(errno, buf, MaRC::size(buf));
 
             MaRC::debug("Unable to open input file '{}': {}",
                         filename,
                         error);
 #endif
 
-            return false;
+            return -1;
         }
 
         yyscan_t scanner;
 
         if (yylex_init(&scanner) != 0)
-            return 1;
+            return -1;
 
         MaRC::scanner_unique_ptr safe_scanner(&scanner);
 
@@ -218,25 +141,21 @@ namespace MaRC
         // Parse user defaults/MaRC initialization file.
         int const parsed = ::yyparse(scanner, pp);
 
-        if (parsed != 0) {
-            MaRC::error("error parsing '{}'.", filename);
-
-            return false;  // Failure
+        if (parsed == 0) {
+            // Successful parse
+            MaRC::debug("MaRC input file '{}' parsed", filename);
         }
 
-        // Successful parse
-        MaRC::debug("MaRC input file '{}' parsed", filename);
-
-        return true;
+        return parsed;
     }
 
     /**
-     * @brief Get the MaRC configuration filename.
+     * @brief Get the %MaRC configuration filename.
      *
-     * Get the MaRC configuration filename, conforming to the XDG
-     * Base Directory specification.  The MaRC configuration file will
-     * be @c ~/.config/marc by default, assuming the user hasn't
-     * changed the MaRC package name at build-time.
+     * Get the %MaRC configuration filename, conforming to the XDG
+     * Base Directory specification.  The %MaRC configuration file
+     * will be @c ~/.config/marc by default, assuming the user hasn't
+     * changed the %MaRC package name at build-time.
      *
      * @see https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
      */
@@ -280,6 +199,7 @@ namespace MaRC
 
 }
 
+/// The canonical main entry point to the %MaRC process.
 int main(int argc, char *argv[])
 {
     MaRC::command_line cl;
@@ -294,11 +214,16 @@ int main(int argc, char *argv[])
 
         std::string const config_file(MaRC::get_config_filename());
 
-        MaRC::parse_file(config_file.c_str(), parse_parameter);
+        // Parse user configuration file, if it exists.
+        if (MaRC::parse_file(config_file.c_str(), parse_parameter) != 0
+            && errno != ENOENT) {
+            // Scanner or parser error.
+            return -1;
+        }
 
         // Parse MaRC input files give on command line.
         for (auto const filename : cl.files())
-            if (!MaRC::parse_file(filename, parse_parameter))
+            if (MaRC::parse_file(filename, parse_parameter) != 0)
                 return -1;;
 
         // Create the map(s).

@@ -21,22 +21,20 @@
  */
 
 #include "PhotoImageFactory.h"
-#include "FITS_memory.h"
+#include "FITS_file.h"
 
-#include "MaRC/PhotoImage.h"
+#include "marc/PhotoImage.h"
 
 // Geometric correction strategies
-#include "MaRC/GLLGeometricCorrection.h"
+#include "marc/GLLGeometricCorrection.h"
 
 // Photometric correction strategies
-//#include "MaRC/MinnaertPhotometricCorrection.h"
+//#include "marc/MinnaertPhotometricCorrection.h"
 
 // Interpolation strategies
-#include "MaRC/BilinearInterpolation.h"
+#include "marc/BilinearInterpolation.h"
 
-#include "MaRC/utility.h"
-
-#include <fitsio.h>
+#include "marc/utility.h"
 
 #include <limits>
 #include <stdexcept>
@@ -48,7 +46,8 @@
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
-    : filename_(filename)
+    : ImageFactory()
+    , filename_(filename)
     , flat_field_()
     , geometric_correction_(false)
     // , photometric_correction_(false)
@@ -66,102 +65,35 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     if (!this->config_ || !this->geometry_)
         return nullptr;  // not set or make() already called!
 
-    fitsfile * fptr = nullptr;
-    static constexpr int mode = READONLY;
-    int status = 0;  // CFITSIO requires initialization of status
-                     // variable.
+    std::vector<double> img;
+    std::size_t samples = 0;
+    std::size_t lines   = 0;
 
-    (void) fits_open_image(&fptr,
-                           this->filename_.c_str(),
-                           mode,
-                           &status);
+    {
+        FITS::file f(this->filename_.c_str());
 
-    if (status != 0) {
-        // Report any errors before creating the map since map
-        // creation can be time consuming.
-        fits_report_error(stderr, status);
+        // Get the image data unit name (FITS standard BUNIT).
+        /**
+         * @todo Make unit related members consistent.  Right
+         *       now we have a mix of char const * and std::string
+         *       typed unit members.
+         */
+        std::string const & bunit = f.header().bunit();
+        this->config_->unit(bunit);
 
-        std::ostringstream s;
-        s << "Unable to open image \"" << this->filename_ << "\"";
+        f.data().read(img);
+        samples = f.data().samples();
+        lines = f.data().lines();
 
-        throw std::invalid_argument(s.str());
+        /**
+         * @todo Get the minimum (@c DATAMIN) and maximum (@c DATAMAX)
+         *       physical data values if available in the source image
+         *       FITS file.
+         */
     }
-
-    FITS::file_unique_ptr safe_fptr(fptr);
-
-    int naxis = 0;
-    int bitpix = 0;
-    static constexpr int MAXDIM = 2;  // CFITSIO wants int.
-    long naxes[MAXDIM] = { 0 };
-
-    (void) fits_get_img_param(fptr,
-                              MAXDIM,
-                              &bitpix,
-                              &naxis,
-                              naxes,
-                              &status);
-
-    // Get the image data unit name (FITS standard BUNIT).
-    char bunit[FLEN_VALUE] = { '\0' };
-    char bunit_comment[FLEN_COMMENT] = { '\0' };
-
-    fits_read_key_str(fptr, "BUNIT", bunit, bunit_comment, &status);
-    if (status == 0) {
-        this->config_->unit(bunit, bunit_comment);
-    } else if (status != KEY_NO_EXIST) {
-        throw std::logic_error("Problem reading FITS BUNIT value.");
-    } else {
-        status = 0;
-    }
-
-    LONGLONG const nelements =
-        static_cast<LONGLONG>(naxes[0]) * naxes[1];
-
-    // Note that we're only reading a 2-dimensional image above.
-    std::vector<double> img(nelements,
-                            std::numeric_limits<double>::signaling_NaN());
-
-    /**
-     * First pixel to be read.
-     *
-     * @attention First pixel in CFITSIO is { 1, 1 } not { 0, 0 }.
-     */
-    long fpixel[MAXDIM] = { 1, 1 };
-
-    // For integer typed FITS images with a BLANK value, set the
-    // "blank" value in our floating point converted copy of the image
-    // to NaN.
-    auto nulval = std::numeric_limits<double>::signaling_NaN();
-    int anynul = 0;  // Unused
-
-    static_assert(std::is_same<decltype(img)::value_type,
-                               decltype(nulval)>(),
-                  "Nul value type doesn't match photo container type.");
-
-    (void) fits_read_pix(fptr,
-                         TDOUBLE, // Array of type "double".
-                         fpixel,
-                         nelements,
-                         &nulval,  // "Blank" value in our image.
-                         img.data(),
-                         &anynul,  // Were any blank values found?
-                         &status);
-
-    fits_report_error(stderr, status);
-
-    safe_fptr.reset();  // Done reading the FITS file.
 
     // Perform flat fielding if a flat field file was provided.
-    int const result = flat_field_correct(naxes, img);
-
-    if (result != 0) {
-        // Report any errors before creating the map since map
-        // creation can be time consuming.
-        return nullptr;
-    }
-
-    std::size_t const samples = static_cast<std::size_t>(naxes[0]);
-    std::size_t const lines   = static_cast<std::size_t>(naxes[1]);
+    flat_field_correct(img, samples, lines);
 
     // Invert image if desired.
     if (this->invert_h_)
@@ -239,99 +171,39 @@ MaRC::PhotoImageFactory::viewing_geometry(
     this->geometry_ = std::move(geometry);
 }
 
-int
-MaRC::PhotoImageFactory::flat_field_correct(
-    long const naxes[2],
-    std::vector<double> & img) const
+void
+MaRC::PhotoImageFactory::flat_field_correct(std::vector<double> & img,
+                                            std::size_t samples,
+                                            std::size_t lines) const
 {
+    if (this->flat_field_.empty())
+        return;
+
     std::vector<double> f_img;
 
-    int status = 0;
-
-    if (!this->flat_field_.empty()) {
-        fitsfile * fptr = nullptr;
-        static constexpr int mode = READONLY;
-
-        if (fits_open_image(&fptr,
-                            this->flat_field_.c_str(),
-                            mode,
-                            &status) != 0) {
-            fits_report_error(stderr, status);
-
-            std::ostringstream s;
-            s << "Unable to open flat field image \""
-              << this->filename_ << "\"";
-
-            throw std::invalid_argument(s.str());
-        }
-
-        FITS::file_unique_ptr const safe_fptr(fptr);
-
-        int f_bitpix = 0;
-        int f_naxis = 0;
-        static constexpr int MAXDIM = 2;  // CFITSIO wants int.
-        long f_naxes[MAXDIM] = { 0 };
-
-        if (fits_get_img_param(fptr,
-                               MAXDIM,
-                               &f_bitpix,
-                               &f_naxis,
-                               f_naxes,
-                               &status) != 0) {
-            fits_report_error(stderr, status);
-
-            return status;
-        }
+    {
+        FITS::file f(this->flat_field_.c_str());
 
         // Verify flat field image is same size as source photo
         // image.
-        if (f_naxes[0] != naxes[0] && f_naxes[1] != naxes[1]) {
+        if (f.data().samples() != samples || f.data().lines() != lines) {
             std::ostringstream s;
-            s << "Mismatched source (" << naxes[0] << "x" << naxes[1] << ")"
-              << " and flat field image "
-              << "(" << f_naxes[0] << "x" << f_naxes[1] << ")"
-              << "dimensions";
+            s << "Mismatched source ("
+              << samples << "x" << lines
+              << ") and flat field image ("
+              << f.data().samples() << "x" << f.data().lines()
+              << ") dimensions";
 
             throw std::runtime_error(s.str());
         }
 
-        // Note that we're only reading a 2-dimensional image
-        // above.
-        LONGLONG const nelements =
-            static_cast<LONGLONG>(f_naxes[0]) * f_naxes[1];
-        f_img.resize(nelements);
-
-        long fpixel[MAXDIM] = { 1, 1 };
-        double nulval = std::numeric_limits<double>::signaling_NaN();
-        int anynul;  // Unused
-
-        (void) fits_read_pix(fptr,
-                             TDOUBLE, // Array of type "double".
-                             fpixel,
-                             nelements,
-                             &nulval,
-                             f_img.data(),
-                             &anynul,
-                             &status);
-
-        fits_report_error(stderr, status);
+        f.data().read(f_img);
     }
 
-    if (status != 0) {
-        char fits_error[FLEN_STATUS] = { 0 };
-        fits_get_errstatus(status, fits_error);
+    // Perform flat fielding.
+    std::size_t const size = img.size();
+    assert(size == f_img.size());
 
-        throw std::runtime_error(fits_error);
-    }
-
-    // Perform flat fielding if desired.
-    if (!f_img.empty()) {
-        std::size_t const size = img.size();
-        assert(size == f_img.size());
-
-        for (std::size_t i = 0; i < size; ++i)
-            img[i] -= f_img[i];
-    }
-
-    return 0;
+    for (std::size_t i = 0; i < size; ++i)
+        img[i] -= f_img[i];
 }

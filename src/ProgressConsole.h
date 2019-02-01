@@ -25,7 +25,7 @@
 #ifndef MARC_PROGRESS_CONSOLE_H
 #define MARC_PROGRESS_CONSOLE_H
 
-#include <MaRC/Observer.h>
+#include <marc/Observer.h>
 
 
 namespace MaRC
@@ -38,7 +38,7 @@ namespace MaRC
          *
          * @brief Log map progress updates to the console.
          */
-        class Console : public Observer
+        class Console final : public Observer
         {
         public:
 
@@ -62,7 +62,7 @@ namespace MaRC
              * @see MaRC::MapProgress::notify()
              */
             virtual void notify(std::size_t map_size,
-                                std::size_t plot_count);
+                                std::size_t plot_count) override;
 
         private:
 

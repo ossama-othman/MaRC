@@ -42,8 +42,9 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
         /**
+         * @brief Constructor.
+         *
          * @param[in] body              Pointer to BodyData object
          *                              representing body being
          *                              mapped.
@@ -54,9 +55,12 @@ namespace MaRC
         LatitudeImageFactory(std::shared_ptr<BodyData> body,
                              bool graphic_latitudes);
 
+        /// Destructor.
+        virtual ~LatitudeImageFactory() = default;
+
         /// Create a @c LatitudeImage.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
     private:
 

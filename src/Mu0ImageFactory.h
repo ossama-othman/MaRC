@@ -42,8 +42,9 @@ namespace MaRC
     {
     public:
 
-        /// Constructor.
         /**
+         * @brief Constructor.
+         *
          * @param[in] body          Body being mapped.
          * @param[in] sub_solar_lat Planetocentric sub-solar latitude
          *                          in degrees.
@@ -53,9 +54,12 @@ namespace MaRC
                         double sub_solar_lat,
                         double sub_solar_lon);
 
+        /// Destructor.
+        virtual ~Mu0ImageFactory() = default;
+
         /// Create a @c Mu0Image.
         virtual std::unique_ptr<SourceImage> make(
-            scale_offset_functor calc_so);
+            scale_offset_functor calc_so) override;
 
     private:
 

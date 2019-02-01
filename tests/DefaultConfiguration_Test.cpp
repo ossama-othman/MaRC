@@ -18,8 +18,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/DefaultConfiguration.h>
-#include <MaRC/Mathematics.h>
+#include <marc/DefaultConfiguration.h>
+#include <marc/Mathematics.h>
 
 
 namespace
@@ -36,24 +36,30 @@ namespace
  *       to use something like MaRC::almost_equal() instead.
  */
 
+/**
+ * @test Test default latitude configuration.  The largest latitude
+ *       range that is valid is [-90, 90].
+ */
 bool test_latitude_configuration()
 {
     using namespace MaRC::default_configuration;
 
-    // Largest latitude range that is valid is [-90, 90].
-
     return latitude_low   >= -90
         && latitude_high  <=  90
         && latitude_range <=  180
-        && MaRC::almost_equal(latitude_range, latitude_high - latitude_low, ulps);
+        && MaRC::almost_equal(latitude_range,
+                              latitude_high - latitude_low,
+                              ulps);
 }
 
+/**
+ * @test Test default longitude configuration.  The largest longitude
+ *       ranges that are valid are [-180, 180] and [0, 360].
+ */
 bool test_longitude_configuration()
 {
     using namespace MaRC::default_configuration;
 
-    // Largest longitude ranges that are valid are [-180, 180] and
-    // [0, 360].
     return longitude_low  >= -180
         && longitude_low  <  longitude_high
         && longitude_high <= longitude_low + 360
@@ -63,11 +69,14 @@ bool test_longitude_configuration()
                               ulps);
 }
 
+/**
+ * @test Test default &mu;, &mu;<SUB>0</SUB> and cos(&phi;) range
+ *       configuration, i.e. they must be all be in the range
+ *       [-1, 1].
+ */
 bool test_cosine_configuration()
 {
     using namespace MaRC::default_configuration;
-
-    // Largest cosine range that is valid is [-1, 1].
 
     return mu_low   >= -1
         && mu_high  <=  1
@@ -79,6 +88,7 @@ bool test_cosine_configuration()
         && cos_phase_high  <=  1;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

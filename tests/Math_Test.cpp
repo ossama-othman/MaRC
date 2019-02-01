@@ -18,13 +18,70 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/Mathematics.h>
+#include <marc/Mathematics.h>
 
 #include <cstdint>
 
 
+namespace
+{
+    /**
+     * @brief Calculate and verify quadratic roots.
+     *
+     * @param[in] a              "a" coefficient of a quadratic
+     *                           equation.
+     * @param[in] b              "b" coefficient of a quadratic
+     *                           equation.
+     * @param[in] c              "c" coefficient of a quadratic
+     *                           equation.
+     * @param[in] expected_roots Quadratic roots that should be
+     *                           returned from
+     *                           MaRC::quadratic_roots().
+     *
+     * @return @c true on successful quadratic root validation, and
+     *         @c false otherwise
+     */
+    bool check_roots(double a,
+                     double b,
+                     double c,
+                     std::pair<double, double> expected_roots)
+    {
+        std::pair<double, double> roots;
+
+        /**
+         * @todo Verify this ULP value isn't too small.
+         *
+         * @see The blog post "Comparing Floating Point Numbers, 2012
+         *      Edition" for an additional discussion on floating
+         *      point comparison:
+         *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
+         */
+        static constexpr int ulp = 1;  // Units in the last place.
+
+        return
+            MaRC::quadratic_roots(a, b, c, roots) // found real roots
+            && ((MaRC::almost_equal(roots.first,
+                                    expected_roots.first,
+                                    ulp)
+                 && MaRC::almost_equal(roots.second,
+                                       expected_roots.second,
+                                       ulp))
+                || (MaRC::almost_equal(roots.first,
+                                       expected_roots.second,
+                                       ulp)
+                    && MaRC::almost_equal(roots.second,
+                                          expected_roots.first,
+                                          ulp)));
+    }
+}
+
+/**
+ * @test Test the MaRC::almost_equal() function.
+ */
 bool test_almost_equal()
 {
+    using namespace std;
+
     static_assert(sizeof(float) == sizeof(int32_t),
                   "Cannot run almost_equal() with different size types.");
 
@@ -67,6 +124,9 @@ bool test_almost_equal()
                                2);
 }
 
+/**
+ * @test Test the MaRC::almost_zero() function.
+ */
 bool test_almost_zero()
 {
     constexpr float  w = 0;
@@ -81,6 +141,9 @@ bool test_almost_zero()
         && !MaRC::almost_zero(z, 100000);
 }
 
+/**
+ * @test Test the MaRC::signum() function.
+ */
 bool test_signum()
 {
     return
@@ -99,6 +162,30 @@ bool test_signum()
         && MaRC::signum( 7.0) ==  1;
 }
 
+/**
+ * @test Test the MaRC::sgn() function.
+ */
+bool test_sgn()
+{
+    return
+        // Signed intger
+        MaRC::sgn   ( -3L) == -1
+        && MaRC::sgn(  0L) ==  1
+        && MaRC::sgn(  5L) ==  1
+
+        // Unsigned integer
+        && MaRC::sgn(  0U) ==  1
+        && MaRC::sgn(  2U) ==  1
+
+        // Floating point number
+        && MaRC::sgn(-2.0) == -1
+        && MaRC::sgn( 0.0) ==  1
+        && MaRC::sgn( 7.0) ==  1;
+}
+
+/**
+ * @test Test the MaRC::quadratic_roots() function.
+ */
 bool test_quadratic_roots()
 {
     /*
@@ -118,47 +205,46 @@ bool test_quadratic_roots()
            b =  1
            c = -6
 
-      Solve using MaRC::quadratic_roots() and confirm we get the
-      expected roots.
+      Similarly, for a quadratic equation with roots (-2.5, 2.5) we
+      could have the following:
+
+          (2x + 5)(2x - 5) = 0
+
+      which in its polynomial form is:
+
+              2
+            4x  - 25 = 0
+
+      where its polynomial coefficients are:
+
+           a =   4
+           b =   0
+           c = -25
+
+      Solve both equations using MaRC::quadratic_roots(), and confirm
+      we get the expected roots.
     */
-    static constexpr int const a =  1;
-    static constexpr int const b =  1;
-    static constexpr int const c = -6;
-    static constexpr auto expected_roots = std::make_pair(-3.0, 2.0);
+    static constexpr int const a1 =  1;
+    static constexpr int const b1 =  1;
+    static constexpr int const c1 = -6;
+    static constexpr auto expected_roots1 = std::make_pair(-3.0, 2.0);
 
-    std::pair<double, double> roots;
+    static constexpr int const a2 =  4;
+    static constexpr int const b2 =  0;
+    static constexpr int const c2 = -25;
+    static constexpr auto expected_roots2 = std::make_pair(-2.5, 2.5);
 
-    /**
-     * @todo Verify this ULP value isn't too small.
-     *
-     * @see The blog post "Comparing Floating Point Numbers, 2012
-     *      Edition" for an additional discussion on floating point
-     *      comparison:
-     *      https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/
-     */
-    static constexpr int ulp = 1;  // Units in the last place.
-
-    return
-        MaRC::quadratic_roots(a, b, c, roots) // found real roots
-        && ((MaRC::almost_equal(roots.first,
-                                expected_roots.first,
-                                ulp)
-             && MaRC::almost_equal(roots.second,
-                                   expected_roots.second,
-                                   ulp))
-            || (MaRC::almost_equal(roots.first,
-                                   expected_roots.second,
-                                   ulp)
-                && MaRC::almost_equal(roots.second,
-                                      expected_roots.first,
-                                      ulp)));
+    return check_roots(a1, b1, c1, expected_roots1)
+        && check_roots(a2, b2, c2, expected_roots2);
 }
 
+/// The canonical main entry point.
 int main()
 {
     return
         test_almost_equal()
         && test_almost_zero()
         && test_signum()
+        && test_sgn()
         && test_quadratic_roots() ? 0 : -1;
 }

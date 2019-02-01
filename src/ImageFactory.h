@@ -83,32 +83,48 @@ namespace MaRC
         virtual std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) = 0;
 
-        /// Set minimum allowed data value in map plane.
+        /// Set minimum allowed physical data value in map plane.
         /**
-         * Set the minimum allowed data value, i.e. data >= minimum,
-         * in the map plane to which an image will be mapped.
+         * Set the minimum allowed physical data value, i.e.
+         * data >= minimum, in the map plane to which an image will be
+         * mapped.
+         *
+         * @throw std::invalid_argument Supplied minimum is either
+         *                              not-a-number (NaN) or greater
+         *                              than the maximum.
          */
-        void minimum(double m) { this->minimum_ = m; }
+        void minimum(double m);
 
-        /// Set maximum allowed data value in map plane.
+        /// Set maximum allowed physical data value in map plane.
         /**
-         * Set the maximum allowed data value, i.e. data =< maximum,
-         * in the map plane to which an image will be mapped.
+         * Set the maximum allowed physical data value, i.e.
+         * data =< maximum, in the map plane to which an image will be
+         * mapped.
+         *
+         * @throw std::invalid_argument Supplied maximum is either
+         *                              not-a-number (NaN) or less
+         *                              than the minimum.
          */
-        void maximum(double m) { this->maximum_ = m; }
+        void maximum(double m);
 
-        /// Return minimum allowed data value in map plane.
+        /// Return minimum allowed physical data value in map plane.
         double minimum() const { return this->minimum_; }
 
-        /// Return maximum allowed data value in map plane.
+        /// Return maximum allowed physical data value in map plane.
         double maximum() const { return this->maximum_; }
 
     private:
 
-        /// Minimum allowed data value in map plane.  (data >= minimum)
+        /**
+         * @brief Minimum allowed physical data value in map plane
+         *        (data >= minimum).
+         */
         double minimum_;
 
-        /// Maximum allowed data value in map plane.  (data =< maximum)
+        /**
+         * @brief Maximum allowed physical data value in map plane
+         *        (data =< maximum)
+         */
         double maximum_;
 
     };

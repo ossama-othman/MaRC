@@ -1,0 +1,72 @@
+MAP:     test_bad_map.fits
+        BODY:   Jupiter
+        EQ_RAD:         71492
+        POL_RAD:        66854
+        ROTATION:       PROGRADE
+        DATA_TYPE:              LONG
+        GRID:                   YES
+        GRID_INTERVAL:          2
+        TYPE:                   SIMPLE_C
+        PLANES:         3
+        SAMPLES:        50
+        LINES:          25
+
+        PLANE:  1
+                IMAGE:  test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2807.61
+                        LINE_CENTER:            1200.67
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         0.06 S
+                        SUB_OBSERV_LON:         215.63 E
+                        POSITION_ANGLE:         179.175
+                        SUB_SOLAR_LAT:          0.22
+                        SUB_SOLAR_LON:          284.67 E
+                        RANGE:                  1211230
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+        PLANE:  3
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        INTERPOLATE:            YES
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2833.21
+                        LINE_CENTER:            1201.89
+                        GEOM_CORRECT:           YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         215.05 E
+                        POSITION_ANGLE:         179.175
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          284.05 E
+                        RANGE:                  1210750
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084
+
+        PLANE:  2
+                IMAGE: test.fits.gz
+                        NIBBLE_LEFT:            4
+                        NIBBLE_RIGHT:           8
+                        NIBBLE_BOTTOM:          4
+                        NIBBLE_TOP:             4
+                        REMOVE_SKY:             NO
+                        SAMPLE_CENTER:          2587.43
+                        LINE_CENTER:            842.981
+                        GEOM_CORRECT:           YES
+                        EMI_ANG_LIMIT:          75
+                        TERMINATOR:             YES
+                        SUB_OBSERV_LAT:         -0.06
+                        SUB_OBSERV_LON:         214.03 E
+                        POSITION_ANGLE:         179.246
+                        SUB_SOLAR_LAT:          -0.22
+                        SUB_SOLAR_LON:          282.99 E
+                        RANGE:                  1209912
+                        FOCAL_LENGTH:           1501.039
+                        PIXEL_SCALE:            32.8084

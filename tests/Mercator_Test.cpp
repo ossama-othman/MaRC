@@ -18,11 +18,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/Mercator.h>
-#include <MaRC/OblateSpheroid.h>
-#include <MaRC/LatitudeImage.h>
-#include <MaRC/Constants.h>
-#include <MaRC/DefaultConfiguration.h>
+#include <marc/Mercator.h>
+#include <marc/OblateSpheroid.h>
+#include <marc/LatitudeImage.h>
+#include <marc/Constants.h>
+#include <marc/DefaultConfiguration.h>
+#include <marc/scale_and_offset.h>
 
 #include <memory>
 #include <cstring>
@@ -48,7 +49,7 @@ namespace
       map falls on the center of a pixel.  This allows us to
       accurately locate the body's equator in the Mercator projection
       since MaRC maps data at the center of map pixel.  For example,
-      the pixel (line, sample) = (0, 0) MaRC maps data at pixel
+      for the pixel (line, sample) = (0, 0) MaRC maps data at pixel
       coordinate (0.5, 0.5), i.e. the center of the pixel.
      */
     constexpr std::size_t samples = 50;
@@ -65,6 +66,9 @@ namespace
 
 }
 
+/**
+ * @test Test the MaRC::Mercator::projection_name() method.
+ */
 bool test_projection_name()
 {
     static char const name[] = "Mercator";
@@ -72,6 +76,10 @@ bool test_projection_name()
     return std::strcmp(projection->projection_name(), name) == 0;
 }
 
+/**
+ * @test Test the MaRC::Mercator::make_map() method, i.e. Mercator map
+ *       projection image creation.
+ */
 bool test_make_map()
 {
     /**
@@ -144,6 +152,10 @@ bool test_make_map()
         && MaRC::almost_zero(equator_data, ulps);
 }
 
+/**
+ * @test Test the MaRC::Mercator::make_grid() method, i.e. Mercator
+ *       grid image creation.
+ */
 bool test_make_grid()
 {
     constexpr auto lat_interval = 10;
@@ -167,6 +179,10 @@ bool test_make_grid()
         && *minmax.second == white;
 }
 
+/**
+ * @test Test the MaRC::Mercator::distortion() method, i.e. scale
+ *       distortion in the Mercator map.
+ */
 bool test_distortion()
 {
     // Latitude at the center of the map.
@@ -191,6 +207,7 @@ bool test_distortion()
         && projection->distortion(not_equator) > equator_distortion;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return

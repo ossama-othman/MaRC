@@ -18,12 +18,15 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/utility.h>
+#include <marc/utility.h>
 
 #include <vector>
 #include <cassert>
 
 
+/**
+ * @test Test the MaRC::invert_samples() function.
+ */
 bool test_invert_samples()
 {
     constexpr std::size_t samples = 5;
@@ -42,6 +45,9 @@ bool test_invert_samples()
     return image == inverted;
 }
 
+/**
+ * @test Test the MaRC::invert_lines() function.
+ */
 bool test_invert_lines()
 {
     constexpr std::size_t samples = 2;
@@ -66,6 +72,7 @@ bool test_invert_lines()
     return image == inverted;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return test_invert_samples() && test_invert_lines() ? 0 : -1;

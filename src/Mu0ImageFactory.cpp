@@ -22,17 +22,19 @@
 
 #include "Mu0ImageFactory.h"
 
-#include "MaRC/Mu0Image.h"
-#include "MaRC/DefaultConfiguration.h"
+#include "marc/Mu0Image.h"
+#include "marc/DefaultConfiguration.h"
 
 #include <stdexcept>
+#include <cmath>
 
 
 MaRC::Mu0ImageFactory::Mu0ImageFactory(
     std::shared_ptr<BodyData> body,
     double sub_solar_lat,
     double sub_solar_lon)
-    : body_(body)
+    : ImageFactory()
+    , body_(body)
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)
 {
@@ -46,10 +48,18 @@ MaRC::Mu0ImageFactory::make(scale_offset_functor calc_so)
     double scale;
     double offset;
 
+    // Scale the default minimum and maximum to match the physical
+    // data scaling.
     if (!calc_so(mu0_low, mu0_high, scale, offset)) {
         throw std::range_error("Cannot store mu0 (cosines) in map of "
                                "chosen data type.");
     }
+
+    if (std::isnan(this->minimum()))
+        this->minimum(mu0_low  * scale + offset);
+
+    if (std::isnan(this->maximum()))
+        this->maximum(mu0_high * scale + offset);
 
     return std::make_unique<MaRC::Mu0Image>(this->body_,
                                             this->sub_solar_lat_,

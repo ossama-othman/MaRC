@@ -1,0 +1,17 @@
+MAP:    test_bad_map.fits
+        BODY:   Jupiter
+        EQ_RAD:         71492
+        POL_RAD:        66854
+        ROTATION:       PROGRADE
+        DATA_TYPE:      LONGLONG
+        DATA_BLANK:     -9223372036854775809
+                              # < INT64_MIN (-9223372036854775808)
+        TYPE:           SIMPLE_C
+        OPTIONS:
+                CENTRIC
+        SAMPLES:        50
+        LINES:          25
+
+        PLANE:
+                LONGITUDE
+

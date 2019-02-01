@@ -18,16 +18,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/LongitudeImage.h>
-#include <MaRC/DefaultConfiguration.h>
-#include <MaRC/Mathematics.h>
-#include <MaRC/Constants.h>
+#include <marc/LongitudeImage.h>
+#include <marc/DefaultConfiguration.h>
+#include <marc/Mathematics.h>
+#include <marc/Constants.h>
+#include <marc/scale_and_offset.h>
 
 #include <memory>
 #include <cstdint>
 #include <cstring>
 
 
+/**
+ * @brief Validate longitude values obtained from
+ *        MaRC::LongitudeImage.
+ *
+ * @param[in] longitude_image MaRC::LongitudeImage object.
+ * @param[in] expected_lon    Longitude in degrees expected to be
+ *                            returned from
+ *                            MaRC::LongitudeImage::read_data().
+ * @param[in] test_lon        Longitude in radians that was passed as
+ *                            the longitude argument to
+ *                            MaRC::LongitudeImage::read_data().
+ *
+ * @retval true  Test succeeded.
+ * @retval false Test failed.
+ */
 bool test_read_data(
     std::unique_ptr<MaRC::VirtualImage> const & longitude_image,
     double expected_lon,  // degrees
@@ -79,6 +95,9 @@ bool test_read_data(
                 && MaRC::almost_zero(data, 17)));
 }
 
+/**
+ * @test Test the MaRC::LongitudeImage class.
+ */
 template <typename T>
 bool test_longitude_image()
 {
@@ -123,11 +142,12 @@ bool test_longitude_image()
         && std::strcmp(longitude_image->unit(), unit) == 0;
 }
 
+/// The canonical main entry point.
 int main()
 {
     return
-        test_longitude_image<int16_t>()
-        && test_longitude_image<uint32_t>()
+        test_longitude_image<std::int16_t>()
+        && test_longitude_image<std::uint32_t>()
         && test_longitude_image<float>()
         && test_longitude_image<double>()
         ? 0 : -1;

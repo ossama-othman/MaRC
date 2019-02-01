@@ -18,10 +18,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <MaRC/root_find.h>
-#include <MaRC/Mathematics.h>
+#include <marc/root_find.h>
+#include <marc/Mathematics.h>
 
 
+/**
+ * @test Test the MaRC::root_find() function.
+ */
 bool test_root_find()
 {
     constexpr int ulps = 2;
@@ -51,6 +54,7 @@ bool test_root_find()
         && MaRC::almost_zero(MaRC::root_find(y, x0, f), ulps);
 }
 
+/// The canonical main entry point.
 int main()
 {
     return test_root_find() ? 0 : -1;

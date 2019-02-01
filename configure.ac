@@ -21,7 +21,7 @@ dnl An autoconf script to automatically configure MaRC.
 
 
 AC_PREREQ([2.69])
-AC_INIT([MaRC], [0.9.10], [othman@users.sourceforge.net], [marc])
+AC_INIT([MaRC], [0.10a], [othman@users.sourceforge.net], [marc])
 
 dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])
@@ -41,16 +41,16 @@ dnl      [with_spdlog=check])
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options -Wall -Werror -Wno-portability])
+AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options readme-alpha -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
 AC_CONFIG_MACRO_DIRS([m4])
 
-AC_CONFIG_SRCDIR([lib/MaRC/PhotoImage.h])
+AC_CONFIG_SRCDIR([lib/marc/PhotoImage.h])
 
 dnl Generate a header file with all settings.
-AC_CONFIG_HEADERS([lib/MaRC/config.h])
+AC_CONFIG_HEADERS([lib/marc/config.h])
 
 dnl Checks for programs.
 AC_PROG_CXX
@@ -59,12 +59,12 @@ AC_PROG_LN_S
 AC_PROG_YACC
 AM_PROG_LEX
 
-AX_CODE_COVERAGE
+MARC_CODE_COVERAGE
 
-# Check for pkg-config
+dnl Check for pkg-config
 PKG_PROG_PKG_CONFIG
 
-# Check for Doxygen
+dnl Check for Doxygen
 DX_DOXYGEN_FEATURE(ON)
 DX_DOT_FEATURE(ON)
 DX_HTML_FEATURE(ON)
@@ -86,7 +86,7 @@ dnl
 dnl config.h template
 dnl
 
-dnl Text to be placed at the top of the `MaRC/config.h' header.
+dnl Text to be placed at the top of the `marc/config.h' header.
 AH_TOP([
 /**
  * @file config.h
@@ -101,7 +101,7 @@ AH_TOP([
 
 ])
 
-dnl Text to be placed at the bottom of the `MaRC/config.h' header.
+dnl Text to be placed at the bottom of the `marc/config.h' header.
 AH_BOTTOM([
 #endif   /* MARC_CONFIG_H */
 
@@ -110,8 +110,6 @@ AH_BOTTOM([
 // End:
 ])
 
-
-AH_TEMPLATE([MARC_HAS_3_PARAM_STD_HYPOT],[C++ compiler supports C++17 three-parameter std::hypot().])
 
 dnl Checks for libraries.
 
@@ -142,56 +140,55 @@ AC_SUBST([CFITSIO_LIBS])
 AC_SUBST([CFITSIO_CFLAGS])
 
 dnl spdlog requires POSIX threads support.
-AX_CXX_PTHREAD
-LIBS="$PTHREAD_LIBS $LIBS"
-CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
-CXX="$PTHREAD_CXX"
+dnl AX_CXX_PTHREAD
+dnl LIBS="$PTHREAD_LIBS $LIBS"
+dnl CXXFLAGS="$CXXFLAGS $PTHREAD_CXXFLAGS"
+dnl CXX="$PTHREAD_CXX"
 
-AC_CACHE_CHECK([for spdlog library],
-  [marc_cv_lib_spdlog],
+dnl Workaround AX_CXX_PTHREAD's inability to detect the need for
+dnl Clang's -Qunused-arguments command line option in some cases, such
+dnl as when building a shared library through Libtool.
+dnl AS_IF([test "x$ax_pthread_clang" = "xyes"],
+dnl       [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
+dnl        AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
+
+AC_CACHE_CHECK([for fmt library],
+  [marc_cv_lib_fmt],
   [
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <spdlog/spdlog.h>
+#include <fmt/format.h>
       ]],
       [[
-auto logger = spdlog::stdout_color_mt("marc");
+void vlog_info(char const * format, fmt::format_args args)
+{
+    fmt::print("INFO: ");
+    fmt::vprint(format, args);
+}
 
-logger->info("foo");
+template <typename ... Args>
+void log_info(char const * format, const Args & ... args)
+{
+    vlog_info(format, fmt::make_format_args(args...));
+}
+
+log_info("{}", "foo");
       ]])
     ],
     [
-     marc_cv_lib_spdlog=yes
+     marc_cv_lib_fmt=yes
     ],
     [
-     marc_cv_lib_spdlog=no
+     marc_cv_lib_fmt=no
     ])
   ])
 dnl  ])
 
-AS_IF([test "x$marc_cv_lib_spdlog" = "xyes"],
-      [AC_DEFINE([HAVE_SPDLOG], [1], [Define if you have spdlog.])],
-      [AC_MSG_FAILURE([spdlog library is required])])
-
-dnl Check for C++17 three-parameter std::hypot() function.
-AC_CACHE_CHECK([if $CXX supports C++17 three-parameter std::hypot()],
-  [marc_cv_cxx_3_param_std_hypot_supported],[
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <cmath>
-      ]],
-      [[
-double h = std::hypot(3, 4, 5);
-      ]])
-    ],
-    [
-     marc_cv_cxx_3_param_std_hypot_supported=yes
-    ],
-    [
-     marc_cv_cxx_3_param_std_hypot_supported=no
-    ])
-  ])
-
-AS_IF([test "x$marc_cv_cxx_3_param_std_hypot_supported" = "xyes"],
-      [AC_DEFINE([MARC_HAS_3_PARAM_STD_HYPOT])])
+AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
+      [],
+      [AC_MSG_WARN([fmt library not found, or is it old - using fallback])
+       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.2.1/include"
+       AC_SUBST([FMTLIB_CPPFLAGS])
+      ])
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -211,8 +208,8 @@ AS_IF([test "x$ax_enable_debug" != "xyes"],
                              [AX_APPEND_FLAG([$marc_lto_flag],
                                              [XCXXFLAGS])])
 
-       dnl NDEBUG is defined in <MaRC/config.h> but also define it on
-       dnl the command line to avoid having to include <MaRC/config.h>
+       dnl NDEBUG is defined in <marc/config.h> but also define it on
+       dnl the command line to avoid having to include <marc/config.h>
        dnl in MaRC headers or template code.
        dnl AX_APPEND_FLAG([-DNDEBUG], [XCPPFLAGS])
       ])
@@ -244,7 +241,7 @@ AC_CONFIG_FILES([
   Makefile
   doc/Makefile
   lib/Makefile
-  lib/MaRC/Makefile
+  lib/marc/Makefile
   src/Makefile
   tests/Makefile
 ])

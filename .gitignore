@@ -81,8 +81,8 @@ src/marc
 
 # Test Files
 test-driver
-tests/*.log
-tests/*.trs
+*.log
+*.trs
 tests/DefaultConfiguration_Test
 tests/Math_Test
 tests/Vector_Test
@@ -94,12 +94,14 @@ tests/LatitudeImage_Test
 tests/LongitudeImage_Test
 tests/ViewingGeometry_Test
 tests/Mercator_Test
+tests/Orthographic_Test
 tests/PolarStereographic_Test
+tests/optional_test
 tests/root_find_test
 tests/utility_test
 tests/validate_test
 tests/test-suite.log
-tests/test_map*.fits
+tests/test_*map*.fits
 
 # Core Dump Files
 core*
