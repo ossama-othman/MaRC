@@ -28,7 +28,7 @@
   number and column containing the syntax error are now reported to
   the user.
 
-- Corrected handling of position angles explicity marked as clockwise,
+- Corrected handling of position angles explicitly marked as clockwise,
   i.e. "CW", in MaRC input files.  They were erroneously treated as
   counter-clockwise position angles.
 
@@ -230,7 +230,7 @@
 
 8 February 2005 - MaRC 0.9.5
 
-- Fixed map corruption and redundant mapping problems that occured
+- Fixed map corruption and redundant mapping problems that occurred
   when specifying more than one MaRC input file on the command line to
   parse.
 - MaRC input file PDF documentation now contains a section menu and
