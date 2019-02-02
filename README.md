@@ -70,7 +70,7 @@ following build dependencies:
 * C++ compiler
   * The C++ compiler should support the C++14 standard or better.
     MaRC is known to build with g++ and clang++, but it should work
-    other C++14 conforming compilers.
+    with other C++14 conforming compilers.
 
 * CFITSIO library
   * Often available as prepackaged binaries on various platforms.
