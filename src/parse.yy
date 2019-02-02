@@ -820,6 +820,7 @@ lines:  LINES ':' size  {
 ;
 
 integer: NUM {
+            auto_free<char> str($1);
             if (!from_string($1, $$))
                 YYERROR;
         }
@@ -2082,6 +2083,7 @@ longitude:
 /* --------------- Multifunction Infix Notation Calculator ----------------- */
 /* All numbers will be handled with double precision here. */
 expr:   NUM {
+            auto_free<char> str($1);
             if (!from_string($1, $$))
                 YYERROR;
         }
