@@ -21,7 +21,7 @@ dnl An autoconf script to automatically configure MaRC.
 
 
 AC_PREREQ([2.69])
-AC_INIT([MaRC], [0.10a], [othman@users.sourceforge.net], [marc])
+AC_INIT([MaRC], [0.10], [othman@users.sourceforge.net], [marc])
 
 dnl Additional configure script arguments
 AX_IS_RELEASE([git-directory])

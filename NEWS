@@ -1,3 +1,5 @@
+1 February 2019 - MaRC 0.10
+
 - Fixed a regression in quadratic roots calculations that caused some
   areas of an Orthographic projection to incorrectly have data of
   value zero, as well as other coordinate calculations.
