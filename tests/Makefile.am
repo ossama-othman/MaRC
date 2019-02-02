@@ -190,6 +190,7 @@ CLEANFILES = \
   test_map5.fits \
   test_map6.fits \
   test_map7.fits \
+  test_map8.fits \
   test_map_ortho.fits \
   test_map_mercator.fits \
   test_map_polar_stereographic.fits
