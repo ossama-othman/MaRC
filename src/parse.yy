@@ -216,7 +216,6 @@ namespace
      *
      * @see strtoll()
      * @see strtod()
-     * @see from_string_helper()
      */
     template <typename T>
     bool
