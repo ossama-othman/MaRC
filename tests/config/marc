@@ -2,8 +2,8 @@
 # file parsing code.
 
 GRID_INTERVAL:  10      # Must be before the data range and nibbling.
-DATA_MIN:      -1e100   # Both before the nibbling entries.
-DATA_MAX:       1e100
+DATA_MIN:      -5e18    # Both before the nibbling entries.
+DATA_MAX:       5e18
 NIBBLE_LEFT:    5       # These must used in the shown order.
 NIBBLE_RIGHT:   5
 NIBBLE_TOP:     4
