@@ -129,6 +129,84 @@ namespace
     }
 
     /**
+     * @struct blank_verifier
+     *
+     * @brief 32-bit, or smaller, blank integer value verifier.
+     *
+     * @tparam T Map integer data type.
+     *
+     * @see verify_data_blank()
+     */
+    template<typename T>
+    struct blank_verifier
+    {
+        /**
+         * @brief Verify that the provided %FITS @c BLANK value actually
+         *        fits within the chosen map integer data type.
+         *
+         * @param[in] blank     %FITS @c BLANK value explicitly
+         *                      provided by the user.
+         * @param[in] data_type %MaRC map data type name (e.g. "BYTE",
+         *                      "SHORT", or "LONG").
+         *
+         * @retval true  @a blank fits within chosen map integer data
+         *               type.
+         * @retval false @a blank is too large for chosen map integer
+         *               data type.
+         */
+        static bool verify(MaRC::blank_type::value_type blank,
+                           char const * data_type)
+        {
+            constexpr auto minimum = std::numeric_limits<T>::lowest();
+            constexpr auto maximum = std::numeric_limits<T>::max();
+
+            bool const verified = (blank >= minimum && blank <= maximum);
+
+            if (!verified)
+                MaRC::error("DATA_BLANK {} does not fit within "
+                            "map data type {}",
+                            blank,
+                            data_type);
+
+            return verified;
+        }
+    };
+
+    /**
+     * @struct blank_verifier<MaRC::FITS::longlong_type>
+     *
+     * @brief 64-bit blank integer value verifier specialization.
+     *
+     * In this case the 64-bit blank value always verifies since the
+     * largest integer value supported by the %FITS standard is 64
+     * bits wide.
+     *
+     * @see verify_data_blank()
+     */
+    template<>
+    struct blank_verifier<MaRC::FITS::longlong_type>
+    {
+        /**
+         * @brief Verify that the provided %FITS @c BLANK value actually
+         *        fits within the chosen map integer data type.
+         *
+         * @param[in] blank     %FITS @c BLANK value explicitly
+         *                      provided by the user.
+         * @param[in] data_type %MaRC map data type name (e.g. "BYTE",
+         *                      "SHORT", or "LONG").
+         *
+         * @retval true Verification always succeeds for the 64-bit
+         *              integer typed maps.
+         */
+
+        static bool verify(MaRC::blank_type::value_type /* blank */,
+                           char const * /* data_type */)
+        {
+            return true;
+        }
+    };
+
+    /**
      * @brief Verify that the provided %FITS @c BLANK value actually
      *        fits within the chosen map data type.
      *
@@ -139,24 +217,16 @@ namespace
      *                      an integer.
      * @param[in] data_type %MaRC map data type name (e.g. "BYTE",
      *                      "SHORT", etc).
+     *
+     * @retval true  @a blank fits within chosen map data type.
+     * @retval false @a blank is too large for chosen map data type.
      */
-    template <typename T>
+    template<typename T>
     bool
     verify_data_blank(MaRC::blank_type::value_type blank,
                       char const * data_type)
     {
-        constexpr auto minimum = std::numeric_limits<T>::lowest();
-        constexpr auto maximum = std::numeric_limits<T>::max();
-
-        bool const verified = (blank >= minimum && blank <= maximum);
-
-        if (!verified)
-            MaRC::error("DATA_BLANK {} does not fit within "
-                        "map data type {}",
-                        blank,
-                        data_type);
-
-        return verified;
+        return blank_verifier<T>::verify(blank, data_type);
     }
 
     /**
