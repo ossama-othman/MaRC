@@ -242,7 +242,13 @@ int main(int argc, char *argv[])
             }
         }
     } catch (std::exception const & e) {
-        MaRC::error(e.what());
+        /*
+          Fall back on fprintf() to avoid potentially throwing another
+          exception through the underlying C++ logging framework.
+        */
+        std::fprintf(stderr,
+                     "[" PACKAGE "][error] %s\n",
+                     e.what());
 
         return -1;
     }
