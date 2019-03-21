@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
         // Parse MaRC input files give on command line.
         for (auto const filename : cl.files())
             if (MaRC::parse_file(filename, parse_parameter) != 0)
-                return -1;;
+                return -1;
 
         // Create the map(s).
         auto const & commands =
@@ -238,7 +238,13 @@ int main(int argc, char *argv[])
             }
         }
     } catch (std::exception const & e) {
-        MaRC::error(e.what());
+        /*
+          Fall back on fprintf() to avoid potentially throwing another
+          exception through the underlying C++ logging framework.
+        */
+        std::fprintf(stderr,
+                     "[" PACKAGE "][error] %s\n",
+                     e.what());
 
         return -1;
     }
