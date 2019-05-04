@@ -157,8 +157,7 @@ AC_CACHE_CHECK([for fmt library],
   [
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <fmt/format.h>
-      ]],
-      [[
+
 void vlog_info(char const * format, fmt::format_args args)
 {
     fmt::print("INFO: ");
@@ -166,11 +165,12 @@ void vlog_info(char const * format, fmt::format_args args)
 }
 
 template <typename ... Args>
-void log_info(char const * format, const Args & ... args)
+void log_info(char const * format, Args const & ... args)
 {
     vlog_info(format, fmt::make_format_args(args...));
 }
-
+      ]],
+      [[
 log_info("{}", "foo");
       ]])
     ],
