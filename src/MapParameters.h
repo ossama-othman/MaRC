@@ -33,8 +33,6 @@
 
 namespace MaRC
 {
-    class ImageFactory;
-
     /**
      * Type used to store a %FITS @c BLANK integer value.
      *
@@ -50,33 +48,10 @@ namespace MaRC
      * The map parameters in this class may be supplied by the user or
      * populated automatically from relevant values in the source
      * images being mapped.
-     *
-     * @todo If possible, populate the following (%FITS)
-     *       parameters from source image factories if they exist:
-     * @li AUTHOR
-     * @li BITPIX
-     * @li BLANK
-     * @li BSCALE
-     * @li BUNIT
-     * @li BZERO
-     * @li DATAMAX
-     * @li DATAMIN
-     * @li EQUINOX
-     * @li INSTRUME
-     * @li NAXES
-     * @li OBJECT
-     * @li OBSERVER
-     * @li ORIGIN
-     * @li REFERENC
-     * @li TELESCOP
      */
     class MapParameters
     {
     public:
-
-        /// Source image factories type.
-        using image_factories_type =
-            std::list<std::unique_ptr<MaRC::ImageFactory>>;
 
         /// Constructor
         MapParameters();
@@ -88,28 +63,26 @@ namespace MaRC
         MapParameters(MapParameters const &) = delete;
         void operator=(MapParameters const &) = delete;
 
-        /**
-         * @brief Populate map parameters from the give source.
-         *
-         * Populate optional parameters automatically, such as from
-         * @c SourceImage parameters, where possible.
-         *
-         * @param[in] sources List of source factories used for
-         *                    providing the data to be mapped.
-         *
-         * @return @c true if map parameter population succeded, and
-         *         @c false otherwise.
-         */
-        bool populate_from(image_factories_type const & sources);
-
         /// Set map author.
-        void author(std::string author);
+        void author(std::string a);
 
         /// Get map author.
         std::string const & author() const { return this->author_; }
 
-        /// Set map bits per pixel code.
-        void bitpix(int bitpix);
+        /**
+         * @brief Set map bits per pixel.
+         *
+         * @li @c  8  8 bit unsigned integer data.
+         * @li @c  16 16 bit signed   integer data.
+         * @li @c  32 32 bit signed   integer data.
+         * @li @c  64 64 bit signed   integer data.
+         * @li @c -32 32 bit floating point   data.
+         * @li @c -64 64 bit floating point   data.
+         *
+         * @param[in] n Bits per pixel value as defined by the %FITS
+         *              standard.
+         */
+        void bitpix(int n);
 
         /**
          * @brief Get map %FITS bits per pixel code.
@@ -129,7 +102,7 @@ namespace MaRC
          * @throw std::runtime_error Unable to determine bitpix
          *                           value.
          */
-        int bitpix();
+        int bitpix() const;
 
         /**
          * @brief Set the value for the map %FITS @c BZERO keyword.
@@ -186,7 +159,7 @@ namespace MaRC
         blank_type blank() const { return this->blank_; }
 
         /// Set name of object being mapped.
-        void object(std::string object);
+        void object(std::string o);
 
         /// Get name of object being mapped.
         std::string const & object() const { return this->object_; }
@@ -195,7 +168,7 @@ namespace MaRC
          * @brief Set organization or institution responsible for
          *        creating the map.
          */
-        void origin(std::string origin);
+        void origin(std::string o);
 
         /**
          * @brief Get organization or institution responsible for
@@ -278,6 +251,15 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "DATAMAX"
          *       keyword.
+         *
+         * @bug On platforms that implement the IEEE 754 floating
+         *      point standard, the use of @c double as the underlying
+         *      @c DATAMAX type will cause loss of precision if the
+         *      %FITS @c DATAMAX values is an integer that requires
+         *      more than 53 bits since the significand of a 64 bit
+         *      IEEE 754 floating point value is only 53 bits wide.
+         *      Special handling will be need to be implemented to
+         *      handle such a case.
          */
         double datamax_;
 
@@ -286,6 +268,15 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "DATAMIN"
          *       keyword.
+         *
+         * @bug On platforms that implement the IEEE 754 floating
+         *      point standard, the use of @c double as the underlying
+         *      @c DATAMIN type will cause loss of precision if the
+         *      %FITS @c DATAMIN values is an integer that requires
+         *      more than 53 bits since the significand of a 64 bit
+         *      IEEE 754 floating point value is only 53 bits wide.
+         *      Special handling will be need to be implemented to
+         *      handle such a case.
          */
         double datamin_;
 
@@ -352,7 +343,6 @@ namespace MaRC
         std::string telescope_;
 
     };
-
 }
 
 

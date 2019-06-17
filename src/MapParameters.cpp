@@ -100,25 +100,17 @@ MaRC::MapParameters::MapParameters()
 {
 }
 
-bool
-MaRC::MapParameters::populate_from(
-    image_factories_type const & /* sources */)
-{
-    return false;
-}
-
 void
 MaRC::MapParameters::bitpix(int n)
 {
-    // Zero means choose bitpix automatically.
-    if (n != 0 && !valid_bitpix(n))
+    if (!valid_bitpix(n))
         throw std::invalid_argument("Invalid FITS BITPIX value");
 
     this->bitpix_ = n;
 }
 
 int
-MaRC::MapParameters::bitpix()
+MaRC::MapParameters::bitpix() const
 {
     /**
      * @bug Choose BITPIX value based on SourceImage, such as the
@@ -139,9 +131,9 @@ MaRC::MapParameters::bitpix()
 }
 
 void
-MaRC::MapParameters::author(std::string author)
+MaRC::MapParameters::author(std::string a)
 {
-    this->author_ = std::move(author);
+    this->author_ = std::move(a);
 }
 
 void
@@ -163,13 +155,13 @@ MaRC::MapParameters::blank(blank_type blank)
 }
 
 void
-MaRC::MapParameters::object(std::string object)
+MaRC::MapParameters::object(std::string o)
 {
-    this->object_ = std::move(object);
+    this->object_ = std::move(o);
 }
 
 void
-MaRC::MapParameters::origin(std::string origin)
+MaRC::MapParameters::origin(std::string o)
 {
-    this->origin_ = std::move(origin);
+    this->origin_ = std::move(o);
 }
