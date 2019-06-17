@@ -56,10 +56,20 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
       type used in the MaRC program to address conversion related
       errors at compile-time exhibited by some compilers.
     */
-    FITS::image::blank_type blank(this->parameters_->blank());
+    auto blank = this->parameters_->blank();
+    if (blank.has_value()) {
+        using fits_blank_type = FITS::image::blank_type::value_type;
 
-    // Write the BLANK keyword and value into the map FITS file.
-    map_image->template blank<T>(blank);
+        /*
+          Truncation will not occur since the MaRC program will pass
+          at most pass a 64 bit signed integer to the MaRC library.
+        */
+        fits_blank_type fits_blank =
+            static_cast<fits_blank_type>(*blank);
+
+        // Write the BLANK keyword and value into the map FITS file.
+        map_image->template blank<T>(fits_blank);
+    }
 
     // Write the author name if supplied.
     auto const author = this->parameters_->author();
