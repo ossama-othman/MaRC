@@ -2,7 +2,7 @@
 /**
  * @file MapCommand.h
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2019  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,11 @@
 #ifndef MARC_MAP_COMMAND_H
 #define MARC_MAP_COMMAND_H
 
+#include "FITS_file.h"
 #include "ImageFactory.h"
 #include "MapParameters.h"
 
 #include <marc/MapFactory.h>
-
-#include <fitsio.h>
 
 #include <list>
 #include <string>
@@ -55,7 +54,7 @@ namespace MaRC
 
         /// Source image factories type.
         using image_factories_type =
-            MaRC::MapParameters::image_factories_type;
+            std::list<std::unique_ptr<MaRC::ImageFactory>>;
 
         /// Constructor.
         /**
@@ -114,41 +113,28 @@ namespace MaRC
          * Write information specific to @c VirtualImage (e.g.
          * @c MuImage) based map planes to the map %FITS file.
          *
-         * @param[in]  fptr       CFITSIO pointer to the map %FITS
-         *                        file.
-         * @param[in]  plane      Map plane number of
-         *                        @c VirtualImage.
-         * @param[in]  num_planes Number of map planes being written
-         *                        to the %FITS file.
-         * @param[in]  image      @c SourceImage object that may be a
-         *                        @c VirtualImage about which facts
-         *                        are being written to the %FITS
-         *                        file.
-         * @param[out] status     CFITSIO file operation status.
+         * @param[in] map_image  %FITS image array HDU enscapulation.
+         * @param[in] plane      Map plane number of @c VirtualImage.
+         * @param[in] num_planes Number of map planes being written
+         *                       to the %FITS file.
+         * @param[in] image      @c SourceImage object that may be a
+         *                       @c VirtualImage about which facts
+         *                       are being written to the %FITS
+         *                       file.
          */
-        void write_virtual_image_facts(fitsfile * fptr,
+        void write_virtual_image_facts(FITS::image & map_image,
                                        std::size_t plane,
                                        std::size_t num_planes,
-                                       SourceImage const * image,
-                                       int & status);
-
-        /**
-         * @brief Create %FITS image array HDU.
-         *
-         * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
-         * @param[out] status CFITSIO file operation status.
-         */
-        void initialize_FITS_image(fitsfile * fptr, int & status);
+                                       SourceImage const * image);
 
         /**
          * @brief Create and write map planes.
          *
-         * @tparam     T      Map data type.
-         * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
-         * @param[out] status CFITSIO file operation status.
+         * @tparam        T    Map data type.
+         * @param[in,out] file Object representing %FITS output file.
          */
         template <typename T>
-        void make_map_planes(fitsfile * fptr, int & status);
+        void make_map_planes(MaRC::FITS::output_file & file);
 
         /**
          * @brief Create grid image.
@@ -172,16 +158,18 @@ namespace MaRC
         /**
          * @brief Write map grid to the map %FITS file.
          *
-         * @param[in]  fptr   CFITSIO pointer to the map %FITS file.
-         * @param[out] status CFITSIO file operation status.
+         * @param[in,out] file Object representing %FITS output file.
          */
-        void write_grid(fitsfile * fptr, int & status);
+        void write_grid(MaRC::FITS::output_file & file);
 
         /**
          * @brief Automatically populate map parameters.
          *
          * Populate optional parameters automatically, such as from
          * @c SourceImage parameters, where possible.
+         *
+         * @return @c true if map parameter population succeded, and
+         *         @c false otherwise.
          *
          * @note This method should be called after all required or
          *       user provided map parameters have been set so that
@@ -199,12 +187,16 @@ namespace MaRC
         /// Number of lines in map.
         long const lines_;
 
-        /// @c MapFactory object responsible for creating maps and
-        /// grids.
+        /**
+         * @c MapFactory object responsible for creating maps and
+         * grids.
+         */
         std::unique_ptr<MapFactory> const factory_;
 
-        /// List of @c ImageFactorys that create the @c SourceImage to
-        /// be mapped on each map plane.
+        /**
+         * List of @c ImageFactory objects that create the
+         * @c SourceImage to be mapped on each map plane.
+         */
         image_factories_type image_factories_;
 
         /// Map filename.
