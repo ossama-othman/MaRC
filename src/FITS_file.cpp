@@ -21,7 +21,9 @@
  */
 
 #include "FITS_file.h"
-#include "FITS_traits.h"
+#include "FITS_image.h"
+
+#include "MapParameters.h"
 
 #include <marc/Log.h>
 
@@ -35,45 +37,44 @@ namespace MaRC
     namespace
     {
         /**
-         * @brief Throw an exception if a CFITSIO error occurred.
+         * @brief Create or open a %FITS file.
          *
-         * @throw std::runtime_error CFITSIO error occurred.
-         */
-        void throw_on_cfitsio_error(int status)
-        {
-            if (status != 0) {
-                char err[FLEN_STATUS] = { 0 };
-                fits_get_errstatus(status, err);
-                throw std::runtime_error(err);
-            }
-        }
-
-        /**
-         * @brief Open a %FITS file for reading.
-         *
-         * Open %FITS file in read-only mode.  This function exists
-         * solely to make it easy to return a CFITSIO @c fitsfile
-         * object as an rvalue.
+         * @note This function exists solely to make it easy to return
+         *        a CFITSIO @c fitsfile object as an rvalue.
          *
          * @param[in] filename Name of %FITS file to opened.
+         * @param[in] create   Create file @a filename for writing if
+         *                     @c true.  Otherwise open @a filename
+         *                     read-only if @c false.
          *
          * @return CFITSIO @c fitsfile object corresponding to the
-         *         opened file.
+         *         opened file.  Call @c fits_close_file() on the
+         *         returned @c fitsfile object when done with the
+         *         corresponding %FITS file.
          *
          * @throw std::runtime_error %FITS file could not be opened.
          */
-        fitsfile *
-        open_fits_file(char const * filename)
+        FITS::file::shared_ptr
+        open_fits_file(char const * filename, bool create)
         {
-            static constexpr int mode = READONLY;  // CFITSIO mode
-
             fitsfile * fptr = nullptr;
             int status = 0;
 
-            if (fits_open_image(&fptr, filename, mode, &status) != 0)
-                throw_on_cfitsio_error(status);
+            if (create) {
+                fits_create_file(&fptr, filename, &status);
+            } else {
+                static constexpr int mode = READONLY;  // CFITSIO mode
 
-            return fptr;
+                // Go to the first IMAGE HDU.
+                fits_open_image(&fptr, filename, mode, &status);
+            }
+
+            if (status != 0)
+                FITS::throw_on_error(status);
+
+            FITS::file::shared_ptr f(fptr, FITS::file::closer());
+
+            return f;
         }
 
         /**
@@ -104,7 +105,7 @@ namespace MaRC
                               &status) == 0)
                 optional_value = MaRC::make_optional(value);
             else if (status != KEY_NO_EXIST) {
-                throw_on_cfitsio_error(status);
+                FITS::throw_on_error(status);
             }
 
             return optional_value;
@@ -141,7 +142,7 @@ namespace MaRC
                               &status) == 0)
                 str = value;
             else if (status != KEY_NO_EXIST) {
-                throw_on_cfitsio_error(status);
+                FITS::throw_on_error(status);
             }
 
             return str;
@@ -151,251 +152,204 @@ namespace MaRC
 
 // ----------------------------------------------------------------
 
-MaRC::FITS::header::header(fitsfile * fptr)
-    : fptr_{fptr}
+void MaRC::FITS::throw_on_error(int status)
+{
+    if (status != 0) {
+        char err[FLEN_STATUS] = { 0 };
+        fits_get_errstatus(status, err);
+        throw std::runtime_error(err);
+    }
+}
+
+// ----------------------------------------------------------------
+
+MaRC::FITS::file::file(char const * filename, bool create)
+    : fptr_(open_fits_file(filename, create))
 {
 }
 
 std::string
-MaRC::FITS::header::author() const
+MaRC::FITS::file::author() const
 {
     constexpr char const key[] = "AUTHOR";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 int
-MaRC::FITS::header::bitpix() const
+MaRC::FITS::file::bitpix() const
 {
     int bp = 0;
     int status = 0;
 
-    if (fits_get_img_type(this->fptr_,
+    if (fits_get_img_type(this->fptr_.get(),
                           &bp,
                           &status) != 0)
-        throw_on_cfitsio_error(status);
+        throw_on_error(status);
 
     return bp;
 }
 
 MaRC::optional<MaRC::FITS::longlong_type>
-MaRC::FITS::header::blank() const
+MaRC::FITS::file::blank() const
 {
     constexpr char const key[] = "BLANK";
 
-    return read_fits_key<longlong_type>(this->fptr_, key);
+    return read_fits_key<longlong_type>(this->fptr_.get(), key);
 }
 
 MaRC::optional<double>
-MaRC::FITS::header::bscale() const
+MaRC::FITS::file::bscale() const
 {
     constexpr char const key[] = "BSCALE";
 
-    return read_fits_key<double>(this->fptr_, key);
+    return read_fits_key<double>(this->fptr_.get(), key);
 }
 
 std::string
-MaRC::FITS::header::bunit() const
+MaRC::FITS::file::bunit() const
 {
     constexpr char const key[] = "BUNIT";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 MaRC::optional<double>
-MaRC::FITS::header::bzero() const
+MaRC::FITS::file::bzero() const
 {
     constexpr char const key[] = "BZERO";
 
-    return read_fits_key<double>(this->fptr_, key);
+    return read_fits_key<double>(this->fptr_.get(), key);
 }
 
 MaRC::optional<double>
-MaRC::FITS::header::datamax() const
+MaRC::FITS::file::datamax() const
 {
     constexpr char const key[] = "DATAMAX";
 
-    return read_fits_key<double>(this->fptr_, key);
+    return read_fits_key<double>(this->fptr_.get(), key);
 }
 
 MaRC::optional<double>
-MaRC::FITS::header::datamin() const
+MaRC::FITS::file::datamin() const
 {
     constexpr char const key[] = "DATAMIN";
 
-    return read_fits_key<double>(this->fptr_, key);
+    return read_fits_key<double>(this->fptr_.get(), key);
 }
 
 MaRC::optional<double>
-MaRC::FITS::header::equinox() const
+MaRC::FITS::file::equinox() const
 {
     constexpr char const key[] = "EQUINOX";
 
-    return read_fits_key<double>(this->fptr_, key);
+    return read_fits_key<double>(this->fptr_.get(), key);
 }
 
 std::string
-MaRC::FITS::header::instrument() const
+MaRC::FITS::file::instrument() const
 {
     constexpr char const key[] = "INSTRUME";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 int
-MaRC::FITS::header::naxis() const
+MaRC::FITS::file::naxis() const
 {
     int n = 0;
     int status = 0;
 
-    if (fits_get_img_dim(this->fptr_,
+    if (fits_get_img_dim(this->fptr_.get(),
                          &n,
                          &status) != 0)
-        throw_on_cfitsio_error(status);
+        throw_on_error(status);
 
     return n;
 }
 
 std::array<long, 3>
-MaRC::FITS::header::naxes() const
+MaRC::FITS::file::naxes() const
 {
     std::array<long, 3> n;
     int status = 0;
 
-    if (fits_get_img_size(this->fptr_,
+    if (fits_get_img_size(this->fptr_.get(),
                           n.size(),
                           n.data(),
                           &status) != 0)
-        throw_on_cfitsio_error(status);
+        throw_on_error(status);
 
     return n;
 }
 
 std::string
-MaRC::FITS::header::object() const
+MaRC::FITS::file::object() const
 {
     constexpr char const key[] = "OBJECT";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 std::string
-MaRC::FITS::header::observer() const
+MaRC::FITS::file::observer() const
 {
     constexpr char const key[] = "OBSERVER";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 std::string
-MaRC::FITS::header::origin() const
+MaRC::FITS::file::origin() const
 {
     constexpr char const key[] = "ORIGIN";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 std::string
-MaRC::FITS::header::reference() const
+MaRC::FITS::file::reference() const
 {
     constexpr char const key[] = "REFERENC";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 std::string
-MaRC::FITS::header::telescope() const
+MaRC::FITS::file::telescope() const
 {
     constexpr char const key[] = "TELESCOP";
 
-    return read_fits_string_key(this->fptr_, key);
+    return read_fits_string_key(this->fptr_.get(), key);
 }
 
 // ----------------------------------------------------------------
 
-MaRC::FITS::data::data(fitsfile * fptr)
-    : fptr_{fptr}
-    , naxes_{}
+MaRC::FITS::output_file::output_file(char const * filename)
+    : file(filename, true)
 {
-    // Get the image parameters.
-    int naxis = 0;
-    int bitpix = 0;
-    int status = 0;
-
-    if (fits_get_img_param(fptr,
-                           this->naxes_.size(),
-                           &bitpix,
-                           &naxis,
-                           this->naxes_.data(),
-                           &status) != 0)
-        throw_on_cfitsio_error(status);
-
-    // Sanity checks.
-    if (naxis < static_cast<int>(this->naxes_.size()))
-        throw std::runtime_error("too few dimensions in FITS image");
-
-    // Smallest image size MaRC will accept is 2x2.  Even that is too
-    // small, but let's not be too picky.
-    constexpr naxes_array_type::value_type mindim = 2;
-    if (this->naxes_[0] < mindim || this->naxes_[1] < mindim)
-        throw std::runtime_error("image dimension is too small");
 }
 
-void
-MaRC::FITS::data::read(std::vector<double> & image) const
+std::unique_ptr<MaRC::FITS::image>
+MaRC::FITS::output_file::make_image(int bitpix,
+                                    size_t samples,
+                                    size_t lines,
+                                    size_t planes,
+                                    char const * extname)
 {
-    // CFITSIO wants its own LONGLONG type, not size_t.
-    LONGLONG const nelements =
-        static_cast<LONGLONG>(this->naxes_[0]) * this->naxes_[1];
-
-    using image_type = std::remove_reference_t<decltype(image)>;
-    using value_type = image_type::value_type;
-
-    constexpr auto nan = std::numeric_limits<value_type>::signaling_NaN();
-
-    /**
-     * @todo Should we bother initializing the image vector with NaN?
-     *       CFITSIO will just overwrite each element regardless,
-     *       right?
-     */
-    image_type tmp(nelements, nan);
-
-    /**
-     * First pixel to be read.
-     *
-     * @attention First pixel in CFITSIO is {1, 1} not {0, 0}.
-     */
-    constexpr long fpixel[] = {1, 1};
-
-    // For integer typed FITS images with a BLANK value, set the
-    // "blank" value in our floating point converted copy of the image
-    // to NaN.
-    auto nulval = nan;
-    int anynul = 0;  // Unused
-    int status = 0;
-
-    static_assert(std::is_same<value_type, decltype(nulval)>(),
-                  "Nul value type doesn't match photo container type.");
-
-    if (fits_read_pix(this->fptr_,
-                      traits<value_type>::datatype,
-                      const_cast<long *>(fpixel),
-                      nelements,
-                      &nulval,  // "Blank" value in our image.
-                      tmp.data(),
-                      &anynul,  // Were any blank values found?
-                      &status) != 0)
-        throw_on_cfitsio_error(status);
-
-    image = std::move(tmp);
+    return std::make_unique<MaRC::FITS::image>(this->fptr_,
+                                               bitpix,
+                                               samples,
+                                               lines,
+                                               planes,
+                                               extname);
 }
+
 
 // ----------------------------------------------------------------
 
-MaRC::FITS::file::file(char const * filename)
-    : fptr_(open_fits_file(filename))
-    , header_(fptr_.get())
-    , data_(fptr_.get())
+MaRC::FITS::input_file::input_file(char const * filename)
+    : file(filename, false)
 {
     // Verify checksums if present.
     int dataok = 0;
@@ -416,4 +370,89 @@ MaRC::FITS::file::file(char const * filename)
                        "is incorrect",
                        filename);
     }
+}
+
+void
+MaRC::FITS::input_file::read(std::vector<double> & image,
+                             std::size_t & samples,
+                             std::size_t & lines) const
+{
+    // Get the image parameters.
+
+    /**
+     * @note Only two-dimensional %FITS images are currently
+     *       supported.
+     */
+    using naxes_array_type = std::array<long, 2>;
+
+    /// Array containing %FITS image dimensions.
+    naxes_array_type naxes;
+
+    int naxis = 0;
+    int bitpix = 0;
+    int status = 0;
+
+    if (fits_get_img_param(this->fptr_.get(),
+                           naxes.size(),
+                           &bitpix,
+                           &naxis,
+                           naxes.data(),
+                           &status) != 0)
+        throw_on_error(status);
+
+    // Sanity checks.
+    if (naxis < static_cast<int>(naxes.size()))
+        throw std::runtime_error("too few dimensions in FITS image");
+
+    // Smallest image size MaRC will accept is 2x2.  Even that is too
+    // small, but let's not be too picky.
+    constexpr naxes_array_type::value_type mindim = 2;
+    if (naxes[0] < mindim || naxes[1] < mindim)
+        throw std::runtime_error("image dimension is too small");
+
+    // CFITSIO wants its own LONGLONG type, not size_t.
+    LONGLONG const nelements = static_cast<LONGLONG>(naxes[0]) * naxes[1];
+
+    using image_type = std::remove_reference_t<decltype(image)>;
+    using value_type = image_type::value_type;
+
+    constexpr auto nan =
+        std::numeric_limits<value_type>::signaling_NaN();
+
+    /**
+     * @todo Should we bother initializing the image vector with NaN?
+     *       CFITSIO will just overwrite each element regardless,
+     *       right?
+     */
+    image_type tmp(nelements, nan);
+
+    /**
+     * First pixel to be read.
+     *
+     * @attention First pixel in CFITSIO is {1, 1} not {0, 0}.
+     */
+    constexpr long fpixel[] = {1, 1};
+
+    // For integer typed FITS images with a BLANK value, set the
+    // "blank" value in our floating point converted copy of the image
+    // to NaN.
+    auto nulval = nan;
+    int anynul = 0;  // Unused
+
+    static_assert(std::is_same<value_type, decltype(nulval)>(),
+                  "Nul value type doesn't match photo container type.");
+
+    if (fits_read_pix(this->fptr_.get(),
+                      traits<value_type>::datatype,
+                      const_cast<long *>(fpixel),
+                      nelements,
+                      &nulval,  // "Blank" value in our image.
+                      tmp.data(),
+                      &anynul,  // Were any blank values found?
+                      &status) != 0)
+        throw_on_error(status);
+
+    image   = std::move(tmp);
+    samples = static_cast<std::size_t>(naxes[0]);
+    lines   = static_cast<std::size_t>(naxes[1]);
 }

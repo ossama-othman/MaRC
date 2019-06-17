@@ -35,6 +35,7 @@ AM_YFLAGS = -d
 
 marc_SOURCES = \
   FITS_file.cpp \
+  FITS_image.cpp \
   ProgressConsole.cpp \
   ImageFactory.cpp \
   MuImageFactory.cpp \
@@ -61,9 +62,10 @@ marc_LDADD    = \
   $(CODE_COVERAGE_LIBS)
 
 noinst_HEADERS = \
-  FITS_memory.h \
   FITS_traits.h \
   FITS_file.h \
+  FITS_image.h \
+  FITS_image_t.cpp \
   ProgressConsole.h \
   ImageFactory.h \
   MuImageFactory.h \
