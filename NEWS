@@ -105,7 +105,8 @@
 
 - The PHASE virtual image no longer ties the existence of a datum to a
   positive cosine of the emission of the angle (mu), meaning cosine of
-  phase angle data will be plotted in areas of the map where mu < 0.
+  phase angle data will also be plotted in areas of the map where
+  mu < 0.
 
 - Improved speed of MU, MU0 and PHASE virtual image generation by up
   to 100% by dropping a redundant data "visibility" check.
@@ -165,9 +166,9 @@
   (i.e. catastrophic cancellation).  This impacts the sky removal
   feature and the Orthographic map projection.
 
-- LONG map types are now correctly written to the map FITS file on 64
-  bit platforms where the fundamental C language 'long' integer type
-  is 8 bytes wide.
+- LONG map types are now correctly written to the map FITS file with
+  32 bit signed integer data on all platforms, including those where
+  the fundamental C language long integer type is 8 bytes wide.
 
 - Improved memory management.
   - Better C++ exception safety.
