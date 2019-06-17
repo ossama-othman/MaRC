@@ -23,8 +23,6 @@
 #include "FITS_file.h"
 #include "FITS_image.h"
 
-#include "MapParameters.h"
-
 #include <marc/Log.h>
 
 #include <limits>
