@@ -185,8 +185,8 @@ dnl  ])
 
 AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
       [],
-      [AC_MSG_WARN([fmt library not found, or is it old - using fallback])
-       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.2.1/include"
+      [AC_MSG_WARN([fmt library not found, or it is old - using fallback])
+       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.3.0/include"
        AC_SUBST([FMTLIB_CPPFLAGS])
       ])
 
