@@ -158,6 +158,24 @@ namespace MaRC
         /// Get the value for the map %FITS @c BLANK keyword.
         blank_type blank() const { return this->blank_; }
 
+        /// Set the %FITS @c DATAMAX value.
+        void datamax(double max);
+
+        /// Get the value for the map %FITS @c DATAMAX keyword.
+        double datamax() const { return this->datamax_; }
+
+        /// Set the %FITS @c DATAMIN value.
+        void datamin(double min);
+
+        /// Get the value for the map %FITS @c DATAMIN keyword.
+        double datamin() const { return this->datamin_; }
+
+        /// Set the %FITS @c EQUINOX value.
+        void equinox(double e);
+
+        /// Get the value for the map %FITS @c EQUINOX keyword.
+        double equinox() const { return this->equinox_; }
+
         /// Set name of object being mapped.
         void object(std::string o);
 

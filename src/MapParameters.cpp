@@ -151,7 +151,26 @@ MaRC::MapParameters::bscale(double scale)
 void
 MaRC::MapParameters::blank(blank_type blank)
 {
+
     this->blank_ = blank;
+}
+
+void
+MaRC::MapParameters::datamax(double max)
+{
+    this->datamax_ = max;
+}
+
+void
+MaRC::MapParameters::datamin(double min)
+{
+    this->datamin_ = min;
+}
+
+void
+MaRC::MapParameters::equinox(double e)
+{
+    this->equinox_ = e;
 }
 
 void
