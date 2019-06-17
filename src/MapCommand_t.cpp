@@ -49,8 +49,14 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
                         this->lines_,
                         this->image_factories_.size());
 
-
-    auto blank = this->parameters_->blank();
+    /*
+      The underlying integer type for the MaRC library "blank_type" is
+      potentially wider than the largest FITS integer type (64 bit
+      signed integer).  Explicitly convert to the FITS blank integer
+      type used in the MaRC program to address conversion related
+      errors at compile-time exhibited by some compilers.
+    */
+    FITS::image::blank_type blank(this->parameters_->blank());
 
     // Write the BLANK keyword and value into the map FITS file.
     map_image->template blank<T>(blank);
