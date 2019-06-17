@@ -105,3 +105,4 @@ tests/test_*map*.fits
 
 # Core Dump Files
 core*
+!core.h
