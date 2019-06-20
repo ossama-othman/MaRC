@@ -202,11 +202,6 @@ namespace MaRC
 /// The canonical main entry point to the %MaRC process.
 int main(int argc, char *argv[])
 {
-    MaRC::command_line cl;
-
-    if (!cl.parse(argc, argv))
-        return 1;
-
     int result = 0;
 
     try {
@@ -221,7 +216,16 @@ int main(int argc, char *argv[])
             return -1;
         }
 
-        // Parse MaRC input files give on command line.
+        /*
+          Parse command line options, overriding corresponding
+          configuration file parameters if any exist.
+        */
+        MaRC::command_line cl;
+
+        if (!cl.parse(argc, argv))
+            return 1;
+
+        // Parse MaRC input files given on command line.
         for (auto const filename : cl.files())
             if (MaRC::parse_file(filename, parse_parameter) != 0)
                 return -1;
@@ -238,13 +242,7 @@ int main(int argc, char *argv[])
             }
         }
     } catch (std::exception const & e) {
-        /*
-          Fall back on fprintf() to avoid potentially throwing another
-          exception through the underlying C++ logging framework.
-        */
-        std::fprintf(stderr,
-                     "[" PACKAGE "][error] %s\n",
-                     e.what());
+        MaRC::error(e.what());
 
         return -1;
     }
