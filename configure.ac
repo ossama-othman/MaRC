@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright 1996-1999, 2003-2004, 2017-2018  Ossama Othman
+dnl Copyright 1996-1999, 2003-2004, 2017-2019  Ossama Othman
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
