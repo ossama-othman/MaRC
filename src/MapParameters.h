@@ -72,7 +72,7 @@ namespace MaRC
         /**
          * @brief Set map bits per pixel.
          *
-         * @li @c  8  8 bit unsigned integer data.
+         * @li @c   8  8 bit unsigned integer data.
          * @li @c  16 16 bit signed   integer data.
          * @li @c  32 32 bit signed   integer data.
          * @li @c  64 64 bit signed   integer data.

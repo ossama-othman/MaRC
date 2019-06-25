@@ -47,10 +47,11 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
       ignored since the above "naxis" variable will be set to two,
       not three.
 
-      The CFITSIO 'naxes' value is of type 'LONGLONG'.  It is
-      extremely unlikely that a map with more than LONGLONG_MAX
-      samples,lines, or planes will ever be created, so the implicit
-      conversions should be safe.
+      The CFITSIO 'naxes' element type is 'LONGLONG'.  It is extremely
+      unlikely that a map with more than LONGLONG_MAX samples, lines,
+      or planes will ever be created, so the explicit conversion from
+      a potential 64 bit unsigned integer (std::size_t) should be
+      safe.
     */
     LONGLONG naxes[] = { static_cast<LONGLONG>(samples),
                          static_cast<LONGLONG>(lines),
@@ -59,7 +60,7 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
     int status = 0;
 
     /* Bits per pixel values:
-          8  8 bit unsigned integer data.
+           8  8 bit unsigned integer data.
           16 16 bit signed   integer data.
           32 32 bit signed   integer data.
           64 64 bit signed   integer data.
