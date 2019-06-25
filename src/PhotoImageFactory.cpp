@@ -91,7 +91,7 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     }
 
     // Perform flat fielding if a flat field file was provided.
-    flat_field_correct(img, samples, lines);
+    this->flat_field_correct(img, samples, lines);
 
     // Invert image if desired.
     if (this->invert_h_)
