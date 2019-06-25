@@ -220,7 +220,7 @@ namespace MaRC
              *            three dimensions when creating %FITS images,
              *            and two when reading them.
              */
-            std::array<long, 3> naxes() const;
+            std::array<LONGLONG, 3> naxes() const;
 
             /// Get name of object being mapped.
             std::string object() const;

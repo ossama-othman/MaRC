@@ -266,16 +266,16 @@ MaRC::FITS::file::naxis() const
     return n;
 }
 
-std::array<long, 3>
+std::array<LONGLONG, 3>
 MaRC::FITS::file::naxes() const
 {
-    std::array<long, 3> n;
+    std::array<LONGLONG, 3> n;
     int status = 0;
 
-    if (fits_get_img_size(this->fptr_.get(),
-                          n.size(),
-                          n.data(),
-                          &status) != 0)
+    if (fits_get_img_sizell(this->fptr_.get(),
+                            n.size(),
+                            n.data(),
+                            &status) != 0)
         throw_on_error(status);
 
     return n;
@@ -381,7 +381,7 @@ MaRC::FITS::input_file::read(std::vector<double> & image,
      * @note Only two-dimensional %FITS images are currently
      *       supported.
      */
-    using naxes_array_type = std::array<long, 2>;
+    using naxes_array_type = std::array<LONGLONG, 2>;
 
     /// Array containing %FITS image dimensions.
     naxes_array_type naxes;
@@ -390,12 +390,12 @@ MaRC::FITS::input_file::read(std::vector<double> & image,
     int bitpix = 0;
     int status = 0;
 
-    if (fits_get_img_param(this->fptr_.get(),
-                           naxes.size(),
-                           &bitpix,
-                           &naxis,
-                           naxes.data(),
-                           &status) != 0)
+    if (fits_get_img_paramll(this->fptr_.get(),
+                             naxes.size(),
+                             &bitpix,
+                             &naxis,
+                             naxes.data(),
+                             &status) != 0)
         throw_on_error(status);
 
     // Sanity checks.
@@ -409,7 +409,7 @@ MaRC::FITS::input_file::read(std::vector<double> & image,
         throw std::runtime_error("image dimension is too small");
 
     // CFITSIO wants its own LONGLONG type, not size_t.
-    LONGLONG const nelements = static_cast<LONGLONG>(naxes[0]) * naxes[1];
+    LONGLONG const nelements = naxes[0] * naxes[1];
 
     using image_type = std::remove_reference_t<decltype(image)>;
     using value_type = image_type::value_type;
@@ -429,7 +429,7 @@ MaRC::FITS::input_file::read(std::vector<double> & image,
      *
      * @attention First pixel in CFITSIO is {1, 1} not {0, 0}.
      */
-    constexpr long fpixel[] = {1, 1};
+    LONGLONG fpixel[] = {1, 1};
 
     // For integer typed FITS images with a BLANK value, set the
     // "blank" value in our floating point converted copy of the image
@@ -440,14 +440,14 @@ MaRC::FITS::input_file::read(std::vector<double> & image,
     static_assert(std::is_same<value_type, decltype(nulval)>(),
                   "Nul value type doesn't match photo container type.");
 
-    if (fits_read_pix(this->fptr_.get(),
-                      traits<value_type>::datatype,
-                      const_cast<long *>(fpixel),
-                      nelements,
-                      &nulval,  // "Blank" value in our image.
-                      tmp.data(),
-                      &anynul,  // Were any blank values found?
-                      &status) != 0)
+    if (fits_read_pixll(this->fptr_.get(),
+                        traits<value_type>::datatype,
+                        fpixel,
+                        nelements,
+                        &nulval,  // "Blank" value in our image.
+                        tmp.data(),
+                        &anynul,  // Were any blank values found?
+                        &status) != 0)
         throw_on_error(status);
 
     image   = std::move(tmp);
