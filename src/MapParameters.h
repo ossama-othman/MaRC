@@ -105,22 +105,22 @@ namespace MaRC
         int bitpix() const;
 
         /**
-         * @brief Set the value for the map %FITS @c BZERO keyword.
+         * @brief Set the value for the map %FITS @c BLANK keyword.
          *
-         * The default value of the %FITS @c BZERO keyword is zero.
+         * The %FITS @c BLANK keyword only applies to %FITS images
+         * containing integer types.  The corresponding "blank" value
+         * for floating point %FITS images is the IEEE "not-a-number
+         * constant.
          *
-         * @param[in] zero @c BZERO keyword value.
+         * The @c BLANK keyword merely documents which physical (not
+         * %FITS) values in the image array are undefined.
          *
-         * @note Setting this value will cause the data written to the
-         *       %FITS file to be transformed according the equation:
-         * @code{.cpp}
-         *     (FITS value) = ((physical value) - BZERO) / BSCALE
-         * @endcode
+         * @param[in] blank %FITS @c BLANK keyword value.
          */
-        void bzero(double zero);
+        void blank(blank_type blank);
 
-        /// Get the value for the map %FITS @c BZERO keyword.
-        double bzero() const { return this->bzero_; }
+        /// Get the value for the map %FITS @c BLANK keyword.
+        blank_type blank() const { return this->blank_; }
 
         /**
          * @brief Set the value for the map %FITS @c BSCALE keyword.
@@ -141,22 +141,48 @@ namespace MaRC
         double bscale() const { return this->bscale_; }
 
         /**
-         * @brief Set the value for the map %FITS @c BLANK keyword.
+         * @brief Set the unit of physical data.
          *
-         * The %FITS @c BLANK keyword only applies to %FITS images
-         * containing integer types.  The corresponding "blank" value
-         * for floating point %FITS images is the IEEE "not-a-number
-         * constant.
+         * Get the units of the physical data, i.e. image data that
+         * has been scaled and offset according to the following
+         * equation:
          *
-         * The @c BLANK keyword merely documents which physical (not
-         * %FITS) values in the image array are undefined.
+         * @code{.cpp}
+         *     physical_data = image_data * scale + offset;
+         * @endcode
          *
-         * @param[in] blank %FITS @c BLANK keyword value.
-         */
-        void blank(blank_type blank);
+         * The unit should conform to IAU Style Manual
+         * recommendations.
+         *
+         * @see https://www.iau.org/publications/proceedings_rules/units/
+         *
+         * @return Unit of physical data in the source image.
+         *
+         * @note This value corresponds to the %FITS "BUNIT" keyword.
 
-        /// Get the value for the map %FITS @c BLANK keyword.
-        blank_type blank() const { return this->blank_; }
+         */
+        void bunit(std::string unit);
+
+        /// Set the unit of physical data.
+        std::string const & bunit() const { return this->bunit_; }
+
+        /**
+         * @brief Set the value for the map %FITS @c BZERO keyword.
+         *
+         * The default value of the %FITS @c BZERO keyword is zero.
+         *
+         * @param[in] zero @c BZERO keyword value.
+         *
+         * @note Setting this value will cause the data written to the
+         *       %FITS file to be transformed according the equation:
+         * @code{.cpp}
+         *     (FITS value) = ((physical value) - BZERO) / BSCALE
+         * @endcode
+         */
+        void bzero(double zero);
+
+        /// Get the value for the map %FITS @c BZERO keyword.
+        double bzero() const { return this->bzero_; }
 
         /// Set the %FITS @c DATAMAX value.
         void datamax(double max);
@@ -176,11 +202,26 @@ namespace MaRC
         /// Get the value for the map %FITS @c EQUINOX keyword.
         double equinox() const { return this->equinox_; }
 
+                /// Set name of object being mapped.
+        void instrument(std::string i);
+
+        /// Get name of object being mapped.
+        std::string const & instrument() const
+        {
+            return this->instrument_;
+        }
+
         /// Set name of object being mapped.
         void object(std::string o);
 
         /// Get name of object being mapped.
         std::string const & object() const { return this->object_; }
+
+        /// Set name of person who acquired the source data.
+        void observer(std::string o);
+
+        /// Get name of person who acquired the source data.
+        std::string const & observer() const { return this->observer_; }
 
         /**
          * @brief Set organization or institution responsible for
@@ -197,6 +238,33 @@ namespace MaRC
          *       the same as the one creating the map.
          */
         std::string const & origin() const { return this->origin_; }
+
+        /**
+         * @brief Set source data publication reference.
+         *
+         * @note The %FITS standard recommends that this be the
+         *       19-digit bibliographic indentifier used in the
+         *       Astrophysics Data System bibliographic databases or
+         *       the Digital Object Identifier.
+         *
+         * @note This value corresponds to the %FITS "REFERENC"
+         *       keyword.
+         */
+        void reference(std::string r);
+
+        /// Get reference to where the source data was published.
+        std::string const & reference() const { return this->reference_; }
+
+        /**
+         * @brief Set telescope used to acquire the source data.
+         *
+         * @note This value corresponds to the %FITS "TELESCOP"
+         *       keyword.
+         */
+        void telescope(std::string t);
+
+        /// Get telescope used to acquire the source data.
+        std::string const & telescope() const { return this->telescope_; }
 
     private:
 
