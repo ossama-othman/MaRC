@@ -46,7 +46,7 @@
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
-    : ImageFactory()
+    : SourceImageFactory()
     , filename_(filename)
     , flat_field_()
     , geometric_correction_(false)

@@ -37,7 +37,7 @@ marc_SOURCES = \
   FITS_file.cpp \
   FITS_image.cpp \
   ProgressConsole.cpp \
-  ImageFactory.cpp \
+  SourceImageFactory.cpp \
   MuImageFactory.cpp \
   Mu0ImageFactory.cpp \
   CosPhaseImageFactory.cpp \
@@ -67,7 +67,7 @@ noinst_HEADERS = \
   FITS_image.h \
   FITS_image_t.cpp \
   ProgressConsole.h \
-  ImageFactory.h \
+  SourceImageFactory.h \
   MuImageFactory.h \
   Mu0ImageFactory.h \
   CosPhaseImageFactory.h \

@@ -24,7 +24,7 @@
 #ifndef MARC_MU0_IMAGE_FACTORY_H
 #define MARC_MU0_IMAGE_FACTORY_H
 
-#include "ImageFactory.h"
+#include "SourceImageFactory.h"
 
 
 namespace MaRC
@@ -38,7 +38,7 @@ namespace MaRC
      *
      * This class creates Mu0Image objects.
      */
-    class Mu0ImageFactory final : public ImageFactory
+    class Mu0ImageFactory final : public SourceImageFactory
     {
     public:
 

@@ -140,7 +140,7 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     int plane_count = 1;
     std::size_t const num_planes = this->image_factories_.size();
 
-    ImageFactory::scale_offset_functor const sof =
+    SourceImageFactory::scale_offset_functor const sof =
         scale_and_offset<T>;
 
     // Create and write the map planes.

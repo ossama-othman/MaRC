@@ -285,7 +285,7 @@ std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
 std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
 
 // Map plane image factory.
-std::unique_ptr<MaRC::ImageFactory> image_factory;
+std::unique_ptr<MaRC::SourceImageFactory> image_factory;
 
 // Map plane image factories.
 MaRC::MapCommand::image_factories_type image_factories;

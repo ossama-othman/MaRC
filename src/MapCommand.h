@@ -25,7 +25,7 @@
 #define MARC_MAP_COMMAND_H
 
 #include "FITS_file.h"
-#include "ImageFactory.h"
+#include "SourceImageFactory.h"
 #include "MapParameters.h"
 
 #include <marc/MapFactory.h>
@@ -54,7 +54,7 @@ namespace MaRC
 
         /// Source image factories type.
         using image_factories_type =
-            std::list<std::unique_ptr<MaRC::ImageFactory>>;
+            std::list<std::unique_ptr<MaRC::SourceImageFactory>>;
 
         /// Constructor.
         /**
@@ -101,8 +101,10 @@ namespace MaRC
          */
          void grid_intervals(double lat_interval, double lon_interval);
 
-        /// Set the @c ImageFactory list responsible for creating
-        /// each of the planes in the map.
+        /**
+         * Set the @c SourceImageFactory list responsible for creating
+         * each of the planes in the map.
+         */
         void image_factories(image_factories_type factories);
 
     private:
@@ -194,7 +196,7 @@ namespace MaRC
         std::unique_ptr<MapFactory> const factory_;
 
         /**
-         * List of @c ImageFactory objects that create the
+         * List of @c SourceImageFactory objects that create the
          * @c SourceImage to be mapped on each map plane.
          */
         image_factories_type image_factories_;

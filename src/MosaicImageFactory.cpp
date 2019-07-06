@@ -28,7 +28,7 @@
 MaRC::MosaicImageFactory::MosaicImageFactory (
     list_type && factories,
     MosaicImage::average_type type)
-    : ImageFactory()
+    : SourceImageFactory()
     , factories_(std::move(factories))
     , average_type_(type)
 {

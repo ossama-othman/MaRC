@@ -24,7 +24,7 @@
 #ifndef MARC_LONGITUDE_IMAGE_FACTORY_H
 #define MARC_LONGITUDE_IMAGE_FACTORY_H
 
-#include "ImageFactory.h"
+#include "SourceImageFactory.h"
 
 
 namespace MaRC
@@ -37,7 +37,7 @@ namespace MaRC
      *
      * This class creates LongitudeImage objects.
      */
-    class LongitudeImageFactory final : public ImageFactory
+    class LongitudeImageFactory final : public SourceImageFactory
     {
     public:
 
