@@ -1,7 +1,7 @@
 /**
  * @file MapCommand.cpp
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2019  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,8 @@
 #include "MapCommand_t.cpp"
 
 #include "FITS_traits.h"
-#include "FITS_memory.h"
+#include "FITS_file.h"
+#include "FITS_image.h"
 
 #include <marc/VirtualImage.h>
 #include <marc/Mathematics.h>
@@ -80,8 +81,87 @@ namespace
 
         return os.str();
     }
+
+    // -------------------------------------------------------------------
+
+#if 0
+    template <typename T>
+    struct parameter_matcher
+    {
+        static bool
+        match(T const & lhs, T const & rhs)
+        {
+            return lhs == rhs;
+        }
+    };
+
+    template <>
+    struct parameter_matcher<double>
+    {
+        static bool
+        match(double lhs, double rhs)
+        {
+            constexpr int ulps = 2;
+            return MaRC::almost_equal(lhs, rhs, ulps);
+        }
+    };
+
+    template <typename T>
+    bool
+    match_parameter(T const & lhs, T const & rhs)
+    {
+        return parameter_matcher<T>::match(lhs, rhs);
+    }
+
+    template <typename T>
+    bool
+    populate_param(
+        char const * keyword,
+        T && param,
+        MaRC::MapCommand::image_factories_type const & factories,
+        std::function<void(T const &)> set_param,
+        bool require_match)
+    {
+        T new_param;
+
+        for (auto const & plane : factories) {
+            auto const & plane_param = plane->param();
+
+            if (new_param.empty()) {
+                new_param = plane_param;
+            } else if (!match_param(new_param, plane_param)) {
+                MaRC::info("Different {} values between map planes:",
+                           keyword);
+                MaRC::info("\t'{}' and '{}'.", new_param, plane_param);
+
+                if (require_match) {
+                    /**
+                     * @todo Should we treat this case as a soft error,
+                     *       and simply warn the user instead?
+                     */
+                    MaRC::error("They must match.");
+
+                    return false;
+                } else {
+                    MaRC::info("{} will only be embedded in the map "
+                               "file in a HISTORY comment.",
+                               keyword);
+
+                    return true;
+                }
+            }
+        }
+
+        set_param = std::move(new_param);
+
+        return true;
+    }
+#endif  // 0
+
 }
 
+
+// ------------------------------------------------------------------
 
 MaRC::MapCommand::MapCommand(std::string filename,
                              long samples,
@@ -149,145 +229,19 @@ MaRC::MapCommand::MapCommand(std::string filename,
 int
 MaRC::MapCommand::execute()
 {
+    std::cout << "\nCreating map: " << this->filename_ << '\n';
+
+#if 0
     // All necessary map configuration parameters should now be in
     // place.  Populate other parameters automatically, if possible.
     if (!populate_map_parameters())
         return -1;
-
-    std::cout << "\nCreating map: " << this->filename_ << '\n';
+#endif  // 0
 
     (void) unlink(this->filename_.c_str());
 
     // Create the map file.
-    fitsfile * fptr = 0;
-    int status = 0;
-    if (fits_create_file(&fptr, this->filename_.c_str(), &status) != 0) {
-        fits_report_error(stderr, status);
-        return status;
-    }
-
-    FITS::file_unique_ptr safe_fptr(fptr);
-
-    // Create primary image array HDU.
-    this->initialize_FITS_image(fptr, status);
-
-    /**
-     * Establish that %MaRC created this %FITS files, e.g.
-     * "MaRC 1.0".
-     *
-     * @note The @c CREATOR keyword is commonly used, but not part of
-     *       the %FITS standard.
-     * @note We could also use the @c PROGRAM keyword here instead.
-     *       It is also commonly used but not in the %FITS standard.
-     */
-    fits_update_key(fptr,
-                    TSTRING,
-                    "CREATOR",
-                    const_cast<char *>(PACKAGE_STRING),
-                    "software that created this FITS file",
-                    &status);
-
-    // Write the author name if supplied.
-    auto const author = this->parameters_->author();
-    if (!author.empty()) {
-        fits_update_key(fptr,
-                        TSTRING,
-                        "AUTHOR",
-                        const_cast<char *>(author.c_str()),
-                        "who compiled original data that was mapped",
-                        &status);
-    }
-
-    // Write the name of the organization or institution responsible
-    // for creating the FITS file, if supplied.
-    auto const origin = this->parameters_->origin();
-    if (!origin.empty()) {
-        fits_update_key(fptr,
-                        TSTRING,
-                        "ORIGIN",
-                        const_cast<char *>(origin.c_str()),
-                        "map creator organization",
-                        &status);
-    }
-
-    // Write the current date and time (i.e. the creation time) into
-    // the map FITS file.
-    fits_write_date(fptr, &status);
-
-    // Write the name of the object being mapped.
-    auto const object = this->parameters_->object();
-    if (!object.empty()) {
-        fits_update_key(fptr,
-                        TSTRING,
-                        "OBJECT",
-                        const_cast<char *>(object.c_str()),
-                        "name of observed object",
-                        &status);
-    } else {
-        /**
-         * @todo s/BODY/OBJECT/ once MaRC supports mapping objects on
-         *       the Celestial Sphere.
-         */
-        MaRC::error("BODY not specified.");
-        return -1;
-    }
-
-    // Write the map comments.
-    for (auto const & comment : this->comments_) {
-        fits_write_comment(fptr, comment.c_str(), &status);
-    }
-
-    std::string const history =
-        std::string(this->projection_name())
-        + " projection created by " PACKAGE_STRING ".";
-
-    // Write some MaRC-specific HISTORY comments.
-    fits_write_history(fptr,
-                       history.c_str(),
-                       &status);
-
-    // Write the BSCALE and BZERO keywords and value into the map FITS
-    // file.
-    if (this->transform_data_) {
-        /**
-         * @bug This code is never called since @c transform_data_ is
-         *      always false.  Support for allowing the user to
-         *      specify the BSCALE and BZERO values has been broken
-         *      for years so it is better to leave this code disabled
-         *      until that is corrected.
-         *
-         * @todo Should we disable CFITSIO automatic scaling via
-         *       @c fits_set_bscale() as we do for @c VirtualImage map
-         *       planes?
-         */
-        double bscale = this->parameters_->bscale();
-        double bzero  = this->parameters_->bzero();
-
-        if (!std::isnan(bscale))
-            fits_update_key(fptr,
-                            TDOUBLE,
-                            "BSCALE",
-                            &bscale,
-                            "linear data scaling coefficient",
-                            &status);
-
-        if (!std::isnan(bzero))
-            fits_update_key(fptr,
-                            TDOUBLE,
-                            "BZERO",
-                            &bzero,
-                            "physical value corresponding to "
-                            "zero in the map",
-                            &status);
-    }
-
-    if (status != 0) {
-        // Report any errors before creating the map since map
-        // creation can be time consuming.
-        fits_report_error(stderr, status);
-
-        return status;
-    }
+    FITS::output_file f(this->filename_.c_str());
 
     /**
      * @todo Map timing should not include %FITS file operations.
@@ -297,22 +251,22 @@ MaRC::MapCommand::execute()
     // Create and write the map planes.
     switch (this->parameters_->bitpix()) {
     case BYTE_IMG:
-        this->template make_map_planes<FITS::byte_type>(fptr, status);
+        this->template make_map_planes<FITS::byte_type>(f);
         break;
     case SHORT_IMG:
-        this->template make_map_planes<FITS::short_type>(fptr, status);
+        this->template make_map_planes<FITS::short_type>(f);
         break;
     case LONG_IMG:
-        this->template make_map_planes<FITS::long_type>(fptr, status);
+        this->template make_map_planes<FITS::long_type>(f);
         break;
     case LONGLONG_IMG:
-        this->template make_map_planes<FITS::longlong_type>(fptr, status);
+        this->template make_map_planes<FITS::longlong_type>(f);
         break;
     case FLOAT_IMG:
-        this->template make_map_planes<FITS::float_type>(fptr, status);
+        this->template make_map_planes<FITS::float_type>(f);
         break;
     case DOUBLE_IMG:
-        this->template make_map_planes<FITS::double_type>(fptr, status);
+        this->template make_map_planes<FITS::double_type>(f);
         break;
     default:
         // We should never get here.
@@ -327,34 +281,10 @@ MaRC::MapCommand::execute()
     std::cout << "Completed mapping data in " << seconds.count()
               << " seconds.\n";
 
-    /**
-     * @todo Set map DATAMIN and DATAMAX automatically based actual
-     *       mapped data.
-     */
-//   // Write DATAMIN and DATAMAX keywords.
-//   fits_update_key(fptr,
-//                   TFLOAT,
-//                   "DATAMIN",
-//                   &this->minimum_,
-//                   "Minimum valid physical value.",
-//                   &status);
-
-//   fits_update_key(fptr,
-//                   TFLOAT,
-//                   "DATAMAX",
-//                   &this->maximum_,
-//                   "Maximum valid physical value.",
-//                   &status);
-
-    // Write a checksum for the map.
-    fits_write_chksum(fptr, &status);
-
     // Write the map grid if requested.
-    this->write_grid(fptr, status);
+    this->write_grid(f);
 
-    fits_report_error(stderr, status);
-
-    return status;
+    return 0;
 }
 
 char const *
@@ -376,75 +306,42 @@ MaRC::MapCommand::make_grid(long samples,
 }
 
 void
-MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
+MaRC::MapCommand::write_grid(MaRC::FITS::output_file & map_file)
 {
     if (!this->create_grid_)
         return;
 
-    long naxes[] = { this->samples_, this->lines_ };
-    constexpr int grid_naxis = sizeof(naxes) / sizeof(naxes[0]);
-
-    static_assert(grid_naxis == 2,
-                  "Map grid is not two dimensional.");
-
-    // Create the image extension containing the map grid.
-    /**
-     * @todo Check return value!
-     */
-    fits_create_img(fptr,
-                    FITS::traits<FITS::byte_type>::bitpix,
-                    grid_naxis,
-                    naxes,
-                    &status);
-
+    constexpr std::size_t planes = 1;  // Only one grid image plane.
     static char const extname[] = "GRID";
-    fits_update_key(fptr,
-                    TSTRING,
-                    "EXTNAME",
-                    const_cast<char *>(extname),
-                    PACKAGE_NAME " grid extension name",
-                    &status);
+
+    auto grid_image =
+        map_file.make_image(FITS::traits<FITS::byte_type>::bitpix,
+                            this->samples_,
+                            this->lines_,
+                            planes,
+                            extname);
 
     // Write the grid comments.
-    for (auto const & xcomment : this->xcomments_) {
-        fits_write_comment(fptr, xcomment.c_str(), &status);
-    }
+    for (auto const & xcomment : this->xcomments_)
+        grid_image->comment(xcomment);
 
     std::string const xhistory =
         std::string(this->projection_name())
         + " projection grid created using " PACKAGE_STRING ".";
 
     // Write some MaRC-specific HISTORY comments.
-    fits_write_history(fptr,
-                       xhistory.c_str(),
-                       &status);
+    grid_image->history(xhistory);
 
     // Write map grid DATAMIN and DATAMAX keywords.  Both are the
     // SAME, since only one valid value exists in the grid image.
     double minimum = std::numeric_limits<grid_type::value_type>::max();
     double maximum = minimum;
 
-    fits_update_key(fptr,
-                    TFLOAT,
-                    "DATAMIN",
-                    &minimum,
-                    "minimum valid grid value",
-                    &status);
-
-    fits_update_key(fptr,
-                    TFLOAT,
-                    "DATAMAX",
-                    &maximum,
-                    "maximum valid grid value",
-                    &status);
+    grid_image->datamin(minimum);
+    grid_image->datamax(maximum);
 
     int grid_blank = 0;
-    fits_update_key(fptr,
-                    TINT,
-                    "BLANK",
-                    &grid_blank,
-                    "value of off-grid pixels",
-                    &status);
+    grid_image->blank<decltype(grid_blank)>(grid_blank);
 
     auto const start = std::chrono::high_resolution_clock::now();
 
@@ -460,26 +357,8 @@ MaRC::MapCommand::write_grid(fitsfile * fptr, int & status)
     std::cout << "Completed mapping grid in " << seconds.count()
               << " seconds.\n";
 
-    // Sanity check.
-    assert(grid.size()
-           == static_cast<std::size_t>(this->samples_) * this->lines_);
-
-    // LONGLONG is a CFITSIO type.
-    constexpr LONGLONG fpixel = 1;  // First pixel/element
-    LONGLONG const nelements = grid.size();
-
-    /**
-     * @todo Check return value!
-     */
-    (void) fits_write_img(fptr,
-                          FITS::traits<grid_type::value_type>::datatype,
-                          fpixel,
-                          nelements,
-                          grid.data(),
-                          &status);
-
-    // Write a checksum for the grid.
-    fits_write_chksum(fptr, &status);
+    if(!grid_image->template write<grid_type>(grid))
+        MaRC::error("Unable to write grid image to map file.");
 }
 
 void
@@ -513,37 +392,10 @@ MaRC::MapCommand::image_factories(image_factories_type factories)
 }
 
 void
-MaRC::MapCommand::initialize_FITS_image(fitsfile * fptr, int & status)
-{
-    // The CFITSIO 'naxes' value is of type 'long'.  It is extremely
-    // unlikely that a map with more than LONG_MAX planes will ever be
-    // created, so this implicit conversion should be safe.
-    long const planes = this->image_factories_.size();
-
-    int const naxis =
-        (planes > 1
-         ? 3  /* 3 dimensions -- map "cube"  */
-         : 2  /* 2 dimensions -- map "plane" */);
-
-    // Specify map cube dimensions.  Note that in the two-dimensional
-    // map case, the third "planes" dimension will be ignored since
-    // the above "naxis" variable will be set to two, not three.
-    long naxes[] = { this->samples_, this->lines_, planes };
-
-    // Create the primary array.
-    (void) fits_create_img(fptr,
-                           this->parameters_->bitpix(),
-                           naxis,
-                           naxes,
-                           &status);
-}
-
-void
-MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
+MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
                                             std::size_t plane,
                                             std::size_t num_planes,
-                                            SourceImage const * image,
-                                            int & status)
+                                            SourceImage const * image)
 {
     /**
      * @todo This entire method seems is a bit of hack.  Come up with
@@ -608,44 +460,20 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
         constexpr double internal_scale  = 1;
         constexpr double internal_offset = 0;
 
-        if (fits_update_key(fptr,
-                            TDOUBLE,
-                            "BSCALE",
-                            &scale,
-                            "linear data scaling coefficient",
-                            &status) != 0
-            || fits_update_key(fptr,
-                               TDOUBLE,
-                               "BZERO",
-                               &offset,
-                               "physical value corresponding "
-                               "to zero in the map",
-                               &status) != 0
+        map_image.bscale(scale);
+        map_image.bzero(offset);
 
-            /*
-              Set CFITSIO internal scaling factors for the current
-              primary array of image extension.  They are independent
-              of the FITS BSCALE and BZERO values set above.
-            */
-            || fits_set_bscale(fptr,
-                               internal_scale,
-                               internal_offset,
-                               &status) != 0) {
-            return;
-        }
+        /*
+          Set CFITSIO internal scaling factors for the current
+          primary array of image extension.  They are independent
+          of the FITS BSCALE and BZERO values set above.
+        */
+        map_image.internal_scale(internal_scale, internal_offset);
 
         // -------------------------------------------
         // Set physical value unit of the array values
-        // ----------------------------------------
-        if (!unit.empty()
-            && fits_update_key(fptr,
-                               TSTRING,
-                               "BUNIT",
-                               const_cast<char *>(unit.c_str()),
-                               "physical unit of the array values",
-                               &status) != 0) {
-            return;
-        }
+        // -------------------------------------------
+        map_image.bunit(unit);
     } else {
         comment_list_type facts;
 
@@ -666,21 +494,20 @@ MaRC::MapCommand::write_virtual_image_facts(fitsfile * fptr,
 
         for (auto & f : facts) {
             // Write some MaRC-specific HISTORY comments.
-            fits_write_history(fptr,
-                               f.c_str(),
-                               &status);
+            map_image.history(f);
         }
     }
 }
 
+#if 0
 bool
 MaRC::MapCommand::populate_map_parameters()
 {
     bool populated = true;
 
     /**
-     * @todo Populate the following parameters from source image
-     *       factories if they exist, and if possible:
+     * Populate the following parameters from source image factories
+     * if possible:
      * @li AUTHOR
      * @li BITPIX
      * @li BLANK
@@ -699,5 +526,27 @@ MaRC::MapCommand::populate_map_parameters()
      * @li TELESCOP
      */
 
+    /*
+      Iterate through the list of source images (map planes) in an
+      attempt to automatically set each of the map parameters.
+
+      Mandatory Parameters:
+        - Data type (BITPIX)
+        - Map plane dimensions, i.e. samples and lines (NAXIS1 and
+          NAXIS2)
+     */
+
+    populated =
+        populate_param(
+            "AUTHOR",
+            this->parameters_->author(),
+            [&](auto value)
+            {
+                this->parameters_->author(std::forward(value));
+            },
+            false);
+
+
     return populated;
 }
+#endif  // 0

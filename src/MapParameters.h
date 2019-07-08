@@ -33,8 +33,6 @@
 
 namespace MaRC
 {
-    class ImageFactory;
-
     /**
      * Type used to store a %FITS @c BLANK integer value.
      *
@@ -50,33 +48,10 @@ namespace MaRC
      * The map parameters in this class may be supplied by the user or
      * populated automatically from relevant values in the source
      * images being mapped.
-     *
-     * @todo If possible, populate the following (%FITS)
-     *       parameters from source image factories if they exist:
-     * @li AUTHOR
-     * @li BITPIX
-     * @li BLANK
-     * @li BSCALE
-     * @li BUNIT
-     * @li BZERO
-     * @li DATAMAX
-     * @li DATAMIN
-     * @li EQUINOX
-     * @li INSTRUME
-     * @li NAXES
-     * @li OBJECT
-     * @li OBSERVER
-     * @li ORIGIN
-     * @li REFERENC
-     * @li TELESCOP
      */
     class MapParameters
     {
     public:
-
-        /// Source image factories type.
-        using image_factories_type =
-            std::list<std::unique_ptr<MaRC::ImageFactory>>;
 
         /// Constructor
         MapParameters();
@@ -88,28 +63,26 @@ namespace MaRC
         MapParameters(MapParameters const &) = delete;
         void operator=(MapParameters const &) = delete;
 
-        /**
-         * @brief Populate map parameters from the give source.
-         *
-         * Populate optional parameters automatically, such as from
-         * @c SourceImage parameters, where possible.
-         *
-         * @param[in] sources List of source factories used for
-         *                    providing the data to be mapped.
-         *
-         * @return @c true if map parameter population succeded, and
-         *         @c false otherwise.
-         */
-        bool populate_from(image_factories_type const & sources);
-
         /// Set map author.
-        void author(std::string author);
+        void author(std::string a);
 
         /// Get map author.
         std::string const & author() const { return this->author_; }
 
-        /// Set map bits per pixel code.
-        void bitpix(int bitpix);
+        /**
+         * @brief Set map bits per pixel.
+         *
+         * @li @c   8  8 bit unsigned integer data.
+         * @li @c  16 16 bit signed   integer data.
+         * @li @c  32 32 bit signed   integer data.
+         * @li @c  64 64 bit signed   integer data.
+         * @li @c -32 32 bit floating point   data.
+         * @li @c -64 64 bit floating point   data.
+         *
+         * @param[in] n Bits per pixel value as defined by the %FITS
+         *              standard.
+         */
+        void bitpix(int n);
 
         /**
          * @brief Get map %FITS bits per pixel code.
@@ -129,25 +102,25 @@ namespace MaRC
          * @throw std::runtime_error Unable to determine bitpix
          *                           value.
          */
-        int bitpix();
+        int bitpix() const;
 
         /**
-         * @brief Set the value for the map %FITS @c BZERO keyword.
+         * @brief Set the value for the map %FITS @c BLANK keyword.
          *
-         * The default value of the %FITS @c BZERO keyword is zero.
+         * The %FITS @c BLANK keyword only applies to %FITS images
+         * containing integer types.  The corresponding "blank" value
+         * for floating point %FITS images is the IEEE "not-a-number
+         * constant.
          *
-         * @param[in] zero @c BZERO keyword value.
+         * The @c BLANK keyword merely documents which physical (not
+         * %FITS) values in the image array are undefined.
          *
-         * @note Setting this value will cause the data written to the
-         *       %FITS file to be transformed according the equation:
-         * @code{.cpp}
-         *     (FITS value) = ((physical value) - BZERO) / BSCALE
-         * @endcode
+         * @param[in] blank %FITS @c BLANK keyword value.
          */
-        void bzero(double zero);
+        void blank(blank_type blank);
 
-        /// Get the value for the map %FITS @c BZERO keyword.
-        double bzero() const { return this->bzero_; }
+        /// Get the value for the map %FITS @c BLANK keyword.
+        blank_type blank() const { return this->blank_; }
 
         /**
          * @brief Set the value for the map %FITS @c BSCALE keyword.
@@ -168,34 +141,93 @@ namespace MaRC
         double bscale() const { return this->bscale_; }
 
         /**
-         * @brief Set the value for the map %FITS @c BLANK keyword.
+         * @brief Set the unit of physical data.
          *
-         * The %FITS @c BLANK keyword only applies to %FITS images
-         * containing integer types.  The corresponding "blank" value
-         * for floating point %FITS images is the IEEE "not-a-number
-         * constant.
+         * Get the units of the physical data, i.e. image data that
+         * has been scaled and offset according to the following
+         * equation:
          *
-         * The @c BLANK keyword merely documents which physical (not
-         * %FITS) values in the image array are undefined.
+         * @code{.cpp}
+         *     physical_data = image_data * scale + offset;
+         * @endcode
          *
-         * @param[in] blank %FITS @c BLANK keyword value.
-         */
-        void blank(blank_type blank);
+         * The unit should conform to IAU Style Manual
+         * recommendations.
+         *
+         * @see https://www.iau.org/publications/proceedings_rules/units/
+         *
+         * @return Unit of physical data in the source image.
+         *
+         * @note This value corresponds to the %FITS "BUNIT" keyword.
 
-        /// Get the value for the map %FITS @c BLANK keyword.
-        blank_type blank() const { return this->blank_; }
+         */
+        void bunit(std::string unit);
+
+        /// Set the unit of physical data.
+        std::string const & bunit() const { return this->bunit_; }
+
+        /**
+         * @brief Set the value for the map %FITS @c BZERO keyword.
+         *
+         * The default value of the %FITS @c BZERO keyword is zero.
+         *
+         * @param[in] zero @c BZERO keyword value.
+         *
+         * @note Setting this value will cause the data written to the
+         *       %FITS file to be transformed according the equation:
+         * @code{.cpp}
+         *     (FITS value) = ((physical value) - BZERO) / BSCALE
+         * @endcode
+         */
+        void bzero(double zero);
+
+        /// Get the value for the map %FITS @c BZERO keyword.
+        double bzero() const { return this->bzero_; }
+
+        /// Set the %FITS @c DATAMAX value.
+        void datamax(double max);
+
+        /// Get the value for the map %FITS @c DATAMAX keyword.
+        double datamax() const { return this->datamax_; }
+
+        /// Set the %FITS @c DATAMIN value.
+        void datamin(double min);
+
+        /// Get the value for the map %FITS @c DATAMIN keyword.
+        double datamin() const { return this->datamin_; }
+
+        /// Set the %FITS @c EQUINOX value.
+        void equinox(double e);
+
+        /// Get the value for the map %FITS @c EQUINOX keyword.
+        double equinox() const { return this->equinox_; }
+
+                /// Set name of object being mapped.
+        void instrument(std::string i);
+
+        /// Get name of object being mapped.
+        std::string const & instrument() const
+        {
+            return this->instrument_;
+        }
 
         /// Set name of object being mapped.
-        void object(std::string object);
+        void object(std::string o);
 
         /// Get name of object being mapped.
         std::string const & object() const { return this->object_; }
+
+        /// Set name of person who acquired the source data.
+        void observer(std::string o);
+
+        /// Get name of person who acquired the source data.
+        std::string const & observer() const { return this->observer_; }
 
         /**
          * @brief Set organization or institution responsible for
          *        creating the map.
          */
-        void origin(std::string origin);
+        void origin(std::string o);
 
         /**
          * @brief Get organization or institution responsible for
@@ -206,6 +238,33 @@ namespace MaRC
          *       the same as the one creating the map.
          */
         std::string const & origin() const { return this->origin_; }
+
+        /**
+         * @brief Set source data publication reference.
+         *
+         * @note The %FITS standard recommends that this be the
+         *       19-digit bibliographic indentifier used in the
+         *       Astrophysics Data System bibliographic databases or
+         *       the Digital Object Identifier.
+         *
+         * @note This value corresponds to the %FITS "REFERENC"
+         *       keyword.
+         */
+        void reference(std::string r);
+
+        /// Get reference to where the source data was published.
+        std::string const & reference() const { return this->reference_; }
+
+        /**
+         * @brief Set telescope used to acquire the source data.
+         *
+         * @note This value corresponds to the %FITS "TELESCOP"
+         *       keyword.
+         */
+        void telescope(std::string t);
+
+        /// Get telescope used to acquire the source data.
+        std::string const & telescope() const { return this->telescope_; }
 
     private:
 
@@ -278,6 +337,15 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "DATAMAX"
          *       keyword.
+         *
+         * @bug On platforms that implement the IEEE 754 floating
+         *      point standard, the use of @c double as the underlying
+         *      @c DATAMAX type will cause loss of precision if the
+         *      %FITS @c DATAMAX values is an integer that requires
+         *      more than 53 bits since the significand of a 64 bit
+         *      IEEE 754 floating point value is only 53 bits wide.
+         *      Special handling will be need to be implemented to
+         *      handle such a case.
          */
         double datamax_;
 
@@ -286,6 +354,15 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "DATAMIN"
          *       keyword.
+         *
+         * @bug On platforms that implement the IEEE 754 floating
+         *      point standard, the use of @c double as the underlying
+         *      @c DATAMIN type will cause loss of precision if the
+         *      %FITS @c DATAMIN values is an integer that requires
+         *      more than 53 bits since the significand of a 64 bit
+         *      IEEE 754 floating point value is only 53 bits wide.
+         *      Special handling will be need to be implemented to
+         *      handle such a case.
          */
         double datamin_;
 
@@ -352,7 +429,6 @@ namespace MaRC
         std::string telescope_;
 
     };
-
 }
 
 

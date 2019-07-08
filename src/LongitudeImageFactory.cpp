@@ -30,7 +30,7 @@
 
 
 MaRC::LongitudeImageFactory::LongitudeImageFactory()
-    : ImageFactory()
+    : SourceImageFactory()
 {
 }
 

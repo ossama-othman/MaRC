@@ -1,7 +1,7 @@
 /**
  * @file MapCommand_T.cpp
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2019  Ossama Othman
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 #include "MapCommand.h"
 #include "FITS_traits.h"
+#include "FITS_image.h"
 #include "ProgressConsole.h"
 
 #include <marc/MapFactory.h>
@@ -39,40 +40,107 @@
 
 template <typename T>
 void
-MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
+MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
 {
+    // Create primary image array HDU.
+    auto map_image =
+        file.make_image(this->parameters_->bitpix(),
+                        this->samples_,
+                        this->lines_,
+                        this->image_factories_.size());
+
+    /*
+      The underlying integer type for the MaRC library "blank_type" is
+      potentially wider than the largest FITS integer type (64 bit
+      signed integer).  Explicitly convert to the FITS blank integer
+      type used in the MaRC program to address conversion related
+      errors at compile-time exhibited by some compilers.
+    */
     auto blank = this->parameters_->blank();
+    if (blank.has_value()) {
+        using fits_blank_type = FITS::image::blank_type::value_type;
 
-    // Write the BLANK keyword and value into the map FITS file.
-    if (std::is_integral<T>() && blank) {
-        T blank_value = *blank;
+        /*
+          Truncation will not occur since the MaRC program will pass
+          at most pass a 64 bit signed integer to the MaRC library.
+        */
+        fits_blank_type fits_blank =
+            static_cast<fits_blank_type>(*blank);
 
-        // Don't bother checking if the blank value fits within the
-        // range of type T.  The make_map() call below already does
-        // that.
-
-        fits_update_key(fptr,
-                        FITS::traits<T>::datatype,
-                        "BLANK",
-                        &blank_value,
-                        "value of pixels with undefined physical value",
-                        &status);
+        // Write the BLANK keyword and value into the map FITS file.
+        map_image->template blank<T>(fits_blank);
     }
 
-    // First pixel/element in FITS array (1-based).
-    //   Plane 1: fpixel =  1
-    //   Plane 2: fpixel += nelements
-    //   Plane 3: fpixel += nelements
-    //   Plane 4: ... etc ...
+    // Write the author name if supplied.
+    auto const author = this->parameters_->author();
+    map_image->author(author);
 
-    // LONGLONG is a CFITSIO type.
-    LONGLONG fpixel = 1;  // First pixel.
+    // Write the name of the organization or institution responsible
+    // for creating the FITS file, if supplied.
+    auto const origin = this->parameters_->origin();
+    map_image->origin(origin);
+
+    // Write the name of the object being mapped.
+    auto const object = this->parameters_->object();
+
+    if (object.empty()) {
+        /**
+         * @todo s/BODY/OBJECT/ once MaRC supports mapping objects on
+         *       the Celestial Sphere.
+         */
+        MaRC::error("BODY not specified.");
+    }
+
+    map_image->object(object);
+
+    // Write the map comments.
+    for (auto const & comment : this->comments_)
+        map_image->comment(comment);
+
+    std::string const history =
+        std::string(this->projection_name())
+        + " projection created by " PACKAGE_STRING ".";
+
+    // Write some MaRC-specific HISTORY comments.
+    map_image->history(history);
+
+/*
+    // Write MaRC-specific HISTORY comments.
+    for (auto & f : facts)
+        map_image->history(f);
+*/
+
+    // Write the BSCALE and BZERO keywords and value into the map FITS
+    // file.
+    if (this->transform_data_) {
+        /**
+         * @bug This code is never called since @c transform_data_ is
+         *      always false.  Support for allowing the user to
+         *      specify the BSCALE and BZERO values has been broken
+         *      for years so it is better to leave this code disabled
+         *      until that is corrected.
+         *
+         * @todo Should we disable CFITSIO automatic scaling via
+         *       @c fits_set_bscale() as we do for @c VirtualImage map
+         *       planes?
+         */
+        double bscale = this->parameters_->bscale();
+        double bzero  = this->parameters_->bzero();
+
+        map_image->bscale(bscale);
+        map_image->bzero(bzero);
+    }
+
+    /**
+     * @todo Write all available %FITS keyword values in the given
+     *       image parameters.
+     */
 
     // Keep track of mapped planes for reporting to user.
     int plane_count = 1;
     std::size_t const num_planes = this->image_factories_.size();
 
-    ImageFactory::scale_offset_functor const sof =
+    SourceImageFactory::scale_offset_functor const sof =
         scale_and_offset<T>;
 
     // Create and write the map planes.
@@ -101,11 +169,10 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
          */
         // Add description specific to the VirtualImage, if we have
         // one, in the map FITS file.
-        this->write_virtual_image_facts(fptr,
+        this->write_virtual_image_facts(*map_image,
                                         plane_count,
                                         num_planes,
-                                        image.get(),
-                                        status);
+                                        image.get());
 
         /**
          * @bug These @c ImageFactory methods return a @c double
@@ -132,27 +199,19 @@ MaRC::MapCommand::make_map_planes(fitsfile * fptr, int & status)
                                                       this->samples_,
                                                       this->lines_));
 
-        // Sanity check.
-        assert(map.size()
-               == static_cast<std::size_t>(this->samples_) * this->lines_);
-
-        LONGLONG const nelements = map.size();
-
-        /**
-         * @todo Check return value!
-         */
-        fits_write_img(fptr,
-                       FITS::traits<T>::datatype,
-                       fpixel,
-                       nelements,
-                       map.data(),
-                       &status);
-
-        // Set offset in the FITS array to the next plane.
-        fpixel += nelements;
+        if (!map_image->template write<decltype(map)>(map))
+            MaRC::error("Unable to write plane to map file.");
 
         ++plane_count;
     }
+
+    /**
+     * @todo Set map DATAMIN and DATAMAX automatically based on actual
+     *       mapped data.
+     */
+    // Write DATAMIN and DATAMAX keywords.
+    // map_image->datamin(this->minimum_);
+    // map_image->datamax(this->maximum_);
 }
 
 

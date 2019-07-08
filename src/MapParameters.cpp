@@ -61,22 +61,22 @@ namespace
 
 
 /*
-AUTHOR
-BITPIX
-BLANK
-BSCALE
-BUNIT
-BZERO
-DATAMAX
-DATAMIN
-EQUINOX
-INSTRUME
+. AUTHOR
+. BITPIX
+. BLANK
+. BSCALE
+. BUNIT
+. BZERO
+. DATAMAX
+. DATAMIN
+. EQUINOX
+. INSTRUME
 NAXES
-OBJECT
-OBSERVER
-ORIGIN
-REFERENC
-TELESCOP
+. OBJECT
+. OBSERVER
+. ORIGIN
+. REFERENC
+. TELESCOP
  */
 
 
@@ -100,25 +100,23 @@ MaRC::MapParameters::MapParameters()
 {
 }
 
-bool
-MaRC::MapParameters::populate_from(
-    image_factories_type const & /* sources */)
+void
+MaRC::MapParameters::author(std::string a)
 {
-    return false;
+    this->author_ = std::move(a);
 }
 
 void
 MaRC::MapParameters::bitpix(int n)
 {
-    // Zero means choose bitpix automatically.
-    if (n != 0 && !valid_bitpix(n))
+    if (!valid_bitpix(n))
         throw std::invalid_argument("Invalid FITS BITPIX value");
 
     this->bitpix_ = n;
 }
 
 int
-MaRC::MapParameters::bitpix()
+MaRC::MapParameters::bitpix() const
 {
     /**
      * @bug Choose BITPIX value based on SourceImage, such as the
@@ -139,15 +137,10 @@ MaRC::MapParameters::bitpix()
 }
 
 void
-MaRC::MapParameters::author(std::string author)
+MaRC::MapParameters::blank(blank_type blank)
 {
-    this->author_ = std::move(author);
-}
 
-void
-MaRC::MapParameters::bzero(double zero)
-{
-    this->bzero_ = zero;
+    this->blank_ = blank;
 }
 
 void
@@ -157,19 +150,67 @@ MaRC::MapParameters::bscale(double scale)
 }
 
 void
-MaRC::MapParameters::blank(blank_type blank)
+MaRC::MapParameters::bunit(std::string unit)
 {
-    this->blank_ = blank;
+    this->bunit_ = std::move(unit);
 }
 
 void
-MaRC::MapParameters::object(std::string object)
+MaRC::MapParameters::bzero(double zero)
 {
-    this->object_ = std::move(object);
+    this->bzero_ = zero;
 }
 
 void
-MaRC::MapParameters::origin(std::string origin)
+MaRC::MapParameters::datamax(double max)
 {
-    this->origin_ = std::move(origin);
+    this->datamax_ = max;
+}
+
+void
+MaRC::MapParameters::datamin(double min)
+{
+    this->datamin_ = min;
+}
+
+void
+MaRC::MapParameters::equinox(double e)
+{
+    this->equinox_ = e;
+}
+
+void
+MaRC::MapParameters::instrument(std::string i)
+{
+    this->instrument_ = std::move(i);
+}
+
+void
+MaRC::MapParameters::object(std::string o)
+{
+    this->object_ = std::move(o);
+}
+
+void
+MaRC::MapParameters::observer(std::string o)
+{
+    this->observer_ = std::move(o);
+}
+
+void
+MaRC::MapParameters::origin(std::string o)
+{
+    this->origin_ = std::move(o);
+}
+
+void
+MaRC::MapParameters::reference(std::string r)
+{
+    this->reference_ = std::move(r);
+}
+
+void
+MaRC::MapParameters::telescope(std::string t)
+{
+    this->telescope_ = std::move(t);
 }

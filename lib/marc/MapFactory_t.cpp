@@ -74,7 +74,7 @@ MaRC::MapFactory::make_map(plot_info & info,
     // Inform "observers" of map completion.
     info.notifier().notify_done(map.size());
 
-    return std::move(map);
+    return map;
 }
 
 template <typename T>

@@ -36,7 +36,7 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
     double sub_solar_lat,
     double sub_solar_lon,
     double range)
-    : ImageFactory()
+    : SourceImageFactory()
     , body_(body)
     , sub_observ_lat_(sub_observ_lat)
     , sub_observ_lon_(sub_observ_lon)

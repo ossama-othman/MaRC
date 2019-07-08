@@ -24,7 +24,7 @@
 #ifndef MARC_PHOTO_IMAGE_FACTORY_H
 #define MARC_PHOTO_IMAGE_FACTORY_H
 
-#include "ImageFactory.h"
+#include "SourceImageFactory.h"
 
 #include "marc/PhotoImageParameters.h"
 #include "marc/ViewingGeometry.h"
@@ -50,7 +50,7 @@ namespace MaRC
      * the PhotoImage to be mapped, which reduces run-time memory
      * requirements.
      */
-    class PhotoImageFactory final : public ImageFactory
+    class PhotoImageFactory final : public SourceImageFactory
     {
     public:
 
