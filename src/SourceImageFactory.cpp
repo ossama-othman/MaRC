@@ -1,5 +1,5 @@
 /**
- * @file ImageFactory.cpp
+ * @file SourceImageFactory.cpp
  *
  * Copyright (C) 2004, 2017  Ossama Othman
  *
@@ -20,21 +20,21 @@
  * @author Ossama Othman
  */
 
-#include "ImageFactory.h"
+#include "SourceImageFactory.h"
 
 #include <limits>
 #include <cmath>
 #include <stdexcept>
 
 
-MaRC::ImageFactory::ImageFactory()
+MaRC::SourceImageFactory::SourceImageFactory()
     : minimum_(std::numeric_limits<double>::signaling_NaN())
     , maximum_(std::numeric_limits<double>::signaling_NaN())
 {
 }
 
 void
-MaRC::ImageFactory::minimum(double m)
+MaRC::SourceImageFactory::minimum(double m)
 {
     if (std::isnan(m) || this->maximum_ < m)
         throw std::invalid_argument("invalid source image minimum");
@@ -43,7 +43,7 @@ MaRC::ImageFactory::minimum(double m)
 }
 
 void
-MaRC::ImageFactory::maximum(double m)
+MaRC::SourceImageFactory::maximum(double m)
 {
     if (std::isnan(m) || this->minimum_ > m)
         throw std::invalid_argument("invalid source image maximum");

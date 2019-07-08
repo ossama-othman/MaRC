@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright 1996-1999, 2003-2004, 2017-2018  Ossama Othman
+dnl Copyright 1996-1999, 2003-2004, 2017-2019  Ossama Othman
 dnl
 dnl This program is free software; you can redistribute it and/or modify
 dnl it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ dnl Checks for programs.
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX_14
 AC_PROG_LN_S
-AC_PROG_YACC
+AX_PROG_BISON
 AM_PROG_LEX
 
 MARC_CODE_COVERAGE
@@ -185,8 +185,8 @@ dnl  ])
 
 AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
       [],
-      [AC_MSG_WARN([fmt library not found, or is it old - using fallback])
-       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.2.1/include"
+      [AC_MSG_WARN([fmt library not found, or it is old - using fallback])
+       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.3.0/include"
        AC_SUBST([FMTLIB_CPPFLAGS])
       ])
 

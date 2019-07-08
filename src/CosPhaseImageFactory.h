@@ -24,7 +24,7 @@
 #ifndef MARC_COS_PHASE_IMAGE_FACTORY_H
 #define MARC_COS_PHASE_IMAGE_FACTORY_H
 
-#include "ImageFactory.h"
+#include "SourceImageFactory.h"
 
 #include <string>
 
@@ -40,7 +40,7 @@ namespace MaRC
      *
      * This class creates CosPhaseImage objects.
      */
-    class CosPhaseImageFactory final : public ImageFactory
+    class CosPhaseImageFactory final : public SourceImageFactory
     {
     public:
 

@@ -33,7 +33,7 @@ MaRC::Mu0ImageFactory::Mu0ImageFactory(
     std::shared_ptr<BodyData> body,
     double sub_solar_lat,
     double sub_solar_lon)
-    : ImageFactory()
+    : SourceImageFactory()
     , body_(body)
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)

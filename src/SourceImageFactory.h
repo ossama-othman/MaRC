@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file ImageFactory.h
+ * @file SourceImageFactory.h
  *
  * Copyright (C) 2004, 2017  Ossama Othman
  *
@@ -21,8 +21,8 @@
  * @author Ossama Othman
  */
 
-#ifndef MARC_IMAGE_FACTORY_H
-#define MARC_IMAGE_FACTORY_H
+#ifndef MARC_SOURCE_IMAGE_FACTORY_H
+#define MARC_SOURCE_IMAGE_FACTORY_H
 
 #include <memory>
 #include <functional>
@@ -33,7 +33,7 @@ namespace MaRC
     class SourceImage;
 
     /**
-     * @class ImageFactory
+     * @class SourceImageFactory
      *
      * @brief Abstract factory class containing interface for image
      *        factories.
@@ -41,7 +41,7 @@ namespace MaRC
      * @note An @c ImageFactory can be considered a map plane factory as
      *       well.
      */
-    class ImageFactory
+    class SourceImageFactory
     {
     public:
 
@@ -55,14 +55,15 @@ namespace MaRC
             std::function<bool(double, double, double &, double &)>;
 
         /// Constructor.
-        ImageFactory();
+        SourceImageFactory();
 
         // Disallow copying.
-        ImageFactory(ImageFactory const &) = delete;
-        ImageFactory & operator=(ImageFactory const &) = delete;
+        SourceImageFactory(SourceImageFactory const &) = delete;
+        SourceImageFactory & operator=(
+            SourceImageFactory const &) = delete;
 
         /// Destructor.
-        virtual ~ImageFactory() = default;
+        virtual ~SourceImageFactory() = default;
 
         /// Create a @c SourceImage for a map of given data type.
         /**
@@ -132,4 +133,4 @@ namespace MaRC
 }
 
 
-#endif  /* MARC_IMAGE_FACTORY_H */
+#endif  /* MARC_SOURCE_IMAGE_FACTORY_H */

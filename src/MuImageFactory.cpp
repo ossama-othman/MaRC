@@ -33,7 +33,7 @@ MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<BodyData> body,
                                      double sub_observ_lat,
                                      double sub_observ_lon,
                                      double range)
-    : ImageFactory()
+    : SourceImageFactory()
     , body_(body)
     , sub_observ_lat_(sub_observ_lat)
     , sub_observ_lon_(sub_observ_lon)

@@ -46,7 +46,7 @@
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
-    : ImageFactory()
+    : SourceImageFactory()
     , filename_(filename)
     , flat_field_()
     , geometric_correction_(false)
@@ -70,7 +70,7 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     std::size_t lines   = 0;
 
     {
-        FITS::file f(this->filename_.c_str());
+        FITS::input_file f(this->filename_.c_str());
 
         // Get the image data unit name (FITS standard BUNIT).
         /**
@@ -78,12 +78,10 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
          *       now we have a mix of char const * and std::string
          *       typed unit members.
          */
-        std::string const & bunit = f.header().bunit();
+        std::string const & bunit = f.bunit();
         this->config_->unit(bunit);
 
-        f.data().read(img);
-        samples = f.data().samples();
-        lines = f.data().lines();
+        f.read(img, samples, lines);
 
         /**
          * @todo Get the minimum (@c DATAMIN) and maximum (@c DATAMAX)
@@ -93,7 +91,7 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     }
 
     // Perform flat fielding if a flat field file was provided.
-    flat_field_correct(img, samples, lines);
+    this->flat_field_correct(img, samples, lines);
 
     // Invert image if desired.
     if (this->invert_h_)
@@ -182,22 +180,25 @@ MaRC::PhotoImageFactory::flat_field_correct(std::vector<double> & img,
     std::vector<double> f_img;
 
     {
-        FITS::file f(this->flat_field_.c_str());
+        FITS::input_file f(this->flat_field_.c_str());
 
         // Verify flat field image is same size as source photo
         // image.
-        if (f.data().samples() != samples || f.data().lines() != lines) {
+        std::size_t f_samples = 0;
+        std::size_t f_lines   = 0;
+
+        f.read(f_img, f_samples, f_lines);
+
+        if (f_samples != samples || f_lines != lines) {
             std::ostringstream s;
             s << "Mismatched source ("
               << samples << "x" << lines
               << ") and flat field image ("
-              << f.data().samples() << "x" << f.data().lines()
+              << f_samples << "x" << f_lines
               << ") dimensions";
 
             throw std::runtime_error(s.str());
         }
-
-        f.data().read(f_img);
     }
 
     // Perform flat fielding.

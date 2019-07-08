@@ -36,6 +36,45 @@ namespace MaRC
 {
 #if __cplusplus < 201703L
     /**
+     * @brief Get pointer to memory containing the container
+     *
+     * @deprecated This is an implementation of the C++17
+     *             @c std::data() function.  It will be removed when
+     *             %MaRC requires C++17.
+     */
+    template <class C>
+    constexpr auto data(C & c) -> decltype(c.data())
+    {
+        return c.data();
+    }
+
+    /**
+     * @brief Get pointer to memory containing the container
+     *
+     * @deprecated This is an implementation of the C++17
+     *             @c std::data() function.  It will be removed when
+     *             %MaRC requires C++17.
+     */
+    template <class C>
+    constexpr auto data(C const & c) -> decltype(c.data())
+    {
+        return c.data();
+    }
+
+    /**
+     * @brief Get pointer to memory containing the array.
+     *
+     * @deprecated This is an implementation of the C++17
+     *             @c std::data() function.  It will be removed when
+     *             %MaRC requires C++17.
+     */
+    template <typename T, std::size_t N>
+    constexpr T * data(T (&array)[N]) noexcept
+    {
+        return array;
+    }
+
+    /**
      * @brief Get the size of a container.
      *
      * @deprecated This is an implementation of the C++17
@@ -55,12 +94,13 @@ namespace MaRC
      *             @c std::size() function.  It will be removed when
      *             %MaRC requires C++17.
      */
-    template <class T, std::size_t N>
+    template <typename T, std::size_t N>
     constexpr std::size_t size(T const (& /* array */)[N]) noexcept
     {
         return N;
     }
 #else
+    using std::data;
     using std::size;
 #endif  // __cplusplus < 201703L
 
