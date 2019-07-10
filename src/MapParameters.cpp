@@ -83,6 +83,7 @@ MaRC::MapParameters::MapParameters()
     , origin_()
     , reference_()
     , telescope_()
+    , comments_()
 {
 }
 
@@ -199,4 +200,16 @@ void
 MaRC::MapParameters::telescope(std::string t)
 {
     this->telescope_ = std::move(t);
+}
+
+void
+MaRC::MapParameters::push_comment(comment_list_type::value_type comment)
+{
+    this->comments_.push_back(std::move(comment));
+}
+
+void
+MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
+{
+    this->xcomments_.push_back(std::move(comment));
 }

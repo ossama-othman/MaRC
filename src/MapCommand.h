@@ -37,9 +37,6 @@ namespace MaRC
         /// Grid image type.
         using grid_type = MaRC::MapFactory::grid_type;
 
-        /// %FITS file comment list type.
-        using comment_list_type = std::list<std::string>;
-
         /// Source image factories type.
         using image_factories_type =
             std::list<std::unique_ptr<MaRC::SourceImageFactory>>;
@@ -74,12 +71,6 @@ namespace MaRC
 
         /// Get name of projection.
         char const * projection_name() const;
-
-        /// Set list of map comments to be written to %FITS file.
-        void comment_list (comment_list_type comments);
-
-        /// Set list of grid comments to be written to %FITS file.
-        void xcomment_list(comment_list_type comments);
 
         /**
          * @brief Set the latitude and longitude grid intervals.
@@ -191,12 +182,6 @@ namespace MaRC
 
         /// Map filename.
         std::string const filename_;
-
-        /// Map comments.
-        std::list<std::string> comments_;
-
-        /// Grid comments.
-        std::list<std::string> xcomments_;
 
         /// Latitude grid line interval.
         double lat_interval_;

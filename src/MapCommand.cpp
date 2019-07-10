@@ -72,7 +72,6 @@ namespace
 
     // -------------------------------------------------------------------
 
-#if 0
     template <typename T>
     struct parameter_matcher
     {
@@ -101,23 +100,24 @@ namespace
         return parameter_matcher<T>::match(lhs, rhs);
     }
 
-    template <typename T>
+#if 0
+    template <typename T, typename U>
     bool
     populate_param(
         char const * keyword,
         T && param,
         MaRC::MapCommand::image_factories_type const & factories,
-        std::function<void(T const &)> set_param,
+        U set_param,
         bool require_match)
     {
-        T new_param;
+        T new_param(param);
 
         for (auto const & plane : factories) {
             auto const & plane_param = plane->param();
 
             if (new_param.empty()) {
                 new_param = plane_param;
-            } else if (!match_param(new_param, plane_param)) {
+            } else if (!match_parameter(new_param, plane_param)) {
                 MaRC::info("Different {} values between map planes:",
                            keyword);
                 MaRC::info("\t'{}' and '{}'.", new_param, plane_param);
@@ -140,12 +140,54 @@ namespace
             }
         }
 
-        set_param = std::move(new_param);
+        set_param(std::move(new_param));
+
+        return true;
+    }
+#elif 0
+    template <typename T, typename U>
+    bool
+    populate_param(
+        char const * keyword,
+        T && param,
+        MaRC::MapCommand::image_factories_type const & factories,
+        U set_param,
+        bool require_match)
+    {
+        T new_param(param);
+
+
+            auto const & plane_param = plane->param();
+
+            if (new_param.empty()) {
+                new_param = plane_param;
+            } else if (!match_parameter(new_param, plane_param)) {
+                MaRC::info("Different {} values between map planes:",
+                           keyword);
+                MaRC::info("\t'{}' and '{}'.", new_param, plane_param);
+
+                if (require_match) {
+                    /**
+                     * @todo Should we treat this case as a soft error,
+                     *       and simply warn the user instead?
+                     */
+                    MaRC::error("They must match.");
+
+                    return false;
+                } else {
+                    MaRC::info("{} will only be embedded in the map "
+                               "file in a HISTORY comment.",
+                               keyword);
+
+                    return true;
+                }
+            }
+
+        set_param(std::move(new_param));
 
         return true;
     }
 #endif  // 0
-
 }
 
 
@@ -161,8 +203,6 @@ MaRC::MapCommand::MapCommand(std::string filename,
     , factory_(std::move(factory))
     , image_factories_()
     , filename_(std::move(filename))
-    , comments_()
-    , xcomments_()
     , lat_interval_(0)
     , lon_interval_(0)
     , transform_data_(false)
@@ -219,12 +259,10 @@ MaRC::MapCommand::execute()
 {
     std::cout << "\nCreating map: " << this->filename_ << '\n';
 
-#if 0
     // All necessary map configuration parameters should now be in
     // place.  Populate other parameters automatically, if possible.
     if (!populate_map_parameters())
         return -1;
-#endif  // 0
 
     (void) unlink(this->filename_.c_str());
 
@@ -310,7 +348,7 @@ MaRC::MapCommand::write_grid(MaRC::FITS::output_file & map_file)
                             extname);
 
     // Write the grid comments.
-    for (auto const & xcomment : this->xcomments_)
+    for (auto const & xcomment : this->parameters_->xcomments())
         grid_image->comment(xcomment);
 
     std::string const xhistory =
@@ -347,18 +385,6 @@ MaRC::MapCommand::write_grid(MaRC::FITS::output_file & map_file)
 
     if(!grid_image->template write<grid_type>(grid))
         MaRC::error("Unable to write grid image to map file.");
-}
-
-void
-MaRC::MapCommand::comment_list(comment_list_type comments)
-{
-    this->comments_= std::move(comments);
-}
-
-void
-MaRC::MapCommand::xcomment_list(comment_list_type comments)
-{
-    this->xcomments_ = std::move(comments);
 }
 
 void
@@ -462,31 +488,27 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
         // -------------------------------------------
         map_image.bunit(unit);
     } else {
-        comment_list_type facts;
 
         /**
          * @todo Improve appearance of map plane facts in %FITS file.
          */
-        facts.emplace_back("Plane "
+
+        // Write some MaRC-specific HISTORY comments.
+        map_image.history("Plane "
                            + std::to_string(plane)
                            + " characteristics:");
-        facts.emplace_back("    BSCALE: " + double_to_string(scale));
-        facts.emplace_back("    BZERO:  " + double_to_string(offset));
+
+        map_image.history("    BSCALE: " + double_to_string(scale));
+        map_image.history("    BZERO:  " + double_to_string(offset));
 
         if (!unit.empty()) {
             // Single quote the unit string per FITS string value
             // conventions.
-            facts.emplace_back("    BUNIT:  '" + unit + "'");
-        }
-
-        for (auto & f : facts) {
-            // Write some MaRC-specific HISTORY comments.
-            map_image.history(f);
+            map_image.history("    BUNIT:  '" + unit + "'");
         }
     }
 }
 
-#if 0
 bool
 MaRC::MapCommand::populate_map_parameters()
 {
@@ -523,17 +545,23 @@ MaRC::MapCommand::populate_map_parameters()
           NAXIS2)
      */
 
+#if 0
     populated =
         populate_param(
             "AUTHOR",
             this->parameters_->author(),
-            [&](auto value)
+            this->image_factories_,
+            [&](auto const & value)
             {
-                this->parameters_->author(std::forward(value));
+                this->parameters_->author(value);
             },
             false);
 
 
+    for (auto const & plane : this->image_factories_) {
+
+    }
+#endif  // 0
+
     return populated;
 }
-#endif  // 0
