@@ -39,6 +39,9 @@ namespace MaRC
     {
     public:
 
+        /// %FITS file comment list type.
+        using comment_list_type = std::list<std::string>;
+
         /// Constructor
         MapParameters();
 
@@ -252,6 +255,18 @@ namespace MaRC
         /// Get telescope used to acquire the source data.
         std::string const & telescope() const { return this->telescope_; }
 
+        void push_comment(comment_list_type::value_type comment);
+        comment_list_type const & comments() const
+        {
+            return this->comments_;
+        }
+
+        void push_xcomment(comment_list_type::value_type comment);
+        comment_list_type const & xcomments() const
+        {
+            return this->xcomments_;
+        }
+
     private:
 
         /**
@@ -413,6 +428,28 @@ namespace MaRC
          *       keyword.
          */
         std::string telescope_;
+
+        /**
+         * @brief User supplied map comments.
+         *
+         * The user may provide map comments to document various
+         * aspects of the data being mapped, and/or the map itself.
+         *
+         * @note The comments correspond to the %FITS "COMMENT"
+         *       keyword.
+         */
+        comment_list_type comments_;
+
+        /**
+         * @brief User supplied map grid comments.
+         *
+         * The user may provide map comments to document various
+         * aspects of the grid being mapped.
+         *
+         * @note The comments correspond to the %FITS "COMMENT"
+         *       keyword in the "GRID" %FITS image extension.
+         */
+        comment_list_type xcomments_;
 
     };
 }

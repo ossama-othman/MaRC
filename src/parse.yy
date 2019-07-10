@@ -319,9 +319,6 @@ std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
 std::unique_ptr<MaRC::MapParameters> map_params;
 
-std::list<std::string> comment_list;
-std::list<std::string> xcomment_list;
-
 using namespace MaRC;
 
 std::unique_ptr<MapFactory> map_factory;
@@ -604,9 +601,6 @@ map_setup:
                         std::move(map_factory),
                         std::move(map_params));
 
-                command->comment_list(comment_list);
-                command->xcomment_list(xcomment_list);
-
                 if (create_grid)
                     command->grid_intervals(lat_interval, lon_interval);
 
@@ -623,11 +617,6 @@ map_entry:
             map_filename = $3;
 
             map_params = std::make_unique<MaRC::MapParameters>();
-
-            // Reset items that may have been set for the previous
-            // map.
-            comment_list.clear();
-            xcomment_list.clear();
 
             create_grid = false;
 
@@ -672,7 +661,7 @@ comment:
 comment_setup:
         _COMMENT ':' _STRING
         {
-            auto_free<char> str($3); comment_list.push_back($3);
+            auto_free<char> str($3); map_params->push_comment($3);
         }
 ;
 
@@ -684,7 +673,7 @@ xcomment:
 xcomment_setup:
         XCOMMENT ':' _STRING
         {
-            auto_free<char> str($3); xcomment_list.push_back($3);
+            auto_free<char> str($3); map_params->push_xcomment($3);
         }
 ;
 

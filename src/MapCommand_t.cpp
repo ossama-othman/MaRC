@@ -81,7 +81,7 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     map_image->object(object);
 
     // Write the map comments.
-    for (auto const & comment : this->comments_)
+    for (auto const & comment : this->parameters_->comments())
         map_image->comment(comment);
 
     std::string const history =
