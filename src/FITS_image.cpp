@@ -11,6 +11,7 @@
 #include "FITS_image.h"
 
 #include <cmath>
+#include <cstring>
 
 
 MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
@@ -212,15 +213,16 @@ MaRC::FITS::image::update_fits_key(fitsfile * fptr,
                                    std::string const & value,
                                    char const * comment)
 {
-    int status = 0;
+    if (value.empty())
+        return;
 
-    if (!value.empty())
-        fits_update_key(fptr,
-                        TSTRING,
-                        key,
-                        const_cast<char *>(value.c_str()),
-                        comment,
-                        &status);
+    int status = 0;
+    fits_update_key(fptr,
+                    TSTRING,
+                    key,
+                    const_cast<char *>(value.c_str()),
+                    comment,
+                    &status);
 
     MaRC::FITS::throw_on_error(status);
 }
@@ -231,15 +233,16 @@ MaRC::FITS::image::update_fits_key(fitsfile * fptr,
                                    char const * value,
                                    char const * comment)
 {
-    int status = 0;
+    if (value == nullptr || std::strlen(value) == 0)
+        return;
 
-    if (value != nullptr)
-        fits_update_key(fptr,
-                        TSTRING,
-                        key,
-                        const_cast<char *>(value),
-                        comment,
-                        &status);
+    int status = 0;
+    fits_update_key(fptr,
+                    TSTRING,
+                    key,
+                    const_cast<char *>(value),
+                    comment,
+                    &status);
 
     MaRC::FITS::throw_on_error(status);
 }
