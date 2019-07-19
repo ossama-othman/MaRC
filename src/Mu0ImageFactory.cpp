@@ -9,6 +9,7 @@
  */
 
 #include "Mu0ImageFactory.h"
+#include "MapParameters.h"
 
 #include "marc/Mu0Image.h"
 #include "marc/DefaultConfiguration.h"
@@ -26,6 +27,18 @@ MaRC::Mu0ImageFactory::Mu0ImageFactory(
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)
 {
+}
+
+bool
+MaRC::Mu0ImageFactory::populate_parameters(MaRC::MapParameters &p) const
+{
+    using namespace MaRC::default_configuration;
+
+    p.bunit("");
+    p.datamax(mu0_high);
+    p.datamin(mu0_low);
+
+    return true;
 }
 
 std::unique_ptr<MaRC::SourceImage>

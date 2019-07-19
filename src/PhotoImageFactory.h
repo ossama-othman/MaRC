@@ -13,6 +13,7 @@
 #define MARC_PHOTO_IMAGE_FACTORY_H
 
 #include "SourceImageFactory.h"
+#include "FITS_file.h"
 
 #include "marc/PhotoImageParameters.h"
 #include "marc/ViewingGeometry.h"
@@ -51,6 +52,10 @@ namespace MaRC
 
         /// Destructor.
         ~PhotoImageFactory() override = default;
+
+        /// Populate map parameters.
+        virtual bool populate_parameters(
+            MapParameters & parameters) const override;
 
         /// Create a @c PhotoImage.
         std::unique_ptr<SourceImage> make(
@@ -99,8 +104,8 @@ namespace MaRC
 
     private:
 
-        /// Name of photo/image to be mapped.
-        std::string const filename_;
+        /// %FITS file containing photo/image data.
+        FITS::input_file const file_;
 
         /// Name of flat field image to be substracted from the
         /// photo/image containing the actual data.

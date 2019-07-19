@@ -19,6 +19,7 @@
 namespace MaRC
 {
     class SourceImage;
+    class MapParameters;
 
     /**
      * @class SourceImageFactory
@@ -52,6 +53,20 @@ namespace MaRC
 
         /// Destructor.
         virtual ~SourceImageFactory() = default;
+
+        /**
+         * @brief Populate map parameters.
+         *
+         * Set map parameters based on @c SourceImage
+         * characteristics.
+         *
+         * @param[in,out] parameters Map parameters to be populated.
+         *
+         * @return @c true if parameters were successfully populated,
+         *         @c false otherwise.
+         */
+        virtual bool populate_parameters(
+            MapParameters & parameters) const = 0;
 
         /// Create a @c SourceImage for a map of given data type.
         /**

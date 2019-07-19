@@ -9,6 +9,7 @@
  */
 
 #include "LatitudeImageFactory.h"
+#include "MapParameters.h"
 
 #include "marc/LatitudeImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -24,6 +25,19 @@ MaRC::LatitudeImageFactory::LatitudeImageFactory(
     , body_(std::move(body))
     , graphic_latitudes_(graphic_latitudes)
 {
+}
+
+bool
+MaRC::LatitudeImageFactory::populate_parameters(
+    MaRC::MapParameters &p) const
+{
+    using namespace MaRC::default_configuration;
+
+    p.bunit("deg");
+    p.datamax(latitude_high);
+    p.datamin(latitude_low);
+
+    return true;
 }
 
 std::unique_ptr<MaRC::SourceImage>

@@ -9,6 +9,7 @@
  */
 
 #include "MuImageFactory.h"
+#include "MapParameters.h"
 
 #include "marc/MuImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -28,6 +29,19 @@ MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<BodyData> body,
     , range_(range)
 {
 }
+
+bool
+MaRC::MuImageFactory::populate_parameters(MaRC::MapParameters &p) const
+{
+    using namespace MaRC::default_configuration;
+
+    p.bunit("");
+    p.datamax(mu_high);
+    p.datamin(mu_low);
+
+    return true;
+}
+
 
 std::unique_ptr<MaRC::SourceImage>
 MaRC::MuImageFactory::make(scale_offset_functor calc_so)
