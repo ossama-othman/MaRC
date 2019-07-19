@@ -1,7 +1,7 @@
 /**
  * @file MapParameters.cpp
  *
- * Copyright (C) 2018-2019  Ossama Othman
+ * Copyright (C) 2018  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -9,8 +9,6 @@
  */
 
 #include "MapParameters.h"
-
-#include <marc/Log.h>
 
 #include <limits>
 
@@ -152,16 +150,7 @@ MaRC::MapParameters::bscale(MaRC::optional<double> scale)
 void
 MaRC::MapParameters::bunit(std::string unit)
 {
-    if (unit != this->bunit_) {
-        MaRC::warn("Data with different physical units (\"{}\", \"{}\") "
-                   "on the same map.",
-                   unit,
-                   this->bunit_);
-
-        this->bunit_.clear();
-    } else {
-        this->bunit_ = std::move(unit);
-    }
+    this->bunit_ = std::move(unit);
 }
 
 void
