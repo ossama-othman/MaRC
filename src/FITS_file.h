@@ -183,11 +183,11 @@ namespace MaRC
 
             std::optional<double> datamin() const;
 
+            /// Get the date of the observation.
+            std::string date_obs() const;
+
             /// Get the equinox of the celestial coordinate system.
             std::optional<double> equinox() const;
-
-            /// Get the data of the observation.
-            std::string date_obs() const;
 
             /**
              * @brief Get the name of the instrument that acquired the
