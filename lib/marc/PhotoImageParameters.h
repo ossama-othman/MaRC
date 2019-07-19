@@ -122,18 +122,6 @@ namespace MaRC
         std::size_t nibble_bottom() const { return this->nibble_bottom_; }
 
         /**
-         * @brief Set the unit for the physical data in the image.
-         *
-         * @param[in] u Unit for the physical data in the image.
-         *
-         * @see SourceImage::unit()
-         */
-        void unit(std::string const & u);
-
-        /// Get the unit for the physical data in the image.
-        char const * unit() const { return this->unit_.c_str(); }
-
-        /**
          * @brief Set sky removal variable
          *
          * Enabling sky removal prevents data believed (i.e. computed)
@@ -183,9 +171,6 @@ namespace MaRC
 
         /// Pointer to the interpolation strategy.
         std::unique_ptr<InterpolationStrategy> interpolation_strategy_;
-
-        /// Unit of physical data in the image.
-        std::string unit_;
 
         /// Should the sky removal mask be generated.
         bool remove_sky_;
