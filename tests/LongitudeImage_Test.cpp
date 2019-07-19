@@ -116,18 +116,13 @@ bool test_longitude_image()
     constexpr double oob_lon = lo_lon - shift;  // out-of-bounds
     constexpr double ib_lon  = hi_lon - shift;  // in-bounds
 
-    // Expected unit string.
-    constexpr char const unit[] = "deg"; // Per FITS recommendation.
-
     return
         longitude_image
 
         && test_read_data(longitude_image, longitude_low, lo_lon)
         && test_read_data(longitude_image, longitude_high, hi_lon)
         && test_read_data(longitude_image, mid_lon / C::degree, mid_lon)
-        && test_read_data(longitude_image, ib_lon  / C::degree, oob_lon)
-
-        && std::strcmp(longitude_image->unit(), unit) == 0;
+        && test_read_data(longitude_image, ib_lon  / C::degree, oob_lon);
 }
 
 /// The canonical main entry point.
