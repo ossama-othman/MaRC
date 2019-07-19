@@ -439,12 +439,16 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 
     double scale  = v->scale();
     double offset = v->offset();
-    std::string const unit = this->parameters_->bunit();
 
     // Avoid writing "-0".  It's harmless but rather unsightly.
     constexpr double ulps = 1;
     if (MaRC::almost_zero(offset, ulps))
         offset = 0;
+
+    // -------------------------------------------
+    // Set physical value unit of the array values
+    // -------------------------------------------
+    map_image.bunit(this->parameters_->bunit());
 
     /**
      * @todo Write the BSCALE, BZERO and BUNIT value if a multi-plane
@@ -486,11 +490,6 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
           of the FITS BSCALE and BZERO values set above.
         */
         map_image.internal_scale(internal_scale, internal_offset);
-
-        // -------------------------------------------
-        // Set physical value unit of the array values
-        // -------------------------------------------
-        map_image.bunit(unit);
     } else {
 
         /**
@@ -505,11 +504,17 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
         map_image.history("    BSCALE: " + double_to_string(scale));
         map_image.history("    BZERO:  " + double_to_string(offset));
 
+        /**
+         * @bug Regression.  Map plane units are no longer written to
+         *      @c HISTORY comments in the map %FITS file.
+         */
+        /*
         if (!unit.empty()) {
             // Single quote the unit string per FITS string value
             // conventions.
             map_image.history("    BUNIT:  '" + unit + "'");
         }
+        */
     }
 }
 
@@ -560,6 +565,11 @@ MaRC::MapCommand::populate_map_parameters()
             false);
 #endif  // 0
 
+    /**
+     * @todo Track plane number to help facilitate incompatible
+     *       differences in map parameters / %FITS keywords between
+     *       map planes.
+     */
     for (auto const & image : this->image_factories_)
         if (!image->populate_parameters(*this->parameters_))
             return false;
