@@ -16,7 +16,7 @@
 #include <marc/Log.h>
 #include <marc/utility.h>
 
-#include "fitsio.h"
+#include <fitsio.h>
 
 
 template <typename T>
