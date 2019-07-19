@@ -131,7 +131,7 @@ MaRC::MapParameters::blank(blank_type blank)
 }
 
 void
-MaRC::MapParameters::bscale(double scale)
+MaRC::MapParameters::bscale(MaRC::optional<double> scale)
 {
     this->bscale_ = scale;
 }
@@ -143,25 +143,25 @@ MaRC::MapParameters::bunit(std::string unit)
 }
 
 void
-MaRC::MapParameters::bzero(double zero)
+MaRC::MapParameters::bzero(MaRC::optional<double> zero)
 {
     this->bzero_ = zero;
 }
 
 void
-MaRC::MapParameters::datamax(double max)
+MaRC::MapParameters::datamax(MaRC::optional<double> max)
 {
     this->datamax_ = max;
 }
 
 void
-MaRC::MapParameters::datamin(double min)
+MaRC::MapParameters::datamin(MaRC::optional<double> min)
 {
     this->datamin_ = min;
 }
 
 void
-MaRC::MapParameters::equinox(double e)
+MaRC::MapParameters::equinox(MaRC::optional<double> e)
 {
     this->equinox_ = e;
 }
