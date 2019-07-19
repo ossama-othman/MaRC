@@ -24,6 +24,22 @@ MaRC::MosaicImageFactory::MosaicImageFactory (
         throw std::invalid_argument("Empty PhotoImageFactory list.");
 }
 
+bool
+MaRC::MosaicImageFactory::populate_parameters(
+    MaRC::MapParameters &p) const
+{
+    /**
+     * @todo Verify this achieves the desired result since all photos
+     *       in this mosaic will plotted to the same map plane, rather
+     *       than different planes.
+     */
+    for (auto const & image : this->factories_)
+        if (!image->populate_parameters(p))
+            return false;
+
+    return true;
+}
+
 std::unique_ptr<MaRC::SourceImage>
 MaRC::MosaicImageFactory::make(scale_offset_functor calc_so)
 {

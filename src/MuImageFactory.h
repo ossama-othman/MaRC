@@ -49,6 +49,10 @@ namespace MaRC
         /// Destructor.
         ~MuImageFactory() override = default;
 
+        /// Populate map parameters.
+        virtual bool populate_parameters(
+            MapParameters & parameters) const override;
+
         /// Create a @c MuImage.
         std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) override;

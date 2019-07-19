@@ -9,7 +9,7 @@
  */
 
 #include "PhotoImageFactory.h"
-#include "FITS_file.h"
+#include "MapParameters.h"
 
 #include "marc/PhotoImage.h"
 
@@ -36,7 +36,7 @@
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
     : SourceImageFactory()
-    , filename_(filename)
+    , file_(filename)
     , flat_field_()
     , geometric_correction_(false)
     // , photometric_correction_(false)
@@ -46,6 +46,29 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
     , config_()
     , geometry_()
 {
+}
+
+bool
+MaRC::PhotoImageFactory::populate_parameters(MaRC::MapParameters &p) const
+{
+#define MARC_SET_PARAM(param) p.param(this->file_.param())
+
+    MARC_SET_PARAM(author);
+    MARC_SET_PARAM(bitpix);
+    MARC_SET_PARAM(blank);
+    MARC_SET_PARAM(bunit);
+    MARC_SET_PARAM(datamax);
+    MARC_SET_PARAM(datamin);
+    MARC_SET_PARAM(equinox);
+    // MARC_SET_PARAM(date_obs);
+    MARC_SET_PARAM(instrument);
+    MARC_SET_PARAM(object);
+    MARC_SET_PARAM(observer);
+    MARC_SET_PARAM(origin);
+    MARC_SET_PARAM(reference);
+    MARC_SET_PARAM(telescope);
+
+    return true;
 }
 
 std::unique_ptr<MaRC::SourceImage>
@@ -58,26 +81,7 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     std::size_t samples = 0;
     std::size_t lines   = 0;
 
-    {
-        FITS::input_file f(this->filename_.c_str());
-
-        // Get the image data unit name (FITS standard BUNIT).
-        /**
-         * @todo Make unit related members consistent.  Right
-         *       now we have a mix of char const * and std::string
-         *       typed unit members.
-         */
-        std::string const & bunit = f.bunit();
-        this->config_->unit(bunit);
-
-        f.read(img, samples, lines);
-
-        /**
-         * @todo Get the minimum (@c DATAMIN) and maximum (@c DATAMAX)
-         *       physical data values if available in the source image
-         *       FITS file.
-         */
-    }
+    this->file_.read(img, samples, lines);
 
     // Perform flat fielding if a flat field file was provided.
     this->flat_field_correct(img, samples, lines);

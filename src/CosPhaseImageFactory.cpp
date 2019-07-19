@@ -9,6 +9,7 @@
  */
 
 #include "CosPhaseImageFactory.h"
+#include "MapParameters.h"
 
 #include "marc/CosPhaseImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -32,6 +33,19 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
     , sub_solar_lon_(sub_solar_lon)
     , range_(range)
 {
+}
+
+bool
+MaRC::CosPhaseImageFactory::populate_parameters(
+    MaRC::MapParameters &p) const
+{
+    using namespace MaRC::default_configuration;
+
+    p.bunit("");
+    p.datamax(cos_phase_high);
+    p.datamin(cos_phase_low);
+
+    return true;
 }
 
 std::unique_ptr<MaRC::SourceImage>

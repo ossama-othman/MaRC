@@ -9,6 +9,7 @@
  */
 
 #include "LongitudeImageFactory.h"
+#include "MapParameters.h"
 
 #include "marc/LongitudeImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -20,6 +21,19 @@
 MaRC::LongitudeImageFactory::LongitudeImageFactory()
     : SourceImageFactory()
 {
+}
+
+bool
+MaRC::LongitudeImageFactory::populate_parameters(
+    MaRC::MapParameters &p) const
+{
+    using namespace MaRC::default_configuration;
+
+    p.bunit("deg");
+    p.datamax(longitude_high);
+    p.datamin(longitude_low);
+
+    return true;
 }
 
 std::unique_ptr<MaRC::SourceImage>
