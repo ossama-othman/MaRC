@@ -252,6 +252,8 @@ MaRC::MapCommand::MapCommand(std::string filename,
         && std::is_floating_point<FITS::double_type>(),
 
         "Underlying types do not satisfy FITS data type requirements.");
+
+    assert(this->parameters_);
 }
 
 int
@@ -437,7 +439,7 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 
     double scale  = v->scale();
     double offset = v->offset();
-    std::string unit = v->unit();
+    std::string const unit = this->parameters_->bunit();
 
     // Avoid writing "-0".  It's harmless but rather unsightly.
     constexpr double ulps = 1;
@@ -451,9 +453,11 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
      *       single plane maps in that case.
      */
     if (num_planes == 1) {
-        // We're the sole plane in the map meaning we can update
-        // actual FITS BSCALE and BZERO cards instead of writing
-        // freeform text in a COMMENT or HISTORY card.
+        /*
+          We're the sole plane in the map meaning we can update
+          actual FITS BSCALE and BZERO cards instead of writing
+          freeform text in a COMMENT or HISTORY card.
+        */
 
         if (this->transform_data_)
             MaRC::warn("computed scale and offset will override "
@@ -512,8 +516,6 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 bool
 MaRC::MapCommand::populate_map_parameters()
 {
-    bool populated = true;
-
     /**
      * Populate the following parameters from source image factories
      * if possible:
@@ -556,12 +558,11 @@ MaRC::MapCommand::populate_map_parameters()
                 this->parameters_->author(value);
             },
             false);
-
-
-    for (auto const & plane : this->image_factories_) {
-
-    }
 #endif  // 0
 
-    return populated;
+    for (auto const & image : this->image_factories_)
+        if (!image->populate_parameters(*this->parameters_))
+            return false;
+
+    return true;
 }

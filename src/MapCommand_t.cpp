@@ -111,11 +111,14 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
          *       @c fits_set_bscale() as we do for @c VirtualImage map
          *       planes?
          */
-        double bscale = this->parameters_->bscale();
-        double bzero  = this->parameters_->bzero();
+        auto const bscale = this->parameters_->bscale();
+        auto const bzero  = this->parameters_->bzero();
 
-        map_image->bscale(bscale);
-        map_image->bzero(bzero);
+        if (bscale)
+            map_image->bscale(*bscale);
+
+        if (bzero)
+            map_image->bzero(*bzero);
     }
 
     /**

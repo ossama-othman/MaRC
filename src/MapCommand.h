@@ -146,7 +146,7 @@ namespace MaRC
         /**
          * @brief Automatically populate map parameters.
          *
-         * Populate optional parameters automatically, such as from
+         * Populate parameters automatically, such as from
          * @c SourceImage parameters, where possible.
          *
          * @return @c true if map parameter population succeded, and
