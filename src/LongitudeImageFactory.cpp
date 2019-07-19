@@ -1,7 +1,7 @@
 /**
  * @file LongitudeImageFactory.cpp
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -29,6 +29,12 @@ MaRC::LongitudeImageFactory::populate_parameters(
 {
     using namespace MaRC::default_configuration;
 
+    /**
+     * @note "deg" is used is instead of "degree" per %FITS standard
+     *       recommendation for the BUNIT keyword.
+     *
+     * @see https://heasarc.gsfc.nasa.gov/docs/fcg/standard_dict.html
+     */
     p.bunit("deg");
     p.datamax(longitude_high);
     p.datamin(longitude_low);
