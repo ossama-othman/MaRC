@@ -102,9 +102,6 @@ bool test_latitude_image()
     constexpr double oob_lo_lat = -C::pi_2 - 1;  // Out-of-bounds
     constexpr double oob_hi_lat =  C::pi_2 + 1;
 
-    // Expected unit string.
-    constexpr char const unit[] = "deg"; // Per FITS recommendation.
-
     return
         latitude_image
 
@@ -117,9 +114,7 @@ bool test_latitude_image()
                            oob_lo_lat)
         && !test_read_data(latitude_image,
                            oob_hi_lat / C::degree,
-                           oob_hi_lat)
-
-        && std::strcmp(latitude_image->unit(), unit) == 0;
+                           oob_hi_lat);
 }
 
 /// The canonical main entry point.
