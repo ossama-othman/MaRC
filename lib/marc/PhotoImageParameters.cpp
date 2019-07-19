@@ -33,7 +33,6 @@ MaRC::PhotoImageParameters::PhotoImageParameters()
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_strategy_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
-    , unit_()
     , remove_sky_(false)
 {
 }
@@ -132,12 +131,6 @@ MaRC::PhotoImageParameters::nibble_bottom(std::size_t n)
 
     //     throw std::invalid_argument(s.str());
     // }
-}
-
-void
-MaRC::PhotoImageParameters::unit(std::string const & u)
-{
-    this->unit_ = u;
 }
 
 void
