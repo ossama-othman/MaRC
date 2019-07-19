@@ -124,10 +124,10 @@ namespace MaRC
          *     (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void bscale(double scale);
+        void bscale(MaRC::optional<double> scale);
 
         /// Get the value for the map %FITS @c BSCALE keyword.
-        double bscale() const { return this->bscale_; }
+        MaRC::optional<double> bscale() const { return this->bscale_; }
 
         /**
          * @brief Set the unit of physical data.
@@ -168,28 +168,28 @@ namespace MaRC
          *     (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void bzero(double zero);
+        void bzero(MaRC::optional<double> zero);
 
         /// Get the value for the map %FITS @c BZERO keyword.
-        double bzero() const { return this->bzero_; }
+        MaRC::optional<double> bzero() const { return this->bzero_; }
 
         /// Set the %FITS @c DATAMAX value.
-        void datamax(double max);
+        void datamax(MaRC::optional<double> max);
 
         /// Get the value for the map %FITS @c DATAMAX keyword.
-        double datamax() const { return this->datamax_; }
+        MaRC::optional<double> datamax() const { return this->datamax_; }
 
         /// Set the %FITS @c DATAMIN value.
-        void datamin(double min);
+        void datamin(MaRC::optional<double> min);
 
         /// Get the value for the map %FITS @c DATAMIN keyword.
-        double datamin() const { return this->datamin_; }
+        MaRC::optional<double> datamin() const { return this->datamin_; }
 
         /// Set the %FITS @c EQUINOX value.
-        void equinox(double e);
+        void equinox(MaRC::optional<double> e);
 
         /// Get the value for the map %FITS @c EQUINOX keyword.
-        double equinox() const { return this->equinox_; }
+        MaRC::optional<double> equinox() const { return this->equinox_; }
 
                 /// Set name of object being mapped.
         void instrument(std::string i);
@@ -301,7 +301,7 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "BSCALE" keyword.
          */
-        double bscale_;
+        MaRC::optional<double> bscale_;
 
         /**
          * @brief Unit of physical data.
@@ -331,7 +331,7 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "BZERO" keyword.
          */
-        double bzero_;
+        MaRC::optional<double> bzero_;
 
         /**
          * @brief Maximum valid physical value.
@@ -348,7 +348,7 @@ namespace MaRC
          *      Special handling will be need to be implemented to
          *      handle such a case.
          */
-        double datamax_;
+        MaRC::optional<double> datamax_;
 
         /**
          * @brief Minimum valid physical value.
@@ -365,7 +365,7 @@ namespace MaRC
          *      Special handling will be need to be implemented to
          *      handle such a case.
          */
-        double datamin_;
+        MaRC::optional<double> datamin_;
 
         /**
          * @brief Epoch of the mean equator and equinox in years.
@@ -374,7 +374,7 @@ namespace MaRC
          * @note This value corresponds to the %FITS "EQUINOX"
          *       keyword.
          */
-        double equinox_;
+        MaRC::optional<double> equinox_;
 
         /**
          * @brief Instrument used to acquire the data.
