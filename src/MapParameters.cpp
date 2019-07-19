@@ -99,12 +99,6 @@ MaRC::MapParameters::bitpix(int n)
     if (!valid_bitpix(n))
         throw std::invalid_argument("Invalid FITS BITPIX value");
 
-    this->bitpix_ = n;
-}
-
-int
-MaRC::MapParameters::bitpix() const
-{
     /**
      * @bug Choose BITPIX value based on SourceImage, such as the
      *      BITPIX value in a PhotoImage, or a BITPIX for floating
@@ -114,8 +108,25 @@ MaRC::MapParameters::bitpix() const
      * @todo Warn the user if the their desired BITPIX (map data type)
      *       is smaller than the data type in a photo.  (e.g. 16 bits
      *       chosen vs 32 bits in photo).  Fixes #72.
+     *
+     * @bug This potentially overrides the user specified map data
+     *      type.
      */
 
+    /*
+      Do not decrease map data type size.
+
+      Choose BITPIX value corresponding to larger data type.
+    */
+    if (this->bitpix_ == 0               // not previously set
+        || (n > 0 && n > this->bitpix_)  // integer (override float)
+        || (n < 0 && n < this->bitpix_)) // floating point
+        this->bitpix_ = n;
+}
+
+int
+MaRC::MapParameters::bitpix() const
+{
     // This should never happen!
     if (!valid_bitpix(this->bitpix_))
         throw std::runtime_error("Unable to determine BITPIX value.");
