@@ -19,7 +19,6 @@
 #include <marc/MapFactory.h>
 #include <marc/scale_and_offset.h>
 
-#include <cassert>
 #include <type_traits>
 #include <iostream>
 
