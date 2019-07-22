@@ -49,7 +49,7 @@ MaRC::FITS::image::blank(blank_type blank)
         /**
          * @todo Should we bother checking if the blank value fits
          *       within the range of type @c T.  The
-         *       @c MaRC::MapCommand::make_map() call already does
+         *       @c MaRC::MapFactory::make_map() call already does
          *       that.
          */
         this->template update_fits_key<T>(

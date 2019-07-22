@@ -78,7 +78,7 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
 
     if (object.empty()) {
         /**
-         * @todo s/BODY/OBJECT/ once MaRC supports mapping objects on
+         * @todo s/BODY/OBJECT/ once %MaRC supports mapping objects on
          *       the Celestial Sphere.
          */
         MaRC::error("BODY not specified.");
