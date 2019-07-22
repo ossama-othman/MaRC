@@ -35,7 +35,6 @@ MaRC::MuImageFactory::populate_parameters(MaRC::MapParameters &p) const
 {
     using namespace MaRC::default_configuration;
 
-    p.bunit("");
     p.datamax(mu_high);
     p.datamin(mu_low);
 
