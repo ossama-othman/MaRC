@@ -81,7 +81,7 @@ MaRC::Radii::validate()
     else if (this->pol_rad < 0)
         this->pol_rad = this->eq_rad * (1 - this->flattening);
 
-    // MaRC currently only support oblate spheroids.
+    // MaRC currently only supports oblate spheroids.
     if (this->eq_rad < this->pol_rad) {
         std::ostringstream s;
         s << "Equatorial radius (" << this->eq_rad
