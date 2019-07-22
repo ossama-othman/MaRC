@@ -37,26 +37,33 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
                         this->lines_,
                         this->image_factories_.size());
 
+    auto const blank = this->parameters_->blank();
+#if __cplusplus < 201703L
     /*
+      Work around lack of a converting constructor in the
+      C++14 based MaRC::optional<> implementation.
+
       The underlying integer type for the MaRC library "blank_type" is
       potentially wider than the largest FITS integer type (64 bit
       signed integer).  Explicitly convert to the FITS blank integer
       type used in the MaRC program to address conversion related
       errors at compile-time exhibited by some compilers.
     */
-    auto blank = this->parameters_->blank();
     if (blank.has_value()) {
         using fits_blank_type = FITS::image::blank_type::value_type;
 
         /*
           Truncation will not occur since the MaRC program will pass
-          at most pass a 64 bit signed integer to the MaRC library.
+          at most a 64 bit signed integer to the MaRC library.
         */
         auto const fits_blank = static_cast<fits_blank_type>(*blank);
 
         // Write the BLANK keyword and value into the map FITS file.
         map_image->template blank<T>(fits_blank);
     }
+#else
+        map_image->template blank<T>(blank);
+#endif  // __cplusplus < 201703L
 
     // Write the author name if supplied.
     auto const author = this->parameters_->author();
