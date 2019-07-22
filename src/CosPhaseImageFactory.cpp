@@ -41,7 +41,6 @@ MaRC::CosPhaseImageFactory::populate_parameters(
 {
     using namespace MaRC::default_configuration;
 
-    p.bunit("");
     p.datamax(cos_phase_high);
     p.datamin(cos_phase_low);
 
