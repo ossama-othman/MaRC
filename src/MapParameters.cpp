@@ -87,6 +87,7 @@ MaRC::MapParameters::MapParameters()
     , reference_()
     , telescope_()
     , comments_()
+    , xcomments_()
 {
 }
 
@@ -223,4 +224,58 @@ void
 MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
 {
     this->xcomments_.push_back(std::move(comment));
+}
+
+bool
+MaRC::MapParameters::merge(MaRC::MapParameters & p)
+{
+    if (this->author_.empty())
+        this->author_ = std::move(p.author_);
+
+    if (this->bitpix_ == 0)
+        this->bitpix_ = p.bitpix_;
+
+    if (!this->blank_.has_value())
+        this->blank_ = p.blank_;
+
+    if (!this->bscale_.has_value())
+        this->bscale_ = p.bscale_;
+
+    if (this->bunit_.empty())
+        this->bunit_ = std::move(p.bunit_);
+
+    if (!this->bzero_.has_value())
+        this->bzero_ = p.bzero_;
+
+    if (!this->datamax_.has_value())
+        this->datamax_ = p.datamax_;
+
+    if (!this->datamin_.has_value())
+        this->datamin_ = p.datamin_;
+
+    if (!this->equinox_.has_value())
+        this->equinox_ = p.equinox_;
+
+    if (this->instrument_.empty())
+        this->instrument_ = std::move(p.instrument_);
+
+    if (this->object_.empty())
+        this->object_ = std::move(p.object_);
+
+    if (this->observer_.empty())
+        this->observer_ = std::move(p.observer_);
+
+    if (this->origin_.empty())
+        this->origin_ = std::move(p.origin_);
+
+    if (this->reference_.empty())
+        this->reference_ = std::move(p.reference_);
+
+    if (this->telescope_.empty())
+        this->telescope_ = std::move(p.telescope_);
+
+    this->comments_.splice(std::cend(this->comments_), p.comments_);
+    this->xcomments_.splice(std::cend(this->xcomments_), p.xcomments_);
+
+    return true;
 }

@@ -209,7 +209,7 @@ namespace MaRC
         /// Flag that determines if a grid is created.
         bool create_grid_;
 
-        /// %FITS related map parameters.
+        /// User supplied map parameters.
         std::unique_ptr<MapParameters> parameters_;
 
     };
