@@ -267,6 +267,25 @@ namespace MaRC
             return this->xcomments_;
         }
 
+        /**
+         * @brief Merge map paremeters.
+         *
+         * Merge the given set of map parameters, @a p, with this
+         * one.  Map parameters in this object will generally override
+         * those in the map parameters @a p.  The goal is to provide a
+         * simple way for user supplied map parameters to override
+         * those that are automatically populated from the image (map
+         * plane) factories.
+         *
+         * @param[in,out] p Map parameters to be merged.  @a p may be
+         *                  modified during the merge, e.g. via
+         *                  @c std::move().
+         *
+         * @return @c true if the map parameter merge was successful,
+         *         and @c false otherwise.
+         */
+        bool merge(MapParameters & p);
+
     private:
 
         /**

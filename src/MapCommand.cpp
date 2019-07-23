@@ -565,14 +565,21 @@ MaRC::MapCommand::populate_map_parameters()
             false);
 #endif  // 0
 
+    MapParameters to_merge;
+
     /**
      * @todo Track plane number to help facilitate incompatible
      *       differences in map parameters / %FITS keywords between
      *       map planes.
      */
     for (auto const & image : this->image_factories_)
-        if (!image->populate_parameters(*this->parameters_))
+        if (!image->populate_parameters(to_merge))
             return false;
 
-    return true;
+    /*
+      Merge automatically populated map parameters with the user
+      supplied parameters.
+    */
+
+    return this->parameters_->merge(to_merge);
 }
