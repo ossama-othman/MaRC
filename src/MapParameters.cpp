@@ -10,16 +10,11 @@
 
 #include "MapParameters.h"
 
-#include <limits>
-
 #include <fitsio.h>
 
 
 namespace
 {
-    static constexpr double not_a_number =
-        std::numeric_limits<double>::signaling_NaN();
-
     /**
      * @brief Validate given %FITS BITPIX value.
      *
@@ -145,6 +140,10 @@ MaRC::MapParameters::blank(blank_type blank)
 void
 MaRC::MapParameters::bscale(MaRC::optional<double> scale)
 {
+    /**
+     * @todo Verify that @a scale is valid, i.e. not the @c NaN
+     *       constant.
+     */
     this->bscale_ = scale;
 }
 
@@ -157,24 +156,44 @@ MaRC::MapParameters::bunit(std::string unit)
 void
 MaRC::MapParameters::bzero(MaRC::optional<double> zero)
 {
+    /**
+     * @todo Verify that @ a zero is valid, i.e. not the @c NaN
+     *       constant.
+     */
+
     this->bzero_ = zero;
 }
 
 void
 MaRC::MapParameters::datamax(MaRC::optional<double> max)
 {
+    /**
+     * @todo Verify that @ a max is valid, i.e. not the @c NaN
+     *       constant.
+     */
+
     this->datamax_ = max;
 }
 
 void
 MaRC::MapParameters::datamin(MaRC::optional<double> min)
 {
+    /**
+     * @todo Verify that @ a min is valid, i.e. not the @c NaN
+     *       constant.
+     */
+
     this->datamin_ = min;
 }
 
 void
 MaRC::MapParameters::equinox(MaRC::optional<double> e)
 {
+    /**
+     * @todo Verify that @ a equinox is valid, i.e. not the @c NaN
+     *       constant.
+     */
+
     this->equinox_ = e;
 }
 
