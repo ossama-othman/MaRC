@@ -1,7 +1,7 @@
 /**
  * @file MapParameters.cpp
  *
- * Copyright (C) 2018  Ossama Othman
+ * Copyright (C) 2018-2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -65,7 +65,10 @@ NAXES
 . TELESCOP
  */
 
-
+/**
+ * @todo Handle and/or validate parameters that are set multiple
+ *       times!
+ */
 
 MaRC::MapParameters::MapParameters()
     : author_()
@@ -100,17 +103,14 @@ MaRC::MapParameters::bitpix(int n)
         throw std::invalid_argument("Invalid FITS BITPIX value");
 
     /**
-     * @bug Choose BITPIX value based on SourceImage, such as the
-     *      BITPIX value in a PhotoImage, or a BITPIX for floating
-     *      point values for VirtualImages with floating point
-     *      values etc.  Fixes #62.
+     * @bug Choose @c BITPIX value based on @c SourceImage, such as
+     *      the @c BITPIX value in a @c PhotoImage, or a @c BITPIX for
+     *      floating point values for a @c VirtualImage with floating
+     *      point values etc.  Fixes #62.
      *
-     * @todo Warn the user if the their desired BITPIX (map data type)
-     *       is smaller than the data type in a photo.  (e.g. 16 bits
-     *       chosen vs 32 bits in photo).  Fixes #72.
-     *
-     * @bug This potentially overrides the user specified map data
-     *      type.
+     * @todo Warn the user if the their desired @c BITPIX (map data
+     *       type) is smaller than the data type in a photo.  (e.g. 16
+     *       bits chosen vs 32 bits in photo).  Fixes #72.
      */
 
     /*
