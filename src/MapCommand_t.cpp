@@ -1,5 +1,5 @@
 /**
- * @file MapCommand_T.cpp
+ * @file MapCommand_t.cpp
  *
  * Copyright (C) 2004, 2017-2019  Ossama Othman
  *

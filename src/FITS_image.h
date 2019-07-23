@@ -21,10 +21,16 @@ namespace MaRC
     namespace FITS
     {
 
+        /**
+         * @class image
+         *
+         * @brief Encapsulate %FITS image creation.
+         */
         class image
         {
         public:
 
+            /// Convenience alias for the blank integer type.
             using blank_type = file::blank_type;
 
             /**
