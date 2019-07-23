@@ -53,9 +53,16 @@ namespace MaRC
         /// Destructor.
         ~PhotoImageFactory() override = default;
 
-        /// Populate map parameters.
+        /**
+         * @brief Populate map parameters.
+         *
+         * @param[in,out] p Map parameters to be populated.
+         *
+         * return @c true if population of map parameters succeeded,
+         *        and @c false otherwise.
+         */
         virtual bool populate_parameters(
-            MapParameters & parameters) const override;
+            MapParameters & p) const override;
 
         /// Create a @c PhotoImage.
         std::unique_ptr<SourceImage> make(

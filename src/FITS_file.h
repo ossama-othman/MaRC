@@ -278,6 +278,9 @@ namespace MaRC
              * Create an image array in the %FITS file represented
              * by this @c output_file.
              *
+             * @param[in] bitpix  Bits-per-pixel in the image,
+             *                    corresponding to the %FITS @c BITPIX
+             *                    keyword.
              * @param[in] samples The number of columns in the %FITS
              *                    image.
              * @param[in] lines   The number of rows in the %FITS

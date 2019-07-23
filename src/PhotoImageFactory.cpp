@@ -48,11 +48,17 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
 {
 }
 
-bool
-MaRC::PhotoImageFactory::populate_parameters(MaRC::MapParameters &p) const
-{
-#define MARC_SET_PARAM(param) p.param(this->file_.param())
+/**
+ * @brief Set map parameter from photo/image %FITS file.
+ *
+ * @param parameter Name of map parameter to be set.
+ */
+#define MARC_SET_PARAM(parameter) p.parameter(this->file_.parameter())
 
+bool
+MaRC::PhotoImageFactory::populate_parameters(
+    MaRC::MapParameters & p) const
+{
     MARC_SET_PARAM(author);
     MARC_SET_PARAM(bitpix);
 #if __cplusplus < 201703L
