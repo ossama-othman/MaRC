@@ -25,8 +25,6 @@
 
 namespace MaRC
 {
-    class MapParameters;
-
     namespace FITS
     {
         class image;
@@ -275,10 +273,10 @@ namespace MaRC
             ~output_file() = default;
 
             /**
-             * @brief Create %FITS image array HDU.
+             * @brief Create a %FITS image array HDU.
              *
              * Create an image array in the %FITS file represented
-             * this @c output_file.
+             * by this @c output_file.
              *
              * @param[in] samples The number of columns in the %FITS
              *                    image.
