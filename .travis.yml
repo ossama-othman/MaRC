@@ -1,55 +1,44 @@
 language: cpp
-
+dist: xenial
 sudo: false
 
 matrix:
   include:
     - os: linux
+      compiler: gcc
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-5
-            - bison
-            - flex
+            - g++
             - texinfo
-            - cfitsio-dev
+            - libcfitsio-dev
             - autoconf-archive
             - lcov
             - python-pip
 
-      env:
-         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-
     - os: linux
+      compiler: clang
       addons:
         apt:
           sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-trusty-3.9
+            - llvm-toolchain-xenial-7
           packages:
-            - clang-3.9
-            - clang++-3.9
-            - libc++-dev
-            - bison
-            - flex
+            - clang-7
+            - clang++-7
             - texinfo
-            - cfitsio-dev
+            - libcfitsio-dev
             - autoconf-archive
 
-      env:  # For whatever reason CXXFLAGS is not honored.  Use CXX.
-        - MATRIX_EVAL="CC=clang-3.9 && CXX='clang++-3.9 -stdlib=libc++'"
-
     - os: osx
-      env:
-        - MATRIX_EVAL="CC=clang && CXX=clang++"
+      compiler: clang
 
 before_script:
     - ./bootstrap
 
 script:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
+    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then
           ./configure --disable-silent-rules --enable-code-coverage;
           make check-code-coverage;
       else
@@ -58,7 +47,7 @@ script:
 
 before_install:
     - eval "${MATRIX_EVAL}"
-    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
+    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then
         pip install --user cpp-coveralls;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
@@ -72,6 +61,6 @@ before_install:
       fi
 
 after_success:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++-5" ]]; then
+    - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then
           cpp-coveralls --exclude src/parse.hh --exclude src/parse.cc --exclude src/lexer.cc --exclude opt --exclude tests --gcov-options '\-lp';
       fi
