@@ -40,26 +40,6 @@ namespace
     }
 }
 
-
-/*
-. AUTHOR
-. BITPIX
-. BLANK
-. BSCALE
-. BUNIT
-. BZERO
-. DATAMAX
-. DATAMIN
-. EQUINOX
-. INSTRUME
-NAXES
-. OBJECT
-. OBSERVER
-. ORIGIN
-. REFERENC
-. TELESCOP
- */
-
 /**
  * @todo Handle and/or validate parameters that are set multiple
  *       times!
