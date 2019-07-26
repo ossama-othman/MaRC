@@ -69,125 +69,6 @@ namespace
 
         return os.str();
     }
-
-    // -------------------------------------------------------------------
-
-    template <typename T>
-    struct parameter_matcher
-    {
-        static bool
-        match(T const & lhs, T const & rhs)
-        {
-            return lhs == rhs;
-        }
-    };
-
-    template <>
-    struct parameter_matcher<double>
-    {
-        static bool
-        match(double lhs, double rhs)
-        {
-            constexpr int ulps = 2;
-            return MaRC::almost_equal(lhs, rhs, ulps);
-        }
-    };
-
-    template <typename T>
-    bool
-    match_parameter(T const & lhs, T const & rhs)
-    {
-        return parameter_matcher<T>::match(lhs, rhs);
-    }
-
-#if 0
-    template <typename T, typename U>
-    bool
-    populate_param(
-        char const * keyword,
-        T && param,
-        MaRC::MapCommand::image_factories_type const & factories,
-        U set_param,
-        bool require_match)
-    {
-        T new_param(param);
-
-        for (auto const & plane : factories) {
-            auto const & plane_param = plane->param();
-
-            if (new_param.empty()) {
-                new_param = plane_param;
-            } else if (!match_parameter(new_param, plane_param)) {
-                MaRC::info("Different {} values between map planes:",
-                           keyword);
-                MaRC::info("\t'{}' and '{}'.", new_param, plane_param);
-
-                if (require_match) {
-                    /**
-                     * @todo Should we treat this case as a soft error,
-                     *       and simply warn the user instead?
-                     */
-                    MaRC::error("They must match.");
-
-                    return false;
-                } else {
-                    MaRC::info("{} will only be embedded in the map "
-                               "file in a HISTORY comment.",
-                               keyword);
-
-                    return true;
-                }
-            }
-        }
-
-        set_param(std::move(new_param));
-
-        return true;
-    }
-#elif 0
-    template <typename T, typename U>
-    bool
-    populate_param(
-        char const * keyword,
-        T && param,
-        MaRC::MapCommand::image_factories_type const & factories,
-        U set_param,
-        bool require_match)
-    {
-        T new_param(param);
-
-
-            auto const & plane_param = plane->param();
-
-            if (new_param.empty()) {
-                new_param = plane_param;
-            } else if (!match_parameter(new_param, plane_param)) {
-                MaRC::info("Different {} values between map planes:",
-                           keyword);
-                MaRC::info("\t'{}' and '{}'.", new_param, plane_param);
-
-                if (require_match) {
-                    /**
-                     * @todo Should we treat this case as a soft error,
-                     *       and simply warn the user instead?
-                     */
-                    MaRC::error("They must match.");
-
-                    return false;
-                } else {
-                    MaRC::info("{} will only be embedded in the map "
-                               "file in a HISTORY comment.",
-                               keyword);
-
-                    return true;
-                }
-            }
-
-        set_param(std::move(new_param));
-
-        return true;
-    }
-#endif  // 0
 }
 
 
@@ -521,27 +402,6 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 bool
 MaRC::MapCommand::populate_map_parameters()
 {
-    /**
-     * Populate the following parameters from source image factories
-     * if possible:
-     * @li AUTHOR
-     * @li BITPIX
-     * @li BLANK
-     * @li BSCALE
-     * @li BUNIT
-     * @li BZERO
-     * @li DATAMAX
-     * @li DATAMIN
-     * @li EQUINOX
-     * @li INSTRUME
-     * @li NAXES
-     * @li OBJECT
-     * @li OBSERVER
-     * @li ORIGIN
-     * @li REFERENC
-     * @li TELESCOP
-     */
-
     /*
       Iterate through the list of source images (map planes) in an
       attempt to automatically set each of the map parameters.
@@ -551,19 +411,6 @@ MaRC::MapCommand::populate_map_parameters()
         - Map plane dimensions, i.e. samples and lines (NAXIS1 and
           NAXIS2)
      */
-
-#if 0
-    populated =
-        populate_param(
-            "AUTHOR",
-            this->parameters_->author(),
-            this->image_factories_,
-            [&](auto const & value)
-            {
-                this->parameters_->author(value);
-            },
-            false);
-#endif  // 0
 
     MapParameters to_merge;
 
