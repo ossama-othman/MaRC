@@ -120,8 +120,8 @@ namespace MaRC
 
         /// Enable/disable geometric correction.
         /**
-         * @note Only GLL spacecraft geometric lens abberration
-         *       correct is currently supported.
+         * @note Only GLL spacecraft geometric lens aberration
+         *       correction is currently supported.
          */
         bool geometric_correction_;
 
