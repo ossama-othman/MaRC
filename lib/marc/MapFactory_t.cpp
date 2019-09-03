@@ -80,6 +80,12 @@ MaRC::MapFactory::plot(plot_info const & info,
          && datum >= info.minimum()
          && datum <= info.maximum());
 
+    /**
+     * @todo Track minimum and maximum values of physical data that
+     *       was actually mapped so that they are readily available to
+     *       the caller of @c make_map().
+     *
+     */
     if (found_data)
         map[offset] = static_cast<T>(datum);
 
