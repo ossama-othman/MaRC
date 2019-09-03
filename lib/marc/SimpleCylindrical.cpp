@@ -75,10 +75,12 @@ MaRC::SimpleCylindrical::SimpleCylindrical(
     , hi_lon_(MaRC::validate_longitude(hi_lon))
     , graphic_lat_(graphic_lat)
 {
-    // Set lower longitude to equivalent longitude less than upper
-    // longitude or add 360 degrees to the upper longitude if it is
-    // equal to the lower longitude (i.e. full 360 degree range) to
-    // make sure longitude range is computed correctly.
+    /*
+      Set lower longitude to equivalent longitude less than upper
+      longitude or add 360 degrees to the upper longitude if it is
+      equal to the lower longitude (i.e. full 360 degree range) to
+      make sure longitude range is computed correctly.
+    */
     constexpr int ulps = 2;
     if (this->lo_lon_ > this->hi_lon_)
         this->lo_lon_ -= C::_2pi;
@@ -103,8 +105,11 @@ MaRC::SimpleCylindrical::plot_map(std::size_t samples,
                                   std::size_t lines,
                                   plot_type plot) const
 {
-    // Conversion factor -- latitudes per line
+    // Latitudes (radians) per line.
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
+
+    // Longitudes (radians) per sample.
+    double const lon_cf = (this->hi_lon_ - this->lo_lon_) / samples;
 
     std::size_t offset = 0;
 
@@ -117,7 +122,7 @@ MaRC::SimpleCylindrical::plot_map(std::size_t samples,
             lat = this->body_->centric_latitude(lat);
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
-            double const lon = this->get_longitude(i, samples);
+            double const lon = this->get_longitude(i, lon_cf);
 
             plot(lat, lon, offset);
         }
@@ -137,7 +142,7 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
     double const lo_lon = this->lo_lon_ / C::degree;
     double const hi_lon = this->hi_lon_ / C::degree;
 
-    // Line-to-latitude ratio.
+    // Lines per degree of latitude.
     double const lr = lines / (hi_lat - lo_lat);
 
     static constexpr auto white =
@@ -158,7 +163,7 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
         }
     }
 
-    // Sample-to-longitude ratio.
+    // Samples per degree of longitude.
     double const sr = samples / (hi_lon - lo_lon);
 
     /**

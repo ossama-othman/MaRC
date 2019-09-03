@@ -110,22 +110,22 @@ namespace MaRC
                        double lon_interval,
                        grid_type & grid) const override;
 
-        /// Orient longitude according to rotation direction
-        /// (prograde/retrograde).
         /**
-         * @param[in] i       Sample in map being mapped.
-         * @param[in] samples Number of samples in image.
+         * @brief Orient longitude according to rotation direction
+         *        (prograde/retrograde).
+         *
+         * @param[in] i  Sample in map being mapped.
+         * @param[in] cf Longitudes (radians) per sample.
+         *
+         * return Longitude in radians.
          */
-        inline double get_longitude(std::size_t i,
-                                    std::size_t samples) const
+        inline double get_longitude(std::size_t i, double cf) const
         {
             // Compute longitude at center of pixel.
+            double lon = (i + 0.5) * cf;
 
-            double lon =
-                (i + 0.5) / samples * (this->hi_lon_ - this->lo_lon_);
-
-            // PROGRADE ----> longitudes increase to the left
-            // RETROGRADE --> longitudes increase to the right
+            // PROGRADE:   West longitudes (increasing to the left)
+            // RETROGRADE: East longitudes (increasing to the right)
 
             if (this->body_->prograde ())
                 lon = this->hi_lon_ - lon;
