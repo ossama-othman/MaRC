@@ -55,8 +55,8 @@ namespace
     dump_vectors(MaRC::DVector const & original,
                  MaRC::DVector const & rotated,
                  MaRC::DMatrix const & transformation,
-                 std::string name,
-                 std::string coordinate_type)
+                 std::string const & name,
+                 std::string const & coordinate_type)
     {
         auto const computed = transformation * rotated;
         std::string const title =

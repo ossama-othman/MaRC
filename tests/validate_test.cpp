@@ -36,7 +36,7 @@
  * @retval true  Test succeeded.
  * @retval false Test failed.
  */
-bool test_validate(std::function<double(double deg)> validate,
+bool test_validate(std::function<double(double deg)> const & validate,
                    double good,
                    double bad)
 {
