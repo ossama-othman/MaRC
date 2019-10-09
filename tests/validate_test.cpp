@@ -36,13 +36,10 @@
  * @retval true  Test succeeded.
  * @retval false Test failed.
  */
-bool test_validate(std::function<double(double deg)> validate,
+bool test_validate(std::function<double(double deg)> const & validate,
                    double good,
                    double bad)
 {
-    double const expected  = good * C::degree;  // radians
-    double const validated = validate(good);
-
     try {
         // This should throw std::invalid_argument.
         (void) validate(bad);
@@ -55,6 +52,8 @@ bool test_validate(std::function<double(double deg)> validate,
         return false;
     }
 
+    double const expected  = good * C::degree;  // radians
+    double const validated = validate(good);
     constexpr int ulps = 2;
 
     return MaRC::almost_equal(expected, validated, ulps);

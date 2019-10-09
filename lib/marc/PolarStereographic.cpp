@@ -30,7 +30,6 @@
 // # include "Log.h"
 #endif
 
-#include <functional>
 #include <limits>
 #include <cmath>
 #include <sstream>
@@ -104,6 +103,10 @@ namespace
      * @note This function is a free function rather than a const
      *       member function to work around buggy implementations of
      *       @c std::bind().
+     *
+     * @todo Since we no longer use @c std::bind() it should be
+     *       possible to once again make this a @c const member
+     *       function of @c MaRC::PolarStereographic.
      */
     double
     stereo_rho_impl(MaRC::OblateSpheroid const & body,
@@ -125,10 +128,10 @@ MaRC::PolarStereographic::PolarStereographic(
     double max_lat,
     bool north_pole)
     : MapFactory()
-    , body_(body)
+    , body_(std::move(body))
     , max_lat_(std::isnan(max_lat) ? 0 : max_lat * C::degree)
-    , rho_coeff_(rho_coefficient(*body))
-    , distortion_coeff_(distortion_coefficient(*body))
+    , rho_coeff_(rho_coefficient(*body_))
+    , distortion_coeff_(distortion_coefficient(*body_))
     , north_pole_(north_pole)
 {
     if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
@@ -174,12 +177,10 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
         ((this->north_pole_ && this->body_->prograde())
          || (!this->north_pole_ && !this->body_->prograde()));
 
-    using namespace std::placeholders;
     auto const map_equation =
-        std::bind(stereo_rho_impl,
-                  std::cref(*this->body_),
-                  this->rho_coeff_,
-                  _1);
+        [&](double latg){
+            return stereo_rho_impl(*this->body_, this->rho_coeff_, latg);
+        };
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const X = k + 0.5 - lines / 2.0;

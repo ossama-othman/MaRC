@@ -62,10 +62,10 @@ namespace MaRC
                            MosaicImage::average_type type);
 
         /// Destructor.
-        virtual ~MosaicImageFactory() = default;
+        ~MosaicImageFactory() override = default;
 
         /// Create a @c MosaicImage.
-        virtual std::unique_ptr<SourceImage> make(
+        std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) override;
 
     private:

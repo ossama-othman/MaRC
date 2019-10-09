@@ -55,8 +55,8 @@ namespace
     dump_vectors(MaRC::DVector const & original,
                  MaRC::DVector const & rotated,
                  MaRC::DMatrix const & transformation,
-                 std::string name,
-                 std::string coordinate_type)
+                 std::string const & name,
+                 std::string const & coordinate_type)
     {
         auto const computed = transformation * rotated;
         std::string const title =
@@ -106,7 +106,7 @@ namespace
 
 MaRC::ViewingGeometry::ViewingGeometry(
     std::shared_ptr<OblateSpheroid> body)
-    : body_(body)
+    : body_(std::move(body))
     , sub_observ_lat_(not_a_number)
     , sub_observ_lon_(not_a_number)
     , sub_solar_lat_ (not_a_number)
@@ -139,7 +139,7 @@ MaRC::ViewingGeometry::geometric_correction(
     std::unique_ptr<GeometricCorrection> strategy)
 {
     if (!strategy) {
-        std::invalid_argument(
+        throw std::invalid_argument(
             "Null geometric correction strategy argument.");
     }
 

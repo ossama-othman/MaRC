@@ -45,7 +45,7 @@ namespace MaRC
     public:
 
         /// Destructor
-        virtual ~NullPhotometricCorrection() = default;
+        ~NullPhotometricCorrection() override = default;
 
         /**
          * @name PhotometricCorrection Methods
@@ -63,8 +63,8 @@ namespace MaRC
          *
          * @return @c true in all cases.
          */
-        virtual bool correct(ViewingGeometry const & geometry,
-                             double & data) override;
+        bool correct(ViewingGeometry const & geometry,
+                     double & data) override;
         //@}
 
     };

@@ -62,10 +62,10 @@ namespace MaRC
         PhotoImageFactory(char const * filename);
 
         /// Destructor.
-        virtual ~PhotoImageFactory() = default;
+        ~PhotoImageFactory() override = default;
 
         /// Create a @c PhotoImage.
-        virtual std::unique_ptr<SourceImage> make(
+        std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) override;
 
         /// Set the flat field image filename.

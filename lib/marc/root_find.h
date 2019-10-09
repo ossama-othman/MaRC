@@ -60,7 +60,7 @@ namespace MaRC
      */
     MARC_API double root_find(double y,
                               double x0,
-                              std::function<double(double)> f);
+                              std::function<double(double)> const & f);
 
     /**
      * @brief Find root of a given equation within a search bracket.
@@ -94,7 +94,7 @@ namespace MaRC
     MARC_API double root_find(double y,
                               double xl,
                               double xh,
-                              std::function<double(double)> f);
+                              std::function<double(double)> const & f);
 }
 
 

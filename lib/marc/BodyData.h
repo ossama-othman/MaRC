@@ -54,7 +54,7 @@ namespace MaRC
          * @param[in] prograde Flag that states whether body rotation
          *                     is prograde or retrograde.
          */
-        constexpr BodyData(bool prograde) noexcept
+        constexpr explicit BodyData(bool prograde) noexcept
             : prograde_(prograde)
         {
         }

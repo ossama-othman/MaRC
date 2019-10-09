@@ -72,7 +72,7 @@ namespace MaRC
                 double offset);
 
         /// Destructor.
-        virtual ~MuImage() = default;
+        ~MuImage() override = default;
 
     private:
 
@@ -80,9 +80,9 @@ namespace MaRC
         /**
          * @see MaRC::VirtualImage::read_data_i().
          */
-        virtual bool read_data_i(double lat,
-                                 double lon,
-                                 double & data) const override;
+        bool read_data_i(double lat,
+                         double lon,
+                         double & data) const override;
 
     private:
 

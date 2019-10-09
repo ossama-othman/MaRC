@@ -44,7 +44,7 @@ MaRC::Orthographic::Orthographic (
     double km_per_pixel,
     OrthographicCenter const & center)
     : MapFactory()
-    , body_(body)
+    , body_(std::move(body))
     , sub_observ_lat_(MaRC::validate_latitude(sub_observ_lat))
     , sub_observ_lon_(MaRC::validate_longitude(sub_observ_lon))
     , PA_(MaRC::validate_position_angle(PA))
@@ -306,10 +306,10 @@ MaRC::Orthographic::plot_grid(std::size_t samples,
                               double lon_interval,
                               grid_type & grid) const
 {
-    int i, k, imax = 2000;
+    int i, k;
     double low_bound, high_bound, x, z;
     DVector Coord, T_Coord;
-    double m, mm, mm2, n, nn;
+    double m, mm, mm2, n, nn, imax = 2000;
 
     // Tranformation matrix to rotate about x than new y
     DMatrix const body2obs(Geometry::RotYMatrix(-this->PA_) *
@@ -363,7 +363,7 @@ MaRC::Orthographic::plot_grid(std::size_t samples,
         double const radius = this->body_->centric_radius(nn);
 
         for (m = 0; m < imax; ++m) {
-            mm = static_cast<float>(m) / imax * C::degree * 360;
+            mm = m / imax * C::degree * 360;
 
             if (mm < low_bound)
                 mm += C::_2pi;
@@ -406,7 +406,7 @@ MaRC::Orthographic::plot_grid(std::size_t samples,
         mm = m * C::degree;
         for (n = 0; n < imax; ++n) {
             mm2 = mm;
-            nn = (static_cast<float>(n) / imax * 180 - 90) * C::degree;
+            nn = (n / imax * 180 - 90) * C::degree;
 
             // tan (graphic lat) * tan (sub observ lat)
             double const cosine =

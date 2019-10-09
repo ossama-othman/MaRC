@@ -64,8 +64,7 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
           Truncation will not occur since the MaRC program will pass
           at most pass a 64 bit signed integer to the MaRC library.
         */
-        fits_blank_type fits_blank =
-            static_cast<fits_blank_type>(*blank);
+        auto const fits_blank = static_cast<fits_blank_type>(*blank);
 
         // Write the BLANK keyword and value into the map FITS file.
         map_image->template blank<T>(fits_blank);

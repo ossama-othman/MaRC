@@ -37,7 +37,7 @@ MaRC::CosPhaseImage::CosPhaseImage(std::shared_ptr<BodyData> body,
                                    double scale,
                                    double offset)
     : VirtualImage(scale, offset)
-    , body_(body)
+    , body_(std::move(body))
     , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
     , sub_observ_lon_(sub_observ_lon * C::degree) // Radians
     , sub_solar_lat_(sub_solar_lat * C::degree)   // Radians

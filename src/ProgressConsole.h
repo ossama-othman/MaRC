@@ -54,15 +54,15 @@ namespace MaRC
             void operator=(Console const &) = delete;
 
             /// Destructor
-            virtual ~Console() = default;
+            ~Console() override = default;
 
             /**
              * @brief Notify observer of progress update.
              *
              * @see MaRC::MapProgress::notify()
              */
-            virtual void notify(std::size_t map_size,
-                                std::size_t plot_count) override;
+            void notify(std::size_t map_size,
+                        std::size_t plot_count) override;
 
         private:
 

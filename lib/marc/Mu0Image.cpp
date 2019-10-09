@@ -34,7 +34,7 @@ MaRC::Mu0Image::Mu0Image(std::shared_ptr<BodyData> body,
                          double scale,
                          double offset)
     : VirtualImage(scale, offset)
-    , body_(body)
+    , body_(std::move(body))
     , sub_solar_lat_(sub_solar_lat * C::degree)  // Radians
     , sub_solar_lon_(sub_solar_lon * C::degree)  // Radians
 {

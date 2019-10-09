@@ -51,7 +51,7 @@ namespace
      * @return First derivative @c f'(x).
      */
     inline double
-    first_derivative(double x, std::function<double(double)> f)
+    first_derivative(double x, std::function<double(double)> const & f)
     {
         /*
           Choose a delta "h" that is approximately within the scale of
@@ -87,7 +87,9 @@ namespace
     }
 
     double
-    newton_raphson(double y, double x0, std::function<double(double)> f)
+    newton_raphson(double y,
+                   double x0,
+                   std::function<double(double)> const & f)
     {
         constexpr int max_iterations = 20;
 
@@ -131,7 +133,9 @@ namespace
 }
 
 double
-MaRC::root_find(double y, double x0, std::function<double(double)> f)
+MaRC::root_find(double y,
+                double x0,
+                std::function<double(double)> const & f)
 {
     double x = newton_raphson(y, x0, f);
 
@@ -195,7 +199,7 @@ double
 MaRC::root_find(double y,
                 double xl,
                 double xh,
-                std::function<double(double)> f)
+                std::function<double(double)> const & f)
 {
     /*
       This implementation is based on the rtsafe() function found in

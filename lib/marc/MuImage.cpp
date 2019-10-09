@@ -35,7 +35,7 @@ MaRC::MuImage::MuImage(std::shared_ptr<BodyData> body,
                        double scale,
                        double offset)
     : VirtualImage(scale, offset)
-    , body_(body)
+    , body_(std::move(body))
     , sub_observ_lat_(sub_observ_lat * C::degree) // Radians
     , sub_observ_lon_(sub_observ_lon * C::degree) // Radians
     , range_(range)
