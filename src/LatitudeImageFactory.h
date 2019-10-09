@@ -56,10 +56,10 @@ namespace MaRC
                              bool graphic_latitudes);
 
         /// Destructor.
-        virtual ~LatitudeImageFactory() = default;
+        ~LatitudeImageFactory() override = default;
 
         /// Create a @c LatitudeImage.
-        virtual std::unique_ptr<SourceImage> make(
+        std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) override;
 
     private:

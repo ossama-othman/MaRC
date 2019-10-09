@@ -29,8 +29,10 @@
 #include <marc/Notifier.h>
 #include <marc/optional.h>
 
+#include <utility>
 #include <cstdint>
 #include <cmath>
+
 
 namespace MaRC
 {
@@ -108,7 +110,7 @@ namespace MaRC
             : source_(source)
             , minimum_(validate_extremum(minimum))
             , maximum_(validate_extremum(maximum))
-            , blank_(blank)
+            , blank_(std::move(blank))
             , notifier_()
         {
         }

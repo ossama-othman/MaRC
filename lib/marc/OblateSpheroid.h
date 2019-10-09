@@ -64,7 +64,7 @@ namespace MaRC
         OblateSpheroid & operator=(OblateSpheroid const &) = delete;
 
         /// Destructor
-        virtual ~OblateSpheroid() = default;
+        ~OblateSpheroid() override = default;
 
         /// Get the equatorial radius of the body.
         double eq_rad() const
@@ -97,30 +97,30 @@ namespace MaRC
          * class.
          */
         //@{
-        virtual double centric_radius(double lat) const override;
+        double centric_radius(double lat) const override;
 
-        virtual double centric_latitude(double latg) const override;
+        double centric_latitude(double latg) const override;
 
-        virtual double graphic_latitude(double lat) const override;
+        double graphic_latitude(double lat) const override;
 
-        virtual double mu(double sub_observ_lat,
-                          double sub_observ_lon,
-                          double lat,
-                          double lon,
-                          double range) const override;
+        double mu(double sub_observ_lat,
+                  double sub_observ_lon,
+                  double lat,
+                  double lon,
+                  double range) const override;
 
-        virtual double mu0(double sub_solar_lat,
-                           double sub_solar_lon,
-                           double lat,
-                           double lon) const override;
+        double mu0(double sub_solar_lat,
+                   double sub_solar_lon,
+                   double lat,
+                   double lon) const override;
 
-        virtual double cos_phase(double sub_observ_lat,
-                                 double sub_observ_lon,
-                                 double sub_solar_lat,
-                                 double sub_solar_lon,
-                                 double lat,
-                                 double lon,
-                                 double range) const override;
+        double cos_phase(double sub_observ_lat,
+                         double sub_observ_lon,
+                         double sub_solar_lat,
+                         double sub_solar_lon,
+                         double lat,
+                         double lon,
+                         double range) const override;
         //@}
 
         /// Radius of curvature of the meridian.

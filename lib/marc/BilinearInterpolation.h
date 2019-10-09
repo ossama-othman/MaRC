@@ -64,17 +64,17 @@ namespace MaRC
                             std::size_t nibble_bottom);
 
       /// Destructor.
-      virtual ~BilinearInterpolation() = default;
+      ~BilinearInterpolation() override = default;
 
       /// Perform bilinear interpolation over a 2x2 area of pixels on
       /// the given pixel.
       /**
        * @see @c InterpolationStrategy for parameter details.
        */
-      virtual bool interpolate(double const * data,
-                               double x,
-                               double z,
-                               double & datum) const override;
+      bool interpolate(double const * data,
+                       double x,
+                       double z,
+                       double & datum) const override;
 
   private:
 

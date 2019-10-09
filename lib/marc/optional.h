@@ -74,10 +74,10 @@ namespace MaRC
     {
     public:
         bad_optional_access() = default;
-        virtual ~bad_optional_access() = default;
+        ~bad_optional_access() override = default;
 
         /// Return description of this exception.
-        virtual char const * what () const noexcept
+        char const * what() const noexcept override
         {
             return "bad optional access";
         }

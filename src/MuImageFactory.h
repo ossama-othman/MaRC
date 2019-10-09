@@ -59,10 +59,10 @@ namespace MaRC
                        double range);
 
         /// Destructor.
-        virtual ~MuImageFactory() = default;
+        ~MuImageFactory() override = default;
 
         /// Create a @c MuImage.
-        virtual std::unique_ptr<SourceImage> make(
+        std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) override;
 
     private:

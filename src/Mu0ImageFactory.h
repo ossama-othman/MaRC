@@ -55,10 +55,10 @@ namespace MaRC
                         double sub_solar_lon);
 
         /// Destructor.
-        virtual ~Mu0ImageFactory() = default;
+        ~Mu0ImageFactory() override = default;
 
         /// Create a @c Mu0Image.
-        virtual std::unique_ptr<SourceImage> make(
+        std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) override;
 
     private:

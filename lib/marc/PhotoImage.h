@@ -73,7 +73,7 @@ namespace MaRC
                    std::unique_ptr<ViewingGeometry> geometry);
 
         /// Destructor.
-        virtual ~PhotoImage() = default;
+        ~PhotoImage() override = default;
 
         /// Retrieve physical data from source image.
         /**
@@ -82,9 +82,9 @@ namespace MaRC
          *
          * @see MaRC::SourceImage::read_data().
          */
-        virtual bool read_data(double lat,
-                               double lon,
-                               double & data) const override;
+        bool read_data(double lat,
+                       double lon,
+                       double & data) const override;
 
         /// Retrieve physical data and weight from source image.
         /**
@@ -105,11 +105,11 @@ namespace MaRC
          * @retval true  Physical data retrieved.
          * @retval false No physical data retrieved.
          */
-        virtual bool read_data(double lat,
-                               double lon,
-                               double & data,
-                               std::size_t & weight,
-                               bool scan = true) const override;
+        bool read_data(double lat,
+                       double lon,
+                       double & data,
+                       std::size_t & weight,
+                       bool scan = true) const override;
 
         /**
          * @brief Get unit of physical data in the photo.
@@ -117,7 +117,7 @@ namespace MaRC
          * @return Unit name, or empty string (@c "") if no unit is
          *         available.
          */
-        virtual char const * unit() const override;
+        char const * unit() const override;
 
     private:
 

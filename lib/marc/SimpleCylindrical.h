@@ -80,7 +80,7 @@ namespace MaRC
                           bool graphic_lat);
 
         /// Destructor
-        virtual ~SimpleCylindrical() = default;
+        ~SimpleCylindrical() override = default;
 
         /**
          * @name @c MapFactory Methods
@@ -90,7 +90,7 @@ namespace MaRC
          * @see @c MapFactory
          */
         //@{
-        virtual char const * projection_name() const override;
+        char const * projection_name() const override;
         //@}
 
     private:
@@ -100,20 +100,20 @@ namespace MaRC
          *
          * @see @c MaRC::MapFactory::plot_map().
          */
-        virtual void plot_map(std::size_t samples,
-                              std::size_t lines,
-                              plot_type plot) const override;
+        void plot_map(std::size_t samples,
+                      std::size_t lines,
+                      plot_type plot) const override;
 
         /**
          * Create the Simple Cylindrical map latitude/longitude grid.
          *
          * @see @c MaRC::MapFactory::plot_grid().
          */
-        virtual void plot_grid(std::size_t samples,
-                               std::size_t lines,
-                               double lat_interval,
-                               double lon_interval,
-                               grid_type & grid) const override;
+        void plot_grid(std::size_t samples,
+                       std::size_t lines,
+                       double lat_interval,
+                       double lon_interval,
+                       grid_type & grid) const override;
 
         /// Orient longitude according to rotation direction
         /// (prograde/retrograde).

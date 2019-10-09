@@ -45,7 +45,7 @@ namespace MaRC
     public:
 
         NullGeometricCorrection() = default;
-        virtual ~NullGeometricCorrection() = default;
+        ~NullGeometricCorrection() override = default;
 
         /**
          * @name GeometricCorrection Methods

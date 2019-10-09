@@ -72,7 +72,7 @@ namespace MaRC
         MosaicImage(list_type && images, average_type type);
 
         /// Destructor.
-        virtual ~MosaicImage() = default;
+        ~MosaicImage() override = default;
 
         /// Retrieve physical data from mosaic images.
         /**
@@ -91,9 +91,9 @@ namespace MaRC
          *
          * @see @c MaRC::SourceImage::read_data();
          */
-        virtual bool read_data(double lat,
-                               double lon,
-                               double & data) const override;
+        bool read_data(double lat,
+                       double lon,
+                       double & data) const override;
 
     private:
 

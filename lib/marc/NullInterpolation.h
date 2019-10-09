@@ -45,13 +45,13 @@ namespace MaRC
     public:
 
         /// Destructor.
-        virtual ~NullInterpolation() = default;
+        ~NullInterpolation() override = default;
 
         /// Performs no interpolation.
-        virtual bool interpolate(double const *,
-                                 double,
-                                 double,
-                                 double &) const override;
+        bool interpolate(double const *,
+                         double,
+                         double,
+                         double &) const override;
 
     };
 

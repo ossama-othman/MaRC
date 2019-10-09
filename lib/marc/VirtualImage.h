@@ -56,7 +56,7 @@ namespace MaRC
         VirtualImage(double s = 1, double o = 0);
 
         /// Destructor.
-        virtual ~VirtualImage() = default;
+        ~VirtualImage() override = default;
 
         /**
          * @brief Retrieve data from virtual image.
@@ -96,9 +96,9 @@ namespace MaRC
          *
          * @see read_data_i()
          */
-        virtual bool read_data(double lat,
-                               double lon,
-                               double & data) const override;
+        bool read_data(double lat,
+                       double lon,
+                       double & data) const override;
 
         /**
          * @name Linear Data Transformation
