@@ -67,7 +67,7 @@ namespace
 
 MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body)
     : MapFactory()
-    , body_(body)
+    , body_(std::move(body))
 {
     using namespace MaRC::default_configuration;
 

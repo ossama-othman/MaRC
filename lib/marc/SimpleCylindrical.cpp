@@ -81,7 +81,7 @@ MaRC::SimpleCylindrical::SimpleCylindrical(
     double hi_lon,
     bool graphic_lat)
     : MapFactory()
-    , body_(body)
+    , body_(std::move(body))
     , lo_lat_(boundary_latitude(lo_lat, body_.get(), graphic_lat))
     , hi_lat_(boundary_latitude(hi_lat, body_.get(), graphic_lat))
     , lo_lon_(MaRC::validate_longitude(lo_lon))

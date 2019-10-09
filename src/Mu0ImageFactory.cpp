@@ -34,7 +34,7 @@ MaRC::Mu0ImageFactory::Mu0ImageFactory(
     double sub_solar_lat,
     double sub_solar_lon)
     : SourceImageFactory()
-    , body_(body)
+    , body_(std::move(body))
     , sub_solar_lat_(sub_solar_lat)
     , sub_solar_lon_(sub_solar_lon)
 {

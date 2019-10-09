@@ -125,10 +125,10 @@ MaRC::PolarStereographic::PolarStereographic(
     double max_lat,
     bool north_pole)
     : MapFactory()
-    , body_(body)
+    , body_(std::move(body))
     , max_lat_(std::isnan(max_lat) ? 0 : max_lat * C::degree)
-    , rho_coeff_(rho_coefficient(*body))
-    , distortion_coeff_(distortion_coefficient(*body))
+    , rho_coeff_(rho_coefficient(*body_))
+    , distortion_coeff_(distortion_coefficient(*body_))
     , north_pole_(north_pole)
 {
     if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {

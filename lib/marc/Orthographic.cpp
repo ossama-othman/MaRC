@@ -44,7 +44,7 @@ MaRC::Orthographic::Orthographic (
     double km_per_pixel,
     OrthographicCenter const & center)
     : MapFactory()
-    , body_(body)
+    , body_(std::move(body))
     , sub_observ_lat_(MaRC::validate_latitude(sub_observ_lat))
     , sub_observ_lon_(MaRC::validate_longitude(sub_observ_lon))
     , PA_(MaRC::validate_position_angle(PA))

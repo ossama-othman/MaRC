@@ -106,7 +106,7 @@ namespace
 
 MaRC::ViewingGeometry::ViewingGeometry(
     std::shared_ptr<OblateSpheroid> body)
-    : body_(body)
+    : body_(std::move(body))
     , sub_observ_lat_(not_a_number)
     , sub_observ_lon_(not_a_number)
     , sub_solar_lat_ (not_a_number)
