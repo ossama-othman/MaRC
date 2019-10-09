@@ -31,7 +31,7 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
                          std::size_t lines,
                          std::size_t planes,
                          char const * extname)
-    : fptr_(fptr)
+    : fptr_(std::move(fptr))
     , fpixel_(1)  // CFITSIO first pixel is 1, not 0.
     , nelements_(samples * lines)
     , max_elements_(nelements_ * planes)
@@ -69,13 +69,13 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
     */
 
     // Create the primary array.
-    (void) fits_create_imgll(fptr.get(),
+    (void) fits_create_imgll(this->fptr_.get(),
                              bitpix,
                              naxis,
                              naxes,
                              &status);
 
-    update_fits_key(fptr.get(),
+    update_fits_key(this->fptr_.get(),
                     "EXTNAME",
                     extname,
                     PACKAGE_NAME " extension name");
@@ -89,7 +89,7 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
      * @note We could also use the @c PROGRAM keyword here instead.
      *       It is also commonly used but not in the %FITS standard.
      */
-    update_fits_key(fptr.get(),
+    update_fits_key(this->fptr_.get(),
                     "CREATOR",
                     PACKAGE_STRING,
                     "software that created this FITS image");
