@@ -62,7 +62,7 @@ namespace MaRC
              * @bug This implementation is subject to overflow or
              *      underflow.
              */
-            for (auto i = 0; i < M; ++i)
+            for (decltype(M) i = 0; i < M; ++i)
                 m += v[i] * v[i];
 
             return std::sqrt(m);
