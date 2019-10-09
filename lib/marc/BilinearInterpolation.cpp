@@ -50,14 +50,14 @@ MaRC::BilinearInterpolation::interpolate(double const * data,
 {
     // Bilinear interpolation over 2x2 area of pixels.
 
-    std::size_t const l = static_cast<std::size_t>(x); // floor(x)
-    std::size_t const r = l + 1;                       // ceil (x);
-    std::size_t const b = static_cast<std::size_t>(z); // floor(z)
-    std::size_t const t = b + 1;                       // ceil (z);
+    auto const l = static_cast<std::size_t>(x); // floor(x)
+    auto const r = l + 1;                       // ceil (x);
+    auto const b = static_cast<std::size_t>(z); // floor(z)
+    auto const t = b + 1;                       // ceil (z);
 
     // Offsets
-    std::size_t const ob = b * this->samples_;  // Bottom line
-    std::size_t const ot = t * this->samples_;  // Top line
+    auto const ob = b * this->samples_;  // Bottom line
+    auto const ot = t * this->samples_;  // Top line
 
     // Note that we assume the image is inverted from top to bottom.
 

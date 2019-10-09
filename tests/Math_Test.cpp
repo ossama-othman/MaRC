@@ -95,18 +95,18 @@ bool test_almost_equal()
     // Interpret its memory as memory belonging to an integer of the
     // same size.  We are casting the pointer to float to a pointer to
     // int32_t.  We are NOT casting the float value to an int32_t.
-    int32_t * const xi = reinterpret_cast<int32_t *>(&x);
+    auto const xi = reinterpret_cast<int32_t *>(&x);
 
     // Add 4 Units in the Last Place (ULPs) to the integer
     // representation.  This is NOT the same as adding 4 to the
     // floating point value x.
-    int32_t yi = *xi + 4;
+    auto yi = *xi + 4;
 
     // Interpret the memory of the new integer as memory belonging to
     // a float of the same size.  We are casting the pointer to
     // int32_t to a pointer to float.  We are NOT casting the int32_t
     // value to a float.
-    float * y  = reinterpret_cast<float *>(&yi);
+    auto const y  = reinterpret_cast<float *>(&yi);
 
     return
         // The floating values (x) and (*y) should now be 4 ULPs

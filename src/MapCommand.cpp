@@ -403,8 +403,7 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
      *       information to the %FITS file.
      */
 
-    VirtualImage const * const v =
-        dynamic_cast<VirtualImage const *>(image);
+    auto const v = dynamic_cast<VirtualImage const *>(image);
 
     if (!v)
         return;  // Not a VirtualImage subclass instance.
