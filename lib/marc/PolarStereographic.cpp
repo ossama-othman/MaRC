@@ -30,7 +30,6 @@
 // # include "Log.h"
 #endif
 
-#include <functional>
 #include <limits>
 #include <cmath>
 #include <sstream>
@@ -104,6 +103,10 @@ namespace
      * @note This function is a free function rather than a const
      *       member function to work around buggy implementations of
      *       @c std::bind().
+     *
+     * @todo Since we no longer use @c std::bind() it should be
+     *       possible to once again make this const member function of
+     *       @ cMaRC::PolarStereographic.
      */
     double
     stereo_rho_impl(MaRC::OblateSpheroid const & body,
@@ -174,12 +177,10 @@ MaRC::PolarStereographic::plot_map(std::size_t samples,
         ((this->north_pole_ && this->body_->prograde())
          || (!this->north_pole_ && !this->body_->prograde()));
 
-    using namespace std::placeholders;
     auto const map_equation =
-        std::bind(stereo_rho_impl,
-                  std::cref(*this->body_),
-                  this->rho_coeff_,
-                  _1);
+        [&](double latg){
+            return stereo_rho_impl(*this->body_, this->rho_coeff_, latg);
+        };
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const X = k + 0.5 - lines / 2.0;

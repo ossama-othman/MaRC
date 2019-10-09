@@ -32,7 +32,6 @@
 // # include "Log.h"
 #endif
 
-#include <functional>
 #include <limits>
 #include <cmath>
 #include <sstream>
@@ -52,6 +51,10 @@ namespace
      * @note This function is a free function rather than a const
      *       member function to work around buggy implementations of
      *       @c std::bind().
+     *
+     * @todo Since we no longer use @c std::bind() it should be
+     *       possible to once again make this const member function of
+     *       @ cMaRC::Mercator.
      */
     double
     mercator_x(MaRC::OblateSpheroid const & body, double latg)
@@ -126,9 +129,8 @@ MaRC::Mercator::plot_map(std::size_t samples,
     double const xmax =
         static_cast<double>(lines) / samples * C::pi;
 
-    using namespace std::placeholders;
     auto const map_equation =
-        std::bind(mercator_x, std::cref(*this->body_), _1);
+        [&](double latg){ return mercator_x(*this->body_, latg); };
 
     for (std::size_t k = 0; k < lines; ++k) {
         double const x = (k + 0.5) / lines * 2 * xmax - xmax;
