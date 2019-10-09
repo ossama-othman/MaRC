@@ -54,7 +54,7 @@ namespace
      *
      * @todo Since we no longer use @c std::bind() it should be
      *       possible to once again make this const member function of
-     *       @ cMaRC::Mercator.
+     *       @c MaRC::Mercator.
      */
     double
     mercator_x(MaRC::OblateSpheroid const & body, double latg)

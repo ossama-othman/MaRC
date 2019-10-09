@@ -106,7 +106,7 @@ namespace
      *
      * @todo Since we no longer use @c std::bind() it should be
      *       possible to once again make this const member function of
-     *       @ cMaRC::PolarStereographic.
+     *       @c MaRC::PolarStereographic.
      */
     double
     stereo_rho_impl(MaRC::OblateSpheroid const & body,
