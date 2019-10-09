@@ -27,7 +27,10 @@ clang-tidy-local:
 
 # MARC_CLANG_TIDY
 #
-# Add support for the clang-tidy linter.
+# Add support for the clang-tidy linter.  This adds a recursive
+# "clang-tidy" target to the Makefiles (e.g. "make clang-tidy") that
+# runs the `clang-tidy' program on any source files tracked by
+# GNU Automake generated Makefiles.
 AC_DEFUN([MARC_CLANG_TIDY],[
   AC_ARG_VAR([CLANG_TIDY],[path for clang-tidy program])
   AC_CHECK_PROGS([CLANG_TIDY], [clang-tidy])
