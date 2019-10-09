@@ -139,7 +139,7 @@ MaRC::ViewingGeometry::geometric_correction(
     std::unique_ptr<GeometricCorrection> strategy)
 {
     if (!strategy) {
-        std::invalid_argument(
+        throw std::invalid_argument(
             "Null geometric correction strategy argument.");
     }
 
