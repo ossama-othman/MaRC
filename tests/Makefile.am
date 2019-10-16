@@ -16,7 +16,7 @@ AM_CPPFLAGS =               \
 AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
 AM_LIBS = $(CODE_COVERAGE_LIBS)
 
-check_PROGRAMS =            \
+library_tests = \
   DefaultConfiguration_Test \
   Math_Test                 \
   Vector_Test               \
@@ -35,6 +35,11 @@ check_PROGRAMS =            \
   root_find_test            \
   utility_test              \
   validate_test
+
+program_tests = \
+  MapParameters_Test
+
+check_PROGRAMS = $(library_tests) $(program_tests)
 
 dist_check_SCRIPTS = command_line_test.sh
 
@@ -79,6 +84,8 @@ nobase_dist_check_DATA = \
   test_map.marc          \
   test.fits.gz           \
   $(BAD_MARC_FILES)
+
+## -------------------------------------------------------------------
 
 DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
 DefaultConfiguration_Test_LDADD   = $(CODE_COVERAGE_LIBS)
@@ -155,6 +162,15 @@ utility_test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 validate_test_SOURCES = validate_test.cpp
 validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
+
+## -------------------------------------------------------------------
+
+MapParameters_Test_SOURCES = MapParameters_Test.cpp
+MapParameters_Test_LDADD = \
+  $(top_builddir)/src/libMaRC_private.la \
+  $(CODE_COVERAGE_LIBS)
+
+## -------------------------------------------------------------------
 
 TESTS =                  \
   $(check_PROGRAMS)      \
