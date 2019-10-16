@@ -17,11 +17,11 @@ AM_CPPFLAGS =           \
   $(FMTLIB_CPPFLAGS)    \
   $(CODE_COVERAGE_CPPFLAGS)
 
-bin_PROGRAMS = marc
-
 AM_YFLAGS = -d
 
-marc_SOURCES = \
+noinst_LTLIBRARIES = libMaRC_private.la
+
+libMaRC_private_la_SOURCES = \
   FITS_file.cpp \
   FITS_image.cpp \
   ProgressConsole.cpp \
@@ -36,18 +36,25 @@ marc_SOURCES = \
   MapCommand.cpp \
   MapParameters.cpp \
   command_line.cpp \
-  marc.cpp \
   parse_scan.cpp \
-  calc.cpp \
-  parse.yy \
-  lexer.ll
+  calc.cpp
 
-marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
-marc_LDADD    = \
+libMaRC_private_la_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
+libMaRC_private_la_LIBADD    = \
   $(CFITSIO_LIBS) \
   $(ARGP_LIBS) \
   $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
+
+bin_PROGRAMS = marc
+
+marc_SOURCES = \
+  marc.cpp \
+  parse.yy \
+  lexer.ll
+
+marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
+marc_LDADD    = libMaRC_private.la
 
 noinst_HEADERS = \
   FITS_traits.h \
