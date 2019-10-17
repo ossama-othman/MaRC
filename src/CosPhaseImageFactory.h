@@ -57,7 +57,7 @@ namespace MaRC
         ~CosPhaseImageFactory() override = default;
 
         /// Populate map parameters.
-        virtual bool populate_parameters(
+        bool populate_parameters(
             MapParameters & parameters) const override;
 
         /// Create a @c CosPhaseImage.
