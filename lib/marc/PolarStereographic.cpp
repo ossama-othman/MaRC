@@ -1,7 +1,7 @@
 /**
  * @file PolarStereographic.cpp
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -19,7 +19,8 @@
 
 #include <limits>
 #include <cmath>
-#include <sstream>
+
+#include <fmt/format.h>
 
 
 namespace
@@ -122,11 +123,11 @@ MaRC::PolarStereographic::PolarStereographic(
     , north_pole_(north_pole)
 {
     if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
-        std::ostringstream s;
-        s << "Maximum Polar Stereographic projection latitude ("
-          << max_lat << ") >= 90.";
+        auto s = fmt::format("Maximum Polar Stereographic projection "
+                             "latitude ({}) >= 90.",
+                             max_lat);
 
-        throw std::invalid_argument(s.str());
+        throw std::invalid_argument(s);
     }
 }
 

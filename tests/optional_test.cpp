@@ -1,7 +1,7 @@
 /**
  * @file optional_test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018-2019 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -10,7 +10,6 @@
 
 #include <string>
 #include <type_traits>
-#include <iostream>
 
 
 /**
@@ -24,8 +23,7 @@ bool test_bad_optional_access()
         (void) no_value.value();
 
         return false;  // Exception should have been thrown!
-    } catch(MaRC::bad_optional_access const & e) {
-        std::cout << e.what() << " thrown as expected.\n";
+    } catch(MaRC::bad_optional_access const &) {
     }
 
     return true;

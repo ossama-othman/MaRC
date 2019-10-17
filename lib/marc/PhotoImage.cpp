@@ -1,7 +1,7 @@
 /**
  * @file PhotoImage.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -20,8 +20,9 @@
 #include "config.h"  // For NDEBUG.
 
 #include <stdexcept>
-#include <sstream>
 #include <cassert>
+
+#include <fmt/format.h>
 
 
 namespace
@@ -63,12 +64,12 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
-        std::ostringstream s;
-        s << "Source image samples (" << samples
-          << ") and lines (" << lines
-          << ") must both be greater than one.";
+        auto s = fmt::format("Source image samples ({}) and lines ({}) "
+                             "must both be greater than one.",
+                             samples,
+                             lines);
 
-        throw std::invalid_argument(s.str());
+        throw std::invalid_argument(s);
     }
 
     if (this->image_.size() != samples * lines) {

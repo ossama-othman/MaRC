@@ -23,7 +23,6 @@
 #include <fitsio.h>
 
 #include <iostream>
-#include <sstream>
 #include <iomanip>
 #include <memory>
 #include <type_traits>  // For sanity check below.
@@ -56,18 +55,9 @@ namespace
         if (MaRC::almost_zero(value, ulps))
             value = 0;
 
-        /**
-         * @todo Replace this std::ostringstream based conversion with
-         *       a fmt library based approach using, such as one that
-         *       leverages @c fmt::memory_buffer.
-         */
         // Work around inability to change precision in
-        // std::to_string().  Yes, this is ugly.
-        std::ostringstream os;
-
-        os << std::setprecision(width) << value;
-
-        return os.str();
+        // std::to_string() by using fmt::format().
+        return fmt::format("{:.{}g}", value, width);
     }
 }
 

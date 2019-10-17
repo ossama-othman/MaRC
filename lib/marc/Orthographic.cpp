@@ -1,7 +1,7 @@
 /**
  * @file Orthographic.cpp
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -16,7 +16,6 @@
 #include "Validate.h"
 #include "Log.h"
 
-#include <sstream>
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
@@ -98,11 +97,11 @@ MaRC::Orthographic::Orthographic (
             * std::tan(this->sub_observ_lat_);
 
         if (cosine < -1) {
-            std::ostringstream s;
-            s << "Desired LATITUDE (" << center.sample_lat_center
-              << ") at center of image is not visible.";
+            auto s = fmt::format("Desired LATITUDE ({}) at center "
+                                 "of image is not visible.",
+                                 center.sample_lat_center);
 
-            throw std::invalid_argument(s.str());
+            throw std::invalid_argument(s);
         }
 
         double lower = this->sub_observ_lon_ - C::pi;
@@ -123,11 +122,11 @@ MaRC::Orthographic::Orthographic (
 
         if (this->lon_at_center_ < lower
             || this->lon_at_center_ > upper) {
-            std::ostringstream s;
-            s << "Desired LONGITUDE (" << center.line_lon_center
-              << ") at center of image is not visible.";
+            auto s = fmt::format("Desired LONGITUDE ({}) at center "
+                                 "of image is not visible.",
+                                 center.line_lon_center);
 
-            throw std::invalid_argument(s.str());
+            throw std::invalid_argument(s);
         }
 
         double const shift = this->sub_observ_lon_ - this->lon_at_center_;
