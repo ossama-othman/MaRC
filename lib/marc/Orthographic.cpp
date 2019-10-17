@@ -1,7 +1,7 @@
 /**
  * @file Orthographic.cpp
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *

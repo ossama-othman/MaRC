@@ -4,7 +4,7 @@
  *
  * Parser for %MaRC input files.  Requires GNU Bison 1.35 or greater.
  *
- * Copyright (C) 1999, 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 1999, 2004, 2017-2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -54,7 +54,6 @@
 #include <cstring>
 #include <cerrno>
 #include <cmath>
-#include <sstream>
 
 
 YY_DECL;
@@ -767,11 +766,11 @@ grid_intervals:
 grid_interval:
         GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
-                std::ostringstream s;
-                s << "Grid interval value (" << $3 << ") "
-                  << "must be greater than zero.";
+                auto s = fmt::format("Grid interval value ({}) "
+                                     "must be greater than zero.",
+                                     $3);
 
-                throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s);
             } else {
               lat_interval = $3;
               lon_interval = $3;
@@ -782,11 +781,11 @@ grid_interval:
 lat_grid_interval:
         LAT_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
-                std::ostringstream s;
-                s << "Latitude grid interval value (" << $3 << ") "
-                  << "must be greater than zero.";
+                auto s = fmt::format("Latitude grid interval value ({}) "
+                                     "must be greater than zero.",
+                                     $3);
 
-                throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s);
             } else {
                 lat_interval = $3;
             }
@@ -796,11 +795,11 @@ lat_grid_interval:
 lon_grid_interval:
         LON_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
-                std::ostringstream s;
-                s << "Longitude grid interval value (" << $3 << ") "
-                  << "must be greater than zero.";
+                auto s = fmt::format("Longitude grid interval value ({}) "
+                                     "must be greater than zero.",
+                                     $3);
 
-                throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s);
             } else {
                 lon_interval = $3;
             }

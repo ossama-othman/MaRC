@@ -27,11 +27,12 @@
 
 #include <limits>
 #include <stdexcept>
-#include <sstream>
 #include <memory>
 #include <type_traits>
 #include <cmath>
 #include <cassert>
+
+#include <fmt/format.h>
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
@@ -201,14 +202,15 @@ MaRC::PhotoImageFactory::flat_field_correct(std::vector<double> & img,
         f.read(f_img, f_samples, f_lines);
 
         if (f_samples != samples || f_lines != lines) {
-            std::ostringstream s;
-            s << "Mismatched source ("
-              << samples << "x" << lines
-              << ") and flat field image ("
-              << f_samples << "x" << f_lines
-              << ") dimensions";
+            auto s =
+                fmt::format("Mismatched source ({}x{}) and "
+                            "flat field image ({}x{}) dimensions.",
+                            samples,
+                            lines,
+                            f_samples,
+                            f_lines);
 
-            throw std::runtime_error(s.str());
+            throw std::runtime_error(s);
         }
     }
 

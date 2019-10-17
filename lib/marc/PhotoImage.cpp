@@ -1,7 +1,7 @@
 /**
  * @file PhotoImage.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -23,6 +23,8 @@
 
 #include <stdexcept>
 #include <cassert>
+
+#include <fmt/format.h>
 
 
 namespace
