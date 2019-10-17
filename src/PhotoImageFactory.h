@@ -61,7 +61,7 @@ namespace MaRC
          * return @c true if population of map parameters succeeded,
          *        and @c false otherwise.
          */
-        virtual bool populate_parameters(
+        bool populate_parameters(
             MapParameters & p) const override;
 
         /// Create a @c PhotoImage.
