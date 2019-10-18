@@ -10,7 +10,13 @@
 
 #include "MapParameters.h"
 
+#include "marc/Log.h"
+#include "marc/Mathematics.h"
+
 #include <fitsio.h>
+
+#include <stdexcept>
+#include <cmath>
 
 
 namespace
@@ -45,8 +51,11 @@ namespace
  *       times!
  */
 
-MaRC::MapParameters::MapParameters()
-    : author_()
+MaRC::MapParameters::MapParameters(int plane)
+    : locked_keywords_()
+    , user_supplied_(false)
+    , plane_(plane)
+    , author_()
     , bitpix_(0)
     , blank_()
     , bscale_()
@@ -63,6 +72,15 @@ MaRC::MapParameters::MapParameters()
     , telescope_()
     , comments_()
     , xcomments_()
+    , histories_()
+{
+    if (plane < 0)
+        throw std::invalid_argument(
+            fmt::format("Invalid map plane: {}", plane));
+}
+
+MaRC::MapParameters::MapParameters()
+    : MapParameters(0)
 {
 }
 
@@ -76,7 +94,8 @@ void
 MaRC::MapParameters::bitpix(int n)
 {
     if (!valid_bitpix(n))
-        throw std::invalid_argument("Invalid FITS BITPIX value");
+        throw std::invalid_argument(
+            fmt::format("Invalid FITS BITPIX value: {}", n));
 
     /**
      * @bug Choose @c BITPIX value based on @c SourceImage, such as
@@ -137,7 +156,7 @@ void
 MaRC::MapParameters::bzero(MaRC::optional<double> zero)
 {
     /**
-     * @todo Verify that @ a zero is valid, i.e. not the @c NaN
+     * @todo Verify that @a zero is valid, i.e. not the @c NaN
      *       constant.
      */
 
@@ -148,7 +167,7 @@ void
 MaRC::MapParameters::datamax(MaRC::optional<double> max)
 {
     /**
-     * @todo Verify that @ a max is valid, i.e. not the @c NaN
+     * @todo Verify that @a max is valid, i.e. not the @c NaN
      *       constant.
      */
 
@@ -159,7 +178,7 @@ void
 MaRC::MapParameters::datamin(MaRC::optional<double> min)
 {
     /**
-     * @todo Verify that @ a min is valid, i.e. not the @c NaN
+     * @todo Verify that @a min is valid, i.e. not the @c NaN
      *       constant.
      */
 
@@ -169,12 +188,7 @@ MaRC::MapParameters::datamin(MaRC::optional<double> min)
 void
 MaRC::MapParameters::equinox(MaRC::optional<double> e)
 {
-    /**
-     * @todo Verify that @ a equinox is valid, i.e. not the @c NaN
-     *       constant.
-     */
-
-    this->equinox_ = e;
+    this->set("EQUINOX", this->equinox_, e);
 }
 
 void
@@ -231,8 +245,8 @@ MaRC::MapParameters::merge(MaRC::MapParameters & p)
     if (this->author_.empty())
         this->author_ = std::move(p.author_);
 
-    if (this->bitpix_ == 0)
-        this->bitpix_ = p.bitpix_;
+    if (p.bitpix_ != 0 && (this->bitpix_ == 0 || !this->user_supplied_))
+        this->bitpix(p.bitpix_);
 
     if (!this->blank_.has_value())
         this->blank_ = p.blank_;
@@ -246,10 +260,19 @@ MaRC::MapParameters::merge(MaRC::MapParameters & p)
     if (!this->bzero_.has_value())
         this->bzero_ = p.bzero_;
 
-    if (!this->datamax_.has_value())
+    /**
+     * @bug This could cause data to be dropped from the map if the
+     *      image factory for a given map plane doesn't set minimum
+     *      and maximum data values.
+     */
+    /*
+      Choose minimum and maximum values large enough to cover the
+      full range of data value in multiple map planes.
+     */
+    if (this->datamax_ < p.datamax_)
         this->datamax_ = p.datamax_;
 
-    if (!this->datamin_.has_value())
+    if (this->datamin_ > p.datamin_)
         this->datamin_ = p.datamin_;
 
     if (!this->equinox_.has_value())
@@ -277,4 +300,64 @@ MaRC::MapParameters::merge(MaRC::MapParameters & p)
     this->xcomments_.splice(std::cend(this->xcomments_), p.xcomments_);
 
     return true;
+}
+
+bool
+MaRC::MapParameters::set(char const * key,
+                         MaRC::optional<double> & to,
+                         MaRC::optional<double> & from)
+{
+    if (!from || std::isnan(*from))
+        return false;
+
+    auto const r = this->locked_keywords_.emplace(key);
+    bool const assignable = r.second;
+    constexpr int ulps = 2;
+
+    // Not previously set.
+    if (!to) {
+        to = from;
+        return true;
+    } else if (to && MaRC::almost_equal(*to, *from, ulps)) {
+        // Same value.  No need to reassign.
+        return true;
+    }
+
+    // Different values between map planes.
+
+    /**
+     * @todo Document different values for the same map parameter in
+     *       %FITS %c HISTORY cards, and clear the @a "to"
+     *       value if it wasn't supplied by the user since we
+     *       can't use it.
+     */
+    MaRC::warn("Different {} values between planes ({}, {}).",
+               key,
+               *to,
+               *from);
+
+    if (this->user_supplied_)
+        MaRC::warn("User supplied value {} will be used.", *to);
+    else {
+        MaRC::warn("Neither will be used.");
+
+        std::string history =
+            fmt::format("Plane {}: {} = {}",
+                        this->plane_,
+                        key,
+                        *to);
+
+        this->histories_.emplace_back(history);
+    }
+
+    return false;
+}
+
+void
+MaRC::MapParameters::set(std::string & to, std::string from)
+{
+    if (to.empty())
+        to = std::move(from);
+    // else
+    //     MaRC::warn();
 }
