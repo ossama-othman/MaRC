@@ -46,15 +46,11 @@ MaRC::MapFactory::make_map(plot_info & info,
 
     map_type<T> map(samples * lines, blank);
 
-    using namespace std::placeholders;
-
-    auto plot = std::bind(&MapFactory::plot<T>,
-                          this,
-                          std::cref(info),
-                          _1,   // lat
-                          _2,   // lon
-                          _3,   // map array offset
-                          std::ref(map));
+    auto plot =
+        [this, &info, &map](double lat, double lon, std::size_t offset)
+        {
+            this->plot(info, lat, lon, offset, map);
+        };
 
     this->plot_map(samples, lines, plot);
 
