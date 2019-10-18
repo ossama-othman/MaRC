@@ -183,6 +183,8 @@ MaRC::MapCommand::execute()
     // Write the map grid if requested.
     this->write_grid(f);
 
+    std::cout << "Created map: " << this->filename_ << '\n';
+
     return 0;
 }
 
@@ -402,21 +404,34 @@ MaRC::MapCommand::populate_map_parameters()
           NAXIS2)
      */
 
+    // Automatically populated map parameters.
     MapParameters to_merge;
 
-    /**
-     * @todo Track plane number to help facilitate incompatible
-     *       differences in map parameters / %FITS keywords between
-     *       map planes.
-     */
-    for (auto const & image : this->image_factories_)
-        if (!image->populate_parameters(to_merge))
+    int plane = 1;
+
+    for (auto const & image : this->image_factories_) {
+        // Automatically populated map plane parameters.
+        MapParameters pp(plane++);
+
+        if (!image->populate_parameters(pp))
             return false;
+
+        /*
+          Merge map plane parameters in to previously populated
+          parameters.
+        */
+        if (!to_merge.merge(pp))
+            return false;
+    }
 
     /*
       Merge automatically populated map parameters with the user
-      supplied parameters.
+      supplied parameters.  Some user supplied parameters, such as
+      bitpix (map data type), are given priority over automatically
+      populated ones.
     */
-
+    /**
+     * @todo Implement user override semantics.
+     */
     return this->parameters_->merge(to_merge);
 }
