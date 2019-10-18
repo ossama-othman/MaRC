@@ -140,7 +140,7 @@ MaRC::PolarStereographic::projection_name() const
 void
 MaRC::PolarStereographic::plot_map(std::size_t samples,
                                    std::size_t lines,
-                                   plot_type plot) const
+                                   plot_type const & plot) const
 {
     std::size_t offset = 0;
 

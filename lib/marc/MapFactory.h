@@ -142,7 +142,7 @@ namespace MaRC
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              plot_type plot) const = 0;
+                              plot_type const & plot) const = 0;
 
         /**
          * @brief Plot the data on the map.

@@ -103,7 +103,7 @@ MaRC::SimpleCylindrical::projection_name() const
 void
 MaRC::SimpleCylindrical::plot_map(std::size_t samples,
                                   std::size_t lines,
-                                  plot_type plot) const
+                                  plot_type const & plot) const
 {
     // Latitudes (radians) per line.
     double const cf = (this->hi_lat_ - this->lo_lat_) / lines;

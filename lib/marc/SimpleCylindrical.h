@@ -97,7 +97,7 @@ namespace MaRC
          */
         void plot_map(std::size_t samples,
                       std::size_t lines,
-                      plot_type plot) const override;
+                      plot_type const & plot) const override;
 
         /**
          * Create the Simple Cylindrical map latitude/longitude grid.

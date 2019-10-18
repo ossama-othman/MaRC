@@ -171,7 +171,7 @@ MaRC::Orthographic::projection_name() const
 void
 MaRC::Orthographic::plot_map(std::size_t samples,
                              std::size_t lines,
-                             plot_type plot) const
+                             plot_type const & plot) const
 {
     double km_per_pixel  = std::numeric_limits<double>::signaling_NaN();
     double sample_center = std::numeric_limits<double>::signaling_NaN();
