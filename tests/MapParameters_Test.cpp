@@ -22,6 +22,9 @@
 
 #include <marc/Mathematics.h>
 
+#include <fitsio.h>
+
+
 namespace
 {
     constexpr int ulps = 2;
@@ -85,6 +88,68 @@ MARC_TEST_REAL_PARAM(equinox)
 
 bool test_bitpix()
 {
+    MaRC::MapParameters p;
+
+    // Increasing integer BITPIX.
+    p.bitpix(BYTE_IMG);
+    if (p.bitpix() != BYTE_IMG)
+        return false;
+
+    p.bitpix(SHORT_IMG);
+    if (p.bitpix() != SHORT_IMG)
+        return false;
+
+    p.bitpix(LONG_IMG);
+    if (p.bitpix() != LONG_IMG)
+        return false;
+
+    p.bitpix(LONGLONG_IMG);
+    if (p.bitpix() != LONGLONG_IMG)
+        return false;
+
+    // Attempt to decrease integer BITPIX.
+    p.bitpix(SHORT_IMG);
+    if (p.bitpix() == SHORT_IMG)  // There should be no change.
+        return false;
+
+    // Increasing floating point BITPIX.
+    p.bitpix(FLOAT_IMG);
+    if (p.bitpix() != FLOAT_IMG)
+        return false;
+
+    p.bitpix(DOUBLE_IMG);
+    if (p.bitpix() != DOUBLE_IMG)
+        return false;
+
+    // Attempt to decrease floating point BITPIX.
+    p.bitpix(FLOAT_IMG);
+    if (p.bitpix() == FLOAT_IMG)  // There should be no change.
+        return false;
+
+    // Attempt to decrease floating point to integer BITPIX.
+    p.bitpix(SHORT_IMG);
+    if (p.bitpix() != SHORT_IMG)  // Integer should have overriden.
+        return false;
+
+    try {
+        constexpr int bad = -1;
+
+        static_assert(bad != BYTE_IMG
+                      && bad != SHORT_IMG
+                      && bad != LONG_IMG
+                      && bad != LONGLONG_IMG
+                      && bad != FLOAT_IMG
+                      && bad != DOUBLE_IMG,
+                      "Bitpix value is unexpectedly valid.");
+
+        p.bitpix(bad);
+    } catch(std::invalid_argument &) {
+        // Expected.
+
+        return true;
+    }
+
+
     return false;
 }
 
@@ -101,6 +166,58 @@ bool test_blank()
     return p.blank() == b;
 }
 
+bool test_comments()
+{
+    MaRC::MapParameters p;
+
+    if (!p.comments().empty())
+        return false;
+
+    using comment_type =
+        MaRC::MapParameters::comment_list_type::value_type;
+
+    comment_type const to_push[] = { "Foo", "Bar" };
+
+    for (auto const & c : to_push)
+        p.push_comment(c);
+
+    auto const & comments = p.comments();
+
+    return std::equal(std::begin(comments),
+                      std::end(comments),
+                      std::begin(to_push));
+}
+
+bool test_xcomments()
+{
+    MaRC::MapParameters p;
+
+    if (!p.xcomments().empty())
+        return false;
+
+    using comment_type =
+        MaRC::MapParameters::comment_list_type::value_type;
+
+    comment_type const to_push[] = { "Foo", "Bar" };
+
+    for (auto const & c : to_push)
+        p.push_xcomment(c);
+
+    auto const & xcomments = p.xcomments();
+
+    return std::equal(std::begin(xcomments),
+                      std::end(xcomments),
+                      std::begin(to_push));
+}
+
+bool test_merge()
+{
+    /**
+     * @todo Implement this test.
+     */
+
+    return true;
+}
 
 /// The canonical main entry point.
 int main()
@@ -108,7 +225,7 @@ int main()
     return
         test_initialization()
         && test_author()
-        // && test_bitpix()
+        && test_bitpix()
         && test_blank()
         && test_bscale()
         && test_bunit()
@@ -122,5 +239,8 @@ int main()
         && test_origin()
         && test_reference()
         && test_telescope()
+        && test_comments()
+        && test_xcomments()
+        && test_merge()
         ? 0 : -1;
 }
