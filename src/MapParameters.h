@@ -17,6 +17,7 @@
 #include <list>
 #include <string>
 #include <memory>
+#include <set>
 
 
 namespace MaRC
@@ -38,11 +39,16 @@ namespace MaRC
     class MapParameters
     {
     public:
-
         /// %FITS file comment list type.
         using comment_list_type = std::list<std::string>;
 
-        /// Constructor
+        /**
+         * @brief Constructor
+         *
+         */
+        explicit MapParameters(int plane);
+
+        /// Default Coonstructor
         MapParameters();
 
         /// Destructor.
@@ -317,6 +323,27 @@ namespace MaRC
 
     private:
 
+        bool set(char const * key,
+                 MaRC::optional<double> & to,
+                 MaRC::optional<double> & from);
+
+        void set(std::string & to, std::string from);
+
+    private:
+
+        /**
+         *
+         */
+        std::set<std::string> locked_keywords_;
+
+        /**
+         *
+         */
+        bool user_supplied_;
+
+        /// Map plane to which these parameters belong.
+        int const plane_;
+
         /**
          * @brief Source data author.
          *
@@ -498,6 +525,18 @@ namespace MaRC
          *       keyword in the "GRID" %FITS image extension.
          */
         comment_list_type xcomments_;
+
+        /**
+         * @brief Map documentation created by %MaRC.
+         *
+         * In some cases %MaRC will document some aspects of the map
+         * it has decided to use without user involvement in history
+         * comments.
+         *
+         * @note The history comments correspond to the %FITS
+         *       "HISTORY" keyword.
+         */
+        comment_list_type histories_;
 
     };
 }
