@@ -45,10 +45,22 @@ namespace MaRC
         /**
          * @brief Constructor
          *
+         * @param[in] plane User-supplied parameters @plane == 0,
+         *                  otherwise @a plane > 0 for plane-specific
+         *                  (automatically populated parameters).
+         *
+         * @todo Revise the design so that this constructor and the
+         *       @c plane_ are not needed.
          */
         explicit MapParameters(int plane);
 
-        /// Default Coonstructor
+        /**
+         * @brief Default Coonstructor
+         *
+         * Convenience constructor used when creating user supplied
+         * map parameters.
+         *
+         */
         MapParameters();
 
         /// Destructor.
@@ -323,11 +335,17 @@ namespace MaRC
 
     private:
 
-        bool set(char const * key,
-                 MaRC::optional<double> & to,
-                 MaRC::optional<double> & from);
+        bool merge_optional(char const * key,
+                            MaRC::optional<double> & to,
+                            MaRC::optional<double> & from);
 
-        void set(std::string & to, std::string from);
+        bool merge_optional(char const * key,
+                            MaRC::blank_type & to,
+                            MaRC::blank_type & from);
+
+        bool merge_optional(char const * key,
+                            std::string & to,
+                            std::string from);
 
     private:
 
