@@ -22,12 +22,18 @@
 
 #include <marc/Mathematics.h>
 
+#include <functional>
+
 #include <fitsio.h>
 
 
 namespace
 {
+    // "Units in the last place" for floating point equality
+    // comparison.
     constexpr int ulps = 2;
+
+    using comments_type = MaRC::MapParameters::comment_list_type;
 }
 
 bool test_initialization()
@@ -166,48 +172,49 @@ bool test_blank()
     return p.blank() == b;
 }
 
-bool test_comments()
+bool test_comments_impl(
+    std::function<void(comments_type::value_type const &)> const & push,
+    comments_type const & comments)
 {
-    MaRC::MapParameters p;
-
-    if (!p.comments().empty())
+    if (!comments.empty())
         return false;
 
-    using comment_type =
-        MaRC::MapParameters::comment_list_type::value_type;
+    using comment_type = comments_type::value_type;
 
     comment_type const to_push[] = { "Foo", "Bar" };
 
     for (auto const & c : to_push)
-        p.push_comment(c);
-
-    auto const & comments = p.comments();
+        push(c);
 
     return std::equal(std::begin(comments),
                       std::end(comments),
                       std::begin(to_push));
 }
 
+bool test_comments()
+{
+    MaRC::MapParameters p;
+
+    auto const & push =
+        [&p](comments_type::value_type const & c)
+        {
+            p.push_comment(c);
+        };
+
+    return test_comments_impl(push, p.comments());
+}
+
 bool test_xcomments()
 {
     MaRC::MapParameters p;
 
-    if (!p.xcomments().empty())
-        return false;
+    auto const & push =
+        [&p](comments_type::value_type const & c)
+        {
+            p.push_xcomment(c);
+        };
 
-    using comment_type =
-        MaRC::MapParameters::comment_list_type::value_type;
-
-    comment_type const to_push[] = { "Foo", "Bar" };
-
-    for (auto const & c : to_push)
-        p.push_xcomment(c);
-
-    auto const & xcomments = p.xcomments();
-
-    return std::equal(std::begin(xcomments),
-                      std::end(xcomments),
-                      std::begin(to_push));
+    return test_comments_impl(push, p.xcomments());
 }
 
 bool test_merge()
