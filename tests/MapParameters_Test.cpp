@@ -23,6 +23,7 @@
 #include <marc/Mathematics.h>
 
 #include <functional>
+#include <cassert>
 
 #include <fitsio.h>
 
@@ -113,11 +114,6 @@ bool test_bitpix()
     if (p.bitpix() != LONGLONG_IMG)
         return false;
 
-    // Attempt to decrease integer BITPIX.
-    p.bitpix(SHORT_IMG);
-    if (p.bitpix() == SHORT_IMG)  // There should be no change.
-        return false;
-
     // Increasing floating point BITPIX.
     p.bitpix(FLOAT_IMG);
     if (p.bitpix() != FLOAT_IMG)
@@ -125,16 +121,6 @@ bool test_bitpix()
 
     p.bitpix(DOUBLE_IMG);
     if (p.bitpix() != DOUBLE_IMG)
-        return false;
-
-    // Attempt to decrease floating point BITPIX.
-    p.bitpix(FLOAT_IMG);
-    if (p.bitpix() == FLOAT_IMG)  // There should be no change.
-        return false;
-
-    // Attempt to decrease floating point to integer BITPIX.
-    p.bitpix(SHORT_IMG);
-    if (p.bitpix() != SHORT_IMG)  // Integer should have overriden.
         return false;
 
     try {
@@ -154,7 +140,6 @@ bool test_bitpix()
 
         return true;
     }
-
 
     return false;
 }
@@ -217,13 +202,123 @@ bool test_xcomments()
     return test_comments_impl(push, p.xcomments());
 }
 
-bool test_merge()
+bool test_merge_bitpix()
 {
+    int plane = 1;
+
+    MaRC::MapParameters u;
+    MaRC::MapParameters p1(plane++);
+    MaRC::MapParameters p2(plane);
+
+    // ---------------------
+    // Integer BITPIX Checks
+    // ---------------------
+
+    // User supplied BITPIX
+    u.bitpix(BYTE_IMG);
+    p1.bitpix(SHORT_IMG);
+
+    assert(u.bitpix() < p1.bitpix());   // Sanity check.
+
+    if (!u.merge(p1)
+        || u.bitpix() != BYTE_IMG)   // Override should NOT have
+                                     // occurred.
+        return false;
+
+    // Same integer BITPIX
+    p1.bitpix(SHORT_IMG);
+    p2.bitpix(p1.bitpix());
+
+    assert(p1.bitpix() == p2.bitpix()); // Sanity check.
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != SHORT_IMG)    // Override should NOT have
+                                        // occurred.
+        return false;
+
+    // Increasing integer BITPIX
+    p1.bitpix(SHORT_IMG);
+    p2.bitpix(LONG_IMG);
+
+    assert(p1.bitpix() < p2.bitpix());  // Sanity check.
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != LONG_IMG)     // Override should have
+                                        // occurred.
+        return false;
+
+    // Decreasing integer BITPIX
+    p1.bitpix(LONG_IMG);
+    p2.bitpix(SHORT_IMG);
+
+    assert(p1.bitpix() > p2.bitpix());  // Sanity check.
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != LONG_IMG)     // Override should NOT have
+                                        // occurred.
+        return false;
+
+    // ----------------------------
+    // Floating point BITPIX Checks
+    // ----------------------------
+
+    // Same floating point BITPIX
+    p1.bitpix(FLOAT_IMG);
+    p2.bitpix(p1.bitpix());
+
+    assert(p1.bitpix() == p2.bitpix()); // Sanity check.
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != FLOAT_IMG)    // Override should NOT have
+                                        // occurred.
+        return false;
+
+    // Increasing floating point BITPIX
+    p1.bitpix(FLOAT_IMG);
+    p2.bitpix(DOUBLE_IMG);
+
+    assert(p1.bitpix() > p2.bitpix());  // Sanity check.
+                                        // FLOAT_IMG > DOUBLE_IMG
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != DOUBLE_IMG)   // Override should have
+                                        // occurred.
+        return false;
+
+    // Decreasing integer BITPIX
+    p1.bitpix(DOUBLE_IMG);
+    p2.bitpix(FLOAT_IMG);
+
+    assert(p1.bitpix() < p2.bitpix());  // Sanity check.
+                                        // FLOAT_IMG > DOUBLE_IMG
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != DOUBLE_IMG)   // Override should NOT have
+                                        // occurred.
+        return false;
+
+    // Override floating point BITPIX with integer BITPIX
     /**
-     * @todo Implement this test.
+     * @todo Verify that the integer @c BITPIX override of a floating
+     *       point @c BITPIX is really needed and/or useful.
      */
+    p1.bitpix(DOUBLE_IMG);
+    p2.bitpix(SHORT_IMG);
+
+    assert(p1.bitpix() < 0 && p2.bitpix() > 0);  // Sanity check.
+
+    if (!p1.merge(p2)
+        || p1.bitpix() != SHORT_IMG)    // Override should have
+                                        // occurred.
+        return false;
 
     return true;
+}
+
+
+bool test_merge()
+{
+    return test_merge_bitpix();
 }
 
 /// The canonical main entry point.

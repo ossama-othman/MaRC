@@ -53,7 +53,7 @@ namespace
 
 MaRC::MapParameters::MapParameters(int plane)
     : locked_keywords_()
-    , user_supplied_(false)
+    , user_supplied_(plane == 0)
     , plane_(plane)
     , author_()
     , bitpix_(0)
@@ -97,26 +97,7 @@ MaRC::MapParameters::bitpix(int n)
         throw std::invalid_argument(
             fmt::format("Invalid FITS BITPIX value: {}", n));
 
-    /**
-     * @bug Choose @c BITPIX value based on @c SourceImage, such as
-     *      the @c BITPIX value in a @c PhotoImage, or a @c BITPIX for
-     *      floating point values for a @c VirtualImage with floating
-     *      point values etc.  Fixes #62.
-     *
-     * @todo Warn the user if the their desired @c BITPIX (map data
-     *       type) is smaller than the data type in a photo.  (e.g. 16
-     *       bits chosen vs 32 bits in photo).  Fixes #72.
-     */
-
-    /*
-      Do not decrease map data type size.
-
-      Choose BITPIX value corresponding to larger data type.
-    */
-    if (this->bitpix_ == 0               // not previously set
-        || (n > 0 && n > this->bitpix_)  // integer (override float)
-        || (n < 0 && n < this->bitpix_)) // floating point
-        this->bitpix_ = n;
+    this->bitpix_ = n;
 }
 
 int
@@ -188,7 +169,11 @@ MaRC::MapParameters::datamin(MaRC::optional<double> min)
 void
 MaRC::MapParameters::equinox(MaRC::optional<double> e)
 {
-    this->set("EQUINOX", this->equinox_, e);
+    /**
+     * @todo Verify that @a e is valid, i.e. not the @c NaN constant.
+     */
+
+    this->equinox_ = e;
 }
 
 void
@@ -239,26 +224,74 @@ MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
     this->xcomments_.push_back(std::move(comment));
 }
 
+/**
+ * @brief Convenience macro that merges a given map parameter.
+ *
+ * Merge a provided map parameter from @c p into @c *this.  Cause the
+ * calling function (@c merge()) to return immediately on error, and
+ * continue otherwise.
+ *
+ * @param[in] key       Parameter name.
+ * @param[in] parameter @c MapParameter member, e.g. (@c origin_).
+ *
+ */
+#define MARC_MERGE_OPTIONAL(parameter)              \
+    if (!this->merge_optional(#parameter,           \
+                              this->parameter ## _, \
+                              p.parameter ## _))    \
+        return false
+
 bool
 MaRC::MapParameters::merge(MaRC::MapParameters & p)
 {
-    if (this->author_.empty())
-        this->author_ = std::move(p.author_);
+    // Merge required parameters.
+    if (p.bitpix_ != 0
+        && (this->bitpix_ == 0 || !this->user_supplied_)) {
+        /**
+         * @bug Choose @c BITPIX value based on @c SourceImage, such
+         *      as the @c BITPIX value in a @c PhotoImage, or a
+         *      @c BITPIX for floating point values for a
+         *      @c VirtualImage with floating point values etc.  Fixes
+         *      #62.
+         *
+         * @todo Warn the user if the their desired @c BITPIX (map
+         *       data type) is smaller than the data type in a photo.
+         *       (e.g. 16 bits chosen vs 32 bits in photo).  Fixes
+         *       #72.
+         *
+         * @todo Should we allow floating point @c BITPIX override
+         *       with integer @c BITPIX?  The original use case was to
+         *       allow the user to prefer integer map data over
+         *       floating point map data.  Is that relevant for the
+         *       automatically populated @c BITPIX case?
+         */
 
-    if (p.bitpix_ != 0 && (this->bitpix_ == 0 || !this->user_supplied_))
-        this->bitpix(p.bitpix_);
+        /*
+          Do not decrease map data type size.
 
-    if (!this->blank_.has_value())
-        this->blank_ = p.blank_;
+          Choose BITPIX value corresponding to larger data type.
+        */
+        if (this->bitpix_ == 0                 // not previously set
+            || (p.bitpix_ > 0
+                && p.bitpix_ > this->bitpix_)  // integer (override float)
+            || (p.bitpix_ < 0
+                && p.bitpix_ < this->bitpix_)) // floating point
+            this->bitpix(p.bitpix_);
+    }
 
-    if (!this->bscale_.has_value())
-        this->bscale_ = p.bscale_;
-
-    if (this->bunit_.empty())
-        this->bunit_ = std::move(p.bunit_);
-
-    if (!this->bzero_.has_value())
-        this->bzero_ = p.bzero_;
+    // Merge optional parameters.
+    MARC_MERGE_OPTIONAL(author);
+    MARC_MERGE_OPTIONAL(blank);
+    MARC_MERGE_OPTIONAL(bscale);
+    MARC_MERGE_OPTIONAL(bunit);
+    MARC_MERGE_OPTIONAL(bzero);
+    MARC_MERGE_OPTIONAL(equinox);
+    MARC_MERGE_OPTIONAL(instrument);
+    MARC_MERGE_OPTIONAL(object);
+    MARC_MERGE_OPTIONAL(observer);
+    MARC_MERGE_OPTIONAL(origin);
+    MARC_MERGE_OPTIONAL(reference);
+    MARC_MERGE_OPTIONAL(telescope);
 
     /**
      * @bug This could cause data to be dropped from the map if the
@@ -275,27 +308,6 @@ MaRC::MapParameters::merge(MaRC::MapParameters & p)
     if (this->datamin_ > p.datamin_)
         this->datamin_ = p.datamin_;
 
-    if (!this->equinox_.has_value())
-        this->equinox_ = p.equinox_;
-
-    if (this->instrument_.empty())
-        this->instrument_ = std::move(p.instrument_);
-
-    if (this->object_.empty())
-        this->object_ = std::move(p.object_);
-
-    if (this->observer_.empty())
-        this->observer_ = std::move(p.observer_);
-
-    if (this->origin_.empty())
-        this->origin_ = std::move(p.origin_);
-
-    if (this->reference_.empty())
-        this->reference_ = std::move(p.reference_);
-
-    if (this->telescope_.empty())
-        this->telescope_ = std::move(p.telescope_);
-
     this->comments_.splice(std::cend(this->comments_), p.comments_);
     this->xcomments_.splice(std::cend(this->xcomments_), p.xcomments_);
 
@@ -303,22 +315,22 @@ MaRC::MapParameters::merge(MaRC::MapParameters & p)
 }
 
 bool
-MaRC::MapParameters::set(char const * key,
-                         MaRC::optional<double> & to,
-                         MaRC::optional<double> & from)
+MaRC::MapParameters::merge_optional(char const * key,
+                                    MaRC::optional<double> & to,
+                                    MaRC::optional<double> & from)
 {
-    if (!from || std::isnan(*from))
-        return false;
+    if (!from.has_value() || std::isnan(*from))
+        return true;
 
     auto const r = this->locked_keywords_.emplace(key);
     bool const assignable = r.second;
     constexpr int ulps = 2;
 
+    if (!to.has_value()) {
     // Not previously set.
-    if (!to) {
         to = from;
         return true;
-    } else if (to && MaRC::almost_equal(*to, *from, ulps)) {
+    } else if (MaRC::almost_equal(*to, *from, ulps)) {
         // Same value.  No need to reassign.
         return true;
     }
@@ -350,14 +362,68 @@ MaRC::MapParameters::set(char const * key,
         this->histories_.emplace_back(history);
     }
 
-    return false;
+    return true;
 }
 
-void
-MaRC::MapParameters::set(std::string & to, std::string from)
+bool
+MaRC::MapParameters::merge_optional(char const * key,
+                                    MaRC::blank_type & to,
+                                    MaRC::blank_type & from)
+{
+    if (!from.has_value())
+        return true;
+
+    auto const r = this->locked_keywords_.emplace(key);
+    bool const assignable = r.second;
+
+    if (!to.has_value()) {
+        // Not previously set.
+        to = from;
+        return true;
+    } else if (to == from) {
+        // Same value.  No need to reassign.
+        return true;
+    }
+
+    // Different values between map planes.
+
+    /**
+     * @todo Document different values for the same map parameter in
+     *       %FITS %c HISTORY cards, and clear the @a "to"
+     *       value if it wasn't supplied by the user since we
+     *       can't use it.
+     */
+    MaRC::warn("Different {} values between planes ({}, {}).",
+               key,
+               *to,
+               *from);
+
+    if (this->user_supplied_)
+        MaRC::warn("User supplied value {} will be used.", *to);
+    else {
+        MaRC::warn("Neither will be used.");
+
+        std::string history =
+            fmt::format("Plane {}: {} = {}",
+                        this->plane_,
+                        key,
+                        *to);
+
+        this->histories_.emplace_back(history);
+    }
+
+    return true;
+}
+
+bool
+MaRC::MapParameters::merge_optional(char const * /* key */,
+                                    std::string & to,
+                                    std::string from)
 {
     if (to.empty())
         to = std::move(from);
     // else
     //     MaRC::warn();
+
+    return true;
 }
