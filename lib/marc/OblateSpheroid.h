@@ -142,9 +142,11 @@ namespace MaRC
          */
         double N(double lat);
 
-        /// Intersection of tri-axial ellipsoid with line.
         /**
-         * Line = vec + k * dvec, where k will computed.
+         * @brief Intersection of tri-axial ellipsoid with line.
+         *
+         * \f$\vec{line} = \vec{vec} + k * \vec{dvec}\f$, where @e k
+         * will computed.
          *
          * @param[in]  vec  Vector from ellipsoid center to observer.
          * @param[in]  dvec Vector along line.
@@ -177,11 +179,11 @@ namespace MaRC
          * A measure of the oblate spheroid's deviation from being
          * spherical.
          *
-         * e = sqrt(1 - (pol_rad / eq_rad) ^ 2)
+         * \f$e = \sqrt{1 - (\frac{polar\ radius}{equatorial\ radius})^2}\f$
          *
          * or:
          *
-         * e = sqrt(1 - (1 - flattening) ^ 2)
+         * \f$e = \sqrt{1 - (1 - flattening)^2}\f$
          */
         double const first_eccentricity_;
 

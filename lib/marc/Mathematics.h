@@ -48,14 +48,12 @@ namespace MaRC
      * underflow or overflow, as well as its excellent floating point
      * error characteristics.
      *
-     * @param[in] x First  coordinate in space.
-     * @param[in] y Second coordinate in space.
-     * @param[in] z Third  coordinate in space.
+     * @param[in] x,y,z Coordinate in space.
      *
      * @return Distance from the origin to the point in space (@a x,
      *         @a y, @a z), i.e. the equivalent of the square root of
-     *         the sum of the squares of each coordinate @c
-     *         sqrt(x*x+y*y+z*z).
+     *         the sum of the squares of each coordinate
+     *         \f$\sqrt{x^2+y^2+z^2}\f$.
      *
      * @deprecated This implementation of the three-parameter
      *             @c std::hypot() will be dropped once we start
@@ -141,7 +139,8 @@ namespace MaRC
      *
      * Determine if a floating point number is essentially zero by
      * comparing it against a small multiple of @c epsilon
-     * (e.g. @c FLT_EPSILON for @c float and DBL_EPSILON for @c double).
+     * (e.g. @c FLT_EPSILON for @c float and @c DBL_EPSILON for
+     * @c double).
      *
      * The relative epsilon approach in @c almost_equal() is not
      * suitable for comparing numbers that are close to zero due
@@ -213,14 +212,11 @@ namespace MaRC
      * @brief Solve the quadratic formula in a numerically stable
      *        manner.
      *
-     * Solve for the roots of a quadratic equation of the form
-     * @code
-     *       2
-     *     ax  + bx + c = 0
-     * @endcode
-     * using a numerically stable form of the Quadratic Formula that
-     * avoids catastrophic cancellation (loss of significant digits
-     * due to subtraction of two nearly equal numbers).
+     * Solve for the roots of a quadratic equation of the form \f$ax^2
+     * + bx + c = 0\f$ using a numerically stable form of the
+     * Quadratic Formula that avoids catastrophic cancellation (loss
+     * of significant digits due to subtraction of two nearly equal
+     * numbers).
      *
      * @see Section 5.6: "Quadratic and Cubic Equations" in "Numerical
      *      Recipes in C", 1992, by Press, Teukolsky, Veterrling
