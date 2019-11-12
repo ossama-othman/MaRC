@@ -248,6 +248,7 @@ AC_CONFIG_FILES([
   doc/Makefile
   lib/Makefile
   lib/marc/Makefile
+  lib/marc/marc.pc
   src/Makefile
   tests/Makefile
 ])

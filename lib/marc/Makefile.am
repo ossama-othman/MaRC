@@ -138,4 +138,7 @@ nobase_pkginclude_HEADERS = \
 
 # noinst_HEADERS =
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = marc.pc
+
 clean-local: code-coverage-clean

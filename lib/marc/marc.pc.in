@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: The MaRC library
+URL: @PACKAGE_URL@
+Version: @VERSION@
+Requires.private: cfitsio
+Cflags: -I${includedir}
+Libs: -L${libdir} -lmarc
+Libs.private: @LIBS@
