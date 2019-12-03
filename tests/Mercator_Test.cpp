@@ -133,11 +133,11 @@ bool test_make_map()
      *       order of 1e-15.  Can we somehow get even closer to zero
      *       so that we can reduce this @c ulps value?
      */
-    constexpr int ulps = 30;
+    constexpr int epsilons = 30;
 
     return
         !map.empty()
-        && MaRC::almost_zero(equator_data, ulps);
+        && MaRC::almost_zero(equator_data, epsilons);
 }
 
 /**

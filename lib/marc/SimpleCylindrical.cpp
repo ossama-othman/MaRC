@@ -82,11 +82,12 @@ MaRC::SimpleCylindrical::SimpleCylindrical(
       make sure longitude range is computed correctly.
     */
     constexpr int ulps = 2;
+    constexpr int epsilons = 2;
     if (this->lo_lon_ > this->hi_lon_)
         this->lo_lon_ -= C::_2pi;
     else if (MaRC::almost_equal(this->lo_lon_, this->hi_lon_, ulps)
-             || (MaRC::almost_zero(this->lo_lon_, ulps)
-                 && MaRC::almost_zero(this->hi_lon_, ulps))) {
+             || (MaRC::almost_zero(this->lo_lon_, epsilons)
+                 && MaRC::almost_zero(this->hi_lon_, epsilons))) {
         this->hi_lon_ += C::_2pi;
 
         MaRC::info("lower and upper map longitudes are the same");
