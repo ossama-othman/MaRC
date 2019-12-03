@@ -63,6 +63,9 @@ doc/mdate-sh
 doc/texinfo.tex
 doc/version.texi
 
+# pkg-config Files
+lib/marc/marc.pc
+
 # Documentation
 README
 doc/*.t2p/
