@@ -39,6 +39,7 @@ bool test_read_data(
 {
     constexpr double latitude = 72 * C::degree;  // arbitrary
     constexpr int    ulps     = 2;
+    constexpr int    epsilons = 2;
 
     double data;  // Data will be in degrees.
 
@@ -70,14 +71,14 @@ bool test_read_data(
             // above equality test due to limitations in
             // MaRC::almost_equal().  Check if both values are almost
             // zero instead.
-            || (MaRC::almost_zero(expected_lon, ulps)
+            || (MaRC::almost_zero(expected_lon, epsilons)
                 /**
-                 * @note 2 ulps isn't enough on some 32 bit
+                 * @note 2 epsilons isn't enough on some 32 bit
                  *       platforms.  For example, this test fails on a
                  *       32 bit virtual machine since the data value
                  *       is about 3.747e-15 but the epsilon() is about
-                 *       2.2204e-16.  Use an ulps value that allows
-                 *       this test to pass since 3.747e-15 is
+                 *       2.2204e-16.  Use an epsilons value that
+                 *       allows this test to pass since 3.747e-15 is
                  *       essentially zero for this use case.
                  */
                 && MaRC::almost_zero(data, 17)));

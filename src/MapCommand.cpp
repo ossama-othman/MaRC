@@ -51,8 +51,8 @@ namespace
             fits_width < double_width ? fits_width : double_width;
 
         // Avoid writing "-0".  It's harmless but rather unsightly.
-        constexpr double ulps = 1;
-        if (MaRC::almost_zero(value, ulps))
+        constexpr int epsilons = 1;
+        if (MaRC::almost_zero(value, epsilons))
             value = 0;
 
         // Work around inability to change precision in
@@ -314,8 +314,8 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
     double offset = v->offset();
 
     // Avoid writing "-0".  It's harmless but rather unsightly.
-    constexpr double ulps = 1;
-    if (MaRC::almost_zero(offset, ulps))
+    constexpr int epsilons = 1;
+    if (MaRC::almost_zero(offset, epsilons))
         offset = 0;
 
     // -------------------------------------------
