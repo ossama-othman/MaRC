@@ -1,5 +1,7 @@
 #! /bin/sh
 
+# SPDX-License-Identifier: GPL-2.0-or-later
+
 # Set $top_builddir default if it was not set in the environment.
 if test -z "${top_builddir+set}"; then
   top_builddir=..

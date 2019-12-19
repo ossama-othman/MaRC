@@ -500,3 +500,15 @@ necessary.  Here is a sample; alter the names:
   Ty Coon, President of Vice
 
 That's all there is to it!
+
+--------------------------------------------------------------------------
+Note:
+Individual files contain the following tag instead of the full license
+text.
+
+        SPDX-License-Identifier: LGPL-2.1-or-later
+
+This enables the machine processing of license information based on
+the SPDX License Identifiers that are available here:
+
+        https://spdx.org/licenses
