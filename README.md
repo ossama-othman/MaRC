@@ -1,3 +1,7 @@
+<!-- Copyright (C) 1997-1999, 2003-2004, 2017-2018 Ossama Othman
+
+     SPDX-License-Identifier: GFDL-1.3-or-later -->
+
 [![Build Status](https://travis-ci.com/ossama-othman/MaRC.svg?branch=master)](https://travis-ci.com/ossama-othman/MaRC)
 [![Coverity Status](https://scan.coverity.com/projects/13233/badge.svg)](https://scan.coverity.com/projects/ossama-othman-marc)
 [![Coverage Status](https://coveralls.io/repos/github/ossama-othman/MaRC/badge.svg?branch=master&service=github)](https://coveralls.io/github/ossama-othman/MaRC?branch=master&service=github)

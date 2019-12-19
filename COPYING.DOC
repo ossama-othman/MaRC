@@ -449,3 +449,15 @@ If your document contains nontrivial examples of program code, we
 recommend releasing these examples in parallel under your choice of
 free software license, such as the GNU General Public License,
 to permit their use in free software.
+
+--------------------------------------------------------------------------
+Note:
+Individual files contain the following tag instead of the full license
+text.
+
+        SPDX-License-Identifier: GFDL-1.3-or-later
+
+This enables the machine processing of license information based on
+the SPDX License Identifiers that are available here:
+
+        https://spdx.org/licenses
