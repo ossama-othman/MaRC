@@ -126,7 +126,8 @@ namespace MaRC
             // one-dimensional array.
             //
             // Non-throwing for arithmetic types.
-            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
+            if (this != &rhs)
+                std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
 
             return *this;
         }
