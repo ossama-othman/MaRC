@@ -20,7 +20,7 @@
 namespace MaRC
 {
     /// Internal convenience type.
-    typedef Vector<double, 3> DVector;
+    using DVector = Vector<double, 3>;
 
     /**
      * @class OblateSpheroid OblateSpheroid.h <marc/OblateSpheroid.h>

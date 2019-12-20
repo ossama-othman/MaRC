@@ -46,16 +46,16 @@ namespace MaRC
     public:
 
         /**
-         * STL style container typedefs.
+         * STL style container type aliases.
          */
         //@{
-        typedef T            value_type;
-        typedef T            element_type;
-        typedef T &          reference;
-        typedef T const &    const_reference;
-        typedef Vector<T, M> vector_type;
-        typedef T *          iterator;
-        typedef T const *    const_iterator;
+        using value_type      = T;
+        using element_type    = T;
+        using reference       = T &;
+        using const_reference = T const &;
+        using vector_type     = Vector<T, M>;
+        using iterator        = T *;
+        using const_iterator  = T const *;
         //@}
 
         /**

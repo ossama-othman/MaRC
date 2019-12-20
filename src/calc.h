@@ -65,7 +65,7 @@ namespace MaRC
     public:
 
         /// Underlying calculator symbol map.
-        typedef std::map<std::string, sym_entry> table_type;
+        using table_type = std::map<std::string, sym_entry>;
 
         /// Constructor
         symrec();
