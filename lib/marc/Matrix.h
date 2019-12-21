@@ -111,26 +111,12 @@ namespace MaRC
             }
         }
 
-        /// Copy constructor.
-        Matrix(Matrix<T, M, N> const & rhs)
-        {
-            // Efficiently copy the matrix by treating it as a
-            // one-dimensional array.
-            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
-        }
-
-        /// Copy assignment operator.
-        Matrix<T, M, N> & operator=(Matrix<T, M, N> const & rhs)
-        {
-            // Efficiently copy the matrix by treating it as a
-            // one-dimensional array.
-            //
-            // Non-throwing for arithmetic types.
-            if (this != &rhs)
-                std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
-
-            return *this;
-        }
+        // Default special members.
+        Matrix(Matrix<T, M, N> const & rhs) = default;
+        Matrix<T, M, N> & operator=(Matrix<T, M, N> const & rhs) = default;
+        Matrix(Matrix<T, M, N> && rhs) noexcept = default;
+        Matrix<T, M, N> & operator=(Matrix<T, M, N> && rhs) noexcept = default;
+        ~Matrix() = default;
 
         /**
          * @brief Element accessor.
