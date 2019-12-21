@@ -249,13 +249,12 @@ MaRC::Orthographic::plot_map(std::size_t samples,
 
                     y = -Rotated[0] * std::sin(-this->PA_) +
                         Rotated[1] * std::cos(-this->PA_);
-
-                    zz=  Rotated[2];
                 } else {
                     x = Rotated[0];
                     y = Rotated[1];
-                    zz= Rotated[2];
                 }
+
+                zz = Rotated[2];
 
                 double const lat = std::atan2(zz, std::hypot(x, y));
 
