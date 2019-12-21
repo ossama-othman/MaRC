@@ -45,6 +45,10 @@ namespace MaRC
             Observer(Observer const &) = delete;
             void operator=(Observer const &) = delete;
 
+            // Disallow moving.
+            Observer(Observer &&) = delete;
+            Observer & operator=(Observer &&) = delete;
+
             /// Destructor.
             virtual ~Observer() = default;
 

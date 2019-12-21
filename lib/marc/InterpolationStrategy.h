@@ -37,6 +37,11 @@ namespace MaRC
         InterpolationStrategy & operator=(
             InterpolationStrategy const &) = delete;
 
+        // Disallow moving.
+        InterpolationStrategy(InterpolationStrategy &&) = delete;
+        InterpolationStrategy & operator=(
+            InterpolationStrategy &&) = delete;
+
         /// Destructor.
         virtual ~InterpolationStrategy() = default;
 

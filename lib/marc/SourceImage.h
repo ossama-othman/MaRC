@@ -40,6 +40,10 @@ namespace MaRC
         SourceImage(SourceImage const &) = delete;
         SourceImage & operator=(SourceImage const &) = delete;
 
+        // Disallow moving.
+        SourceImage(SourceImage &&) = delete;
+        SourceImage & operator=(SourceImage &&) = delete;
+
         /// Destructor.
         virtual ~SourceImage() = default;
 

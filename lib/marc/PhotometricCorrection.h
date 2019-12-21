@@ -41,11 +41,17 @@ namespace MaRC
         PhotometricCorrection & operator=(
             PhotometricCorrection const &) = delete;
 
+        // Disallow moving.
+        PhotometricCorrection(PhotometricCorrection &&) = delete;
+        PhotometricCorrection & operator=(
+            PhotometricCorrection &&) = delete;
+
         /// Destructor
         virtual ~PhotometricCorrection() = default;
 
-        /// Perform photometric correction.
         /**
+         * @brief Perform photometric correction.
+         *
          * @param[in]     geometry Viewing geometry.
          * @param[in,out] data     Data to be photometrically
          *                         corrected.

@@ -50,6 +50,10 @@ namespace MaRC
         BodyData(BodyData const &) = delete;
         BodyData & operator=(BodyData const &) = delete;
 
+        // Disallow moving.
+        BodyData(BodyData &&) = delete;
+        BodyData & operator=(BodyData &&) = delete;
+
         /// Destructor
         virtual ~BodyData() = default;
 

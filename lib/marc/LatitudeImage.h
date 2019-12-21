@@ -55,6 +55,14 @@ namespace MaRC
                       double scale,
                       double offset);
 
+        // Disallow copying.
+        LatitudeImage(LatitudeImage const &) = delete;
+        LatitudeImage & operator=(LatitudeImage const &) = delete;
+
+        // Disallow moving.
+        LatitudeImage(LatitudeImage &&) = delete;
+        LatitudeImage & operator=(LatitudeImage &&) = delete;
+
         /// Destructor.
         ~LatitudeImage() override = default;
 

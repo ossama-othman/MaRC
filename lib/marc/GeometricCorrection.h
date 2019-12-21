@@ -38,6 +38,10 @@ namespace MaRC
         GeometricCorrection & operator=(
             GeometricCorrection const &) = delete;
 
+        // Disallow moving.
+        GeometricCorrection(GeometricCorrection &&) = delete;
+        GeometricCorrection & operator=(GeometricCorrection &&) = delete;
+
         /// Destructor.
         virtual ~GeometricCorrection() = default;
 
