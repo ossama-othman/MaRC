@@ -58,6 +58,12 @@ namespace MaRC
          */
         MosaicImage(list_type && images, average_type type);
 
+        // Disallow copying and moving.
+        MosaicImage(MosaicImage const &) = delete;
+        MosaicImage(MosaicImage &&) = delete;
+        MosaicImage & operator=(MosaicImage const &) = delete;
+        MosaicImage & operator=(MosaicImage &&) = delete;
+
         /// Destructor.
         ~MosaicImage() override = default;
 

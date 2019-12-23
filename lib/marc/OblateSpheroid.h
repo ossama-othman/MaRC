@@ -46,9 +46,13 @@ namespace MaRC
          */
         OblateSpheroid(bool prograde, double eq_rad, double pol_rad);
 
-        // Disallow copying.
-        OblateSpheroid(OblateSpheroid const &) = delete;
-        OblateSpheroid & operator=(OblateSpheroid const &) = delete;
+        // Copy construction and assignment.
+        OblateSpheroid(OblateSpheroid const &) = default;
+        OblateSpheroid & operator=(OblateSpheroid const &) = default;
+
+        // Move construction and assignment.
+        OblateSpheroid(OblateSpheroid &&) noexcept = default;
+        OblateSpheroid & operator=(OblateSpheroid &&) = default;
 
         /// Destructor
         ~OblateSpheroid() override = default;

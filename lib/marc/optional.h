@@ -64,6 +64,12 @@ namespace MaRC
         bad_optional_access() = default;
         ~bad_optional_access() override = default;
 
+        bad_optional_access(bad_optional_access const &) = default;
+        bad_optional_access & operator=(bad_optional_access const &) = default;
+
+        bad_optional_access(bad_optional_access &&) noexcept = default;
+        bad_optional_access & operator=(bad_optional_access &&) = default;
+
         /// Return description of this exception.
         char const * what() const noexcept override
         {
