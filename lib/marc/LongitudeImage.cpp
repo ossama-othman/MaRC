@@ -41,7 +41,7 @@ MaRC::LongitudeImage::read_data_i(double /* lat */,
      * @note We would only need to check if @c data less then zero for
      *       the [0,360] case but we also need to support the case
      *       where @c longitude_high is less than 360, such as
-     *       [-180,180], which is why we we have the "@c else if"
+     *       [-180,180], which is why we have the "@c else @c if"
      *       clause below.
      */
     if (data < longitude_low)
