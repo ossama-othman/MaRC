@@ -455,18 +455,7 @@ namespace MaRC
         return opt ? value >= *opt : true;
     }
     //@}
-#else
-    using std::nullopt_t;
-    using std::nullopt;
-    using std::bad_optional_access;
-    using std::optional;
-    using std::make_optional;
-#endif  // __cplusplus >= 201703L
-}
 
-#if __cplusplus < 201703L
-namespace std
-{
     /**
      * @brief Swap contents of MaRC::optional objects.
      *
@@ -478,7 +467,15 @@ namespace std
     {
         lhs.swap(rhs);
     }
+#else
+    using std::nullopt_t;
+    using std::nullopt;
+    using std::bad_optional_access;
+    using std::optional;
+    using std::make_optional;
+    using std::swap;
+#endif  // __cplusplus >= 201703L
 }
-#endif  // __cplusplus < 201703L
+
 
 #endif  // MARC_OPTIONAL_H
