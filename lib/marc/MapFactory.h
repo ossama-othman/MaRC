@@ -65,7 +65,7 @@ namespace MaRC
         MapFactory & operator=(MapFactory const &) = delete;
 
         // Disallow moving.
-        MapFactory(MapFactory &&) = delete;
+        MapFactory(MapFactory &&) noexcept = delete;
         MapFactory & operator=(MapFactory &&) = delete;
 
         /// Destructor.

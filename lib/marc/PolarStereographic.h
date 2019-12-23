@@ -60,13 +60,13 @@ namespace MaRC
                            double max_lat,
                            bool north_pole);
 
-        // Default copy construction and assignment.
-        PolarStereographic(PolarStereographic const &) = default;
-        PolarStereographic & operator=(PolarStereographic const &) = default;
+        // Disallow coping.
+        PolarStereographic(PolarStereographic const &) = delete;
+        PolarStereographic & operator=(PolarStereographic const &) = delete;
 
-        // Default move construction and assignment.
-        PolarStereographic(PolarStereographic &&) noexcept = default;
-        PolarStereographic & operator=(PolarStereographic &&) = default;
+        // Disallow moving.
+        PolarStereographic(PolarStereographic &&) noexcept = delete;
+        PolarStereographic & operator=(PolarStereographic &&) = delete;
 
         /// Destructor
         ~PolarStereographic() override = default;

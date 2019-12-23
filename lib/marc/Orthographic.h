@@ -76,13 +76,13 @@ namespace MaRC
                      double km_per_pixel,
                      OrthographicCenter const & center);
 
-        // Default copy construction and assignment.
-        Orthographic(Orthographic const &) = default;
-        Orthographic & operator=(Orthographic const &) = default;
+        // Disallow copying.
+        Orthographic(Orthographic const &) = delete;
+        Orthographic & operator=(Orthographic const &) = delete;
 
-        // Default move construction and assignment.
-        Orthographic(Orthographic &&) noexcept = default;
-        Orthographic & operator=(Orthographic &&) = default;
+        // Disallow moving.
+        Orthographic(Orthographic &&) noexcept = delete;
+        Orthographic & operator=(Orthographic &&) = delete;
 
         /// Destructor
         ~Orthographic() override = default;

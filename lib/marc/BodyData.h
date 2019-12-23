@@ -51,7 +51,7 @@ namespace MaRC
         BodyData & operator=(BodyData const &) = delete;
 
         // Disallow moving.
-        BodyData(BodyData &&) = delete;
+        BodyData(BodyData &&) noexcept = delete;
         BodyData & operator=(BodyData &&) = delete;
 
         /// Destructor

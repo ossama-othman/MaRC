@@ -58,12 +58,12 @@ namespace MaRC
         Mercator(std::shared_ptr<OblateSpheroid> body);
 
         // Disallow copying.
-        Mercator(Mercator const &) = default;
-        Mercator & operator=(Mercator const &) = default;
+        Mercator(Mercator const &) = delete;
+        Mercator & operator=(Mercator const &) = delete;
 
         // Disallow moving.
-        Mercator(Mercator &&) noexcept = default;
-        Mercator & operator=(Mercator &&) = default;
+        Mercator(Mercator &&) noexcept = delete;
+        Mercator & operator=(Mercator &&) = delete;
 
         /// Destructor
         ~Mercator() override = default;
