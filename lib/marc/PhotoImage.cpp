@@ -17,6 +17,8 @@
 #include "InterpolationStrategy.h"
 #include "PhotometricCorrection.h"
 
+#include "config.h"  // For NDEBUG.
+
 #include <stdexcept>
 #include <sstream>
 #include <cassert>

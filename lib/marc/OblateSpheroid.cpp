@@ -11,6 +11,7 @@
 #include "OblateSpheroid.h"
 #include "Vector.h"
 #include "Mathematics.h"
+#include "config.h"  // For NDEBUG.
 
 #include <stdexcept>
 #include <cmath>

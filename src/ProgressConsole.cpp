@@ -10,6 +10,7 @@
  */
 
 #include "ProgressConsole.h"
+#include "config.h"  // For NDEBUG.
 
 #include <iostream>
 #include <cassert>
