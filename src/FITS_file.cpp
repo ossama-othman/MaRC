@@ -257,7 +257,7 @@ MaRC::FITS::file::naxis() const
 std::array<LONGLONG, 3>
 MaRC::FITS::file::naxes() const
 {
-    std::array<LONGLONG, 3> n;
+    std::array<LONGLONG, 3> n{0};
     int status = 0;
 
     if (fits_get_img_sizell(this->fptr_.get(),
