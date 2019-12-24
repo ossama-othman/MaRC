@@ -8,6 +8,7 @@
 
 #include <marc/scale_and_offset.h>
 #include <marc/DefaultConfiguration.h>
+#include <marc/config.h>  // For NDEBUG.
 
 #include <limits>
 #include <type_traits>

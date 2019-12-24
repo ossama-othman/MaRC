@@ -42,6 +42,14 @@ namespace MaRC
          */
         LongitudeImage(double scale, double offset);
 
+        // Disallow copying.
+        LongitudeImage(LongitudeImage const &) = delete;
+        LongitudeImage & operator=(LongitudeImage const &) = delete;
+
+        // Disallow moving.
+        LongitudeImage(LongitudeImage &&) = delete;
+        LongitudeImage & operator=(LongitudeImage &&) = delete;
+
         /// Destructor.
         ~LongitudeImage() override = default;
 

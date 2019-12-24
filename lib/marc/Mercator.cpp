@@ -195,7 +195,7 @@ MaRC::Mercator::plot_grid(std::size_t samples,
         if (k >= 0 && k < static_cast<double>(lines)) {
             auto const first =
                 std::begin(grid)
-                + static_cast<std::size_t>(k) * samples;
+                + static_cast<decltype(samples)>(k * samples);
 
             auto const last = first + samples;
 
@@ -205,14 +205,14 @@ MaRC::Mercator::plot_grid(std::size_t samples,
 
     // Draw longitude lines.
     for (double m = 360; m > 0; m -= lon_interval) {
-        int i = static_cast<int>(std::round(m * samples / 360.0));
+        decltype(samples) i = std::round(m * samples / 360.0);
 
         if (this->body_->prograde())
             i = samples - i;
 
-        if (i >= 0 && static_cast<std::size_t>(i) < samples) {
+        if (i < samples) {
             for (std::size_t k = 0; k < lines; ++k)
-                grid[k * samples + static_cast<std::size_t>(i)] = white;
+                grid[k * samples + i] = white;
         }
     }
 }

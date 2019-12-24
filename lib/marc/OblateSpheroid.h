@@ -20,7 +20,7 @@
 namespace MaRC
 {
     /// Internal convenience type.
-    typedef Vector<double, 3> DVector;
+    using DVector = Vector<double, 3>;
 
     /**
      * @class OblateSpheroid OblateSpheroid.h <marc/OblateSpheroid.h>
@@ -49,6 +49,10 @@ namespace MaRC
         // Disallow copying.
         OblateSpheroid(OblateSpheroid const &) = delete;
         OblateSpheroid & operator=(OblateSpheroid const &) = delete;
+
+        // Disallow moving.
+        OblateSpheroid(OblateSpheroid &&) noexcept = delete;
+        OblateSpheroid & operator=(OblateSpheroid &&) = delete;
 
         /// Destructor
         ~OblateSpheroid() override = default;

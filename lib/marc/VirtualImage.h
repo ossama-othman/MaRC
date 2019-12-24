@@ -42,6 +42,14 @@ namespace MaRC
          */
         VirtualImage(double s = 1, double o = 0);
 
+        // Disallow copying.
+        VirtualImage(VirtualImage const &) = delete;
+        VirtualImage & operator=(VirtualImage const &) = delete;
+
+        // Disallow moving.
+        VirtualImage(VirtualImage &&) = delete;
+        VirtualImage & operator=(VirtualImage &&) = delete;
+
         /// Destructor.
         ~VirtualImage() override = default;
 

@@ -54,6 +54,10 @@ namespace MaRC
         ViewingGeometry(ViewingGeometry const &) = delete;
         ViewingGeometry & operator=(ViewingGeometry const &) = delete;
 
+        // Disallow moving.
+        ViewingGeometry(ViewingGeometry &&) = delete;
+        ViewingGeometry & operator=(ViewingGeometry &&) = delete;
+
         /// Make sure all pre-processing is done.
         /**
          * @param[in] samples  Number of samples in the image.

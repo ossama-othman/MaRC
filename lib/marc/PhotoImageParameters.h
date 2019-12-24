@@ -35,12 +35,18 @@ namespace MaRC
         /// Constructor
         PhotoImageParameters();
 
-        /// Destructor.
-        ~PhotoImageParameters() = default;
-
         // Disallow copying.
         PhotoImageParameters(PhotoImageParameters const &) = delete;
-        void operator=(PhotoImageParameters const &) = delete;
+        PhotoImageParameters & operator=(
+            PhotoImageParameters const &) = delete;
+
+        // Disallow moving.
+        PhotoImageParameters(PhotoImageParameters &&) = delete;
+        PhotoImageParameters & operator=(
+            PhotoImageParameters &&) = delete;
+
+        /// Destructor.
+        ~PhotoImageParameters() = default;
 
         /// Set the photometric correction strategy.
         /**

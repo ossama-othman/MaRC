@@ -47,6 +47,10 @@ namespace MaRC
             Notifier(Notifier const &) = delete;
             Notifier & operator=(Notifier const &) = delete;
 
+            // Disallow moving.
+            Notifier(Notifier &&) = delete;
+            Notifier & operator=(Notifier &&) = delete;
+
             /// Destructor.
             ~Notifier() = default;
 

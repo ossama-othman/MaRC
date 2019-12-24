@@ -58,6 +58,14 @@ namespace MaRC
                 double scale,
                 double offset);
 
+        // Disallow copying.
+        MuImage(MuImage const &) = delete;
+        MuImage & operator=(MuImage const &) = delete;
+
+        // Disallow moving.
+        MuImage(MuImage &&) = delete;
+        MuImage & operator=(MuImage &&) = delete;
+
         /// Destructor.
         ~MuImage() override = default;
 

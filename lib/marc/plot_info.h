@@ -136,8 +136,14 @@ namespace MaRC
         }
 
         ~plot_info() = default;
+
+        // Disallow copying.
         plot_info(plot_info const &) = delete;
         void operator=(plot_info const &) = delete;
+
+        // Disallow moving.
+        plot_info(plot_info &&) = delete;
+        void operator=(plot_info &&) = delete;
 
         /// Get data to be mapped.
         SourceImage const & source() const { return this->source_; }

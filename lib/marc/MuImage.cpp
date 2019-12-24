@@ -11,6 +11,7 @@
 #include "MuImage.h"
 #include "BodyData.h"
 #include "Constants.h"
+#include "config.h"  // For NDEBUG.
 
 #include <cassert>
 

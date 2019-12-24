@@ -76,6 +76,14 @@ namespace MaRC
                      double km_per_pixel,
                      OrthographicCenter const & center);
 
+        // Disallow copying.
+        Orthographic(Orthographic const &) = delete;
+        Orthographic & operator=(Orthographic const &) = delete;
+
+        // Disallow moving.
+        Orthographic(Orthographic &&) noexcept = delete;
+        Orthographic & operator=(Orthographic &&) = delete;
+
         /// Destructor
         ~Orthographic() override = default;
 

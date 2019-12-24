@@ -30,8 +30,8 @@ namespace MaRC
      * %MaRC library.
      */
     //@{
-    typedef Vector<double, 3> DVector;
-    typedef Matrix<double, 3, 3> DMatrix;
+    using DVector = Vector<double, 3>;
+    using DMatrix = Matrix<double, 3, 3>;
     //@}
 
     /**

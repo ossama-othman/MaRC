@@ -46,16 +46,16 @@ namespace MaRC
     public:
 
         /**
-         * STL style container typedefs.
+         * STL style container type aliases.
          */
         //@{
-        typedef T            value_type;
-        typedef T            element_type;
-        typedef T &          reference;
-        typedef T const &    const_reference;
-        typedef Vector<T, M> vector_type;
-        typedef T *          iterator;
-        typedef T const *    const_iterator;
+        using value_type      = T;
+        using element_type    = T;
+        using reference       = T &;
+        using const_reference = T const &;
+        using vector_type     = Vector<T, M>;
+        using iterator        = T *;
+        using const_iterator  = T const *;
         //@}
 
         /**
@@ -111,19 +111,12 @@ namespace MaRC
             std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
         }
 
-        /// Copy constructor.
-        Vector(Vector<T, M> const & rhs)
-        {
-            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
-        }
-
-        /// Copy assignment operator.
-        Vector<T, M> & operator=(Vector<T, M> const & rhs)
-        {
-            std::copy(std::cbegin(rhs), std::cend(rhs), this->begin());
-
-            return *this;
-        }
+        // Default special members.
+        Vector(Vector<T, M> const & rhs) = default;
+        Vector<T, M> & operator=(Vector<T, M> const & rhs) = default;
+        Vector(Vector && rhs) noexcept = default;
+        Vector & operator=(Vector &&) noexcept = default;
+        ~Vector() = default;
 
         /**
          * @brief Element accessor.

@@ -53,6 +53,16 @@ namespace MaRC
       /// Destructor.
       ~BilinearInterpolation() override = default;
 
+      // Disallow copying.
+      BilinearInterpolation(BilinearInterpolation const &) = delete;
+      BilinearInterpolation & operator=(
+          BilinearInterpolation const &) = delete;
+
+      // Disallow moving.
+      BilinearInterpolation(BilinearInterpolation &&) = delete;
+      BilinearInterpolation & operator=(
+          BilinearInterpolation &&) = delete;
+
       /// Perform bilinear interpolation over a 2x2 area of pixels on
       /// the given pixel.
       /**

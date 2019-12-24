@@ -59,6 +59,14 @@ namespace MaRC
                    std::unique_ptr<PhotoImageParameters> config,
                    std::unique_ptr<ViewingGeometry> geometry);
 
+        // Disallow copying.
+        PhotoImage(PhotoImage const &) = delete;
+        PhotoImage & operator=(PhotoImage const &) = delete;
+
+        // Disallow moving.
+        PhotoImage(PhotoImage &&) = delete;
+        PhotoImage & operator=(PhotoImage &&) = delete;
+
         /// Destructor.
         ~PhotoImage() override = default;
 

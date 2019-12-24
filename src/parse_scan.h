@@ -48,7 +48,7 @@ namespace MaRC
     public:
 
         /// Map command list type.
-        typedef std::list<std::unique_ptr<MapCommand>> command_list;
+        using command_list = std::list<std::unique_ptr<MapCommand>>;
 
         /// Constructor.
         ParseParameter();
@@ -132,7 +132,7 @@ namespace MaRC
     };
 
     /// Sub-solar point latitude and longitude.
-    typedef SubObserv SubSolar;
+    using SubSolar = SubObserv;
 
     /**
      * @struct Radii

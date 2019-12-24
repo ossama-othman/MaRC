@@ -38,7 +38,7 @@ namespace MaRC
     public:
 
         /// Type returned from @c make_grid() method.
-        typedef typename MapFactory::grid_type grid_type;
+        using typename MapFactory::grid_type;
 
         /// Type of functor passed to @c plot_map() method.
         using typename MapFactory::plot_type;
@@ -59,6 +59,14 @@ namespace MaRC
         PolarStereographic(std::shared_ptr<OblateSpheroid> body,
                            double max_lat,
                            bool north_pole);
+
+        // Disallow coping.
+        PolarStereographic(PolarStereographic const &) = delete;
+        PolarStereographic & operator=(PolarStereographic const &) = delete;
+
+        // Disallow moving.
+        PolarStereographic(PolarStereographic &&) noexcept = delete;
+        PolarStereographic & operator=(PolarStereographic &&) = delete;
 
         /// Destructor
         ~PolarStereographic() override = default;

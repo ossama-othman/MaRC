@@ -116,6 +116,29 @@ bool test_conversion(MaRC::ViewingGeometry & vg)
                               lon / C::degree, 4);
 }
 
+bool test_lat_lon_center()
+{
+    MaRC::ViewingGeometry vg(body);  // Different instance from main.
+
+    vg.lat_lon_center(sub_obs_lat, sub_obs_lon);
+    vg.sub_observ(sub_obs_lat, sub_obs_lon);
+    vg.position_angle(pos_angle);
+    vg.sub_solar(sub_sol_lat, sub_sol_lon);
+    vg.range(range);
+    vg.focal_length(focal_length);
+    vg.scale(pixel_scale);
+
+    vg.finalize_setup(image_samples, image_lines);
+
+    /**
+     * @todo Verify that viewing geometry calculations are correct
+     *       when using specifying the latitude and longitude at the
+     *       center of the image.
+     */
+
+    return true;
+}
+
 
 int main()
 {
@@ -125,5 +148,6 @@ int main()
         test_initialization(vg)
         && test_visibility(vg)
         && test_conversion(vg)
+        && test_lat_lon_center()
         ? 0 : -1;
 }

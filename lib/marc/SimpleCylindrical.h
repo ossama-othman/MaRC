@@ -66,6 +66,14 @@ namespace MaRC
                           double hi_lon,
                           bool graphic_lat);
 
+        // Disallow coping.
+        SimpleCylindrical(SimpleCylindrical const &) = delete;
+        SimpleCylindrical & operator=(SimpleCylindrical const &) = delete;
+
+        // Disallow moving.
+        SimpleCylindrical(SimpleCylindrical &&) noexcept = delete;
+        SimpleCylindrical & operator=(SimpleCylindrical &&) = delete;
+
         /// Destructor
         ~SimpleCylindrical() override = default;
 

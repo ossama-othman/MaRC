@@ -64,6 +64,14 @@ namespace MaRC
                       double scale,
                       double offset);
 
+        // Disallow copying.
+        CosPhaseImage(CosPhaseImage const &) = delete;
+        CosPhaseImage & operator=(CosPhaseImage const &) = delete;
+
+        // Disallow moving.
+        CosPhaseImage(CosPhaseImage &&) = delete;
+        CosPhaseImage & operator=(CosPhaseImage &&) = delete;
+
         /// Destructor.
         ~CosPhaseImage() override = default;
 

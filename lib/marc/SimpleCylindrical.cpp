@@ -150,7 +150,7 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
         if (k >= 0 && k < static_cast<double>(lines)) {
             auto const first =
                 std::begin(grid)
-                + static_cast<std::size_t>(k) * samples;
+                + static_cast<decltype(samples)>(k * samples);
 
             auto const last = first + samples;
 
@@ -177,16 +177,14 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
         else
             lo_lon_2 = lo_lon;
 
-        int i;
+        decltype(samples) i = std::round((m - lo_lon_2) * sr);
 
         if (this->body_->prograde())
-            i = samples - static_cast<int>(std::round((m - lo_lon_2) * sr));
-        else
-            i = static_cast<int>(std::round((m - lo_lon_2) * sr));
+            i = samples - i;
 
-        if (i >= 0 && static_cast<std::size_t>(i) < samples) {
+        if (i < samples) {
             for (std::size_t k = 0; k < lines; ++k)
-                grid[k * samples + static_cast<std::size_t>(i)] = white;
+                grid[k * samples + i] = white;
         }
     }
 }

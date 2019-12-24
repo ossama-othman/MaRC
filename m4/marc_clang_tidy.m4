@@ -8,7 +8,7 @@ m4_define(_MARC_CLANG_TIDY_RULES,[
   AX_ADD_AM_MACRO_STATIC([
 clang-tidy-local:
 	@if test -n \"\$(CLANG_TIDY)\" && test -n \"\$(SOURCES)\"; then \
-	  \$(CLANG_TIDY) -header-filter=.* -checks=-*,bugprone-*,clang-analyzer-*,modernize-*,performance-* \`echo \$(SOURCES) | sed -e 's/[^ ]*\.\(ll\|yy\)//g'\` -- \$(DEFS) \$(DEFAULT_INCLUDES) \$(INCLUDES) \$(AM_CPPFLAGS) \$(CPPFLAGS); \
+	  \$(CLANG_TIDY) \`echo \$(SOURCES) | sed -e 's/[^ ]*\.\(ll\|yy\)//g'\` -- \$(DEFS) \$(DEFAULT_INCLUDES) \$(INCLUDES) \$(AM_CPPFLAGS) \$(CPPFLAGS); \
 	fi
 ])
 ])

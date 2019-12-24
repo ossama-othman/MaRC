@@ -10,6 +10,7 @@
 
 #include "Notifier.h"
 #include "Observer.h"
+#include "config.h"  // For NDEBUG.
 
 #include <cassert>
 

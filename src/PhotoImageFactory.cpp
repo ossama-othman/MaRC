@@ -23,6 +23,7 @@
 #include "marc/BilinearInterpolation.h"
 
 #include "marc/utility.h"
+#include "marc/config.h"  // For NDEBUG.
 
 #include <limits>
 #include <stdexcept>

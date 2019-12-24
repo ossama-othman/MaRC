@@ -64,6 +64,12 @@ namespace MaRC
         bad_optional_access() = default;
         ~bad_optional_access() override = default;
 
+        bad_optional_access(bad_optional_access const &) = default;
+        bad_optional_access & operator=(bad_optional_access const &) = default;
+
+        bad_optional_access(bad_optional_access &&) noexcept = default;
+        bad_optional_access & operator=(bad_optional_access &&) = default;
+
         /// Return description of this exception.
         char const * what() const noexcept override
         {
@@ -455,18 +461,7 @@ namespace MaRC
         return opt ? value >= *opt : true;
     }
     //@}
-#else
-    using std::nullopt_t;
-    using std::nullopt;
-    using std::bad_optional_access;
-    using std::optional;
-    using std::make_optional;
-#endif  // __cplusplus >= 201703L
-}
 
-#if __cplusplus < 201703L
-namespace std
-{
     /**
      * @brief Swap contents of MaRC::optional objects.
      *
@@ -478,7 +473,15 @@ namespace std
     {
         lhs.swap(rhs);
     }
+#else
+    using std::nullopt_t;
+    using std::nullopt;
+    using std::bad_optional_access;
+    using std::optional;
+    using std::make_optional;
+    using std::swap;
+#endif  // __cplusplus >= 201703L
 }
-#endif  // __cplusplus < 201703L
+
 
 #endif  // MARC_OPTIONAL_H
