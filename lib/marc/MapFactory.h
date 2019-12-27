@@ -176,7 +176,7 @@ namespace MaRC
          *       will be passed in as a single parameter instead.
          */
         template <typename T>
-        void plot(plot_info const & info,
+        void plot(plot_info & info,
                   double lat,
                   double lon,
                   std::size_t offset,
