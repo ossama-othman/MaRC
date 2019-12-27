@@ -104,8 +104,8 @@ namespace MaRC
              * @c byte_type traits specializations.
              */
             //@{
-            static constexpr int  bitpix   = BYTE_IMG;
-            static constexpr int  datatype = TBYTE;
+            static constexpr int bitpix   = BYTE_IMG;
+            static constexpr int datatype = TBYTE;
             //@}
         };
 
@@ -123,8 +123,8 @@ namespace MaRC
              * @c short_type traits specializations.
              */
             //@{
-            static constexpr int  bitpix   = SHORT_IMG;
-            static constexpr int  datatype = TSHORT;
+            static constexpr int bitpix   = SHORT_IMG;
+            static constexpr int datatype = TSHORT;
             //@}
         };
 
@@ -142,14 +142,14 @@ namespace MaRC
              * @c long_type traits specializations.
              */
             //@{
-            static constexpr int  bitpix   = LONG_IMG;
+            static constexpr int bitpix   = LONG_IMG;
             /**
              * @note @c long may be 8 bytes on some 64 bit platforms
              *       so go with the CFITSIO @c TINT type code instead
              *       of @c TLONG to make sure CFITSIO knows we are
              *       using an array of 4 byte integers.
              */
-            static constexpr int  datatype = TINT;
+            static constexpr int datatype = TINT;
             //@}
         };
 
@@ -167,8 +167,8 @@ namespace MaRC
              * @c longlong_type traits specializations.
              */
             //@{
-            static constexpr int  bitpix   = LONGLONG_IMG;
-            static constexpr int  datatype = TLONGLONG;
+            static constexpr int bitpix   = LONGLONG_IMG;
+            static constexpr int datatype = TLONGLONG;
             //@}
         };
 
@@ -186,8 +186,8 @@ namespace MaRC
              * @c float traits specializations.
              */
             //@{
-            static constexpr int  bitpix   = FLOAT_IMG;
-            static constexpr int  datatype = TFLOAT;
+            static constexpr int bitpix   = FLOAT_IMG;
+            static constexpr int datatype = TFLOAT;
             //@}
         };
 
@@ -205,8 +205,8 @@ namespace MaRC
              * @c double traits specializations.
              */
             //@{
-            static constexpr int  bitpix   = DOUBLE_IMG;
-            static constexpr int  datatype = TDOUBLE;
+            static constexpr int bitpix   = DOUBLE_IMG;
+            static constexpr int datatype = TDOUBLE;
             //@}
         };
 
