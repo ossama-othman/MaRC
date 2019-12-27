@@ -139,6 +139,9 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     SourceImageFactory::scale_offset_functor const sof =
         scale_and_offset<T>;
 
+    double actual_minimum = std::numeric_limits<double>::max();
+    double actual_maximum = std::numeric_limits<double>::lowest();
+
     // Create and write the map planes.
     for (auto const & i : this->image_factories_) {
         // Create the SourceImage.
@@ -198,16 +201,20 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         if (!map_image->template write<decltype(map)>(map))
             MaRC::error("Unable to write plane to map file.");
 
+        if (info.minimum() < actual_minimum)
+            actual_minimum = info.minimum();
+
+        if (info.maximum() > actual_maximum)
+            actual_maximum = info.maximum();
+
         ++plane_count;
     }
 
-    /**
-     * @todo Set map DATAMIN and DATAMAX automatically based on actual
-     *       mapped data.
-     */
-    // Write DATAMIN and DATAMAX keywords.
-    // map_image->datamin(this->minimum_);
-    // map_image->datamax(this->maximum_);
+    if (actual_minimum <= actual_maximum) {
+        // Write DATAMIN and DATAMAX keywords.
+        map_image->datamin(actual_minimum);
+        map_image->datamax(actual_maximum);
+    }
 }
 
 
