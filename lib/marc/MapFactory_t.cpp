@@ -39,10 +39,10 @@ MaRC::MapFactory::make_map(plot_info & info,
         blank = static_cast<T>(*info.blank());
     }
 
-    T const actual_min = Map_traits<T>::minimum(info.minimum());
-    T const actual_max = Map_traits<T>::maximum(info.maximum());
-    info.minimum(actual_min);
-    info.maximum(actual_max);
+    T const actual_min = Map_traits<T>::minimum(info.desired_minimum());
+    T const actual_max = Map_traits<T>::maximum(info.desired_maximum());
+    info.desired_minimum(actual_min);
+    info.desired_maximum(actual_max);
 
     map_type<T> map(samples * lines, blank);
 
@@ -57,12 +57,15 @@ MaRC::MapFactory::make_map(plot_info & info,
     // Inform "observers" of map completion.
     info.notifier().notify_done(map.size());
 
+    if (!info.data_mapped())
+        map.clear();  // No data was mapped!
+
     return map;
 }
 
 template <typename T>
 void
-MaRC::MapFactory::plot(plot_info const & info,
+MaRC::MapFactory::plot(plot_info & info,
                        double lat,
                        double lon,
                        std::size_t offset,
@@ -73,17 +76,15 @@ MaRC::MapFactory::plot(plot_info const & info,
 
     bool const found_data =
         (info.source().read_data(lat, lon, datum)
-         && datum >= info.minimum()
-         && datum <= info.maximum());
+         && datum >= info.desired_minimum()
+         && datum <= info.desired_maximum());
 
-    /**
-     * @todo Track minimum and maximum values of physical data that
-     *       was actually mapped so that they are readily available to
-     *       the caller of @c make_map().
-     *
-     */
-    if (found_data)
+    if (found_data) {
         map[offset] = static_cast<T>(datum);
+        info.minimum(datum);
+        info.maximum(datum);
+    }
+
 
     // Inform "observers" of mapping progress.
     info.notifier().notify_plotted(map.size());

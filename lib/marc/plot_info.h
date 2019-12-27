@@ -16,6 +16,7 @@
 #include <marc/Notifier.h>
 
 #include <optional>
+#include <limits>
 #include <utility>
 #include <cstdint>
 #include <cmath>
@@ -64,11 +65,21 @@ namespace MaRC
                   double minimum,
                   double maximum)
             : source_(source)
-            , minimum_(validate_extremum(minimum))
-            , maximum_(validate_extremum(maximum))
+            , desired_minimum_(validate_extremum(minimum))
+            , desired_maximum_(validate_extremum(maximum))
+            , minimum_(std::numeric_limits<double>::max())  // see below
+            , maximum_(std::numeric_limits<double>::lowest())
             , blank_()
             , notifier_()
         {
+            /**
+             * @note @c minimum_ is initialized to the maximum
+             *       @c double value, and @c maximum_ to the lowest
+             *       @c double value to avoid potentially ignoring the
+             *       value of the first plotted datum when setting the
+             *       minimum and maximum plotted physical data
+             *       values.
+             */
         }
 
         /**
@@ -77,6 +88,7 @@ namespace MaRC
          * Constructor used when supplying an integer typed @a blank
          * value.
          *
+         * @tparam    T        %MaRC blank integer type.
          * @param[in] source   @c SourceImage object containing the
          *                     data to be mapped.
          * @param[in] minimum  Minimum allowed physical data value on
@@ -96,11 +108,21 @@ namespace MaRC
                   double maximum,
                   T blank)
             : source_(source)
-            , minimum_(validate_extremum(minimum))
-            , maximum_(validate_extremum(maximum))
+            , desired_minimum_(validate_extremum(minimum))
+            , desired_maximum_(validate_extremum(maximum))
+            , minimum_(std::numeric_limits<double>::max())  // see below
+            , maximum_(std::numeric_limits<double>::lowest())
             , blank_(std::move(blank))
             , notifier_()
         {
+            /**
+             * @note @c minimum_ is initialized to the maximum
+             *       @c double value, and @c maximum_ to the lowest
+             *       @c double value to avoid potentially ignoring the
+             *       value of the first plotted datum when setting the
+             *       minimum and maximum plotted physical data
+             *       values.
+             */
         }
 
         /**
@@ -149,17 +171,55 @@ namespace MaRC
         /// Get data to be mapped.
         SourceImage const & source() const { return this->source_; }
 
-        /// Set minimum allowed value on map.
-        void minimum(double m) { this->minimum_ = validate_extremum(m); }
-
         /// Get minimum allowed physical data value on map.
-        double minimum() const { return this->minimum_; }
+        double desired_minimum() const { return this->desired_minimum_; }
 
-        /// Set maximum allowed physical data value on map.
-        void maximum(double m) { this->maximum_ = validate_extremum(m); }
+        /// Set minimum allowed physical data value on map.
+        void desired_minimum(double m)
+        {
+            this->desired_minimum_ = validate_extremum(m);
+        }
 
         /// Get maximum allowed physical data value on map.
+        double desired_maximum() const { return this->desired_maximum_; }
+
+        /// Set maximum allowed physical data value on map.
+        void desired_maximum(double m)
+        {
+            this->desired_maximum_ = validate_extremum(m);
+        }
+
+        /// Get minimum mapped physical data value.
+        double minimum() const { return this->minimum_; }
+
+        /// Set minimum mapped physical data value.
+        void minimum(double m)
+        {
+            /**
+             * @todo Should we validate 'm'?
+             */
+            if (m < this->minimum_)
+                this->minimum_ = m;
+        }
+
+        /// Get maximum mapped physical data value.
         double maximum() const { return this->maximum_; }
+
+        /// Set maximum mapped physical data value.
+        void maximum(double m)
+        {
+            /**
+             * @todo Should we validate 'm'?
+             */
+            if (m > this->maximum_)
+                this->maximum_ = m;
+        }
+
+        // Was data plotted to the map?
+        bool data_mapped() const
+        {
+            return this->minimum_ <= this->maximum_;
+        }
 
         /// Get blank map array value.
         blank_type const & blank() const
@@ -209,11 +269,22 @@ namespace MaRC
          * @brief Minimum allowed physical data value on the map,
          *        i.e. data >= @c minimum_.
          */
-        double minimum_;
+        double desired_minimum_;
 
         /**
          * @brief Maximum allowed physical data value on the map,
          *         i.e. data <= @c maximum_.
+         */
+        double desired_maximum_;
+
+
+        /**
+         * @brief Minimum mapped physical data value.
+         */
+        double minimum_;
+
+        /**
+          * @brief Maximum mapped physical data value.
          */
         double maximum_;
 
