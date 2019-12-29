@@ -188,7 +188,7 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         if (std::isnan(maximum))
             maximum = std::numeric_limits<T>::max();
 
-        plot_info info(*image, minimum, maximum, blank);
+        plot_info<T> info(*image, minimum, maximum, blank);
 
         using namespace MaRC::Progress;
         info.notifier().subscribe(std::make_unique<Console>());
@@ -212,8 +212,8 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
 
     if (actual_minimum <= actual_maximum) {
         // Write DATAMIN and DATAMAX keywords.
-        map_image->datamin(actual_minimum);
-        map_image->datamax(actual_maximum);
+        map_image->template datamin<T>(actual_minimum);
+        map_image->template datamax<T>(actual_maximum);
     }
 }
 

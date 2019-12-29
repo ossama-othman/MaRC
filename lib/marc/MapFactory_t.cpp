@@ -23,7 +23,7 @@
 
 template <typename T>
 MaRC::MapFactory::map_type<T>
-MaRC::MapFactory::make_map(plot_info & info,
+MaRC::MapFactory::make_map(plot_info<T> & info,
                            std::size_t samples,
                            std::size_t lines)
 {
@@ -38,11 +38,6 @@ MaRC::MapFactory::make_map(plot_info & info,
 
         blank = static_cast<T>(*info.blank());
     }
-
-    T const actual_min = Map_traits<T>::minimum(info.desired_minimum());
-    T const actual_max = Map_traits<T>::maximum(info.desired_maximum());
-    info.desired_minimum(actual_min);
-    info.desired_maximum(actual_max);
 
     map_type<T> map(samples * lines, blank);
 
@@ -65,7 +60,7 @@ MaRC::MapFactory::make_map(plot_info & info,
 
 template <typename T>
 void
-MaRC::MapFactory::plot(plot_info & info,
+MaRC::MapFactory::plot(plot_info<T> & info,
                        double lat,
                        double lon,
                        std::size_t offset,
@@ -81,10 +76,8 @@ MaRC::MapFactory::plot(plot_info & info,
 
     if (found_data) {
         map[offset] = static_cast<T>(datum);
-        info.minimum(datum);
-        info.maximum(datum);
+        info.update_extrema(map[offset]);
     }
-
 
     // Inform "observers" of mapping progress.
     info.notifier().notify_plotted(map.size());

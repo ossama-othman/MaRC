@@ -23,7 +23,7 @@
 namespace MaRC
 {
     class SourceImage;
-    class plot_info;
+    template <typename T> class plot_info;
 
     /**
      * @class MapFactory MapFactory.h <marc/MapFactory.h>
@@ -48,6 +48,12 @@ namespace MaRC
          *
          * Concrete map factories will call a function of this type in
          * their @c plot_map() implementation.
+         *
+         * @param[in] lat    Planetocentric latitude in radians.
+         * @param[in] lon    Planetocentric longitude in radians.
+         * @param[in] offset Map offset corresponding to the location
+         *                   in the underlying map array where the
+         *                   data will be plotted.
          *
          * @see @c plot()
          *
@@ -97,7 +103,7 @@ namespace MaRC
          *       the returned map.
          */
         template <typename T>
-        map_type<T> make_map(plot_info & info,
+        map_type<T> make_map(plot_info<T> & info,
                              std::size_t samples,
                              std::size_t lines);
 
@@ -155,10 +161,10 @@ namespace MaRC
          * @see @c plot_type
          * @see @c plot_map()
          *
-         * @tparam        T       Map element data type.
+         * @tparam        T      Map element data type.
          * @param[in]     info   Map plotting information.
-         * @param[in]     lat    Planetocentric latitude.
-         * @param[in]     lon    Planetocentric longitude.
+         * @param[in]     lat    Planetocentric latitude in radians.
+         * @param[in]     lon    Planetocentric longitude in radians.
          * @param[in]     offset Map offset corresponding to the
          *                       location in the underlying map array
          *                       where the data will be plotted.
@@ -176,7 +182,7 @@ namespace MaRC
          *       will be passed in as a single parameter instead.
          */
         template <typename T>
-        void plot(plot_info & info,
+        void plot(plot_info<T> & info,
                   double lat,
                   double lon,
                   std::size_t offset,
