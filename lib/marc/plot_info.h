@@ -12,7 +12,7 @@
 #ifndef MARC_PLOT_INFO_H
 #define MARC_PLOT_INFO_H
 
-#include <marc/Export.h>
+#include "marc/Map_traits.h"
 #include <marc/Notifier.h>
 
 #include <optional>
@@ -27,6 +27,9 @@ namespace MaRC
 {
     class SourceImage;
 
+    /// Type used to store "blank" integer values.
+    using blank_type = std::optional<std::intmax_t>;
+
     /**
      * @class plot_info plot_info.h <marc/plot_info.h>
      *
@@ -35,15 +38,13 @@ namespace MaRC
      * Information that will be used when a plotting a map is
      * enscapsulated in this class.
      */
-    class MARC_API plot_info
+    template <typename T>
+    class plot_info
     {
     public:
 
         /// Convenience alias for the progress notifier type.
         using notifier_type = Progress::Notifier;
-
-        /// Convenience alias for the blank integer type.
-        using blank_type = std::optional<std::intmax_t>;
 
         /**
          * @brief Constructor used when no blank value is provided.
@@ -65,17 +66,17 @@ namespace MaRC
                   double minimum,
                   double maximum)
             : source_(source)
-            , desired_minimum_(validate_extremum(minimum))
-            , desired_maximum_(validate_extremum(maximum))
-            , minimum_(std::numeric_limits<double>::max())  // see below
-            , maximum_(std::numeric_limits<double>::lowest())
+            , desired_minimum_(validate_minimum(minimum))
+            , desired_maximum_(validate_maximum(maximum))
+            , minimum_(std::numeric_limits<T>::max())  // see below
+            , maximum_(std::numeric_limits<T>::lowest())
             , blank_()
             , notifier_()
         {
             /**
-             * @note @c minimum_ is initialized to the maximum
-             *       @c double value, and @c maximum_ to the lowest
-             *       @c double value to avoid potentially ignoring the
+             * @note @c minimum_ is initialized to the maximum value
+             *       of type @c T, and @c maximum_ to the lowest
+             *       value of type @c T to avoid potentially ignoring the
              *       value of the first plotted datum when setting the
              *       minimum and maximum plotted physical data
              *       values.
@@ -88,7 +89,6 @@ namespace MaRC
          * Constructor used when supplying an integer typed @a blank
          * value.
          *
-         * @tparam    T        %MaRC blank integer type.
          * @param[in] source   @c SourceImage object containing the
          *                     data to be mapped.
          * @param[in] minimum  Minimum allowed physical data value on
@@ -102,14 +102,13 @@ namespace MaRC
          *                     corresponds to undefined "blank"
          *                     physical values.
          */
-        template <typename T>
         plot_info(SourceImage const & source,
                   double minimum,
                   double maximum,
-                  T blank)
+                  blank_type blank)
             : source_(source)
-            , desired_minimum_(validate_extremum(minimum))
-            , desired_maximum_(validate_extremum(maximum))
+            , desired_minimum_(validate_minimum(minimum))
+            , desired_maximum_(validate_maximum(maximum))
             , minimum_(std::numeric_limits<double>::max())  // see below
             , maximum_(std::numeric_limits<double>::lowest())
             , blank_(std::move(blank))
@@ -174,45 +173,30 @@ namespace MaRC
         /// Get minimum allowed physical data value on map.
         double desired_minimum() const { return this->desired_minimum_; }
 
-        /// Set minimum allowed physical data value on map.
-        void desired_minimum(double m)
-        {
-            this->desired_minimum_ = validate_extremum(m);
-        }
-
         /// Get maximum allowed physical data value on map.
         double desired_maximum() const { return this->desired_maximum_; }
 
-        /// Set maximum allowed physical data value on map.
-        void desired_maximum(double m)
-        {
-            this->desired_maximum_ = validate_extremum(m);
-        }
-
         /// Get minimum mapped physical data value.
-        double minimum() const { return this->minimum_; }
-
-        /// Set minimum mapped physical data value.
-        void minimum(double m)
-        {
-            /**
-             * @todo Should we validate 'm'?
-             */
-            if (m < this->minimum_)
-                this->minimum_ = m;
-        }
+        T minimum() const { return this->minimum_; }
 
         /// Get maximum mapped physical data value.
-        double maximum() const { return this->maximum_; }
+        T maximum() const { return this->maximum_; }
 
-        /// Set maximum mapped physical data value.
-        void maximum(double m)
+        /**
+         * @brief Update mapped physical data value extrema.
+         *
+         * @param[in] datum Physical data value.
+         */
+        void update_extrema(T datum)
         {
             /**
-             * @todo Should we validate 'm'?
+             * @todo Should we validate @a datum?
              */
-            if (m > this->maximum_)
-                this->maximum_ = m;
+            if (datum < this->minimum_)
+                this->minimum_ = datum;
+
+            if (datum > this->maximum_)
+                this->maximum_ = datum;
         }
 
         // Was data plotted to the map?
@@ -236,7 +220,6 @@ namespace MaRC
          * @see Notifier
          */
         notifier_type & notifier() const { return this->notifier_; }
-
     private:
 
         /**
@@ -260,6 +243,34 @@ namespace MaRC
             return value;
         }
 
+        /**
+         * @brief Verify desired minimum physical value is valid.
+         *
+         * @param[in] value Physical data minimum to be validated.
+         *
+         * @return @a value if it is valid.
+         *
+         * @throw std::invalid_argument @a value is @c NaN.
+         */
+        static double validate_minimum(double value)
+        {
+            return Map_traits<T>::minimum(validate_extremum(value));
+        }
+
+        /**
+         * @brief Verify desired maximum physical value is valid.
+         *
+         * @param[in] value Physical data maximum to be validated.
+         *
+         * @return @a value if it is valid.
+         *
+         * @throw std::invalid_argument @a value is @c NaN.
+         */
+        static double validate_maximum(double value)
+        {
+            return Map_traits<T>::maximum(validate_extremum(value));
+        }
+
     private:
 
         /// @c SourceImage object containing the data to be mapped.
@@ -267,16 +278,15 @@ namespace MaRC
 
         /**
          * @brief Minimum allowed physical data value on the map,
-         *        i.e. data >= @c minimum_.
+         *        i.e. data >= @c desired_minimum_.
          */
-        double desired_minimum_;
+        double const desired_minimum_;
 
         /**
          * @brief Maximum allowed physical data value on the map,
-         *         i.e. data <= @c maximum_.
+         *         i.e. data <= @c desired_maximum_.
          */
-        double desired_maximum_;
-
+        double const desired_maximum_;
 
         /**
          * @brief Minimum mapped physical data value.
