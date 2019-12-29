@@ -61,6 +61,30 @@ MaRC::FITS::image::blank(blank_type blank)
 }
 
 template <typename T>
+void
+MaRC::FITS::image::datamin(T min)
+{
+    if (!std::isnan(min))
+        this->template update_fits_key<T>(
+            this->fptr_.get(),
+            "DATAMIN",
+            min,
+            "minimum valid physical data value");
+}
+
+template <typename T>
+void
+MaRC::FITS::image::datamax(T max)
+{
+    if (!std::isnan(max))
+        this->template update_fits_key<T>(
+            this->fptr_.get(),
+            "DATAMAX",
+            max,
+            "maximum valid physical data value");
+}
+
+template <typename T>
 bool
 MaRC::FITS::image::write(T const & img)
 {
