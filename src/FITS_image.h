@@ -151,17 +151,29 @@ namespace MaRC
              * The @c BLANK keyword merely documents which physical
              * (not %FITS) values in the image array are undefined.
              *
-             * @tparam    T     Blank value data type.
+             * @tparam    T     Image data type.
              * @param[in] blank %FITS @c BLANK keyword value.
              */
             template <typename T>
             void blank(blank_type blank);
 
-            /// Set the minimum valid physical value.
-            void datamin(double min);
+            /**
+             * @brief Set the minimum valid physical value.
+             *
+             * @tparam    T   Image data type.
+             * @param[in] min Minimum valid physical value.
+             */
+            template <typename T>
+            void datamin(T min);
 
-            /// Set the maximum valid physical value.
-            void datamax(double max);
+            /**
+             * @brief Set the maximum valid physical value.
+             *
+             * @tparam    T   Image data type.
+             * @param[in] max Maximum valid physical value.
+             */
+            template <typename T>
+            void datamax(T max);
 
             /// Set name of object being mapped.
             void object(std::string const & o);
