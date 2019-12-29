@@ -83,16 +83,16 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
                     PACKAGE_STRING,
                     "software that created this FITS image");
 
+    // Write the current date and time (i.e. the creation time) into
+    // the map FITS file.
+    fits_write_date(this->fptr_.get(), &status);
+
     MaRC::FITS::throw_on_error(status);
 }
 
 MaRC::FITS::image::~image()
 {
     int status = 0;
-
-    // Write the current date and time (i.e. the creation time) into
-    // the map FITS file.
-    fits_write_date(this->fptr_.get(), &status);
 
     // Write a checksum for the image.
     fits_write_chksum(this->fptr_.get(), &status);
@@ -137,26 +137,6 @@ MaRC::FITS::image::bunit(std::string const & unit)
                           "BUNIT",
                           unit,
                           "physical unit of the array values");
-}
-
-void
-MaRC::FITS::image::datamin(double min)
-{
-    if (!std::isnan(min))
-        this->update_fits_key(this->fptr_.get(),
-                              "DATAMIN",
-                              min,
-                              "minimum valid physical data value");
-}
-
-void
-MaRC::FITS::image::datamax(double max)
-{
-    if (!std::isnan(max))
-        this->update_fits_key(this->fptr_.get(),
-                              "DATAMAX",
-                              max,
-                              "maximum valid physical data value");
 }
 
 void
