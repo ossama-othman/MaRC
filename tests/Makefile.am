@@ -30,6 +30,7 @@ library_tests = \
   Mercator_Test             \
   Orthographic_Test         \
   PolarStereographic_Test   \
+  extrema_test              \
   log_test                  \
   root_find_test            \
   utility_test              \
@@ -139,6 +140,10 @@ Orthographic_Test_LDADD = \
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = \
   $(top_builddir)/lib/marc/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
+
+extrema_test_SOURCES = extrema_test.cpp
+extrema_test_LDADD   = \
   $(CODE_COVERAGE_LIBS)
 
 log_test_SOURCES = log_test.cpp
