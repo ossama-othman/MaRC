@@ -88,14 +88,17 @@ namespace MaRC
          * subclass implementation of @c plot_map().
          *
          * @tparam        T       Map element data type.
+         * @param[in]     image   Image from which data to be
+         *                        plotted to the map will be read.
          * @param[in,out] info    Map plotting information, such as
-         *                        the source image, min/max allowed
-         *                        data values, etc.  Some fields, such
-         *                        as the minimum and maximum, may be
-         *                        updated to reflect the actual values
-         *                        used when creating the map.
-         * @param[in]     samples Number of samples in map.
-         * @param[in]     lines   Number of lines   in map.
+         *                        the number of samples and lines in
+         *                        the map, the desired mininimum and
+         *                        maximum allowed physical data
+         *                        values, etc.  Some fields, such as
+         *                        the minimum and maximum (not the
+         *                        desired ones), may be updated to
+         *                        reflect the actual values used when
+         * creating the map.
          *
          * @return The generated map image.
          *
@@ -103,9 +106,8 @@ namespace MaRC
          *       the returned map.
          */
         template <typename T>
-        map_type<T> make_map(plot_info<T> & info,
-                             std::size_t samples,
-                             std::size_t lines);
+        map_type<T> make_map(SourceImage const & image,
+                             plot_info<T> & info) const;
 
         /**
          * @brief Create the latitude/longitude grid for the map
@@ -134,9 +136,61 @@ namespace MaRC
         grid_type make_grid(std::size_t samples,
                             std::size_t lines,
                             double lat_interval,
-                            double lon_interval);
+                            double lon_interval) const;
 
     private:
+
+        /**
+         * @class parameters
+         *
+         * @brief Group map parameters under a single object.
+         *
+         * The purpose of this internal class is to group map
+         * parameters in one place to minimize the number of
+         * arguments passed to the map plot() method.
+         */
+        template <typename T>
+        class parameters
+        {
+        public:
+
+            /**
+             * @brief Constructor
+             *
+             * @param[in]     source Map source image.
+             * @param[in,out] info   Map plotting information.
+             * @param[in,out] map    Map image container.
+             */
+            parameters(SourceImage const & source,
+                       plot_info<T> & info,
+                       map_type<T> & map)
+                : source_(source)
+                , info_(info)
+                , map_(map)
+            {
+            }
+
+            /// Get the map source image.
+            auto const & source() const { return this->source_; }
+
+            /// Get the map plotting information.
+            auto & info() { return this->info_; }
+
+            /// Get the map image container.
+            auto & map() { return map_; }
+
+        private:
+
+            /// Map source image.
+            SourceImage const & source_;
+
+            /// Map plotting information.
+            plot_info<T> & info_;
+
+            /// Map image container.
+            map_type<T> & map_;
+
+        };
 
         /**
          * @brief Create the desired map projection.
@@ -162,7 +216,7 @@ namespace MaRC
          * @see @c plot_map()
          *
          * @tparam        T      Map element data type.
-         * @param[in]     info   Map plotting information.
+         * @param[in]     p      Map parameters.
          * @param[in]     lat    Planetocentric latitude in radians.
          * @param[in]     lon    Planetocentric longitude in radians.
          * @param[in]     offset Map offset corresponding to the
@@ -176,17 +230,12 @@ namespace MaRC
          *       rather roundabout way of mapping the data.  Ideally
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
-         *
-         * @todo This method has too many parameters.  Move most,
-         *       if not all, of the parameters to a structure that
-         *       will be passed in as a single parameter instead.
          */
         template <typename T>
-        void plot(plot_info<T> & info,
+        void plot(parameters<T> & p,
                   double lat,
                   double lon,
-                  std::size_t offset,
-                  map_type<T> & map);
+                  std::size_t offset) const;
 
         /**
          * @brief Plot latitude/longitude grid for the map.
