@@ -110,6 +110,7 @@ nobase_pkginclude_HEADERS = \
   PolarStereographic.h \
   SimpleCylindrical.h \
   Validate.h \
+  extrema.h \
   optional.h \
   plot_info.h \
   root_find.h \
