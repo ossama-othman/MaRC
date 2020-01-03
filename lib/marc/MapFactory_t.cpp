@@ -23,11 +23,10 @@
 
 template <typename T>
 MaRC::MapFactory::map_type<T>
-MaRC::MapFactory::make_map(plot_info<T> & info,
-                           std::size_t samples,
-                           std::size_t lines)
+MaRC::MapFactory::make_map(SourceImage const & image,
+                           plot_info<T> & info) const
 {
-    T blank = Map_traits<T>::empty_value();
+    auto blank = Map_traits<T>::empty_value();
 
     if (std::is_integral<T>::value && info.blank()) {
         if (info.blank() < std::numeric_limits<T>::lowest()
@@ -39,15 +38,17 @@ MaRC::MapFactory::make_map(plot_info<T> & info,
         blank = static_cast<T>(*info.blank());
     }
 
-    map_type<T> map(samples * lines, blank);
+    map_type<T> map(info.samples() * info.lines(), blank);
+
+    parameters<T> p(image, info, map);
 
     auto plot =
-        [this, &info, &map](double lat, double lon, std::size_t offset)
+        [this, &p](double lat, double lon, std::size_t offset)
         {
-            this->plot(info, lat, lon, offset, map);
+            this->plot(p, lat, lon, offset);
         };
 
-    this->plot_map(samples, lines, plot);
+    this->plot_map(info.samples(), info.lines(), plot);
 
     // Inform "observers" of map completion.
     info.notifier().notify_done(map.size());
@@ -60,17 +61,20 @@ MaRC::MapFactory::make_map(plot_info<T> & info,
 
 template <typename T>
 void
-MaRC::MapFactory::plot(plot_info<T> & info,
+MaRC::MapFactory::plot(parameters<T> & p,
                        double lat,
                        double lon,
-                       std::size_t offset,
-                       map_type<T> & map)
+                       std::size_t offset) const
 {
     // Clip datum to fit within map data type range, if necessary.
     double datum = 0;
 
+    auto const & source = p.source();
+    auto & info         = p.info();
+    auto & map          = p.map();
+
     bool const found_data =
-        (info.source().read_data(lat, lon, datum)
+        (source.read_data(lat, lon, datum)
          && datum >= info.desired_minimum()
          && datum <= info.desired_maximum());
 
