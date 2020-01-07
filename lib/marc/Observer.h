@@ -69,6 +69,9 @@ namespace MaRC
             virtual void notify(std::size_t map_size,
                                 std::size_t plot_count) = 0;
 
+            /// Reset progress to initial (zero) state.
+            virtual void reset() = 0;
+
         };
 
     }  // Progress
