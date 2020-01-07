@@ -1,7 +1,7 @@
 /**
  * @file PhotoImageFactory.cpp
  *
- * Copyright (C) 2004, 2017-2019  Ossama Othman
+ * Copyright (C) 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -76,8 +76,18 @@ MaRC::PhotoImageFactory::populate_parameters(
     MARC_SET_PARAM(blank);
 #endif  // __cplusplus < 201703L
     MARC_SET_PARAM(bunit);
-    MARC_SET_PARAM(datamax);
-    MARC_SET_PARAM(datamin);
+
+    /**
+     * @note The %FITS @c DATAMIN and @c DATAMAX values are not set in
+     *       the map parameters.  Instead they are set in this image
+     *       factory so that they may be used when plotting the image
+     *       to the map.  The %FITS @c DATAMIN and @c DATAMAX values
+     *       corresponding to data that was actually plotted will be
+     *       automatically written to map %FITS once mapping is done.
+     */
+    // MARC_SET_PARAM(datamin);
+    // MARC_SET_PARAM(datamax);
+
     MARC_SET_PARAM(equinox);
     // MARC_SET_PARAM(date_obs);
     MARC_SET_PARAM(instrument);
@@ -133,6 +143,17 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
      *       brittle. Revisit.
      */
     this->geometry_->finalize_setup(samples, lines);
+
+    // Set physical data extrema if not previously set.
+    if (!this->extrema_.is_valid()) {
+        auto const & minimum = this->file_.datamin();
+        auto const & maximum = this->file_.datamax();
+
+        if (minimum)
+            this->extrema_.update(*minimum);
+        if (maximum)
+            this->extrema_.update(*maximum);
+    }
 
     return
         std::make_unique<MaRC::PhotoImage>(std::move(img),

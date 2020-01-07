@@ -1,7 +1,7 @@
 /**
  * @file MosaicImageFactory.cpp
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -43,10 +43,40 @@ MaRC::MosaicImageFactory::populate_parameters(
 std::unique_ptr<MaRC::SourceImage>
 MaRC::MosaicImageFactory::make(scale_offset_functor calc_so)
 {
+    extrema_type ex;
+    bool valid_extrema = true;
     MosaicImage::list_type photos;
 
-    for (auto & factory : this->factories_)
+    /*
+      Only set the mosaic image extrema if all photos in the mosaic
+      have set extrema (e.g. FITS DATAMIN and DATAMAX values) to
+      prevent inadvertently blocking out data from photos that don't
+      set extrema values.  Avoid overriding previously set values, as
+      well.
+    */
+    if (valid_extrema && !this->extrema_.is_valid())
+        this->extrema_.update(ex);
+
+    for (auto & factory : this->factories_) {
+        auto const & minmax = factory->minmax();
+
+        ex.update(minmax);
+
+        if (!minmax.is_valid())
+            valid_extrema = false;
+
         photos.push_back(factory->make(calc_so));
+    }
+
+    /*
+      Only set the mosaic image extrema if all photos in the mosaic
+      have set extrema (e.g. FITS DATAMIN and DATAMAX values) to
+      prevent inadvertently blocking out data from photos that don't
+      set extrema values.  Avoid overriding previously set values, as
+      well.
+    */
+    if (valid_extrema && !this->extrema_.is_valid())
+        this->extrema_.update(ex);
 
     return
         std::make_unique<MosaicImage>(std::move(photos),
