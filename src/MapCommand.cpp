@@ -1,7 +1,7 @@
 /**
  * @file MapCommand.cpp
  *
- * Copyright (C) 2004, 2017-2019  Ossama Othman
+ * Copyright (C) 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -359,7 +359,7 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 
         /*
           Set CFITSIO internal scaling factors for the current
-          primary array of image extension.  They are independent
+          primary array or image extension.  They are independent
           of the FITS BSCALE and BZERO values set above.
         */
         map_image.internal_scale(internal_scale, internal_offset);
@@ -370,9 +370,8 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
          */
 
         // Write some MaRC-specific HISTORY comments.
-        map_image.history("Plane "
-                           + std::to_string(plane)
-                           + " characteristics:");
+        map_image.history(fmt::format("Plane {} characteristics:",
+                                      plane));
 
         map_image.history("    BSCALE: " + double_to_string(scale));
         map_image.history("    BZERO:  " + double_to_string(offset));
