@@ -30,11 +30,7 @@ namespace MaRC
         public:
 
             /// Constructor
-            Console()
-                : Observer()
-                , percent_complete_old_(0)
-            {
-            }
+            Console();
 
             // Disallow copying.
             Console(Console const &) = delete;
@@ -50,6 +46,9 @@ namespace MaRC
              */
             void notify(std::size_t map_size,
                         std::size_t plot_count) override;
+
+            /// Reset progress to initial (zero) state.
+            void reset() override;
 
         private:
 

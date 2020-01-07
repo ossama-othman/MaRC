@@ -56,10 +56,16 @@ MaRC::Progress::Notifier::notify_done(std::size_t map_size)
 {
     assert(map_size > 0);
 
+    auto const plot_count = map_size;
+
     /**
      * @todo Access to the observers container should be synchronized
      *       once parallelized mapping is supported.
      */
-    for (auto const & o : this->observers_)
-        o->notify(map_size, map_size);  // plot_count == map_size
+    for (auto const & o : this->observers_) {
+        o->notify(map_size, plot_count);
+        o->reset();
+    }
+
+    this->plot_count_ = 0;
 }

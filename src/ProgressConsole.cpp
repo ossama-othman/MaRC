@@ -15,6 +15,13 @@
 #include <iostream>
 #include <cassert>
 
+
+MaRC::Progress::Console::Console()
+    : Observer()
+    , percent_complete_old_(0)
+{
+}
+
 void
 MaRC::Progress::Console::notify(std::size_t map_size,
                                 std::size_t plot_count)
@@ -48,4 +55,10 @@ MaRC::Progress::Console::notify(std::size_t map_size,
 
         this->percent_complete_old_ = percent_complete;
     }
+}
+
+void
+MaRC::Progress::Console::reset()
+{
+    this->percent_complete_old_ = 0;
 }
