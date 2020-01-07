@@ -24,6 +24,7 @@
 template <typename T>
 MaRC::MapFactory::map_type<T>
 MaRC::MapFactory::make_map(SourceImage const & image,
+                           extrema<T> const & minmax,
                            plot_info<T> & info) const
 {
     auto blank = Map_traits<T>::empty_value();
@@ -40,7 +41,14 @@ MaRC::MapFactory::make_map(SourceImage const & image,
 
     map_type<T> map(info.samples() * info.lines(), blank);
 
-    parameters<T> p(image, info, map);
+    extrema<T> const * ex = &minmax;
+    static extrema<T> const open_minmax(std::numeric_limits<T>::lowest(),
+                                        std::numeric_limits<T>::max());
+
+    if (!minmax.is_valid())
+        ex = &open_minmax;
+
+    parameters<T> p(image, *ex, info, map);
 
     auto plot =
         [this, &p](double lat, double lon, std::size_t offset)
@@ -70,13 +78,14 @@ MaRC::MapFactory::plot(parameters<T> & p,
     double datum = 0;
 
     auto const & source = p.source();
+    auto const & e      = p.minmax();
     auto & info         = p.info();
     auto & map          = p.map();
 
     bool const found_data =
         (source.read_data(lat, lon, datum)
-         && datum >= info.desired_minimum()
-         && datum <= info.desired_maximum());
+         && datum >= e.minimum()
+         && datum <= e.maximum());
 
     if (found_data) {
         map[offset] = static_cast<T>(datum);
