@@ -27,6 +27,7 @@ MaRC::MapFactory::make_map(SourceImage const & image,
                            extrema<T> const & minmax,
                            plot_info<T> & info) const
 {
+    // Set up blank value for the map.
     auto blank = Map_traits<T>::empty_value();
 
     if (std::is_integral<T>::value && info.blank()) {
@@ -39,16 +40,16 @@ MaRC::MapFactory::make_map(SourceImage const & image,
         blank = static_cast<T>(*info.blank());
     }
 
+    // Set up physical data value extrema.
     map_type<T> map(info.samples() * info.lines(), blank);
 
-    extrema<T> const * ex = &minmax;
     static extrema<T> const open_minmax(std::numeric_limits<T>::lowest(),
                                         std::numeric_limits<T>::max());
 
-    if (!minmax.is_valid())
-        ex = &open_minmax;
+    extrema<T> const & ex = minmax.is_valid() ? minmax : open_minmax;
 
-    parameters<T> p(image, *ex, info, map);
+    // Begin mapping.
+    parameters<T> p(image, ex, info, map);
 
     auto plot =
         [this, &p](double lat, double lon, std::size_t offset)
@@ -60,9 +61,6 @@ MaRC::MapFactory::make_map(SourceImage const & image,
 
     // Inform "observers" of map completion.
     info.notifier().notify_done(map.size());
-
-    if (!info.data_mapped())
-        map.clear();  // No data was mapped!
 
     return map;
 }
