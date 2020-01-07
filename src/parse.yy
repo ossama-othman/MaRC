@@ -4,7 +4,7 @@
  *
  * Parser for %MaRC input files.  Requires GNU Bison 1.35 or greater.
  *
- * Copyright (C) 1999, 2004, 2017-2019  Ossama Othman
+ * Copyright (C) 1999, 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -956,10 +956,10 @@ plane_setup:
         plane_data_range
         plane_type      {
             if (!std::isnan(minimum))
-                image_factory->minimum(minimum);
+                image_factory->update_minmax(minimum);
 
             if (!std::isnan(maximum))
-                image_factory->maximum(maximum);
+                image_factory->update_minmax(maximum);
 
             image_factories.push_back(std::move(image_factory));
 

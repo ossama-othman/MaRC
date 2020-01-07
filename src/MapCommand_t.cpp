@@ -1,7 +1,7 @@
 /**
  * @file MapCommand_t.cpp
  *
- * Copyright (C) 2004, 2017-2019  Ossama Othman
+ * Copyright (C) 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -176,30 +176,16 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
                                         num_planes,
                                         image.get());
 
-        /**
-         * @bug These @c ImageFactory methods return a @c double
-         *      value, which is not appropriate for 64 bit integer
-         *      values greater than 2^53, i.e. the width of the
-         *      significand in 64 bit IEEE 754 floating point values.
-         */
-        auto minimum = i->minimum();
-        auto maximum = i->maximum();
-
-        if (std::isnan(minimum))
-            minimum = std::numeric_limits<T>::lowest();
-
-        if (std::isnan(maximum))
-            maximum = std::numeric_limits<T>::max();
-
-        MaRC::extrema<T> minmax(minimum, maximum);
-
         // Create the map plane.
         auto map =
-            this->factory_->template make_map<T>(*image, minmax, info);
+            this->factory_->template make_map<T>(*image,
+                                                 i->minmax(),
+                                                 info);
 
-        if (map.size() == 0)
+        if (!info.data_mapped())
             MaRC::warn("No data mapped for plane {}.", plane_count);
-        else if (!map_image->template write<decltype(map)>(map))
+
+        if (!map_image->template write<decltype(map)>(map))
             MaRC::error("Unable to write plane {} to map file.",
                         plane_count);
 
