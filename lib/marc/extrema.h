@@ -2,7 +2,7 @@
 /**
  * @file extrema.h
  *
- * Copyright (C) 2019  Ossama Othman
+ * Copyright (C) 2019-2020  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -68,6 +68,52 @@ namespace MaRC
                     "or equal to maximum.");
         }
 
+        /// Copy constructor.
+        extrema(extrema const &) = default;
+
+        /**
+         * @brief Converting copy constructor.
+         *
+         * @param[in] other Extrema to be copied.
+         */
+        template <typename U>
+        extrema(extrema<U> const & other)
+            : extrema()
+        {
+            if (other.is_valid()) {
+                this->minimum_ = validate_minimum(other.minimum());
+                this->maximum_ = validate_maximum(other.maximum());
+            }
+        }
+
+        /// Copy assignment operator.
+        extrema & operator=(extrema const &) = default;
+
+        /**
+         * @brief Converting copy assignment operator.
+         *
+         * @param[in] rhs Extrema to be copied.
+         */
+        template <typename U>
+        extrema & operator=(extrema<U> const & rhs)
+        {
+            if (rhs.is_valid()) {
+                this->minimum_ = validate_minimum(rhs.minimum());
+                this->maximum_ = validate_maximum(rhs.maximum());
+            }
+
+            return *this;
+        }
+
+        /// Move constructor.
+        extrema(extrema && rhs) noexcept = default;
+
+        /// Move assignment operator.
+        extrema & operator=(extrema && rhs) noexcept = default;
+
+        /// Destructor.
+        ~extrema() = default;
+
         /// Get minimum physical data value.
         auto minimum() const { return this->minimum_; }
 
@@ -101,6 +147,33 @@ namespace MaRC
 
             if (datum > this->maximum_)
                 this->maximum_ = datum;
+        }
+
+        /**
+         * @brief Update physical data value extrema.
+         *
+         * Update extrema such that the minimum @c e.minimum() is less
+         * than the current minimum, and the maximum will only be
+         * updated if the @c e.maximum() datum is greater than the
+         * current maximum.
+         *
+         * @param[in] e Extrema to be merged to this instance of
+         *              extrema.
+         */
+        void update(extrema const & e)
+        {
+            if (!e.is_valid())
+                return;
+
+            /**
+             * @todo Should we validate @c e.minimum_ and
+             *       @c e.maximum_ as is done in the constructor?
+             */
+            if (e.minimum_ < this->minimum_)
+                this->minimum_ = e.minimum_;
+
+            if (e.maximum_ > this->maximum_)
+                this->maximum_ = e.maximum_;
         }
 
         /**
