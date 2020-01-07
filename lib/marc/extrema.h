@@ -14,6 +14,7 @@
 
 #include <marc/Map_traits.h>
 
+#include <limits>
 #include <type_traits>
 #include <stdexcept>
 #include <cmath>
