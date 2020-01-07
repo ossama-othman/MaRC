@@ -139,8 +139,11 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     SourceImageFactory::scale_offset_functor const sof =
         scale_and_offset<T>;
 
-    double actual_minimum = std::numeric_limits<double>::max();
-    double actual_maximum = std::numeric_limits<double>::lowest();
+    plot_info<T> info(this->samples_,
+                      this->lines_,
+                      blank);
+
+    info.notifier().subscribe(std::make_unique<Progress::Console>());
 
     // Create and write the map planes.
     for (auto const & i : this->image_factories_) {
@@ -188,32 +191,25 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         if (std::isnan(maximum))
             maximum = std::numeric_limits<T>::max();
 
-        plot_info<T> info(*image, minimum, maximum, blank);
-
-        using namespace MaRC::Progress;
-        info.notifier().subscribe(std::make_unique<Console>());
+        MaRC::extrema<T> minmax(minimum, maximum);
 
         // Create the map plane.
-        auto map(this->factory_->template make_map<T>(info,
-                                                      this->samples_,
-                                                      this->lines_));
+        auto map =
+            this->factory_->template make_map<T>(*image, minmax, info);
 
-        if (!map_image->template write<decltype(map)>(map))
-            MaRC::error("Unable to write plane to map file.");
-
-        if (info.minimum() < actual_minimum)
-            actual_minimum = info.minimum();
-
-        if (info.maximum() > actual_maximum)
-            actual_maximum = info.maximum();
+        if (map.size() == 0)
+            MaRC::warn("No data mapped for plane {}.", plane_count);
+        else if (!map_image->template write<decltype(map)>(map))
+            MaRC::error("Unable to write plane {} to map file.",
+                        plane_count);
 
         ++plane_count;
     }
 
-    if (actual_minimum <= actual_maximum) {
+    if (info.data_mapped()) {
         // Write DATAMIN and DATAMAX keywords.
-        map_image->template datamin<T>(actual_minimum);
-        map_image->template datamax<T>(actual_maximum);
+        map_image->template datamin<T>(info.minimum());
+        map_image->template datamax<T>(info.maximum());
     }
 }
 
