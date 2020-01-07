@@ -94,7 +94,9 @@ MaRC::FITS::image::write(T const & img)
         return false;
     } else if(static_cast<LONGLONG>(MaRC::size(img))
               != this->nelements_) {
-        MaRC::error("FITS image and data array size do not match..");
+        MaRC::error("FITS image and data array sizes, "
+                    "{} and {}, do not match.",
+                    this->nelements_, MaRC::size(img));
 
         return false;
     }
