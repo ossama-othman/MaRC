@@ -1,7 +1,7 @@
 /**
  * @file Mu0ImageFactory.cpp
  *
- * Copyright (C) 2004, 2017, 2019  Ossama Othman
+ * Copyright (C) 2004, 2017, 2019-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -30,12 +30,21 @@ MaRC::Mu0ImageFactory::Mu0ImageFactory(
 }
 
 bool
-MaRC::Mu0ImageFactory::populate_parameters(MaRC::MapParameters &p) const
+MaRC::Mu0ImageFactory::populate_parameters(MaRC::MapParameters &) const
 {
-    using namespace MaRC::default_configuration;
-
-    p.datamax(mu0_high);
-    p.datamin(mu0_low);
+    /**
+     * @note The %FITS @c DATAMIN and @c DATAMAX values are not set in
+     *       the map parameters.  Instead they are set in this image
+     *       factory so that they may be used when plotting the image
+     *       to the map.  The %FITS @c DATAMIN and @c DATAMAX values
+     *       corresponding to data that was actually plotted will be
+     *       automatically written to map %FITS once mapping is done.
+     *
+     * @see make()
+     */
+    // using namespace MaRC::default_configuration;
+    // p.datamax(mu0_high);
+    // p.datamin(mu0_low);
 
     return true;
 }
@@ -48,18 +57,18 @@ MaRC::Mu0ImageFactory::make(scale_offset_functor calc_so)
     double scale;
     double offset;
 
-    // Scale the default minimum and maximum to match the physical
-    // data scaling.
     if (!calc_so(mu0_low, mu0_high, scale, offset)) {
         throw std::range_error("Cannot store mu0 (cosines) in map of "
                                "chosen data type.");
     }
 
-    if (std::isnan(this->minimum()))
-        this->minimum(mu0_low  * scale + offset);
-
-    if (std::isnan(this->maximum()))
-        this->maximum(mu0_high * scale + offset);
+    // Set physical data extrema if not previously set.
+    if (!this->extrema_.is_valid()) {
+        // Scale the default minimum and maximum to match the physical
+        // data scaling.
+        this->extrema_.update(mu0_low  * scale + offset);
+        this->extrema_.update(mu0_high * scale + offset);
+    }
 
     return std::make_unique<MaRC::Mu0Image>(this->body_,
                                             this->sub_solar_lat_,
