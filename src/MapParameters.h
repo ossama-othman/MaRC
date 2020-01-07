@@ -23,11 +23,6 @@
 namespace MaRC
 {
     /**
-     * Type used to store a %FITS @c BLANK integer value.
-     */
-    using blank_type = MaRC::plot_info::blank_type;
-
-    /**
      * @class MapParameters
      *
      * @brief Map configuration parameters.
