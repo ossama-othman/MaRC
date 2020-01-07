@@ -23,6 +23,7 @@
 namespace MaRC
 {
     class SourceImage;
+    template <typename T> class extrema;
     template <typename T> class plot_info;
 
     /**
@@ -87,18 +88,21 @@ namespace MaRC
          * underlying map array, and delegates actual mapping to the
          * subclass implementation of @c plot_map().
          *
-         * @tparam        T       Map element data type.
-         * @param[in]     image   Image from which data to be
-         *                        plotted to the map will be read.
-         * @param[in,out] info    Map plotting information, such as
-         *                        the number of samples and lines in
-         *                        the map, the desired mininimum and
-         *                        maximum allowed physical data
-         *                        values, etc.  Some fields, such as
-         *                        the minimum and maximum (not the
-         *                        desired ones), may be updated to
-         *                        reflect the actual values used when
-         * creating the map.
+         * @tparam        T      Map element data type.
+         * @param[in]     image  Image from which data to be
+         *                       plotted to the map will be read.
+         * @param[in]     minmax User-specified minimum and maximum
+         *                       allowed physical data values on the
+         *                       map.
+         * @param[in,out] info   Map plotting information, such as
+         *                       the number of samples and lines in
+         *                       the map, the desired mininimum and
+         *                       maximum allowed physical data
+         *                       values, etc.  Some fields, such as
+         *                       the minimum and maximum (not the
+         *                       desired ones), may be updated to
+         *                       reflect the actual values used when
+         *                       creating the map.
          *
          * @return The generated map image.
          *
@@ -107,6 +111,7 @@ namespace MaRC
          */
         template <typename T>
         map_type<T> make_map(SourceImage const & image,
+                             extrema<T> const & minmax,
                              plot_info<T> & info) const;
 
         /**
@@ -158,13 +163,19 @@ namespace MaRC
              * @brief Constructor
              *
              * @param[in]     source Map source image.
+             * @param[in]     minmax The minimum and maximum allowed
+             *                       physical data values on the map,
+             *                       i.e. data >= desired minimum and
+             *                       data <= desired maximum.
              * @param[in,out] info   Map plotting information.
              * @param[in,out] map    Map image container.
              */
             parameters(SourceImage const & source,
+                       extrema<T> const & minmax,
                        plot_info<T> & info,
                        map_type<T> & map)
                 : source_(source)
+                , minmax_(minmax)
                 , info_(info)
                 , map_(map)
             {
@@ -172,6 +183,9 @@ namespace MaRC
 
             /// Get the map source image.
             auto const & source() const { return this->source_; }
+
+            /// Get user-specified min/max map data values.
+            auto const & minmax() const { return this->minmax_; }
 
             /// Get the map plotting information.
             auto & info() { return this->info_; }
@@ -183,6 +197,9 @@ namespace MaRC
 
             /// Map source image.
             SourceImage const & source_;
+
+            /// User-specified allowed min/max map data values.
+            extrema<T> const & minmax_;
 
             /// Map plotting information.
             plot_info<T> & info_;

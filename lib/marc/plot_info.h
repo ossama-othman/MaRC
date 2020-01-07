@@ -52,21 +52,12 @@ namespace MaRC
          *
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed physical data value on
-         *                    map, i.e. all data greater than or
-         *                    equal to @a minimum.
-         * @param[in] maximum Maximum allowed physical data value on
-         *                    map, i.e. all data less than or equal
-         *                    to @a maximum.
          */
         plot_info(std::size_t samples,
-                  std::size_t lines,
-                  double minimum,
-                  double maximum)
+                  std::size_t lines)
             : samples_(samples)
             , lines_(lines)
-            , desired_extrema_(minimum, maximum)
-            , extrema_()  // see below
+            , extrema_()
             , blank_()
             , notifier_()
         {
@@ -80,12 +71,6 @@ namespace MaRC
          *
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed physical data value on
-         *                    map, i.e. all data greater than or
-         *                    equal to @a minimum.
-         * @param[in] maximum Maximum allowed physical data value on
-         *                    map, i.e. all data less than or equal
-         *                    to @a maximum.
          * @param[in] blank   Blank map array value for integer typed
          *                    maps.  The blank map array value
          *                    corresponds to undefined "blank"
@@ -93,12 +78,9 @@ namespace MaRC
          */
         plot_info(std::size_t samples,
                   std::size_t lines,
-                  double minimum,
-                  double maximum,
                   blank_type blank)
             : samples_(samples)
             , lines_(lines)
-            , desired_extrema_(minimum, maximum)
             , extrema_()
             , blank_(std::move(blank))
             , notifier_()
@@ -123,19 +105,11 @@ namespace MaRC
          *
          * @param[in] samples Number of samples in map.
          * @param[in] lines   Number of lines   in map.
-         * @param[in] minimum Minimum allowed physical data value on
-         *                    map, i.e. all data greater than or
-         *                    equal to @a minimum.
-         * @param[in] maximum Maximum allowed physical data value on
-         *                    map, i.e. all data less than or equal
-         *                    to @a maximum.
          */
         plot_info(std::size_t samples,
                   std::size_t lines,
-                  double minimum,
-                  double maximum,
                   double /* unused */)
-            : plot_info(samples, lines, minimum, maximum)
+            : plot_info(samples, lines)
         {
         }
 
@@ -144,18 +118,6 @@ namespace MaRC
 
         /// Get the number of lines (rows in the map).
         auto lines() const { return this->lines_; }
-
-        /// Get minimum allowed physical data value on map.
-        auto desired_minimum() const
-        {
-            return this->desired_extrema_.minimum();
-        }
-
-        /// Get maximum allowed physical data value on map.
-        auto desired_maximum() const
-        {
-            return this->desired_extrema_.maximum();
-        }
 
         /// Get minimum mapped physical data value.
         auto minimum() const { return this->extrema_.minimum(); }
@@ -199,15 +161,6 @@ namespace MaRC
 
         /// Number of lines (rows) in map.
         std::size_t const lines_;
-
-        /**
-         * @brief Desired physical data extrema on the map.
-         *
-         * The minimum and maximum allowed physical data values on the
-         * map, i.e. data >= desired minimum && data <= desired
-         * maximum.
-         */
-        extrema<T> const desired_extrema_;
 
         /// Minimum and maximum values of mapped physical data.
         extrema<T> extrema_;
