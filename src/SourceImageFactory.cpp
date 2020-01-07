@@ -1,7 +1,7 @@
 /**
  * @file SourceImageFactory.cpp
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -16,25 +16,12 @@
 
 
 MaRC::SourceImageFactory::SourceImageFactory()
-    : minimum_(std::numeric_limits<double>::signaling_NaN())
-    , maximum_(std::numeric_limits<double>::signaling_NaN())
+    : extrema_()
 {
 }
 
 void
-MaRC::SourceImageFactory::minimum(double m)
+MaRC::SourceImageFactory::update_minmax(double datum)
 {
-    if (std::isnan(m) || this->maximum_ < m)
-        throw std::invalid_argument("invalid source image minimum");
-
-    this->minimum_ = m;
-}
-
-void
-MaRC::SourceImageFactory::maximum(double m)
-{
-    if (std::isnan(m) || this->minimum_ > m)
-        throw std::invalid_argument("invalid source image maximum");
-
-    this->maximum_ = m;
+    this->extrema_.update(datum);
 }
