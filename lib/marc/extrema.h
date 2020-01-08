@@ -248,10 +248,10 @@ namespace MaRC
     private:
 
         /// Minimum value.
-        double minimum_;
+        T minimum_;
 
         /// Maximum value.
-        double maximum_;
+        T maximum_;
 
     };
 
