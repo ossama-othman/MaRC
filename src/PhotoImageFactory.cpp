@@ -145,15 +145,13 @@ MaRC::PhotoImageFactory::make(scale_offset_functor /* calc_so */)
     this->geometry_->finalize_setup(samples, lines);
 
     // Set physical data extrema if not previously set.
-    if (!this->extrema_.is_valid()) {
-        auto const & minimum = this->file_.datamin();
-        auto const & maximum = this->file_.datamax();
+    auto const & datamin = this->file_.datamin();
+    auto const & datamax = this->file_.datamax();
 
-        if (minimum)
-            this->extrema_.update(*minimum);
-        if (maximum)
-            this->extrema_.update(*maximum);
-    }
+    if (datamin)
+        this->minimum(*datamin);
+    if (datamax)
+        this->maximum(*datamax);
 
     return
         std::make_unique<MaRC::PhotoImage>(std::move(img),

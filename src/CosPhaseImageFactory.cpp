@@ -69,13 +69,14 @@ MaRC::CosPhaseImageFactory::make(scale_offset_functor calc_so)
                                "map of chosen datatype.");
     }
 
-    // Set physical data extrema if not previously set.
-    if (!this->extrema_.is_valid()) {
-        // Scale the default minimum and maximum to match the physical
-        // data scaling.
-        this->extrema_.update(cos_phase_low  * scale + offset);
-        this->extrema_.update(cos_phase_high * scale + offset);
-    }
+    /*
+      Set physical data extrema if not previously set.
+
+      Scale the default minimum and maximum to match the physical data
+      scaling.
+    */
+    this->minimum(cos_phase_low  * scale + offset);
+    this->maximum(cos_phase_high * scale + offset);
 
     return std::make_unique<MaRC::CosPhaseImage>(this->body_,
                                                  this->sub_observ_lat_,
