@@ -13,6 +13,7 @@
 #define MARC_EXTREMA_H
 
 #include <marc/Map_traits.h>
+#include <marc/optional.h>
 
 #include <limits>
 #include <type_traits>
@@ -38,22 +39,13 @@ namespace MaRC
         using extremum_type = T;
 
         /// Constructor.
-        extrema()
-            : minimum_(std::numeric_limits<T>::max()) // see below
-            , maximum_(std::numeric_limits<T>::lowest())
-        {
-            /**
-             * @note @c minimum_ is initialized to the maximum value
-             *       of type @c T, and @c maximum_ to the lowest
-             *       value of type @c T so that the first extrema
-             *       update always succeeds, and so that it is obvious
-             *       if no updates to the extrema occured.
-             */
-        }
+        extrema() = default;
 
         /**
          * @brief Constructor.
          *
+         * @tparam U Type of minimum and maximum to be converted to
+         *           type @c T.
          * @param[in] minimum Initial minimum value.
          * @param[in] maximum Initial maximum value.
          */
@@ -74,16 +66,22 @@ namespace MaRC
         /**
          * @brief Converting copy constructor.
          *
+         * @tparam U Underyling type of extrema to be converted to
+         *           extrema of type @c T.
          * @param[in] other Extrema to be copied.
          */
         template <typename U>
         extrema(extrema<U> const & other)
             : extrema()
         {
-            if (other.is_valid()) {
-                this->minimum_ = validate_minimum(other.minimum());
-                this->maximum_ = validate_maximum(other.maximum());
-            }
+            auto const & minimum = other.minimum();
+            auto const & maximum = other.maximum();
+
+            if (minimum)
+                this->minimum_ = validate_minimum(*minimum);
+
+            if (maximum)
+                this->maximum_ = validate_maximum(*maximum);
         }
 
         /// Copy assignment operator.
@@ -92,15 +90,14 @@ namespace MaRC
         /**
          * @brief Converting copy assignment operator.
          *
+         * @tparam U Underyling type of extrema to be converted to
+         *           extrema of type @c T.
          * @param[in] rhs Extrema to be copied.
          */
         template <typename U>
-        extrema & operator=(extrema<U> const & rhs)
+        extrema & operator=(extrema<U> rhs)
         {
-            if (rhs.is_valid()) {
-                this->minimum_ = validate_minimum(rhs.minimum());
-                this->maximum_ = validate_maximum(rhs.maximum());
-            }
+            this->swap(rhs);
 
             return *this;
         }
@@ -114,16 +111,29 @@ namespace MaRC
         /// Destructor.
         ~extrema() = default;
 
+        /// Set minimum physical data value.
+        template <typename U>
+        void minimum(U m) { this->minimum_ = validate_minimum(m); }
+
         /// Get minimum physical data value.
-        auto minimum() const { return this->minimum_; }
+        optional<T> const & minimum() const { return this->minimum_; }
+
+        /// Set maximum physical data value.
+        template <typename U>
+        void maximum(U m) { this->maximum_ = validate_maximum(m); }
 
         /// Get maximum physical data value.
-        auto maximum() const { return this->maximum_; }
+        optional<T> const & maximum() const { return this->maximum_; }
 
-        /// Is the current pair of extrema are valid?
+        /// Is the current pair of extrema valid?
         bool is_valid() const
         {
-            return this->minimum_ <= this-> maximum_;
+            /*
+              Valid if both extrema are set, and if minimum_ is less
+              than or equal to maximum_.
+            */
+            return this->minimum_ && this->maximum_
+                && this->minimum_ <= this-> maximum_;
         }
 
         /**
@@ -142,10 +152,10 @@ namespace MaRC
              * @todo Should we validate @a datum as is done in the
              *       constructor?
              */
-            if (datum < this->minimum_)
+            if (datum < this->minimum_ || !this->minimum_)
                 this->minimum_ = datum;
 
-            if (datum > this->maximum_)
+            if (datum > this->maximum_ || !this->maximum_)
                 this->maximum_ = datum;
         }
 
@@ -162,18 +172,15 @@ namespace MaRC
          */
         void update(extrema const & e)
         {
-            if (!e.is_valid())
-                return;
-
             /**
              * @todo Should we validate @c e.minimum_ and
              *       @c e.maximum_ as is done in the constructor?
              */
-            if (e.minimum_ < this->minimum_)
-                this->minimum_ = e.minimum_;
+            if (e.minimum_ && *e.minimum_ < this->minimum_)
+                this->minimum_ = *e.minimum_;
 
-            if (e.maximum_ > this->maximum_)
-                this->maximum_ = e.maximum_;
+            if (e.maximum_ && *e.maximum_ > this->maximum_)
+                this->maximum_ = *e.maximum_;
         }
 
         /**
@@ -184,11 +191,24 @@ namespace MaRC
          */
         void reset()
         {
-            constexpr auto worst_min = std::numeric_limits<T>::max();
-            constexpr auto worst_max = std::numeric_limits<T>::lowest();
+            this->minimum_.reset();
+            this->maximum_.reset();
+        }
 
-            this->minimum_ = worst_min;
-            this->maximum_ = worst_max;
+        /**
+         * @brief Swap extrema.
+         *
+         * @param[in,out] other Extrema to be swapped in to this
+         *                      @c extrema<T> instance.
+         */
+        void swap(extrema & other) noexcept(
+            std::is_nothrow_move_constructible<T>::value
+            /* && std::is_nothrow_swappable<T>::value */)
+        {
+            using std::swap;
+
+            swap(this->minimum_, other.minimum_);
+            swap(this->maximum_, other.maximum_);
         }
 
     private:
@@ -199,6 +219,8 @@ namespace MaRC
          * Verify that the given extremum @a value is valid, i.e. not
          * @c NaN.
          *
+         * @tparam U Type of extremum to be converted to extremum of
+         *           type @c T.
          * @param[in] value Physical data extremum to be validated.
          *
          * @return @a value if it is valid.
@@ -218,6 +240,8 @@ namespace MaRC
         /**
          * @brief Verify desired minimum physical value is valid.
          *
+         * @tparam U Type of minimum to be converted to minimum of
+         *           type @c T.
          * @param[in] value Physical data minimum to be validated.
          *
          * @return @a value if it is valid.
@@ -233,6 +257,8 @@ namespace MaRC
         /**
          * @brief Verify desired maximum physical value is valid.
          *
+         * @tparam U Type of maximum to be converted to minimum of
+         *           type @c T.
          * @param[in] value Physical data maximum to be validated.
          *
          * @return @a value if it is valid.
@@ -248,12 +274,67 @@ namespace MaRC
     private:
 
         /// Minimum value.
-        T minimum_;
+        optional<T> minimum_;
 
         /// Maximum value.
-        T maximum_;
+        optional<T> maximum_;
 
     };
+
+    /**
+     * @brief Swap contents of @c MaRC::extrema objects.
+     *
+     * @relates MaRC::extrema
+     */
+    template<typename T>
+    void swap(MaRC::extrema<T> & lhs, MaRC::extrema<T> & rhs) noexcept(
+        noexcept(lhs.swap(rhs)))
+    {
+        lhs.swap(rhs);
+    }
+
+    /**
+     * @brief Create an @c extrema object.
+     *
+     * @tparam T Underyling type of @c extrema.
+     * @param[in] minimum Minium Value to be stored in the created
+     *                    @c extrema object.
+     * @param[in] maximum Maxium Value to be stored in the created
+     *                    @c extrema object.
+     *
+     * @return @c extrema Object containing the provided @a minimum
+     *                    and @c maximum..
+     *
+     * @relates MaRC::extrema
+     */
+    template<typename T>
+    extrema<T> make_extrema(T minimum, T maximum)
+    {
+        return extrema<T>(minimum, maximum);
+    }
+
+    /**
+     * @brief Create an @c extrema object.
+     *
+     * @tparam T Underyling type of @c extrema.
+     * @tparam U Type of extrema to be converted to extrema of type
+     *           @c T.
+     * @param[in] minimum Minium Value to be stored in the created
+     *                    @c extrema object.
+     * @param[in] maximum Maxium Value to be stored in the created
+     *                    @c extrema object.
+     *
+     * @return @c extrema Object containing the provided @a minimum
+     *                    and @c maximum clipped to fit within type
+     *                    @c T.
+     *
+     * @relates MaRC::extrema
+     */
+    template<typename T, typename U>
+    extrema<T> make_extrema(U minimum, U maximum)
+    {
+        return extrema<T>(minimum, maximum);
+    }
 
 }  // MaRC
 
