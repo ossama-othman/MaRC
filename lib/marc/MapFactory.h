@@ -13,9 +13,9 @@
 #define MARC_MAP_FACTORY_H
 
 #include <marc/Export.h>
+#include <marc/extrema.h>
 
 #include <vector>
-#include <limits>
 #include <functional>
 #include <cstdint>
 
@@ -175,7 +175,7 @@ namespace MaRC
                        plot_info<T> & info,
                        map_type<T> & map)
                 : source_(source)
-                , minmax_(minmax)
+                , minmax_(get_extrema(minmax))
                 , info_(info)
                 , map_(map)
             {
@@ -195,11 +195,30 @@ namespace MaRC
 
         private:
 
+            /**
+             * @brief Get valid extrema.
+             *
+             * Obtain @c extrema<> object with the underlying minimum
+             * and maximum both set with suitable values.  In
+             * particular, if @a e.minimum() is not set, the returned
+             * @c extrema<> will contain a minimum set to
+             * @c std::numeric_limits<T>::lowest().  Similarly, the
+             * maximum will be set to @c std::numeric_limits<T>::max()
+             * if @a e.maximum() is not set.
+             *
+             * @param[in] e User-specified min/max map data values.
+             *
+             * @return Suitably initialized extrema.
+             */
+            MaRC::extrema<T> get_extrema(extrema<T> const & e);
+
+        private:
+
             /// Map source image.
             SourceImage const & source_;
 
             /// User-specified allowed min/max map data values.
-            extrema<T> const & minmax_;
+            extrema<T> const minmax_;
 
             /// Map plotting information.
             plot_info<T> & info_;

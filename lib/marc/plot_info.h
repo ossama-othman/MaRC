@@ -130,16 +130,10 @@ namespace MaRC
          *
          * @param[in] datum Physical data value.
          */
-        void update_extrema(T datum)
-        {
-            this->extrema_.update(datum);
-        }
+        void update_extrema(T datum) { this->extrema_.update(datum); }
 
         // Was data plotted to the map?
-        bool data_mapped() const
-        {
-            return this->extrema_.is_valid();
-        }
+        bool data_mapped() const { return this->extrema_.is_valid(); }
 
         /// Get blank map array value.
         auto const & blank() const { return this->blank_; }
