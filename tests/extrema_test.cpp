@@ -16,6 +16,20 @@ namespace
 {
     /// Primary extremum type alias used by the overall test.
     using extremum_type = int;
+
+    constexpr extremum_type good_min = -1;
+    constexpr extremum_type good_max = 42;
+
+    constexpr auto bad_min = good_max;
+    constexpr auto bad_max = good_min;
+
+    // For testing extrema clipping.
+    constexpr auto d_min = std::numeric_limits<double>::lowest();
+    constexpr auto d_max = std::numeric_limits<double>::max();
+
+    static_assert(d_min < std::numeric_limits<extremum_type>::lowest()
+                  && d_max > std::numeric_limits<extremum_type>::max(),
+                  "Incorrect values for extrema clipping test.");
 }
 
 /**
@@ -40,24 +54,19 @@ bool test_bad_extrema(T minimum, T maximum)
  */
 bool test_initialization()
 {
-    constexpr extremum_type good_min = -1;
-    constexpr extremum_type good_max = 42;
+    MaRC::extrema<extremum_type> e1;
+    MaRC::extrema<extremum_type> e2(good_min, good_max);
+    MaRC::extrema<extremum_type> e3(d_min, d_max);
+    MaRC::extrema<extremum_type> e4(good_min, good_min);
 
-    constexpr auto bad_min = good_max;
-    constexpr auto bad_max = good_min;
+    // Copy construction and copy assignment.
+    MaRC::extrema<extremum_type> e5(e2);
+    MaRC::extrema<extremum_type> e6 = e2;
 
-    // For testing extrema clipping.
-    constexpr auto d_min = std::numeric_limits<double>::lowest();
-    constexpr auto d_max = std::numeric_limits<double>::max();
-
-    static_assert(d_min < std::numeric_limits<extremum_type>::lowest()
-                  && d_max > std::numeric_limits<extremum_type>::max(),
-                  "Incorrect values for extrema clipping test.");
-
-    MaRC::extrema<int> e1;
-    MaRC::extrema<int> e2(good_min, good_max);
-    MaRC::extrema<int> e3(d_min, d_max);
-    MaRC::extrema<int> e4(good_min, good_min);
+    // Converting copy construction and copy assignment.
+    MaRC::extrema<double> e7(d_min, d_max);
+    MaRC::extrema<extremum_type> e8(e7);
+    MaRC::extrema<extremum_type> e9 = e7;
 
     return !e1.is_valid()
         && e2.is_valid()
@@ -75,7 +84,51 @@ bool test_initialization()
         && e3.maximum() == std::numeric_limits<extremum_type>::max()
 
         && e4.minimum() == good_min
-        && e4.minimum() == e4.maximum();
+        && e4.minimum() == e4.maximum()
+
+        && e5.minimum() == e2.minimum()
+        && e5.maximum() == e2.maximum()
+
+        && e6.minimum() == e2.minimum()
+        && e6.maximum() == e2.maximum()
+
+        && e8.minimum() == std::numeric_limits<extremum_type>::lowest()
+        && e8.maximum() == std::numeric_limits<extremum_type>::max()
+
+        && e9.minimum() == std::numeric_limits<extremum_type>::lowest()
+        && e9.maximum() == std::numeric_limits<extremum_type>::max();
+}
+
+/**
+ * @test Test the MaRC::extrema<> swap.
+ */
+bool test_make_extrema()
+{
+    auto const e1 = MaRC::make_extrema(good_min, good_max);
+    auto const e2 = MaRC::make_extrema<extremum_type>(d_min, d_max);
+
+    return e1.minimum() == good_min && e1.maximum() == good_max
+        && e2.minimum() == std::numeric_limits<extremum_type>::lowest()
+        && e2.maximum() == std::numeric_limits<extremum_type>::max();
+}
+
+/**
+ * @test Test the MaRC::extrema<> swap.
+ */
+bool test_swap()
+{
+    constexpr extremum_type min1 = good_min;
+    constexpr extremum_type max1 = good_max;
+    constexpr extremum_type min2 = 18;
+    constexpr extremum_type max2 = 27;
+
+    auto e1 = MaRC::make_extrema(min1, max1);
+    auto e2 = MaRC::make_extrema(min2, max2);
+
+    swap(e1, e2);
+
+    return e1.minimum() == min2 && e1.maximum() == max2
+        && e2.minimum() == min1 && e2.maximum() == max1;
 }
 
 /**
@@ -83,8 +136,8 @@ bool test_initialization()
  */
 bool test_update(MaRC::extrema<extremum_type> & e,
                  extremum_type datum,
-                 extremum_type expected_minimum,
-                 extremum_type expected_maximum)
+                 MaRC::optional<extremum_type> expected_minimum,
+                 MaRC::optional<extremum_type> expected_maximum)
 {
     e.update(datum);
 
@@ -98,8 +151,8 @@ bool test_update(MaRC::extrema<extremum_type> & e,
  */
 bool test_update(MaRC::extrema<extremum_type> & to,
                  MaRC::extrema<extremum_type> const & from,
-                 extremum_type expected_minimum,
-                 extremum_type expected_maximum)
+                 MaRC::optional<extremum_type> expected_minimum,
+                 MaRC::optional<extremum_type> expected_maximum)
 {
     to.update(from);
 
@@ -174,6 +227,8 @@ bool test_reset()
 int main()
 {
     return test_initialization()
+        && test_make_extrema()
+        && test_swap()
         && test_update()
         && test_reset()
         ? 0 : -1;
