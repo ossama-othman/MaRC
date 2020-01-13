@@ -72,13 +72,14 @@ MaRC::LongitudeImageFactory::make(scale_offset_functor calc_so)
                                "chosen data type.");
     }
 
-    // Set physical data extrema if not previously set.
-    if (!this->extrema_.is_valid()) {
-        // Scale the default minimum and maximum to match the physical
-        // data scaling.
-        this->extrema_.update(longitude_low  * scale + offset);
-        this->extrema_.update(longitude_high * scale + offset);
-    }
+    /*
+      Set physical data extrema if not previously set.
+
+      Scale the default minimum and maximum to match the physical data
+      scaling.
+    */
+    this->minimum(longitude_low  * scale + offset);
+    this->maximum(longitude_high * scale + offset);
 
     return std::make_unique<MaRC::LongitudeImage>(scale, offset);
 }

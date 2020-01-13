@@ -64,13 +64,14 @@ MaRC::MuImageFactory::make(scale_offset_functor calc_so)
                                "chosen data type.");
     }
 
-    // Set physical data extrema if not previously set.
-    if (!this->extrema_.is_valid()) {
-        // Scale the default minimum and maximum to match the physical
-        // data scaling.
-        this->extrema_.update(mu_low  * scale + offset);
-        this->extrema_.update(mu_high * scale + offset);
-    }
+    /*
+      Set physical data extrema if not previously set.
+
+      Scale the default minimum and maximum to match the physical data
+      scaling.
+    */
+    this->minimum(mu_low  * scale + offset);
+    this->maximum(mu_high * scale + offset);
 
     return std::make_unique<MaRC::MuImage>(this->body_,
                                            this->sub_observ_lat_,
