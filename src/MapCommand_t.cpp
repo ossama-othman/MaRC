@@ -193,9 +193,13 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     }
 
     if (info.data_mapped()) {
-        // Write DATAMIN and DATAMAX keywords.
-        map_image->template datamin<T>(info.minimum());
-        map_image->template datamax<T>(info.maximum());
+        /*
+          Write DATAMIN and DATAMAX keywords.
+
+          At this point we know the extrema were set.
+        */
+        map_image->template datamin<T>(*info.minimum());
+        map_image->template datamax<T>(*info.maximum());
     }
 }
 
