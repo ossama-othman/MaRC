@@ -22,6 +22,21 @@
 
 
 template <typename T>
+MaRC::extrema<T>
+MaRC::MapFactory::parameters<T>::get_extrema(extrema<T> const & e)
+{
+    auto const & minimum = e.minimum();
+    auto const & maximum = e.maximum();
+
+    extrema<T> ex(minimum ? *minimum : std::numeric_limits<T>::lowest(),
+                  maximum ? *maximum : std::numeric_limits<T>::max());
+
+    return ex;
+}
+
+// -----------------------------------------------------------------------
+
+template <typename T>
 MaRC::MapFactory::map_type<T>
 MaRC::MapFactory::make_map(SourceImage const & image,
                            extrema<T> const & minmax,
@@ -43,13 +58,8 @@ MaRC::MapFactory::make_map(SourceImage const & image,
     // Set up physical data value extrema.
     map_type<T> map(info.samples() * info.lines(), blank);
 
-    static extrema<T> const open_minmax(std::numeric_limits<T>::lowest(),
-                                        std::numeric_limits<T>::max());
-
-    extrema<T> const & ex = minmax.is_valid() ? minmax : open_minmax;
-
     // Begin mapping.
-    parameters<T> p(image, ex, info, map);
+    parameters<T> p(image, minmax, info, map);
 
     auto plot =
         [this, &p](double lat, double lon, std::size_t offset)
