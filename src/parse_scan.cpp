@@ -12,7 +12,6 @@
 #include "MapCommand.h"
 
 #include <stdexcept>
-#include <limits>
 
 #include <fmt/format.h>
 
@@ -21,8 +20,8 @@ MaRC::ParseParameter::ParseParameter()
     : filename(nullptr)
     , lat_interval(10)
     , lon_interval(10)
-    , minimum(std::numeric_limits<decltype(this->minimum)>::signaling_NaN())
-    , maximum(std::numeric_limits<decltype(this->maximum)>::signaling_NaN())
+    , minimum()
+    , maximum()
     , nibble_left  (0)
     , nibble_right (0)
     , nibble_top   (0)
