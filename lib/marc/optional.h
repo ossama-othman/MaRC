@@ -463,7 +463,7 @@ namespace MaRC
     //@}
 
     /**
-     * @brief Swap contents of MaRC::optional objects.
+     * @brief Swap contents of @c MaRC::optional objects.
      *
      * @relates MaRC::optional
      */
