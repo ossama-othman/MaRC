@@ -100,22 +100,51 @@ namespace MaRC
             scale_offset_functor calc_so) = 0;
 
         /**
-         * @brief Set the minimum or maximum physical data value.
+         * @brief Set the minimum physical data value.
+         *
+         * Set the minimum physical data value if it hasn't already
+         * been set.
          *
          * @param[in] datum Physical data value.
          */
-        void update_minmax(double datum);
+        void minimum(double datum);
 
-        /// Get the minimum and maximum physical data values.
+        /**
+         * @brief Set the maximum physical data value.
+         *
+         * Set the maximum physical data value if it hasn't already
+         * been set.
+         *
+         * @param[in] datum Physical data value.
+         */
+        void maximum(double datum);
+
+        /**
+         * @brief Get the minimum and maximum physical data values.
+         *
+         * @note Only a @c const reference is accessible to prevent
+         *       @c SourceImageFactory subclasses from potentially
+         *       overriding previously set extrema, in particular
+         *       those specified by the user in a %MaRC configuration
+         *       or input file.
+         */
         extrema_type const & minmax() const { return this->extrema_; }
 
-    protected:
+    private:
 
         /**
          * @brief Minimum and maximum physical data values.
          *
          * Minimum and maximum physical data values in the
          * source image. (minimum <= data <= maximum).
+         *
+         * @note Both, one, or none of the extrema may be set.
+         *
+         * @note This member is private to prevent
+         *       @c SourceImageFactory subclasses from potentially
+         *       overriding previously set extrema, in particular
+         *       those specified by the user in a %MaRC configuration
+         *       or input file.
          */
         extrema_type extrema_;
 

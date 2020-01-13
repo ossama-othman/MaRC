@@ -21,7 +21,17 @@ MaRC::SourceImageFactory::SourceImageFactory()
 }
 
 void
-MaRC::SourceImageFactory::update_minmax(double datum)
+MaRC::SourceImageFactory::minimum(double datum)
 {
-    this->extrema_.update(datum);
+    // Only set once to prevent override of user-specified value.
+    if (!this->extrema_.minimum())
+        this->extrema_.minimum(datum);
+}
+
+void
+MaRC::SourceImageFactory::maximum(double datum)
+{
+    // Only set once to prevent override of user-specified value.
+    if (!this->extrema_.maximum())
+        this->extrema_.maximum(datum);
 }
