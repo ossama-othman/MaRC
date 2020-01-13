@@ -355,8 +355,8 @@ std::size_t num_planes = 0;
 // Used to ensure num_planes are defined in sequence
 std::size_t expected_plane = 1;
 
-double minimum = not_a_number;
-double maximum = not_a_number;
+MaRC::optional<double> minimum;
+MaRC::optional<double> maximum;
 
 double sample_center = not_a_number;
 double line_center   = not_a_number;
@@ -545,10 +545,10 @@ user_file_parse:
           pp.lat_interval = lat_interval;
           pp.lon_interval = lon_interval;
 
-          if (!std::isnan(minimum))
+          if (!minimum)
               pp.minimum = minimum;
 
-          if (!std::isnan(maximum))
+          if (!maximum)
               pp.maximum = maximum;
         }
 ;
@@ -955,11 +955,11 @@ plane_setup:
         plane_size
         plane_data_range
         plane_type      {
-            if (!std::isnan(minimum))
-                image_factory->update_minmax(minimum);
+            if (minimum)
+                image_factory->minimum(*minimum);
 
-            if (!std::isnan(maximum))
-                image_factory->update_minmax(maximum);
+            if (maximum)
+                image_factory->maximum(*maximum);
 
             image_factories.push_back(std::move(image_factory));
 
