@@ -160,6 +160,11 @@ namespace MaRC
          */
         bool populate_map_parameters();
 
+        /**
+         * @brief Return the number of digits in an unsigned integer.
+         */
+        static int number_of_digits(std::size_t num);
+
     private:
 
         /// Number of samples in map.

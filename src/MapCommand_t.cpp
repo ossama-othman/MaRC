@@ -19,8 +19,9 @@
 #include <marc/MapFactory.h>
 #include <marc/scale_and_offset.h>
 
+#include <fmt/format.h>
+
 #include <type_traits>
-#include <iostream>
 
 #include <fitsio.h>
 
@@ -91,8 +92,8 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         map_image->comment(comment);
 
     std::string const history =
-        std::string(this->projection_name())
-        + " projection created by " PACKAGE_STRING ".";
+        fmt::format("{} projection created by " PACKAGE_STRING ".",
+                    this->projection_name());
 
     // Write some MaRC-specific HISTORY comments.
     map_image->history(history);
@@ -135,6 +136,7 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     // Keep track of mapped planes for reporting to user.
     int plane_count = 1;
     std::size_t const num_planes = this->image_factories_.size();
+    auto const digits = this->number_of_digits(num_planes);
 
     SourceImageFactory::scale_offset_functor const sof =
         scale_and_offset<T>;
@@ -153,15 +155,18 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         if (!image)
             continue;  // Problem creating SourceImage.  Move on.
 
-        std::cout << "Plane "
-                  << plane_count << " / " << num_planes
-                  <<" : " << std::flush;
+        /**
+         * @todo Move to @c MaRC::Progess::Console.
+         */
+        fmt::print("Plane {:>{}} / {}: ",
+                   plane_count, digits, num_planes);
 
         // Add description of the source image.
         // comment_list_type descriptions;
 
         // std::string image_title =
-        //     "Plane " + std::to_string(plane_count) ": " + image->name();
+        //     fmt::format("Plane {:>{}}: {}",
+        //                 plane_count, digits, image->name());
 
         // descriptions.push_back();
 

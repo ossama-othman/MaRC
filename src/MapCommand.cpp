@@ -434,3 +434,19 @@ MaRC::MapCommand::populate_map_parameters()
      */
     return this->parameters_->merge(to_merge);
 }
+
+int
+MaRC::MapCommand::number_of_digits(std::size_t num)
+{
+    int digits = 0;
+
+    for ( ; num != 0; num /= 10)
+        ++digits;
+
+    /**
+     * @note We could also determine the number of digits in the
+     *       integer using std::log10(num) + 1, instead.
+     */
+
+    return digits;
+}
