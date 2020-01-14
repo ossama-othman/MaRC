@@ -100,6 +100,10 @@ MaRC::MapFactory::plot(parameters<T> & p,
         info.update_extrema(map[offset]);
     }
 
+    /**
+     * @todo Should we only notify observers if data was actually
+     *       plotted?
+     */
     // Inform "observers" of mapping progress.
     info.notifier().notify_plotted(map.size());
 }
