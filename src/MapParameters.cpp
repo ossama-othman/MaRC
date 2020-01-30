@@ -1,7 +1,7 @@
 /**
  * @file MapParameters.cpp
  *
- * Copyright (C) 2018-2019  Ossama Othman
+ * Copyright (C) 2018-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -326,8 +326,8 @@ MaRC::MapParameters::merge_optional(char const * key,
     bool const assignable = r.second;
     constexpr int ulps = 2;
 
-    if (!to.has_value()) {
-    // Not previously set.
+    if (!to) {
+        // Not previously set.
         to = from;
         return true;
     } else if (MaRC::almost_equal(*to, *from, ulps)) {
