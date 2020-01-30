@@ -1,26 +1,17 @@
 /**
  * @file MapParameters_Test.cpp
  *
- * Copyright (C) 2019 Ossama Othman
+ * Copyright (C) 2019-2020 Ossama Othman
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * by the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * @author Ossama Othman
  */
 
 #include "../src/MapParameters.h"
 
 #include <marc/Mathematics.h>
+#include <marc/config.h>  // For NDEBUG.
 
 #include <functional>
 #include <cassert>
@@ -56,26 +47,24 @@ bool test_initialization()
     return false;
 }
 
-#define MARC_TEST_STRING_PARAM(parameter)  \
-bool test_ ## parameter()                  \
-{                                          \
-    MaRC::MapParameters p;                 \
-    if (!p.parameter().empty())            \
-        return false;                      \
-    p.parameter(#parameter);               \
-    return p.parameter() == #parameter;    \
+#define MARC_TEST_STRING_PARAM(parameter)        \
+bool test_ ## parameter(MaRC::MapParameters & p) \
+{                                                \
+    if (!p.parameter().empty())                  \
+        return false;                            \
+    p.parameter(#parameter);                     \
+    return p.parameter() == #parameter;          \
 }
 
-#define MARC_TEST_REAL_PARAM(parameter)     \
-bool test_ ## parameter()                   \
-{                                           \
-    MaRC::MapParameters p;                  \
-    if (p.parameter().has_value())          \
-        return false;                       \
-    constexpr double x = __LINE__;          \
-    p.parameter(x);                         \
-    auto const y = p.parameter().value();   \
-    return MaRC::almost_equal(x, y, ulps);  \
+#define MARC_TEST_REAL_PARAM(parameter)          \
+bool test_ ## parameter(MaRC::MapParameters & p) \
+{                                                \
+    if (p.parameter().has_value())               \
+        return false;                            \
+    constexpr double x = __LINE__;               \
+    p.parameter(x);                              \
+    auto const y = p.parameter().value();        \
+    return MaRC::almost_equal(x, y, ulps);       \
 }
 
 MARC_TEST_STRING_PARAM(author)
@@ -93,10 +82,8 @@ MARC_TEST_REAL_PARAM(datamax)
 MARC_TEST_REAL_PARAM(datamin)
 MARC_TEST_REAL_PARAM(equinox)
 
-bool test_bitpix()
+bool test_bitpix(MaRC::MapParameters & p)
 {
-    MaRC::MapParameters p;
-
     // Increasing integer BITPIX.
     p.bitpix(BYTE_IMG);
     if (p.bitpix() != BYTE_IMG)
@@ -144,10 +131,8 @@ bool test_bitpix()
     return false;
 }
 
-bool test_blank()
+bool test_blank(MaRC::MapParameters & p)
 {
-    MaRC::MapParameters p;
-
     if (p.blank().has_value())
         return false;  // Should not be set yet!
 
@@ -176,10 +161,8 @@ bool test_comments_impl(
                       std::begin(to_push));
 }
 
-bool test_comments()
+bool test_comments(MaRC::MapParameters & p)
 {
-    MaRC::MapParameters p;
-
     auto const & push =
         [&p](comments_type::value_type const & c)
         {
@@ -189,10 +172,8 @@ bool test_comments()
     return test_comments_impl(push, p.comments());
 }
 
-bool test_xcomments()
+bool test_xcomments(MaRC::MapParameters & p)
 {
-    MaRC::MapParameters p;
-
     auto const & push =
         [&p](comments_type::value_type const & c)
         {
@@ -202,14 +183,77 @@ bool test_xcomments()
     return test_comments_impl(push, p.xcomments());
 }
 
-bool test_merge_bitpix()
+bool test_parameters()
 {
-    int plane = 1;
+    MaRC::MapParameters p;
 
-    MaRC::MapParameters u;
-    MaRC::MapParameters p1(plane++);
-    MaRC::MapParameters p2(plane);
+    return test_author(p)
+        && test_bitpix(p)
+        && test_blank(p)
+        && test_bscale(p)
+        && test_bunit(p)
+        && test_bzero(p)
+        && test_datamax(p)
+        && test_datamin(p)
+        && test_equinox(p)
+        && test_instrument(p)
+        && test_object(p)
+        && test_observer(p)
+        && test_origin(p)
+        && test_reference(p)
+        && test_telescope(p)
+        && test_comments(p)
+        && test_xcomments(p);
+}
 
+#define MARC_TEST_MERGE_STRING(parameter)               \
+bool test_merge_ ## parameter(MaRC::MapParameters & u,  \
+                              MaRC::MapParameters & p1, \
+                              MaRC::MapParameters & p2) \
+{                                                       \
+    constexpr char const uv[] = #parameter;             \
+    constexpr char const pv[] = #parameter "_plane";    \
+    u.parameter(uv);                                    \
+    p2.parameter(pv);                                   \
+    return p1.merge(p2) && p1.parameter() == pv         \
+        && u.merge(p1)  && u.parameter()  == uv;        \
+}
+
+#define MARC_TEST_MERGE_REAL(parameter)                   \
+bool test_merge_ ## parameter(MaRC::MapParameters & u,    \
+                              MaRC::MapParameters & p1,   \
+                              MaRC::MapParameters & p2)   \
+{                                                         \
+    constexpr double uv = __LINE__;                       \
+    constexpr double pv = uv + 2;                         \
+    assert(!MaRC::almost_equal(uv, pv, ulps));            \
+    u.parameter(uv);                                      \
+    p2.parameter(pv);                                     \
+    return p1.merge(p2)                                   \
+        && MaRC::almost_equal(*p1.parameter(), pv, ulps)  \
+        && u.merge(p1)                                    \
+        && MaRC::almost_equal(*u.parameter(), uv,  ulps); \
+}
+
+MARC_TEST_MERGE_STRING(author)
+MARC_TEST_MERGE_STRING(bunit)
+MARC_TEST_MERGE_STRING(instrument)
+MARC_TEST_MERGE_STRING(object)
+MARC_TEST_MERGE_STRING(observer)
+MARC_TEST_MERGE_STRING(origin)
+MARC_TEST_MERGE_STRING(reference)
+MARC_TEST_MERGE_STRING(telescope)
+
+MARC_TEST_MERGE_REAL(bscale)
+MARC_TEST_MERGE_REAL(bzero)
+MARC_TEST_MERGE_REAL(datamax)
+MARC_TEST_MERGE_REAL(datamin)
+MARC_TEST_MERGE_REAL(equinox)
+
+bool test_merge_bitpix(MaRC::MapParameters & u,
+                       MaRC::MapParameters & p1,
+                       MaRC::MapParameters & p2)
+{
     // ---------------------
     // Integer BITPIX Checks
     // ---------------------
@@ -285,7 +329,7 @@ bool test_merge_bitpix()
                                         // occurred.
         return false;
 
-    // Decreasing integer BITPIX
+    // Decreasing floating point BITPIX
     p1.bitpix(DOUBLE_IMG);
     p2.bitpix(FLOAT_IMG);
 
@@ -315,34 +359,138 @@ bool test_merge_bitpix()
     return true;
 }
 
+bool test_merge_blank(MaRC::MapParameters & u,
+                      MaRC::MapParameters & p1,
+                      MaRC::MapParameters & p2)
+{
+    constexpr MaRC::blank_type uv(__LINE__);
+    constexpr MaRC::blank_type pv(uv.value() * 2);
+    u.blank(uv);
+    p2.blank(pv);
+    return p1.merge(p2) && p1.blank() == pv
+        && u.merge(p1)  && u.blank()  == uv;
+}
+
+/*
+bool test_merge_comments_impl(
+    std::function<void(comments_type::value_type const &)> const & u_push,
+    comments_type const & comments)
+{
+    if (!comments.empty())
+        return false;
+
+    using comment_type = comments_type::value_type;
+
+    comment_type const p2c[] = { "p2: 1", "p2: 2" };
+
+    assert(!u.comments().empty());
+    assert(!p1.comments().empty());
+    assert(!p2.comments().empty());
+
+    // Pre-merge copies.
+    auto u_comments  = u.comments();
+    auto p1_comments = p1.comments();
+
+    // Expected contents of p1 comment list after merge.
+    for (auto const & c: p2c)
+        p1_comments.push_back(c);
+
+    // Add comments for merge testing.
+    for (auto const & c : p2c)
+        p2.push_comment(c);
+
+    // Merge and test.
+    return p1.merge(p2) && p1.comments() == p1_comments  // Updated
+        && u.merge(p1) && u.comments() == user_comments; // No change
+}
+*/
+
+bool test_merge_comments(MaRC::MapParameters & u,
+                         MaRC::MapParameters & p1,
+                         MaRC::MapParameters & p2)
+{
+    std::string const p2c[] = { "p2: 1", "p2: 2" };
+
+    assert(!u.comments().empty());
+    assert(!p1.comments().empty());
+    assert(!p2.comments().empty());
+
+    // Pre-merge copies.
+    auto u_comments  = u.comments();
+    auto p1_comments = p1.comments();
+
+    // Expected contents of p1 comment list after merge.
+    for (auto const & c: p2c)
+        p1_comments.push_back(c);
+
+    // Add comments for merge testing.
+    for (auto const & c : p2c)
+        p2.push_comment(c);
+
+    // Merge and test.
+    return p1.merge(p2) && p1.comments() == p1_comments  // Updated
+        && u.merge(p1)  && u.comments()  == u_comments;  // No change
+}
+
+bool test_merge_xcomments(MaRC::MapParameters & u,
+                          MaRC::MapParameters & p1,
+                          MaRC::MapParameters & p2)
+{
+    std::string const p2c[] = { "p2: 1", "p2: 2" };
+
+    assert(!u.xcomments().empty());
+    assert(!p1.xcomments().empty());
+    assert(!p2.xcomments().empty());
+
+    // Pre-merge copies.
+    auto u_comments  = u.xcomments();
+    auto p1_comments = p1.xcomments();
+
+    // Expected contents of p1 comment list after merge.
+    for (auto const & c: p2c)
+        p1_comments.push_back(c);
+
+    // Add comments for merge testing.
+    for (auto const & c : p2c)
+        p2.push_xcomment(c);
+
+    // Merge and test.
+    return p1.merge(p2) && p1.xcomments() == p1_comments  // Updated
+        && u.merge(p1)  && u.xcomments()  == u_comments;  // No change
+}
 
 bool test_merge()
 {
-    return test_merge_bitpix();
+    int plane = 1;
+
+    MaRC::MapParameters u;
+    MaRC::MapParameters p1(plane++);
+    MaRC::MapParameters p2(plane);
+
+    return test_merge_author(u, p1, p2)
+        && test_merge_bitpix(u, p1, p2)
+        && test_merge_blank(u, p1, p2)
+        && test_merge_bscale(u, p1, p2)
+        && test_merge_bunit(u, p1, p2)
+        && test_merge_bzero(u, p1, p2)
+        && test_merge_datamax(u, p1, p2)
+        && test_merge_datamin(u, p1, p2)
+        && test_merge_equinox(u, p1, p2)
+        && test_merge_instrument(u, p1, p2)
+        && test_merge_object(u, p1, p2)
+        && test_merge_observer(u, p1, p2)
+        && test_merge_origin(u, p1, p2)
+        && test_merge_reference(u, p1, p2)
+        && test_merge_telescope(u, p1, p2)
+        && test_merge_comments(u, p1, p2)
+        && test_merge_xcomments(u, p1, p2);
 }
 
 /// The canonical main entry point.
 int main()
 {
-    return
-        test_initialization()
-        && test_author()
-        && test_bitpix()
-        && test_blank()
-        && test_bscale()
-        && test_bunit()
-        && test_bzero()
-        && test_datamax()
-        && test_datamin()
-        && test_equinox()
-        && test_instrument()
-        && test_object()
-        && test_observer()
-        && test_origin()
-        && test_reference()
-        && test_telescope()
-        && test_comments()
-        && test_xcomments()
+    return test_initialization()
+        && test_parameters()
         && test_merge()
         ? 0 : -1;
 }
