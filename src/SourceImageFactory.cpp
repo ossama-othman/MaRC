@@ -10,15 +10,6 @@
 
 #include "SourceImageFactory.h"
 
-#include <limits>
-#include <cmath>
-#include <stdexcept>
-
-
-MaRC::SourceImageFactory::SourceImageFactory()
-    : extrema_()
-{
-}
 
 void
 MaRC::SourceImageFactory::minimum(double datum)

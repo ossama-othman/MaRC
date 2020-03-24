@@ -56,7 +56,7 @@ namespace MaRC
             std::function<bool(double, double, double &, double &)>;
 
         /// Constructor.
-        SourceImageFactory();
+        SourceImageFactory() = default;
 
         // Disallow copying.
         SourceImageFactory(SourceImageFactory const &) = delete;
