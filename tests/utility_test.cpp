@@ -1,13 +1,15 @@
 /**
  * @file utility_test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <marc/utility.h>
 #include <marc/config.h>  // For NDEBUG.
+
+#include <catch2/catch.hpp>
 
 #include <vector>
 #include <cassert>
@@ -16,7 +18,7 @@
 /**
  * @test Test the MaRC::invert_samples() function.
  */
-bool test_invert_samples()
+TEST_CASE("Image samples inversion", "[utility]")
 {
     constexpr std::size_t samples = 5;
     constexpr std::size_t lines   = 2;
@@ -31,13 +33,13 @@ bool test_invert_samples()
 
     MaRC::invert_samples(image, samples, lines);
 
-    return image == inverted;
+    REQUIRE(image == inverted);
 }
 
 /**
  * @test Test the MaRC::invert_lines() function.
  */
-bool test_invert_lines()
+TEST_CASE("Image lines inversion", "[utility]")
 {
     constexpr std::size_t samples = 2;
     constexpr std::size_t lines   = 5;
@@ -58,11 +60,5 @@ bool test_invert_lines()
 
     MaRC::invert_lines(image, samples, lines);
 
-    return image == inverted;
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return test_invert_samples() && test_invert_lines() ? 0 : -1;
+    REQUIRE(image == inverted);
 }

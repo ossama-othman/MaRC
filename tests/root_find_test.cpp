@@ -1,7 +1,7 @@
 /**
  * @file root_find_test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -9,11 +9,13 @@
 #include <marc/root_find.h>
 #include <marc/Mathematics.h>
 
+#include <catch2/catch.hpp>
+
 
 /**
  * @test Test the MaRC::root_find() function.
  */
-bool test_root_find()
+namespace
 {
     constexpr int ulps = 2;
 
@@ -33,17 +35,18 @@ bool test_root_find()
 
     // Root guess for non-bracketing variant of MaRC::root_find().
     constexpr double x0 = xh;
-
-    return
-        // Since the value we're looking for is zero, check for
-        // "almost zero" rather than "almost equal to zero", since
-        // MaRC::almost_equal() is not suitable for the latter.
-        MaRC::almost_zero(MaRC::root_find(y, xl, xh, f), ulps)
-        && MaRC::almost_zero(MaRC::root_find(y, x0, f), ulps);
 }
 
-/// The canonical main entry point.
-int main()
-{
-    return test_root_find() ? 0 : -1;
+/**
+ * @test Test the bracketing MaRC::root_find() function.
+ */
+TEST_CASE("Roots are computed - bracketed", "[root find]") {
+    REQUIRE(MaRC::almost_zero(MaRC::root_find(y, xl, xh, f), ulps));
+}
+
+/**
+ * @test Test the non-bracketing MaRC::root_find() function.
+ */
+TEST_CASE("Roots are computed - non-bracketed", "[root find]") {
+    REQUIRE(MaRC::almost_zero(MaRC::root_find(y, x0, f), ulps));
 }

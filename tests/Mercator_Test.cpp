@@ -1,7 +1,7 @@
 /**
  * @file Mercator_Test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -12,6 +12,8 @@
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
 #include <marc/scale_and_offset.h>
+
+#include <catch2/catch.hpp>
 
 #include <memory>
 #include <cstring>
@@ -57,18 +59,18 @@ namespace
 /**
  * @test Test the MaRC::Mercator::projection_name() method.
  */
-bool test_projection_name()
+TEST_CASE("Mercator projection name", "[mercator]")
 {
     static char const name[] = "Mercator";
 
-    return std::strcmp(projection->projection_name(), name) == 0;
+    REQUIRE(std::strcmp(projection->projection_name(), name) == 0);
 }
 
 /**
  * @test Test the MaRC::Mercator::make_map() method, i.e. Mercator map
  *       projection image creation.
  */
-bool test_make_map()
+TEST_CASE("Make Mercator projection map", "[mercator]")
 {
     /**
      * @todo Test conformal properties of Mercator projection.
@@ -83,11 +85,10 @@ bool test_make_map()
     double map_scale;
     double map_offset;
 
-    if (!MaRC::scale_and_offset<data_type>(latitude_low,
-                                           latitude_high,
-                                           map_scale,
-                                           map_offset))
-        return false;
+    REQUIRE(MaRC::scale_and_offset<data_type>(latitude_low,
+                                              latitude_high,
+                                              map_scale,
+                                              map_offset));
 
     constexpr bool graphic_latitudes = false;
 
@@ -110,8 +111,7 @@ bool test_make_map()
     auto const map =
         projection->template make_map<data_type>(info, samples, lines);
 
-    if (map.empty())
-        return false;
+    REQUIRE_FALSE(map.empty());
 
     /*
       Pick a random sample along the center line (equator) in the
@@ -135,16 +135,14 @@ bool test_make_map()
      */
     constexpr int ulps = 30;
 
-    return
-        !map.empty()
-        && MaRC::almost_zero(equator_data, ulps);
+    REQUIRE(MaRC::almost_zero(equator_data, ulps));
 }
 
 /**
  * @test Test the MaRC::Mercator::make_grid() method, i.e. Mercator
  *       grid image creation.
  */
-bool test_make_grid()
+TEST_CASE("Make Mercator projection grid", "[mercator]")
 {
     constexpr auto lat_interval = 10;
     constexpr auto lon_interval = 10;
@@ -161,17 +159,16 @@ bool test_make_grid()
     static constexpr auto white =
         std::numeric_limits<decltype(grid)::value_type>::max();
 
-    return
-        minmax.first != minmax.second
-        && *minmax.first  == black
-        && *minmax.second == white;
+    REQUIRE(minmax.first != minmax.second);
+    REQUIRE(*minmax.first  == black);
+    REQUIRE(*minmax.second == white);
 }
 
 /**
  * @test Test the MaRC::Mercator::distortion() method, i.e. scale
  *       distortion in the Mercator map.
  */
-bool test_distortion()
+TEST_CASE("Mercator projection scale distortion", "[mercator]")
 {
     // Latitude at the center of the map.
     constexpr double equator     = 0;
@@ -187,21 +184,9 @@ bool test_distortion()
 
     auto const distortion = projection->distortion(equator);
 
-    return
-        MaRC::almost_equal(equator_distortion, distortion, ulps)
+    REQUIRE(MaRC::almost_equal(equator_distortion, distortion, ulps));
 
-        // Distortion away from the equator should always be greater
-        // than one.
-        && projection->distortion(not_equator) > equator_distortion;
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_projection_name()
-        && test_make_map()
-        && test_make_grid()
-        && test_distortion()
-        ? 0 : -1;
+    // Distortion away from the equator should always be greater than
+    // one.
+    REQUIRE(projection->distortion(not_equator) > equator_distortion);
 }

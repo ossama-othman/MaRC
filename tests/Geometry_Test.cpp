@@ -1,7 +1,7 @@
 /**
  * @file Geometry_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -9,6 +9,8 @@
 #include <marc/Geometry.h>
 #include <marc/Mathematics.h>
 #include <marc/Constants.h>
+
+#include <catch2/catch.hpp>
 
 #include<algorithm>
 
@@ -45,7 +47,7 @@ namespace
 /**
  * @test Test rotation of vectors to different coordinate system.
  */
-bool test_vector_rotation()
+TEST_CASE("Vector rotation", "[geometry]")
 {
     MaRC::DVector const V{ 3, 4, 5 };
     MaRC::DVector const Vx{ Rx * V };
@@ -66,25 +68,24 @@ bool test_vector_rotation()
         [](auto lhs, auto rhs)
         { return MaRC::almost_equal(lhs, rhs, ulps); };
 
-    return
-        std::equal(std::cbegin(Vx),
-                   std::cend(Vx),
-                   std::cbegin(Wx),
-                   cmp)
-        && std::equal(std::cbegin(Vy),
-                      std::cend(Vy),
-                      std::cbegin(Wy),
-                      cmp)
-        && std::equal(std::cbegin(Vz),
-                      std::cend(Vz),
-                      std::cbegin(Wz),
-                      cmp);
+    REQUIRE(std::equal(std::cbegin(Vx),
+                       std::cend(Vx),
+                       std::cbegin(Wx),
+                       cmp));
+    REQUIRE(std::equal(std::cbegin(Vy),
+                       std::cend(Vy),
+                       std::cbegin(Wy),
+                       cmp));
+    REQUIRE(std::equal(std::cbegin(Vz),
+                       std::cend(Vz),
+                       std::cbegin(Wz),
+                       cmp));
 }
 
 /**
  * @test Test creation of rotation matrices.
  */
-bool test_rotation_matrices()
+TEST_CASE("Rotation matricies", "[geometry]")
 {
     MaRC::DMatrix Mx = MaRC::Geometry::RotXMatrix(angle);
     MaRC::DMatrix My = MaRC::Geometry::RotYMatrix(angle);
@@ -98,26 +99,16 @@ bool test_rotation_matrices()
         [](auto lhs, auto rhs)
         { return MaRC::almost_equal(lhs, rhs, ulps); };
 
-    return
-        std::equal(std::cbegin(Rx),
-                   std::cend(Rx),
-                   std::cbegin(Mx),
-                   cmp)
-        && std::equal(std::cbegin(Ry),
-                      std::cend(Ry),
-                      std::cbegin(My),
-                      cmp)
-        && std::equal(std::cbegin(Rz),
-                      std::cend(Rz),
-                      std::cbegin(Mz),
-                      cmp);
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_vector_rotation()
-        && test_rotation_matrices()
-        ? 0 : -1;
+    REQUIRE(std::equal(std::cbegin(Rx),
+                       std::cend(Rx),
+                       std::cbegin(Mx),
+                       cmp));
+    REQUIRE(std::equal(std::cbegin(Ry),
+                       std::cend(Ry),
+                       std::cbegin(My),
+                       cmp));
+    REQUIRE(std::equal(std::cbegin(Rz),
+                       std::cend(Rz),
+                       std::cbegin(Mz),
+                       cmp));
 }

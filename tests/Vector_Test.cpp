@@ -1,12 +1,14 @@
 /**
  * @file Vector_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <marc/Vector.h>
+
+#include <catch2/catch.hpp>
 
 
 namespace
@@ -20,7 +22,7 @@ namespace
 /**
  * @test Test MaRC::Vector initialization.
  */
-bool test_vector_initialization()
+TEST_CASE("MaRC::Vector initialization", "[vector]")
 {
     static constexpr std::size_t ROWS = 3;
     using vector_type = MaRC::Vector<int, ROWS>;
@@ -44,33 +46,32 @@ bool test_vector_initialization()
     std::iterator_traits<vector_type::iterator>::difference_type const
         row_count = std::distance(std::cbegin(v1), std::cend(v1));
 
-    return
-        row_count > 0
-        && static_cast<std::remove_const<decltype(ROWS)>::type>(
-            row_count) == ROWS
-        && std::find_if_not(
-            std::cbegin(v1),
-            std::cend(v1),
-            [](auto value)
-            {
-                return value == vector_type::value_type();
-            }) == std::cend(v1)
-        && std::equal(std::cbegin(v2), std::cend(v2),
-                      std::cbegin(n),  std::cend(n))
-        && std::equal(std::cbegin(v3), std::cend(v3),
-                      std::cbegin(v2), std::cend(v2))
-        && std::equal(std::cbegin(v4), std::cend(v4),
-                      std::cbegin(n),  std::cend(n))
-        && std::equal(std::cbegin(v5), std::cend(v5),
-                      std::cbegin(v3), std::cend(v3))
-        && std::equal(std::cbegin(v6), std::cend(v6),
-                      std::cbegin(n),  std::cend(n));
+    REQUIRE(row_count > 0);
+    REQUIRE(static_cast<std::remove_const<decltype(ROWS)>::type>(
+                row_count) == ROWS);
+    REQUIRE(std::find_if_not(
+                std::cbegin(v1),
+                std::cend(v1),
+                [](auto value)
+                {
+                    return value == vector_type::value_type();
+                }) == std::cend(v1));
+    REQUIRE(std::equal(std::cbegin(v2), std::cend(v2),
+                       std::cbegin(n),  std::cend(n)));
+    REQUIRE(std::equal(std::cbegin(v3), std::cend(v3),
+                       std::cbegin(v2), std::cend(v2)));
+    REQUIRE(std::equal(std::cbegin(v4), std::cend(v4),
+                       std::cbegin(n),  std::cend(n)));
+    REQUIRE(std::equal(std::cbegin(v5), std::cend(v5),
+                       std::cbegin(v3), std::cend(v3)));
+    REQUIRE(std::equal(std::cbegin(v6), std::cend(v6),
+                       std::cbegin(n),  std::cend(n)));
 }
 
 /**
  * @test Test MaRC::Vector element access.
  */
-bool test_vector_element_access()
+TEST_CASE("MaRC::Vector element access", "[vector]")
 {
     static constexpr std::size_t ROWS = 3;
     using vector_type = MaRC::Vector<int, ROWS>;
@@ -82,24 +83,22 @@ bool test_vector_element_access()
 
     vector_type const v(n[0], n[1], n[2]);
 
-    bool caught_expected_exception = false;
+    REQUIRE(v[0]    == n[0]);
+    REQUIRE(v.at(0) == n[0]);
 
-    try {
-        (void) v.at(ROWS + 1);
-    } catch(std::out_of_range const &) {
-        caught_expected_exception = true;
-    }
+    REQUIRE(v[1]    == n[1]);
+    REQUIRE(v.at(1) == n[1]);
 
-    return v[0] == n[0] && v.at(0) == n[0]
-        && v[1] == n[1] && v.at(1) == n[1]
-        && v[2] == n[2] && v.at(2) == n[2]
-        && caught_expected_exception;
+    REQUIRE(v[2]    == n[2]);
+    REQUIRE(v.at(2) == n[2]);
+
+    REQUIRE_THROWS_AS((void) v.at(ROWS + 1), std::out_of_range);
 }
 
 /**
  * @test Test MaRC::Vector comparison.
  */
-bool test_vector_comparison()
+TEST_CASE("MaRC::Vector comparison", "[vector]")
 {
     using vector_type = MaRC::Vector<int, 3>;
 
@@ -108,13 +107,15 @@ bool test_vector_comparison()
     vector_type const v3 = v2;
     vector_type const v4{ 7, 11, 13 };
 
-    return v2 == v1 && v3 == v2 && v4 != v1;
+    REQUIRE(v2 == v1);
+    REQUIRE(v3 == v2);
+    REQUIRE(v4 != v1);
 }
 
 /**
  * @test Test MaRC::Vector addition.
  */
-bool test_vector_addition()
+TEST_CASE("MaRC::Vector addition", "[vector]")
 {
     using vector_type = MaRC::Vector<int, 3>;
 
@@ -125,13 +126,14 @@ bool test_vector_addition()
 
     vector_type const sum{ 1, 7, 5 };
 
-    return v3 == sum && v1 + v2 == sum;
+    REQUIRE(v3      == sum);
+    REQUIRE(v1 + v2 == sum);
 }
 
 /**
  * @test Test MaRC::Vector subtraction.
  */
-bool test_vector_subtraction()
+TEST_CASE("MaRC::Vector substraction", "[vector]")
 {
     using vector_type = MaRC::Vector<int, 3>;
 
@@ -142,13 +144,14 @@ bool test_vector_subtraction()
 
     vector_type const diff{ 3, -1, 5 };
 
-    return v3 == diff && v1 - v2 == diff;
+    REQUIRE(v3      == diff);
+    REQUIRE(v1 - v2 == diff);
 }
 
 /**
  * @test Test MaRC::Vector multiplication by a scalar value.
  */
-bool test_vector_multiplication()
+TEST_CASE("MaRC::Vector multiplication", "[vector]")
 {
     using vector_type = MaRC::Vector<int, 3>;
 
@@ -161,14 +164,16 @@ bool test_vector_multiplication()
 
     vector_type const prod{ 4, 6, 10 };
 
-    return v2 == prod && v1 * s == prod && s * v1 == prod;
+    REQUIRE(v2     == prod);
+    REQUIRE(v1 * s == prod);
+    REQUIRE(s * v1 == prod);
 }
 
 
 /**
  * @test Test MaRC::Vector magnitude (norm) calculation.
  */
-bool test_vector_magnitude()
+TEST_CASE("MaRC::Vector magnitude (norm)", "[vector]")
 {
     using vector_type = MaRC::Vector<int, 3>;
     vector_type const v{ 3, 4, 5 };
@@ -176,13 +181,13 @@ bool test_vector_magnitude()
     double const mag =
         std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 
-    return MaRC::almost_equal(v.magnitude(), mag, ulps);
+    REQUIRE(MaRC::almost_equal(v.magnitude(), mag, ulps));
 }
 
 /**
  * @test Test MaRC::Vector conversion to a unit vector.
  */
-bool test_unit_vector()
+TEST_CASE("MaRC::Vector conversion to a unit vector", "[vector]")
 {
     using vector_type = MaRC::Vector<double, 3>;
     vector_type v{ 3, 4, 5 };
@@ -191,19 +196,18 @@ bool test_unit_vector()
     // Unit vector magnitude is always 1.
     constexpr double unit_mag = 1;
 
-    return
-           std::abs(v[0]) <= unit_mag
-        && std::abs(v[1]) <= unit_mag
-        && std::abs(v[2]) <= unit_mag
-        && MaRC::almost_equal(v.magnitude(),
-                              unit_mag,
-                              ulps);
+    REQUIRE(std::abs(v[0]) <= unit_mag);
+    REQUIRE(std::abs(v[1]) <= unit_mag);
+    REQUIRE(std::abs(v[2]) <= unit_mag);
+    REQUIRE(MaRC::almost_equal(v.magnitude(),
+                               unit_mag,
+                               ulps));
 }
 
 /**
  * @test Test the dot product on two MaRC::Vector objects.
  */
-bool test_dot_product()
+TEST_CASE("MaRC::Vector dot product", "[vector]")
 {
     using vector_type = MaRC::Vector<int, 3>;
 
@@ -212,20 +216,5 @@ bool test_dot_product()
 
     auto const dp = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 
-    return MaRC::dot_product(a, b) == dp;
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_vector_initialization()
-        && test_vector_element_access()
-        && test_vector_comparison()
-        && test_vector_addition()
-        && test_vector_subtraction()
-        && test_vector_magnitude()
-        && test_unit_vector()
-        && test_dot_product()
-        ? 0 : -1;
+    REQUIRE(MaRC::dot_product(a, b) == dp);
 }

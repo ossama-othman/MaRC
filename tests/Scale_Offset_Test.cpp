@@ -1,7 +1,7 @@
 /**
  * @file Scale_Offset_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -9,6 +9,8 @@
 #include <marc/scale_and_offset.h>
 #include <marc/DefaultConfiguration.h>
 #include <marc/config.h>  // For NDEBUG.
+
+#include <catch2/catch.hpp>
 
 #include <limits>
 #include <type_traits>
@@ -50,11 +52,15 @@ bool test_scaling(double minimum, double maximum)
  * @test Test scaling of values that can't possibly fit into integer
  *       types or 32 bit floating point types without complete loss of
  *       precision.
- *
- * @tparam T Destination data type.
  */
-template <typename T>
-bool test_extreme_value_scaling()
+TEMPLATE_TEST_CASE("Extreme value scaling",
+                   "[scale and offset]",
+                   uint8_t,
+                   int16_t,
+                   int32_t,
+                   int64_t,
+                   float,
+                   double)
 {
     /*
       These minimum and maximum values scaling will only work when
@@ -66,59 +72,71 @@ bool test_extreme_value_scaling()
     constexpr auto minimum = std::numeric_limits<double>::lowest();
     constexpr auto maximum = std::numeric_limits<double>::max();
 
-    return
-        // T = double
-        (std::is_same<T, std::remove_const<decltype(minimum)>::type>()
-         && test_scaling<T>(minimum, maximum))
-
-        // T = type other than double
-        || !test_scaling<T>(minimum, maximum);
+    if (std::is_same<TestType,
+                     std::remove_const<decltype(minimum)>::type>()) {
+        // TestType == double
+        REQUIRE(test_scaling<TestType>(minimum, maximum));
+    } else {
+        // TestType != double
+        REQUIRE(!test_scaling<TestType>(minimum, maximum));
+    }
 }
 
 /**
  * @test Test scaling of cosine values.
- *
- * @tparam T Destination data type.
  */
-template <typename T>
-bool test_cosine_scaling()
+TEMPLATE_TEST_CASE("Cosine scaling",
+                   "[scale and offset]",
+                   uint8_t,
+                   int16_t,
+                   int32_t,
+                   int64_t,
+                   float,
+                   double)
 {
     // Cosine range is [-1, 1].
     constexpr double minimum = -1;
     constexpr double maximum =  1;
 
-    return test_scaling<T>(minimum, maximum);
+    REQUIRE(test_scaling<TestType>(minimum, maximum));
 }
 
 /**
  * @test Test scaling of latitude values.
- *
- * @tparam T Destination data type.
  */
-template <typename T>
-bool test_latitude_scaling()
+TEMPLATE_TEST_CASE("Latitude scaling",
+                   "[scale and offset]",
+                   uint8_t,
+                   int16_t,
+                   int32_t,
+                   int64_t,
+                   float,
+                   double)
 {
     using namespace MaRC::default_configuration;
 
     // Latitude range is [-90, 90] by default.
 
-    return test_scaling<T>(latitude_low, latitude_high);
+    REQUIRE(test_scaling<TestType>(latitude_low, latitude_high));
 }
 
 /**
  * @test Test scaling of longitude values.
- *
- * @tparam T Destination data type.
  */
-template <typename T>
-bool test_longitude_scaling()
+TEMPLATE_TEST_CASE("Longitude scaling",
+                   "[scale and offset]",
+                   uint8_t,
+                   int16_t,
+                   int32_t,
+                   int64_t,
+                   float,
+                   double)
 {
     using namespace MaRC::default_configuration;
 
     // Longitude range is [0, 360] by default.
 
-    return
-
+    if (sizeof(TestType) == 1) {
         /*
           Expect the longitude scale and offset computation to fail
           for 8 bit integer types since it isn't possible to fit the
@@ -128,49 +146,10 @@ bool test_longitude_scaling()
           NOTE: We assume that 1 byte integer types have 8 bits,
                 e.g. UCHAR_WIDTH = 8.
         */
-        (sizeof(T) == 1
-         && !test_scaling<T>(0, 360)) // Force full longitude range.
-
+        REQUIRE(!test_scaling<TestType>(0, 360)); // Force full
+                                                  // longitude range.
+    } else {
         // Integer types larger than 8 bits.
-        || test_scaling<T>(longitude_low, longitude_high);
-}
-
-/// The canonical main entry point.
-int main()
-{
-    // The fixed width integer types used here correspond to the
-    // integer data types specified in the FITS standard.
-
-    using namespace std;
-
-    return
-        test_extreme_value_scaling<uint8_t>()
-        && test_extreme_value_scaling<int16_t>()
-        && test_extreme_value_scaling<int32_t>()
-        && test_extreme_value_scaling<int64_t>()
-        && test_extreme_value_scaling<float>()
-        && test_extreme_value_scaling<double>()
-
-        && test_cosine_scaling<uint8_t>()
-        && test_cosine_scaling<int16_t>()
-        && test_cosine_scaling<int32_t>()
-        && test_cosine_scaling<int64_t>()
-        && test_cosine_scaling<float>()
-        && test_cosine_scaling<double>()
-
-        && test_latitude_scaling<uint8_t>()
-        && test_latitude_scaling<int16_t>()
-        && test_latitude_scaling<int32_t>()
-        && test_latitude_scaling<int64_t>()
-        && test_latitude_scaling<float>()
-        && test_latitude_scaling<double>()
-
-        && test_longitude_scaling<uint8_t>()
-        && test_longitude_scaling<int16_t>()
-        && test_longitude_scaling<int32_t>()
-        && test_longitude_scaling<int64_t>()
-        && test_longitude_scaling<float>()
-        && test_longitude_scaling<double>()
-
-        ? 0 : -1;
+        REQUIRE(test_scaling<TestType>(longitude_low, longitude_high));
+    }
 }

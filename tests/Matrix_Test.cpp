@@ -1,7 +1,7 @@
 /**
  * @file Matrix_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -9,13 +9,15 @@
 #include <marc/Vector.h>
 #include <marc/Matrix.h>
 
+#include <catch2/catch.hpp>
+
 #include <algorithm>
 
 
 /**
  * @test Test MaRC::Matrix initialization.
  */
-bool test_matrix_initialization()
+TEST_CASE("MaRC::Matrix initialization", "[matrix]")
 {
     static constexpr std::size_t ROWS = 2;
     static constexpr std::size_t COLUMNS = 2;
@@ -39,31 +41,30 @@ bool test_matrix_initialization()
     std::iterator_traits<matrix_type::iterator>::difference_type const
         element_count = std::distance(std::cbegin(m1), std::cend(m1));
 
-    return
-        element_count > 0
-        && static_cast<std::remove_const<decltype(ROWS)>::type>(
-            element_count) == ROWS * COLUMNS
-        && std::find_if_not(
-            std::cbegin(m1),
-            std::cend(m1),
-            [](auto value)
-            {
-                return value == matrix_type::value_type();
-            }) == std::cend(m1)
-        && std::equal(std::cbegin(m2), std::cend(m2),
-                      std::cbegin(n),  std::cend(n))
-        && std::equal(std::cbegin(m3), std::cend(m3),
-                      std::cbegin(m2), std::cend(m2))
-        && std::equal(std::cbegin(m4), std::cend(m4),
-                      std::cbegin(n),  std::cend(n))
-        && std::equal(std::cbegin(m5), std::cend(m5),
-                      std::cbegin(m3), std::cend(m3));
+    REQUIRE(element_count > 0);
+    REQUIRE(static_cast<std::remove_const<decltype(ROWS)>::type>(
+                element_count) == ROWS * COLUMNS);
+    REQUIRE(std::find_if_not(
+                std::cbegin(m1),
+                std::cend(m1),
+                [](auto value)
+                {
+                    return value == matrix_type::value_type();
+                }) == std::cend(m1));
+    REQUIRE(std::equal(std::cbegin(m2), std::cend(m2),
+                       std::cbegin(n),  std::cend(n)));
+    REQUIRE(std::equal(std::cbegin(m3), std::cend(m3),
+                       std::cbegin(m2), std::cend(m2)));
+    REQUIRE(std::equal(std::cbegin(m4), std::cend(m4),
+                       std::cbegin(n),  std::cend(n)));
+    REQUIRE(std::equal(std::cbegin(m5), std::cend(m5),
+                       std::cbegin(m3), std::cend(m3)));
 }
 
 /**
  * @test Test MaRC::Matrix element access.
  */
-bool test_matrix_element_access()
+TEST_CASE("MaRC::Matrix element access", "[matrix]")
 {
     static constexpr std::size_t ROWS = 2;
     static constexpr std::size_t COLUMNS = 2;
@@ -78,45 +79,30 @@ bool test_matrix_element_access()
     matrix_initializer_list{{n[0], n[1]},
                             {n[2], n[3]}};
 
-    matrix_type const m{matrix_initializer_list};
+    matrix_type const m{matrix_initializer_list};\
 
-    bool caught_expected_exception = false;
+    REQUIRE(m(0, 0) == n[0]);
+    REQUIRE(m.at(0, 0) == n[0]);
 
-    try {
-        (void) m.at(ROWS + 1, COLUMNS);
-    } catch(std::out_of_range const &) {
-        caught_expected_exception = true;
-    }
+    REQUIRE(m(0, 1) == n[1]);
+    REQUIRE(m.at(0, 1) == n[1]);
 
-    if (caught_expected_exception) {
-        try {
-            (void) m.at(ROWS, COLUMNS + 1);
-            caught_expected_exception = false;
-        } catch(std::out_of_range const &) {
-            caught_expected_exception = true;
-        }
-    }
+    REQUIRE(m(1, 0) == n[2]);
+    REQUIRE(m.at(1, 0) == n[2]);
 
-    if (caught_expected_exception) {
-        try {
-            (void) m.at(ROWS + 1, COLUMNS + 1);
-            caught_expected_exception = false;
-        } catch(std::out_of_range const &) {
-            caught_expected_exception = true;
-        }
-    }
+    REQUIRE(m(1, 1) == n[3]);
+    REQUIRE(m.at(1, 1) == n[3]);
 
-    return m(0, 0) == n[0] && m.at(0, 0) == n[0]
-        && m(0, 1) == n[1] && m.at(0, 1) == n[1]
-        && m(1, 0) == n[2] && m.at(1, 0) == n[2]
-        && m(1, 1) == n[3] && m.at(1, 1) == n[3]
-        && caught_expected_exception;
+    REQUIRE_THROWS_AS((void) m.at(ROWS + 1, COLUMNS), std::out_of_range);
+    REQUIRE_THROWS_AS((void) m.at(ROWS, COLUMNS + 1), std::out_of_range);
+    REQUIRE_THROWS_AS((void) m.at(ROWS + 1, COLUMNS + 1),
+                      std::out_of_range);
 }
 
 /**
  * @test Test MaRC::Matrix comparison.
  */
-bool test_matrix_comparison()
+TEST_CASE("MaRC::Matrix comparison", "[matrix]")
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
@@ -131,13 +117,15 @@ bool test_matrix_comparison()
     matrix_type const m4{{2, 3},
                          {5, 7},
                          {11, 13}};
-    return m2 == m1 && m3 == m2 && m4 != m1;
+    REQUIRE(m2 == m1);
+    REQUIRE(m3 == m2);
+    REQUIRE(m4 != m1);
 }
 
 /**
  * @test Test MaRC::Matrix addition.
  */
-bool test_matrix_addition()
+TEST_CASE("MaRC::Matrix addition", "[matrix]")
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
@@ -156,13 +144,14 @@ bool test_matrix_addition()
                           { 7, 5 },
                           { 4, 7 }};
 
-    return m3 == sum && m1 + m2 == sum;
+    REQUIRE(m3      == sum);
+    REQUIRE(m1 + m2 == sum);
 }
 
 /**
  * @test Test MaRC::Matrix subtraction.
  */
-bool test_matrix_subtraction()
+TEST_CASE("MaRC::Matrix subtraction", "[matrix]")
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
@@ -181,13 +170,14 @@ bool test_matrix_subtraction()
                            {-1,  3 },
                            { 8,  7 }};
 
-    return m3 == diff && m1 - m2 == diff;
+    REQUIRE(m3      == diff);
+    REQUIRE(m1 - m2 == diff);
 }
 
 /**
  * @test Test MaRC::Matrix multiplication by scalars and vectors.
  */
-bool test_matrix_multiplication()
+TEST_CASE("MaRC::Matrix multiplication", "[matrix]")
 {
     using left_matrix_type  = MaRC::Matrix<int, 3, 2>;
     using right_matrix_type = MaRC::Matrix<int, 2, 3>;
@@ -215,17 +205,16 @@ bool test_matrix_multiplication()
                                  {  68, 106, 134 },
                                  { 122, 190, 242 }}; //  prod * s
 
-    return
-        left * right == prod
-        && prod * v == vprod
-        && prod * s == sprod
-        && s * prod == sprod;
+    REQUIRE(left * right == prod);
+    REQUIRE(prod * v == vprod);
+    REQUIRE(prod * s == sprod);
+    REQUIRE(s * prod == sprod);
 }
 
 /**
  * @test Test the MaRC::transpose() function.
  */
-bool test_matrix_transpose()
+TEST_CASE("MaRC::Matrix transpose", "[matrix]")
 {
     using matrix_type = MaRC::Matrix<int, 3, 2>;
 
@@ -238,18 +227,5 @@ bool test_matrix_transpose()
 
     auto const t(MaRC::transpose(m));
 
-    return t == expected_t;
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_matrix_initialization()
-        && test_matrix_element_access()
-        && test_matrix_comparison()
-        && test_matrix_addition()
-        && test_matrix_subtraction()
-        && test_matrix_multiplication()
-        && test_matrix_transpose() ? 0 : -1;
+    REQUIRE(t == expected_t);
 }

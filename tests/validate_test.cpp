@@ -1,13 +1,15 @@
 /**
  * @file validate_test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <marc/Validate.h>
 #include <marc/Mathematics.h>
+
+#include <catch2/catch.hpp>
 
 #include <functional>
 
@@ -52,13 +54,13 @@ bool test_validate(std::function<double(double deg)> const & validate,
  *       the provided good latitude in radians, and fails to validate
  *       the provided bad latitude.
  */
-bool test_validate_latitude()
+TEST_CASE("Latitude validation", "[validate]")
 {
     // -90 <= good latitude (degrees) <= 90
     constexpr double good = 45;   // degrees
     constexpr double bad  = -100;
 
-    return test_validate(MaRC::validate_latitude, good, bad);
+    REQUIRE(test_validate(MaRC::validate_latitude, good, bad));
 }
 
 /**
@@ -66,13 +68,13 @@ bool test_validate_latitude()
  *       the provided good longitude in radians, and fails to validate
  *       the provided bad longitude.
  */
-bool test_validate_longitude()
+TEST_CASE("Longitude validation", "[validate]")
 {
     // -360 <= good longitude (degrees) <= 360
     constexpr double good = -120;   // degrees
     constexpr double bad  = 540;
 
-    return test_validate(MaRC::validate_longitude, good, bad);
+    REQUIRE(test_validate(MaRC::validate_longitude, good, bad));
 }
 
 /**
@@ -80,21 +82,11 @@ bool test_validate_longitude()
  *       returns the provided good position angle in radians, and
  *       fails to validate the provided bad position angle.
  */
-bool test_validate_position_angle()
+TEST_CASE("Position angle validation", "[validate]")
 {
     // -360 <= good position angle (degrees) <= 360
     constexpr double good = 270;   // degrees
     constexpr double bad  = -365;
 
-    return test_validate(MaRC::validate_position_angle, good, bad);
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_validate_latitude()
-        && test_validate_longitude()
-        && test_validate_position_angle()
-        ? 0 : -1;
+    REQUIRE(test_validate(MaRC::validate_position_angle, good, bad));
 }

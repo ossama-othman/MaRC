@@ -1,7 +1,7 @@
 /**
  * @file Orthographic_Test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -13,7 +13,7 @@
 #include <marc/DefaultConfiguration.h>
 #include <marc/scale_and_offset.h>
 
-#include <marc/Log.h>
+#include <catch2/catch.hpp>
 
 #include <memory>
 #include <cstring>
@@ -78,18 +78,18 @@ namespace
 /**
  * @test Test the MaRC::Orthographic::projection_name() method.
  */
-bool test_projection_name()
+TEST_CASE("Orthographic projection name", "[orthographic]")
 {
     static char const name[] = "Orthographic";
 
-    return std::strcmp(projection->projection_name(), name) == 0;
+    REQUIRE(std::strcmp(projection->projection_name(), name) == 0);
 }
 
 /**
  * @test Test the MaRC::Orthographic::make_map() method,
  *       i.e. Orthographic map projection image creation.
  */
-bool test_make_map()
+TEST_CASE("Make Orthographic projection map", "[orthographic]")
 {
     using namespace MaRC::default_configuration;
 
@@ -108,11 +108,10 @@ bool test_make_map()
     double scale;
     double offset;
 
-    if (!MaRC::scale_and_offset<data_type>(latitude_low,
-                                           latitude_high,
-                                           scale,
-                                           offset))
-        return false;
+    REQUIRE(MaRC::scale_and_offset<data_type>(latitude_low,
+                                              latitude_high,
+                                              scale,
+                                              offset));
 
     constexpr bool graphic_latitudes = false;
 
@@ -139,8 +138,7 @@ bool test_make_map()
     auto const map =
         projection->template make_map<data_type>(info, samples, lines);
 
-    if (map.empty())
-        return false;
+    REQUIRE_FALSE(map.empty());
 
     auto const non_blank =
         std::find_if_not(std::cbegin(map),
@@ -153,8 +151,7 @@ bool test_make_map()
                                  : !std::isnan(v);
                          });
 
-    if (non_blank == std::cend(map))
-        return false;  // All blank!
+    REQUIRE(non_blank != std::cend(map));   // All blank!
 
     constexpr auto sub_observation_sample = samples / 2;
     constexpr auto sub_observation_line   = lines / 2;
@@ -166,16 +163,16 @@ bool test_make_map()
 
     constexpr int ulps = 2;
 
-    return
-        !map.empty()
-        && MaRC::almost_equal(sub_observation_data, sub_observ_lat, ulps);
+    REQUIRE(MaRC::almost_equal(sub_observation_data,
+                               sub_observ_lat,
+                               ulps));
 }
 
 /**
  * @test Test the MaRC::Orthogographic::make_grid() method,
  *       i.e. Orthographic projection grid image creation.
  */
-bool test_make_grid()
+TEST_CASE("Make Orthographic projection grid", "[orthographic]")
 {
     constexpr auto lat_interval = 10;
     constexpr auto lon_interval = 10;
@@ -192,24 +189,7 @@ bool test_make_grid()
     static constexpr auto white =
         std::numeric_limits<decltype(grid)::value_type>::max();
 
-    return
-        minmax.first != minmax.second
-        && *minmax.first  == black
-        && *minmax.second == white;
-}
-
-
-/// The canonical main entry point.
-int main()
-{
-    /**
-     * @todo Test calculated kilometers per pixel, sample and line at
-     *       the body center, and latitude and longitude at the center
-     *       of the projection.
-     */
-    return
-        test_projection_name()
-        && test_make_map()
-        && test_make_grid()
-        ? 0 : -1;
+    REQUIRE(minmax.first != minmax.second);
+    REQUIRE(*minmax.first  == black);
+    REQUIRE(*minmax.second == white);
 }

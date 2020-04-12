@@ -1,7 +1,7 @@
 /**
  * @file PolarStereographic_Test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -12,6 +12,8 @@
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
 #include <marc/scale_and_offset.h>
+
+#include <catch2/catch.hpp>
 
 #include <memory>
 #include <cstring>
@@ -88,10 +90,10 @@ namespace
         return extrapolate(x1, x2, y1, y2, x);
     }
 
-    double percent_difference(double l, double l0)
+    double percent_difference(double l, double l_0)
     {
-        // l0 better not be zero!
-        return (l - l0) / l0 * 100;
+        // l_0 better not be zero!
+        return (l - l_0) / l_0 * 100;
     }
 }
 
@@ -99,18 +101,19 @@ namespace
 /**
  * @test Test the MaRC::PolarStereographic::projection_name() method.
  */
-bool test_projection_name()
+TEST_CASE("Polar stereographic projection name", "[polar stereographic]")
 {
     static char const name[] = "Polar Stereographic";
 
-    return std::strcmp(projection->projection_name(), name) == 0;
+    REQUIRE(std::strcmp(projection->projection_name(), name) == 0);
 }
 
 /**
  * @test Test the MaRC::PolarStereographic::make_map() method,
  *       i.e. Polar Stereographic map image creation.
  */
-bool test_make_map()
+TEST_CASE("Make Polar stereographic projection map",
+          "[polar stereographic]")
 {
     /**
      * @todo Test conformal properties of Polar Stereographic
@@ -126,11 +129,10 @@ bool test_make_map()
     double map_scale;
     double map_offset;
 
-    if (!MaRC::scale_and_offset<data_type>(latitude_low,
-                                           latitude_high,
-                                           map_scale,
-                                           map_offset))
-        return false;
+    REQUIRE(MaRC::scale_and_offset<data_type>(latitude_low,
+                                              latitude_high,
+                                              map_scale,
+                                              map_offset));
 
     constexpr bool graphic_latitudes = false;
 
@@ -154,8 +156,7 @@ bool test_make_map()
     auto const map =
         projection->template make_map<data_type>(info, samples, lines);
 
-    if (map.empty())
-        return false;
+    REQUIRE_FALSE(map.empty());
 
     constexpr auto center_sample = samples / 2;
     constexpr auto center_line   = lines / 2;
@@ -250,26 +251,25 @@ bool test_make_map()
     constexpr double pdmax = 0.08; // Maximum allowed difference in
                                    // percent.
 
-    return
-        !map.empty()
-        && MaRC::almost_equal(center_data, expected_center_data, ulps)
+    REQUIRE(MaRC::almost_equal(center_data, expected_center_data, ulps));
 
-        /*
-          The linearly extrapolated maximum latitudes won't be close
-          enough to max_lat to get a good result from
-          MaRC::almost_equal() unless we greatly increase the ulps
-          argument.  Just check if the difference between the two
-          values falls within a small percentage instead.
-        */
-        && (percent_difference(max_lat_data[0], max_lat) < pdmax)
-        && (percent_difference(max_lat_data[1], max_lat) < pdmax);
+    /*
+      The linearly extrapolated maximum latitudes won't be close
+      enough to max_lat to get a good result from MaRC::almost_equal()
+      unless we greatly increase the ulps argument.  Just check if the
+      difference between the two values falls within a small
+      percentage instead.
+    */
+    REQUIRE(percent_difference(max_lat_data[0], max_lat) < pdmax);
+    REQUIRE(percent_difference(max_lat_data[1], max_lat) < pdmax);
 }
 
 /**
  * @test Test the MaRC::PolarStereographic::make_grid() method,
  *       i.e. Polar Stereographic grid image creation.
  */
-bool test_make_grid()
+TEST_CASE("Make Polar Stereographic projection grid",
+          "[polar stereographic]")
 {
     constexpr auto lat_interval = 10;
     constexpr auto lon_interval = 10;
@@ -286,17 +286,17 @@ bool test_make_grid()
     static constexpr auto white =
         std::numeric_limits<decltype(grid)::value_type>::max();
 
-    return
-        minmax.first != minmax.second
-        && *minmax.first  == black
-        && *minmax.second == white;
+    REQUIRE(minmax.first != minmax.second);
+    REQUIRE(*minmax.first  == black);
+    REQUIRE(*minmax.second == white);
 }
 
 /**
  * @test Test the MaRC::PolarStereographic::distortion() method,
  *       i.e. scale distortion in the Polar Stereographic map.
  */
-bool test_distortion()
+TEST_CASE("Polar Stereographic projection scale distortion",
+          "[polar stereographic]")
 {
     // Latitude at the center of the map.
     constexpr double pole    = (north_pole ? 90 : -90) * C::degree;
@@ -310,21 +310,9 @@ bool test_distortion()
 
     auto const distortion = projection->distortion(pole);
 
-    return
-        MaRC::almost_equal(map_center_distortion, distortion, ulps)
+    REQUIRE(MaRC::almost_equal(map_center_distortion, distortion, ulps));
 
-        // Distortion away from the pole at the center of the
-        // projection should always be greater than one.
-        && projection->distortion(equator) > map_center_distortion;
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_projection_name()
-        && test_make_map()
-        && test_make_grid()
-        && test_distortion()
-        ? 0 : -1;
+    // Distortion away from the pole at the center of the projection
+    // should always be greater than one.
+    REQUIRE(projection->distortion(equator) > map_center_distortion);
 }

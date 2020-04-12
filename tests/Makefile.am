@@ -1,4 +1,4 @@
-## Copyright (C) 1999, 2004, 2017  Ossama Othman
+## Copyright (C) 1999, 2004, 2017, 2020  Ossama Othman
 ##
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -11,28 +11,12 @@ MARC_LIB = $(top_builddir)/lib/marc/libMaRC.la
 AM_CPPFLAGS =               \
   -I$(top_srcdir)/lib       \
   $(FMTLIB_CPPFLAGS)        \
+  $(CATCH2_CPPFLAGS)        \
   $(CODE_COVERAGE_CPPFLAGS)
 AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
 AM_LIBS = $(CODE_COVERAGE_LIBS)
 
-check_PROGRAMS =            \
-  DefaultConfiguration_Test \
-  Math_Test                 \
-  Vector_Test               \
-  Matrix_Test               \
-  Geometry_Test             \
-  OblateSpheroid_Test       \
-  Scale_Offset_Test         \
-  LatitudeImage_Test        \
-  LongitudeImage_Test       \
-  ViewingGeometry_Test      \
-  Mercator_Test             \
-  Orthographic_Test         \
-  PolarStereographic_Test   \
-  optional_test             \
-  root_find_test            \
-  utility_test              \
-  validate_test
+check_PROGRAMS = marc_test
 
 dist_check_SCRIPTS = command_line_test.sh
 
@@ -78,76 +62,29 @@ nobase_dist_check_DATA = \
   test.fits.gz           \
   $(BAD_MARC_FILES)
 
-DefaultConfiguration_Test_SOURCES = DefaultConfiguration_Test.cpp
-DefaultConfiguration_Test_LDADD   = $(CODE_COVERAGE_LIBS)
+marc_test_SOURCES =			\
+	DefaultConfiguration_Test.cpp	\
+	Math_Test.cpp			\
+	Vector_Test.cpp			\
+	Matrix_Test.cpp			\
+	Geometry_Test.cpp		\
+	OblateSpheroid_Test.cpp		\
+	Scale_Offset_Test.cpp		\
+	LatitudeImage_Test.cpp		\
+	LongitudeImage_Test.cpp		\
+	ViewingGeometry_Test.cpp	\
+	Mercator_Test.cpp		\
+	Orthographic_Test.cpp		\
+	PolarStereographic_Test.cpp	\
+	optional_test.cpp		\
+	root_find_test.cpp		\
+	utility_test.cpp		\
+	validate_test.cpp		\
+	marc_test.cpp
 
-Math_Test_SOURCES = Math_Test.cpp
-Math_Test_LDADD   = $(CODE_COVERAGE_LIBS)
-
-Vector_Test_SOURCES = Vector_Test.cpp
-Vector_Test_LDADD   = $(CODE_COVERAGE_LIBS)
-
-Matrix_Test_SOURCES = Matrix_Test.cpp
-Matrix_Test_LDADD   = $(CODE_COVERAGE_LIBS)
-
-Geometry_Test_SOURCES = Geometry_Test.cpp
-Geometry_Test_LDADD = \
-   $(top_builddir)/lib/marc/libMaRC.la \
-   $(CODE_COVERAGE_LIBS)
-
-OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
-OblateSpheroid_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-Scale_Offset_Test_SOURCES = Scale_Offset_Test.cpp
-Scale_Offset_Test_LDADD   = $(CODE_COVERAGE_LIBS)
-
-LatitudeImage_Test_SOURCES = LatitudeImage_Test.cpp
-LatitudeImage_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-LongitudeImage_Test_SOURCES = LongitudeImage_Test.cpp
-LongitudeImage_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
-ViewingGeometry_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-Mercator_Test_SOURCES = Mercator_Test.cpp
-Mercator_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-Orthographic_Test_SOURCES = Orthographic_Test.cpp
-Orthographic_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
-PolarStereographic_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-optional_test_SOURCES = optional_test.cpp
-optional_test_LDADD   = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-root_find_test_SOURCES = root_find_test.cpp
-root_find_test_LDADD   = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-utility_test_SOURCES = utility_test.cpp
-utility_test_LDADD   = $(CODE_COVERAGE_LIBS)
-
-validate_test_SOURCES = validate_test.cpp
-validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
+marc_test_LDADD =				\
+	$(top_builddir)/lib/marc/libMaRC.la	\
+	$(CODE_COVERAGE_LIBS)
 
 TESTS =                  \
   $(check_PROGRAMS)      \

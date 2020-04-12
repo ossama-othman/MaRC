@@ -1,12 +1,14 @@
 /**
  * @file Math_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <marc/Mathematics.h>
+
+#include <catch2/catch.hpp>
 
 #include <cstdint>
 
@@ -66,7 +68,7 @@ namespace
 /**
  * @test Test the MaRC::almost_equal() function.
  */
-bool test_almost_equal()
+TEST_CASE("MaRC::almost_equal()", "[math]")
 {
     using namespace std;
 
@@ -96,85 +98,78 @@ bool test_almost_equal()
     // value to a float.
     auto const y  = reinterpret_cast<float *>(&yi);
 
-    return
-        // The floating values (x) and (*y) should now be 4 ULPs
-        // apart. Test that they are still almost equal to each
-        // other.
-        MaRC::almost_equal(x, *y, 2)
+    // The floating values (x) and (*y) should now be 4 ULPs
+    // apart. Test that they are still almost equal to each other.
+    REQUIRE(MaRC::almost_equal(x, *y, 2));
 
-        // Increase precision to make the "almost equal" check more
-        // strict.
-        && !MaRC::almost_equal(x, *y, 1)
+    // Increase precision to make the "almost equal" check more
+    // strict.
+    REQUIRE(!MaRC::almost_equal(x, *y, 1));
 
-        // Check for inequality with relatively tight precision.
-        && !MaRC::almost_equal(3.1234567891234,
-                               3.12345678912341,
-                               2);
+    // Check for inequality with relatively tight precision.
+    REQUIRE(!MaRC::almost_equal(3.1234567891234, 3.12345678912341, 2));
 }
 
 /**
  * @test Test the MaRC::almost_zero() function.
  */
-bool test_almost_zero()
+TEST_CASE("MaRC::almost_zero()", "[math]")
 {
     constexpr float  w = 0;
     constexpr double x = std::numeric_limits<double>::min();
     constexpr float  y = -1e-5;
     constexpr float  z = 1;
 
-    return
-           MaRC::almost_zero(w, 1)
-        && MaRC::almost_zero(x, 1)
-        && MaRC::almost_zero(y, 100)
-        && !MaRC::almost_zero(z, 100000);
+    REQUIRE(MaRC::almost_zero(w, 1));
+    REQUIRE(MaRC::almost_zero(x, 1));
+    REQUIRE(MaRC::almost_zero(y, 100));
+    REQUIRE(!MaRC::almost_zero(z, 100000));
 }
 
 /**
  * @test Test the MaRC::signum() function.
  */
-bool test_signum()
+TEST_CASE("MaRC::signum()", "[math]")
 {
-    return
-        // Signed intger
-        MaRC::signum   ( -3L) == -1
-        && MaRC::signum(  0L) ==  0
-        && MaRC::signum(  5L) ==  1
+    // Signed intger
+    REQUIRE(MaRC::signum(-3L) == -1);
+    REQUIRE(MaRC::signum( 0L) ==  0);
+    REQUIRE(MaRC::signum( 5L) ==  1);
 
-        // Unsigned integer
-        && MaRC::signum(  0U) ==  0
-        && MaRC::signum(  2U) ==  1
+    // Unsigned integer
+    REQUIRE(MaRC::signum(0U) ==  0);
+    REQUIRE(MaRC::signum(2U) ==  1);
 
-        // Floating point number
-        && MaRC::signum(-2.0) == -1
-        && MaRC::signum( 0.0) ==  0
-        && MaRC::signum( 7.0) ==  1;
+    // Floating point number
+    REQUIRE(MaRC::signum(-2.0) == -1);
+    REQUIRE(MaRC::signum( 0.0) ==  0);
+    REQUIRE(MaRC::signum( 7.0) ==  1);
 }
 
 /**
  * @test Test the MaRC::sgn() function.
  */
-bool test_sgn()
+TEST_CASE("MaRC::sgn()", "[math]")
 {
-    return
-        // Signed intger
-        MaRC::sgn   ( -3L) == -1
-        && MaRC::sgn(  0L) ==  1
-        && MaRC::sgn(  5L) ==  1
+    // Signed intger
+    REQUIRE(MaRC::sgn(-3L) == -1);
+    REQUIRE(MaRC::sgn( 0L) ==  1);
+    REQUIRE(MaRC::sgn( 5L) ==  1);
 
-        // Unsigned integer
-        && MaRC::sgn(  0U) ==  1
-        && MaRC::sgn(  2U) ==  1
+    // Unsigned integer
+    REQUIRE(MaRC::sgn(0U) ==  1);
+    REQUIRE(MaRC::sgn(2U) ==  1);
 
-        // Floating point number
-        && MaRC::sgn(-2.0) == -1
-        && MaRC::sgn( 0.0) ==  1
-        && MaRC::sgn( 7.0) ==  1;
+    // Floating point number
+    REQUIRE(MaRC::sgn(-2.0) == -1);
+    REQUIRE(MaRC::sgn( 0.0) ==  1);
+    REQUIRE(MaRC::sgn( 7.0) ==  1);
 }
 
 /**
  * @test Test the MaRC::quadratic_roots() function.
  */
-bool test_quadratic_roots()
+TEST_CASE("MaRC::quadratic_roots()", "[math]")
 {
     /*
       For a quadratic equation with roots of (-3, 2) we have the
@@ -222,17 +217,6 @@ bool test_quadratic_roots()
     static constexpr int const c2 = -25;
     static constexpr auto expected_roots2 = std::make_pair(-2.5, 2.5);
 
-    return check_roots(a1, b1, c1, expected_roots1)
-        && check_roots(a2, b2, c2, expected_roots2);
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_almost_equal()
-        && test_almost_zero()
-        && test_signum()
-        && test_sgn()
-        && test_quadratic_roots() ? 0 : -1;
+    REQUIRE(check_roots(a1, b1, c1, expected_roots1));
+    REQUIRE(check_roots(a2, b2, c2, expected_roots2));
 }

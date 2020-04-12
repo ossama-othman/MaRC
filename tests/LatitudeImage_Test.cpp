@@ -1,7 +1,7 @@
 /**
  * @file LatitudeImage_Test.cpp
  *
- * Copyright (C) 2017-2018 Ossama Othman
+ * Copyright (C) 2017-2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -13,54 +13,62 @@
 #include <marc/Constants.h>
 #include <marc/scale_and_offset.h>
 
+#include <catch2/catch.hpp>
+
 #include <memory>
 #include <cstdint>
 #include <cstring>
 
 
-/**
- * @brief Validate latitude values obtained from MaRC::LatitudeImage.
- *
- * @param[in] latitude_image MaRC::LatitudeImage object.
- * @param[in] expected_lat   Latitude in degrees expected to be
- *                           returned from
- *                           MaRC::LatitudeImage::read_data().
- * @param[in] test_lat       Latitude in radians that was passed as
- *                           the latitude argument to
- *                           MaRC::LatitudeImage::read_data().
- *
- * @retval true  Test succeeded.
- * @retval false Test failed.
- */
-bool test_read_data(
-    std::unique_ptr<MaRC::VirtualImage> const & latitude_image,
-    double expected_lat,  // degrees
-    double test_lat)      // radians
+namespace
 {
-    constexpr double longitude = -42 * C::degree;  // arbitrary
-    constexpr int    ulps      = 2;
+    /**
+     * @brief Validate latitude values obtained from
+     *        MaRC::LatitudeImage.
+     *
+     * @param[in] latitude_image MaRC::LatitudeImage object.
+     * @param[in] expected_lat   Latitude in degrees expected to be
+     *                           returned from
+     *                           MaRC::LatitudeImage::read_data().
+     * @param[in] test_lat       Latitude in radians that was passed
+     *                           as the latitude argument to
+     *                           MaRC::LatitudeImage::read_data().
+     *
+     * @retval true  Test succeeded.
+     * @retval false Test failed.
+     */
+    bool test_read_data(
+        std::unique_ptr<MaRC::VirtualImage> const & latitude_image,
+        double expected_lat,  // degrees
+        double test_lat)      // radians
+    {
+        constexpr double longitude = -42 * C::degree;  // arbitrary
+        constexpr int    ulps      = 2;
 
-    double data;  // Data will be in degrees.
+        double data;  // Data will be in degrees.
 
-    // Scale and offset used to convert map data to physical data
-    // (latitudes)
-    double const data_scale  = latitude_image->scale();
-    double const data_offset = latitude_image->offset();
+        // Scale and offset used to convert map data to physical data
+        // (latitudes)
+        double const data_scale  = latitude_image->scale();
+        double const data_offset = latitude_image->offset();
 
-    return
-        latitude_image->read_data(test_lat, longitude, data)
-        && MaRC::almost_equal(expected_lat,
-                              data * data_scale + data_offset,
-                              ulps);
+        return
+            latitude_image->read_data(test_lat, longitude, data)
+            && MaRC::almost_equal(expected_lat,
+                                  data * data_scale + data_offset,
+                                  ulps);
+    }
 }
 
 /**
  * @test Test the MaRC::LatitudeImage class.
- *
- * @tparam T Map data type.
  */
-template <typename T>
-bool test_latitude_image()
+TEMPLATE_TEST_CASE("MaRC::LatitudeImage",
+                   "[latitude image]",
+                   int16_t,
+                   uint32_t,
+                   float,
+                   double)
 {
     using namespace MaRC::default_configuration;
 
@@ -69,11 +77,10 @@ bool test_latitude_image()
     double map_scale;
     double map_offset;
 
-    if (!MaRC::scale_and_offset<T>(latitude_low,
-                                   latitude_high,
-                                   map_scale,
-                                   map_offset))
-        return false;
+    REQUIRE(MaRC::scale_and_offset<TestType>(latitude_low,
+                                             latitude_high,
+                                             map_scale,
+                                             map_offset));
 
     constexpr bool   prograde   = false;
     constexpr double eq_rad     = 1234567;
@@ -105,30 +112,18 @@ bool test_latitude_image()
     // Expected unit string.
     constexpr char const unit[] = "deg"; // Per FITS recommendation.
 
-    return
-        latitude_image
+    REQUIRE(latitude_image);
 
-        && test_read_data(latitude_image, latitude_low, lo_lat)
-        && test_read_data(latitude_image, latitude_high, hi_lat)
-        && test_read_data(latitude_image, mid_lat / C::degree, mid_lat)
+    REQUIRE(test_read_data(latitude_image, latitude_low, lo_lat));
+    REQUIRE(test_read_data(latitude_image, latitude_high, hi_lat));
+    REQUIRE(test_read_data(latitude_image, mid_lat / C::degree, mid_lat));
 
-        && !test_read_data(latitude_image,
-                           oob_lo_lat / C::degree,
-                           oob_lo_lat)
-        && !test_read_data(latitude_image,
-                           oob_hi_lat / C::degree,
-                           oob_hi_lat)
+    REQUIRE(!test_read_data(latitude_image,
+                            oob_lo_lat / C::degree,
+                            oob_lo_lat));
+    REQUIRE(!test_read_data(latitude_image,
+                            oob_hi_lat / C::degree,
+                            oob_hi_lat));
 
-        && std::strcmp(latitude_image->unit(), unit) == 0;
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_latitude_image<std::int16_t>()
-        && test_latitude_image<std::uint32_t>()
-        && test_latitude_image<float>()
-        && test_latitude_image<double>()
-        ? 0 : -1;
+    REQUIRE(std::strcmp(latitude_image->unit(), unit) == 0);
 }

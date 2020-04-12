@@ -86,23 +86,7 @@ src/marc
 test-driver
 *.log
 *.trs
-tests/DefaultConfiguration_Test
-tests/Math_Test
-tests/Vector_Test
-tests/Matrix_Test
-tests/Geometry_Test
-tests/OblateSpheroid_Test
-tests/Scale_Offset_Test
-tests/LatitudeImage_Test
-tests/LongitudeImage_Test
-tests/ViewingGeometry_Test
-tests/Mercator_Test
-tests/Orthographic_Test
-tests/PolarStereographic_Test
-tests/optional_test
-tests/root_find_test
-tests/utility_test
-tests/validate_test
+tests/marc_test
 tests/test-suite.log
 tests/test_*map*.fits
 

@@ -1,7 +1,7 @@
 /**
  * @file OblateSpheroid_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -9,6 +9,8 @@
 #include <marc/OblateSpheroid.h>
 #include <marc/Mathematics.h>
 #include <marc/Constants.h>
+
+#include <catch2/catch.hpp>
 
 #include <memory>
 #include <cmath>
@@ -80,7 +82,7 @@ namespace
 /**
  * @test Test MaRC::OblateSpheroid initialization.
  */
-bool test_initialization()
+TEST_CASE("MaRC::OblateSpheroid initialization", "[oblate spheroid]")
 {
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
@@ -88,19 +90,17 @@ bool test_initialization()
     // Expected first eccentricity
     double const e = std::sqrt(1 - std::pow(c / a, 2));
 
-    return
-        prograde == o->prograde()
-
-        && MaRC::almost_equal(a, o->eq_rad(),  ulps)
-        && MaRC::almost_equal(c, o->pol_rad(), ulps)
-        && MaRC::almost_equal(e, o->first_eccentricity(), ulps);
+    REQUIRE(prograde == o->prograde());
+    REQUIRE(MaRC::almost_equal(a, o->eq_rad(),  ulps));
+    REQUIRE(MaRC::almost_equal(c, o->pol_rad(), ulps));
+    REQUIRE(MaRC::almost_equal(e, o->first_eccentricity(), ulps));
 }
 
 /**
  * @test Test the MaRC::OblateSpheroid::centric_radius() method,
  *       i.e. the radius at a given planetocentric latitude.
  */
-bool test_centric_radius()
+TEST_CASE("MaRC::OblateSpheroid::centric_radius()", "[oblate spheroid]")
 {
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
@@ -118,31 +118,30 @@ bool test_centric_radius()
     double const y = r * std::cos(latitude) * std::sin(longitude);;
     double const z = r * std::sin(latitude);
 
-    return
-        // Oblate spheroid sanity checks.
-           r <= a
-        && r >= c
+    // Oblate spheroid sanity checks.
+    REQUIRE(r <= a);
+    REQUIRE(r >= c);
 
-        // Centric radius, e.g. planetocentric, is the same as the
-        // equatorial radius at the equator (latitude 0).
-        &&  MaRC::almost_equal(a, o->centric_radius(equator),    ulps)
-        && !MaRC::almost_equal(a, o->centric_radius(north_pole), ulps)
-        && !MaRC::almost_equal(a, o->centric_radius(south_pole), ulps)
+    // Centric radius, e.g. planetocentric, is the same as the
+    // equatorial radius at the equator (latitude 0).
+    REQUIRE( MaRC::almost_equal(a, o->centric_radius(equator),    ulps));
+    REQUIRE(!MaRC::almost_equal(a, o->centric_radius(north_pole), ulps));
+    REQUIRE(!MaRC::almost_equal(a, o->centric_radius(south_pole), ulps));
 
-        // Centric radius is the same as the polar radius at the poles
-        // (latitudes -90 and 90).
-        &&  MaRC::almost_equal(c, o->centric_radius(north_pole), ulps)
-        &&  MaRC::almost_equal(c, o->centric_radius(south_pole), ulps)
-        && !MaRC::almost_equal(c, o->centric_radius(equator),    ulps)
+    // Centric radius is the same as the polar radius at the poles
+    // (latitudes -90 and 90).
+    REQUIRE( MaRC::almost_equal(c, o->centric_radius(north_pole), ulps));
+    REQUIRE( MaRC::almost_equal(c, o->centric_radius(south_pole), ulps));
+    REQUIRE(!MaRC::almost_equal(c, o->centric_radius(equator),    ulps));
 
-        && MaRC::almost_equal(r, MaRC::hypot(x, y, z), ulps);
+    REQUIRE(MaRC::almost_equal(r, MaRC::hypot(x, y, z), ulps));
 }
 
 /**
  * @test Test calculations of planetocentric and planetographic
  *       latitudes in MaRC::OblateSpheroid.
  */
-bool test_latitudes()
+TEST_CASE("MaRC::OblateSpheroid latitudes", "[oblate spheroid]")
 {
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
@@ -162,20 +161,21 @@ bool test_latitudes()
     // poles, graphic latitudes will always be greater than the
     // centric latitude counterparts.   They will also have the same
     // sign.
-    return
-        MaRC::signum(latc) == MaRC::signum(latg)  // Same sign
-        && std::abs(latc) < std::abs(latg)  // True if not equator or pole
-        && !MaRC::almost_equal(latc, latg, ulps)
-        &&  MaRC::almost_equal(latc,
-                               o->centric_latitude(latg),
-                               ulps);
+
+    REQUIRE(MaRC::signum(latc) == MaRC::signum(latg));  // Same sign
+    REQUIRE(std::abs(latc) < std::abs(latg));  // True if not equator
+                                               // or pole
+    REQUIRE(!MaRC::almost_equal(latc, latg, ulps));
+    REQUIRE( MaRC::almost_equal(latc,
+                                o->centric_latitude(latg),
+                                ulps));
 }
 
 /**
  * @test Test cosine of emission angle (&mu;) calculations in
  *       MaRC::OblateSpheroid.
  */
-bool test_mu()
+TEST_CASE("MaRC::OblateSpheroid::mu()", "[oblate spheroid]")
 {
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
@@ -195,8 +195,8 @@ bool test_mu()
                             range);
 
     /**
-     * @todo Refactor vector calculations in @c test_mu(),
-     *       @c test_mu0() and @c test_cos_phase() functions.
+     * @todo Refactor vector calculations in @c mu(),
+     *       @c mu0() and @c cos_phase() method test cases.
      */
 
     // Vector from the observer (e.g. spacecraft) to the center of the
@@ -233,14 +233,14 @@ bool test_mu()
     // this case.
     double const mu_2 = cos_included_angle(rc, rn);
 
-    return MaRC::almost_equal(mu, mu_2, ulps);
+    REQUIRE(MaRC::almost_equal(mu, mu_2, ulps));
 }
 
 /**
  * @test Test cosine of incidence angle (&mu;<SUB>0</SUB>)
  *       calculations in MaRC::OblateSpheroid.
  */
-bool test_mu0()
+TEST_CASE("MaRC::OblateSpheroid::mu0()", "[oblate spheroid]")
 {
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
@@ -287,14 +287,14 @@ bool test_mu0()
     // surface at (lat, lon), the incidence angle in this case.
     double const mu0_2 = cos_included_angle(rs, rn);
 
-    return MaRC::almost_equal(mu0, mu0_2, ulps);
+    REQUIRE(MaRC::almost_equal(mu0, mu0_2, ulps));
 }
 
 /**
  * @test Test cosine of phase angle (cos(&phi;)) calculations in
  *       MaRC::OblateSpheroid.
  */
-bool test_cos_phase()
+TEST_CASE("MaRC::OblateSpheroid cos_phase()", "[oblate spheroid]")
 {
     auto const o =
         std::make_unique<MaRC::OblateSpheroid>(prograde, a, c);
@@ -354,18 +354,5 @@ bool test_cos_phase()
     // angle in this case.
     double const cos_phase_2 = cos_included_angle(rc, rs);
 
-    return MaRC::almost_equal(cos_phase, cos_phase_2, ulps);
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return
-        test_initialization()
-        && test_centric_radius()
-        && test_latitudes()
-        && test_mu()
-        && test_mu0()
-        && test_cos_phase()
-        ? 0 : -1;
+    REQUIRE(MaRC::almost_equal(cos_phase, cos_phase_2, ulps));
 }

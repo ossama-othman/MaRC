@@ -1,7 +1,7 @@
 /**
- * @file Vector_Test.cpp
+ * @file ViewingGeometry_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -9,6 +9,8 @@
 #include <marc/ViewingGeometry.h>
 #include <marc/OblateSpheroid.h>
 #include <marc/Constants.h>
+
+#include <catch2/catch.hpp>
 
 
 namespace
@@ -20,6 +22,8 @@ namespace
 
     std::shared_ptr<MaRC::OblateSpheroid> body =
         std::make_shared<MaRC::OblateSpheroid>(prograde, eq_rad, pol_rad);
+
+    MaRC::ViewingGeometry vg(body);
 
     // Viewing geometry parameters.
     constexpr double sample_center = 2807.61;  // pixels
@@ -38,7 +42,7 @@ namespace
     constexpr std::size_t image_lines   = 200;
 }
 
-bool test_initialization(MaRC::ViewingGeometry & vg)
+TEST_CASE("Viewing geometry initialization", "[viewing geometry]")
 {
     vg.body_center(sample_center, line_center);
     vg.sub_observ(sub_obs_lat, sub_obs_lon);
@@ -50,10 +54,12 @@ bool test_initialization(MaRC::ViewingGeometry & vg)
 
     vg.finalize_setup(image_samples, image_lines);
 
-    return true;
+    /**
+     * @todo Verify viewing geometry is usable.
+     */
 }
 
-bool test_visibility(MaRC::ViewingGeometry & vg)
+TEST_CASE("Viewing geometry visibility", "[viewing geometry]")
 {
     // Point on the far side of the planet.  Not visible to the
     // observer.  This is suitable for bodies modelled as oblate
@@ -77,10 +83,10 @@ bool test_visibility(MaRC::ViewingGeometry & vg)
      *       sub-observation point.
      */
 
-    return !vg.latlon2pix(far_lat, far_lon, sample, line);
+    REQUIRE(!vg.latlon2pix(far_lat, far_lon, sample, line));
 }
 
-bool test_conversion(MaRC::ViewingGeometry & vg)
+TEST_CASE("Viewing geometry conversion", "[viewing geometry]")
 {
     double sample, line;
     double lat, lon;
@@ -105,18 +111,17 @@ bool test_conversion(MaRC::ViewingGeometry & vg)
       -15.629999999999912 for the sub-observation latitude conversion
       check.
     */
-    return
-        visible
-        && MaRC::almost_equal(sample_center, sample, 4)
-        && MaRC::almost_equal(line_center, line, 12)
-        && MaRC::almost_equal(sub_obs_lat, lat / C::degree, 13)
-        && MaRC::almost_equal(sub_obs_lon < 0
-                              ? sub_obs_lon + 360
-                              : sub_obs_lon,
-                              lon / C::degree, 4);
+    REQUIRE(visible);
+    REQUIRE(MaRC::almost_equal(sample_center, sample, 4));
+    REQUIRE(MaRC::almost_equal(line_center, line, 12));
+    REQUIRE(MaRC::almost_equal(sub_obs_lat, lat / C::degree, 13));
+    REQUIRE(MaRC::almost_equal(sub_obs_lon < 0
+                               ? sub_obs_lon + 360
+                               : sub_obs_lon,
+                               lon / C::degree, 4));
 }
 
-bool test_lat_lon_center()
+TEST_CASE("Viewing geometry lat/lon at center", "[viewing geometry]")
 {
     MaRC::ViewingGeometry vg(body);  // Different instance from main.
 
@@ -135,19 +140,5 @@ bool test_lat_lon_center()
      *       when using specifying the latitude and longitude at the
      *       center of the image.
      */
-
-    return true;
-}
-
-
-int main()
-{
-    MaRC::ViewingGeometry vg(body);
-
-    return
-        test_initialization(vg)
-        && test_visibility(vg)
-        && test_conversion(vg)
-        && test_lat_lon_center()
-        ? 0 : -1;
+    INFO("Lat/lon at center viewing geometry is currently unsupported");
 }

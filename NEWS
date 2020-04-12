@@ -1,3 +1,10 @@
+- To improve robustness and flexibilty of the MaRC test suite, the
+  Catch2 test framework replaces MaRC's simple testing approach.
+  Separate test programs have been replaced by a single `marc_test'
+  program that runs all test cases.  Run `tests/marc_test --help' to
+  get a full list of test options, assuming the test suite was built
+  via `make check' beforehand.
+
 1 February 2019 - MaRC 0.10
 
 - Fixed a regression in quadratic roots calculations that caused some

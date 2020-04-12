@@ -1,12 +1,14 @@
 /**
  * @file optional_test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2020 Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <marc/optional.h>
+
+#include <catch2/catch.hpp>
 
 #include <string>
 #include <type_traits>
@@ -16,25 +18,17 @@
 /**
  * @test Test the MaRC::bad_optional_access exception.
  */
-bool test_bad_optional_access()
+TEST_CASE("MaRC::bad_optional_access exception", "[optional]")
 {
-    try {
-        constexpr MaRC::optional<int> no_value;
+    constexpr MaRC::optional<int> no_value;
 
-        (void) no_value.value();
-
-        return false;  // Exception should have been thrown!
-    } catch(MaRC::bad_optional_access const & e) {
-        std::cout << e.what() << " thrown as expected.\n";
-    }
-
-    return true;
+    REQUIRE_THROWS_AS((void) no_value.value(), MaRC::bad_optional_access);
 }
 
 /**
- * @test Test the MaRC::optional class exception.
+ * @test Test the MaRC::optional class.
  */
-bool test_optional()
+TEST_CASE("MaRC::optional behavior", "[optional]")
 {
     constexpr MaRC::optional<int> no_value;
     constexpr int v1 = 62;
@@ -63,44 +57,65 @@ bool test_optional()
     MaRC::optional<decltype(v1)> const ov10{MaRC::nullopt};
     MaRC::optional<decltype(v1)> const ov11 = MaRC::nullopt;
 
-    return
-        !no_value.has_value() && !no_value && v1 == no_value.value_or(v1)
-        && no_value != ov1
-        && no_value <   v1 && no_value <=  v1
-        && no_value <  ov1 && no_value <= ov1
+    REQUIRE(!no_value.has_value());
+    REQUIRE(!no_value);
+    REQUIRE(v1 == no_value.value_or(v1));
+    REQUIRE(no_value != ov1);
+    REQUIRE(no_value <   v1);
+    REQUIRE(no_value <=  v1);
+    REQUIRE(no_value <  ov1);
+    REQUIRE(no_value <= ov1);
 
-        && v1 == ov1.value() &&  v1 == *ov1 &&  v1 == ov1
-        && v1 <= ov1         &&  v1 >=  ov1
-        && v1 != ov2         && ov2 !=   v1 && ov1 != ov2
+    REQUIRE(v1 == ov1.value());
+    REQUIRE(v1 == *ov1);
+    REQUIRE(v1 ==  ov1);
+    REQUIRE(v1 <=  ov1);
+    REQUIRE(v1 >=  ov1);
+    REQUIRE(v1 !=  ov2);
+    REQUIRE(ov2 != v1);
+    REQUIRE(ov1 != ov2);
 
+    REQUIRE(ov1 <  ov2);
+    REQUIRE(ov1 <  v2);
+    REQUIRE(v1  <  ov2);
+    REQUIRE(ov1 <= ov2);
+    REQUIRE(ov1 <= v2);
+    REQUIRE(v1  <= ov2);
 
-        && ov1 <  ov2 && ov1 <  v2 && v1 <  ov2
-        && ov1 <= ov2 && ov1 <= v2 && v1 <= ov2
+    REQUIRE(ov2 >  ov1);
+    REQUIRE(ov2 >  v1);
+    REQUIRE(v2  >  ov1);
+    REQUIRE(ov2 >= ov1);
+    REQUIRE(ov2 >= v1);
+    REQUIRE(v2  >= ov1);
 
-        && ov2 >  ov1 && ov2 >  v1 && v2 >  ov1
-        && ov2 >= ov1 && ov2 >= v1 && v2 >= ov1
+    REQUIRE(!ov3->empty());
 
-        && !ov3->empty()
+    REQUIRE(!ov4);
+    REQUIRE(ov5);
+    REQUIRE(ov5 == ov1);
+    REQUIRE(!ov6);
+    REQUIRE(ov7);
+    REQUIRE(ov7 == ov2);
 
-        && !ov4 && ov5 && ov5 == ov1
-        && !ov6 && ov7 && ov7 == ov2
+    REQUIRE(!ov8);
 
-        && !ov8
+    REQUIRE(ov9 == v2);
 
-        && ov9 == v2
-
-        && !ov10 && !ov11
-        && ov10 == MaRC::nullopt && ov11 == MaRC::nullopt
-        && no_value == MaRC::nullopt && MaRC::nullopt == no_value
-        &&   ov1 != MaRC::nullopt  &&   MaRC::nullopt != ov1
-        && !(ov1 <  MaRC::nullopt) &&   MaRC::nullopt <  ov1
-        && !(ov1 <= MaRC::nullopt) &&   MaRC::nullopt <= ov1
-        &&   ov1 >  MaRC::nullopt  && !(MaRC::nullopt >  ov1)
-        &&   ov1 >= MaRC::nullopt  && !(MaRC::nullopt >= ov1);
-}
-
-/// The canonical main entry point.
-int main()
-{
-    return test_bad_optional_access() && test_optional() ? 0 : -1;
+    REQUIRE(!ov10);
+    REQUIRE(!ov11);
+    REQUIRE(ov10 == MaRC::nullopt);
+    REQUIRE(ov11 == MaRC::nullopt);
+    REQUIRE(no_value == MaRC::nullopt);
+    REQUIRE(MaRC::nullopt == no_value);
+    REQUIRE(ov1 != MaRC::nullopt);
+    REQUIRE(MaRC::nullopt != ov1);
+    REQUIRE(!(ov1 <  MaRC::nullopt));
+    REQUIRE(MaRC::nullopt <  ov1);
+    REQUIRE(!(ov1 <= MaRC::nullopt));
+    REQUIRE(MaRC::nullopt <= ov1);
+    REQUIRE(ov1 >  MaRC::nullopt);
+    REQUIRE(!(MaRC::nullopt >  ov1));
+    REQUIRE(ov1 >= MaRC::nullopt);
+    REQUIRE(!(MaRC::nullopt >= ov1));
 }

@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright 1996-1999, 2003-2004, 2017-2019  Ossama Othman
+dnl Copyright 1996-1999, 2003-2004, 2017-2020  Ossama Othman
 dnl
 dnl SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -146,6 +146,7 @@ dnl AS_IF([test "x$ax_pthread_clang" = "xyes"],
 dnl       [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
 dnl        AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
 
+dnl fmt (aka "fmtlib") formatting library
 AC_CACHE_CHECK([for fmt library],
   [marc_cv_lib_fmt],
   [
@@ -177,11 +178,43 @@ log_info("{}", "foo");
   ])
 dnl  ])
 
-AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
-      [],
+AS_IF([test "x$marc_cv_lib_fmt" != "xyes"],
       [AC_MSG_WARN([fmt library not found, or it is old - using fallback])
        FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.3.0/include"
        AC_SUBST([FMTLIB_CPPFLAGS])
+      ])
+
+dnl Catch2 test framework
+AC_CACHE_CHECK([for Catch2 library],
+  [marc_cv_lib_catch2],
+  [
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <catch2/catch.hpp>
+
+int foo()
+{
+    return 2;
+}
+      ]],
+      [[
+TEST_CASE("Dummy test case", "foo") {
+    REQUIRE(foo == 2);
+}
+      ]])
+    ],
+    [
+     marc_cv_lib_catch2=yes
+    ],
+    [
+     marc_cv_lib_catch2=no
+    ])
+  ])
+dnl  ])
+
+AS_IF([test "x$marc_cv_lib_catch2" != "xyes"],
+      [AC_MSG_WARN([Catch2 library not found - using fallback])
+       CATCH2_CPPFLAGS="-I\$(top_srcdir)/opt"
+       AC_SUBST([CATCH2_CPPFLAGS])
       ])
 
 dnl Checks for header files.
