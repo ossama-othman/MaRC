@@ -19,6 +19,7 @@
 #include <utility>
 #include <cstdint>
 #include <cmath>
+#include <stdexcept>
 
 
 namespace MaRC
