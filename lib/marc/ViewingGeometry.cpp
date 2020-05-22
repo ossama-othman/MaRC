@@ -1,7 +1,7 @@
 /**
  * @file ViewingGeometry.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2020  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -498,14 +498,6 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
     // Unit vector representing North pole in body coordinates.
     constexpr DVector body_north(0, 0, 1);
 
-    // OA_O is the optical axis vector in observer coordinates.
-    DVector const OA_O(0,
-                       /**
-                        * @todo Shouldn't this be @c -OA.magnitude() ?
-                        */
-                       OA.magnitude(),
-                       0);
-
     DVector UnitOpticalAxis(OA); // Optical axis in body coordinates
     UnitOpticalAxis.to_unit_vector();
 
@@ -518,6 +510,12 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
 
     /**
      * @todo Shouldn't this be @c (C::pi_2 @c - @c std::acos(dotProd)) ?
+     */
+    /*
+      Given cos(x):
+          asin(cos(x)) = x + pi/2
+          asin(-cos(x)) = -(x + pi/2)
+          x = pi/2 - asin(-cos(x))
      */
     // Try first possibility
     SubLatMod[0] = std::asin(-dotProd);  // Angle between equatorial
@@ -535,6 +533,14 @@ MaRC::ViewingGeometry::rot_matrices(DVector const & range_b,
                    * Geometry::RotYMatrix(-this->position_angle_)));
 
     observ2body = o2b;
+
+    // OA_O is the optical axis vector in observer coordinates.
+    DVector const OA_O(0,
+                       /**
+                        * @todo Shouldn't this be @c -OA.magnitude() ?
+                        */
+                       OA.magnitude(),
+                       0);
 
     double diff_magnitude = (OA - o2b * OA_O).magnitude();
 
