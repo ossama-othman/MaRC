@@ -298,9 +298,15 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
 
         double const mag = range_O.magnitude();
 
-        // Perpendicular distance from observer to image plane.
+        /*
+          Perpendicular distance from observer to image plane.
+
+          Reduce cancellation due to subtraction from being
+          catastrophic to benign by using the form (r-m)(r+m) instead
+          of (r*r - m*m).
+        */
         this->normal_range_ =
-            std::sqrt(this->range_ * this->range_ - mag * mag);
+            std::sqrt((this->range_ - mag) * (this->range_ + mag));
 
         // In case focal length and scale are not set or used.
         range_O[1] = -this->normal_range_;
