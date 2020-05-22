@@ -52,7 +52,7 @@ before_install:
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          brew install cfitsio bison flex texinfo autoconf-archive fmt;
+          brew install bison flex texinfo autoconf-archive fmt;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
           for p in bison gettext flex texinfo; do
