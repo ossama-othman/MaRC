@@ -10,6 +10,7 @@ MARC_LIB = $(top_builddir)/lib/marc/libMaRC.la
 
 AM_CPPFLAGS =               \
   -I$(top_srcdir)/lib       \
+  -I$(top_builddir)/lib     \
   $(FMTLIB_CPPFLAGS)        \
   $(CODE_COVERAGE_CPPFLAGS)
 AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
