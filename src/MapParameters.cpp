@@ -231,9 +231,7 @@ MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
  * calling function (@c merge()) to return immediately on error, and
  * continue otherwise.
  *
- * @param[in] key       Parameter name.
  * @param[in] parameter @c MapParameter member, e.g. (@c origin_).
- *
  */
 #define MARC_MERGE_OPTIONAL(parameter)              \
     if (!this->merge_optional(#parameter,           \
