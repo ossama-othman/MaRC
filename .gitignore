@@ -106,7 +106,7 @@ tests/optional_test
 tests/root_find_test
 tests/utility_test
 tests/validate_test
-tests/MapParameters_Test
+tests/map_parameters_test
 tests/test-suite.log
 tests/test_*map*.fits
 

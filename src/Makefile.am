@@ -34,7 +34,7 @@ libMaRC_private_la_SOURCES = \
   PhotoImageFactory.cpp \
   MosaicImageFactory.cpp \
   MapCommand.cpp \
-  MapParameters.cpp \
+  map_parameters.cpp \
   command_line.cpp \
   parse_scan.cpp \
   calc.cpp
@@ -72,7 +72,7 @@ noinst_HEADERS = \
   MosaicImageFactory.h \
   MapCommand.h \
   MapCommand_t.cpp \
-  MapParameters.h \
+  map_parameters.h \
   calc.h \
   command_line.h \
   parse_scan.h \

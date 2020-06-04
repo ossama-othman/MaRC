@@ -21,7 +21,7 @@
 namespace MaRC
 {
     class SourceImage;
-    class MapParameters;
+    class map_parameters;
 
     /**
      * @class SourceImageFactory
@@ -78,7 +78,7 @@ namespace MaRC
          *         @c false otherwise.
          */
         virtual bool populate_parameters(
-            MapParameters & parameters) const = 0;
+            map_parameters & parameters) const = 0;
 
         /// Create a @c SourceImage for a map of given data type.
         /**

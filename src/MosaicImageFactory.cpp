@@ -26,7 +26,7 @@ MaRC::MosaicImageFactory::MosaicImageFactory (
 
 bool
 MaRC::MosaicImageFactory::populate_parameters(
-    MaRC::MapParameters &p) const
+    MaRC::map_parameters &p) const
 {
     /**
      * @todo Verify this achieves the desired result since all photos

@@ -9,7 +9,7 @@
  */
 
 #include "Mu0ImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/Mu0Image.h"
 #include "marc/DefaultConfiguration.h"
@@ -30,7 +30,7 @@ MaRC::Mu0ImageFactory::Mu0ImageFactory(
 }
 
 bool
-MaRC::Mu0ImageFactory::populate_parameters(MaRC::MapParameters &) const
+MaRC::Mu0ImageFactory::populate_parameters(MaRC::map_parameters &) const
 {
     /**
      * @note The %FITS @c DATAMIN and @c DATAMAX values are not set in

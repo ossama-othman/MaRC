@@ -68,7 +68,7 @@ MaRC::MapCommand::MapCommand(std::string filename,
                              long samples,
                              long lines,
                              std::unique_ptr<MapFactory> factory,
-                             std::unique_ptr<MapParameters> params)
+                             std::unique_ptr<map_parameters> params)
     : samples_(samples)
     , lines_(lines)
     , factory_(std::move(factory))
@@ -404,13 +404,13 @@ MaRC::MapCommand::populate_map_parameters()
      */
 
     // Automatically populated map parameters.
-    MapParameters to_merge;
+    map_parameters to_merge;
 
     int plane = 1;
 
     for (auto const & image : this->image_factories_) {
         // Automatically populated map plane parameters.
-        MapParameters pp(plane++);
+        map_parameters pp(plane++);
 
         if (!image->populate_parameters(pp))
             return false;

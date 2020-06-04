@@ -14,7 +14,7 @@
 
 #include "FITS_file.h"
 #include "SourceImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include <marc/MapFactory.h>
 
@@ -54,7 +54,7 @@ namespace MaRC
                    long samples,
                    long lines,
                    std::unique_ptr<MapFactory> factory,
-                   std::unique_ptr<MapParameters> params);
+                   std::unique_ptr<map_parameters> params);
 
         // Disallow copying.
         MapCommand(MapCommand const &) = delete;
@@ -215,7 +215,7 @@ namespace MaRC
         bool create_grid_;
 
         /// User supplied map parameters.
-        std::unique_ptr<MapParameters> parameters_;
+        std::unique_ptr<map_parameters> parameters_;
 
     };
 

@@ -37,7 +37,7 @@ library_tests = \
   validate_test
 
 program_tests = \
-  MapParameters_Test
+  map_parameters_test
 
 check_PROGRAMS = $(library_tests) $(program_tests)
 
@@ -164,8 +164,8 @@ validate_test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 ## -------------------------------------------------------------------
 
-MapParameters_Test_SOURCES = MapParameters_Test.cpp
-MapParameters_Test_LDADD = \
+map_parameters_test_SOURCES = map_parameters_test.cpp
+map_parameters_test_LDADD = \
   $(top_builddir)/src/libMaRC_private.la \
   $(CODE_COVERAGE_LIBS)
 

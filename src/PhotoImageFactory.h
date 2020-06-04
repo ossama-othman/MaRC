@@ -62,7 +62,7 @@ namespace MaRC
          *        and @c false otherwise.
          */
         bool populate_parameters(
-            MapParameters & p) const override;
+            map_parameters & p) const override;
 
         /// Create a @c PhotoImage.
         std::unique_ptr<SourceImage> make(
