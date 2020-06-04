@@ -9,7 +9,7 @@
  */
 
 #include "LongitudeImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/LongitudeImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -25,7 +25,7 @@ MaRC::LongitudeImageFactory::LongitudeImageFactory()
 
 bool
 MaRC::LongitudeImageFactory::populate_parameters(
-    MaRC::MapParameters &p) const
+    MaRC::map_parameters &p) const
 {
     /**
      * @note "deg" is used is instead of "degree" per %FITS standard

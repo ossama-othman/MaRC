@@ -9,7 +9,7 @@
  */
 
 #include "CosPhaseImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/CosPhaseImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -37,7 +37,7 @@ MaRC::CosPhaseImageFactory::CosPhaseImageFactory(
 
 bool
 MaRC::CosPhaseImageFactory::populate_parameters(
-    MaRC::MapParameters &) const
+    MaRC::map_parameters &) const
 {
     /**
      * @note The %FITS @c DATAMIN and @c DATAMAX values are not set in

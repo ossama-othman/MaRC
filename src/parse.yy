@@ -316,7 +316,7 @@ std::string map_filename;
 
 std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
-std::unique_ptr<MaRC::MapParameters> map_params;
+std::unique_ptr<MaRC::map_parameters> map_params;
 
 using namespace MaRC;
 
@@ -615,7 +615,7 @@ map_entry:
             auto_free<char> str($3);
             map_filename = $3;
 
-            map_params = std::make_unique<MaRC::MapParameters>();
+            map_params = std::make_unique<MaRC::map_parameters>();
 
             create_grid = false;
 

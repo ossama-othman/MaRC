@@ -9,7 +9,7 @@
  */
 
 #include "PhotoImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/PhotoImage.h"
 
@@ -58,7 +58,7 @@ MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
 
 bool
 MaRC::PhotoImageFactory::populate_parameters(
-    MaRC::MapParameters & p) const
+    MaRC::map_parameters & p) const
 {
     MARC_SET_PARAM(author);
     MARC_SET_PARAM(bitpix);

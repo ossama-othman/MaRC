@@ -37,7 +37,7 @@ namespace MaRC
 
         /// Populate map parameters.
         bool populate_parameters(
-            MapParameters & parameters) const override;
+            map_parameters & parameters) const override;
 
         /// Create a @c LongitudeImage.
         std::unique_ptr<SourceImage> make(

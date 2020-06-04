@@ -9,7 +9,7 @@
  */
 
 #include "MuImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/MuImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -31,7 +31,7 @@ MaRC::MuImageFactory::MuImageFactory(std::shared_ptr<BodyData> body,
 }
 
 bool
-MaRC::MuImageFactory::populate_parameters(MaRC::MapParameters &) const
+MaRC::MuImageFactory::populate_parameters(MaRC::map_parameters &) const
 {
     /**
      * @note The %FITS @c DATAMIN and @c DATAMAX values are not set in

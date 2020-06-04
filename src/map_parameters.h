@@ -1,6 +1,6 @@
 // -*- C++ -*-
 /**
- * @file MapParameters.h
+ * @file map_parameters.h
  *
  * Copyright (C) 2018-2019  Ossama Othman
  *
@@ -23,7 +23,7 @@
 namespace MaRC
 {
     /**
-     * @class MapParameters
+     * @class map_parameters
      *
      * @brief Map configuration parameters.
      *
@@ -31,7 +31,7 @@ namespace MaRC
      * populated automatically from relevant values in the source
      * images being mapped.
      */
-    class MapParameters
+    class map_parameters
     {
     public:
         /// %FITS file comment list type.
@@ -47,7 +47,7 @@ namespace MaRC
          * @todo Revise the design so that this constructor and the
          *       @c plane_ are not needed.
          */
-        explicit MapParameters(int plane);
+        explicit map_parameters(int plane);
 
         /**
          * @brief Default Coonstructor
@@ -56,14 +56,14 @@ namespace MaRC
          * map parameters.
          *
          */
-        MapParameters();
+        map_parameters();
 
         /// Destructor.
-        ~MapParameters() = default;
+        ~map_parameters() = default;
 
         // Disallow copying.
-        MapParameters(MapParameters const &) = delete;
-        void operator=(MapParameters const &) = delete;
+        map_parameters(map_parameters const &) = delete;
+        void operator=(map_parameters const &) = delete;
 
         /// Set map author.
         void author(std::string a);
@@ -326,7 +326,7 @@ namespace MaRC
          * @return @c true if the map parameter merge was successful,
          *         and @c false otherwise.
          */
-        bool merge(MapParameters & p);
+        bool merge(map_parameters & p);
 
     private:
 

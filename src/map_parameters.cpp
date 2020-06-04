@@ -1,5 +1,5 @@
 /**
- * @file MapParameters.cpp
+ * @file map_parameters.cpp
  *
  * Copyright (C) 2018-2020  Ossama Othman
  *
@@ -8,7 +8,7 @@
  * @author Ossama Othman
  */
 
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/Log.h"
 #include "marc/Mathematics.h"
@@ -51,7 +51,7 @@ namespace
  *       times!
  */
 
-MaRC::MapParameters::MapParameters(int plane)
+MaRC::map_parameters::map_parameters(int plane)
     : locked_keywords_()
     , user_supplied_(plane == 0)
     , plane_(plane)
@@ -79,19 +79,19 @@ MaRC::MapParameters::MapParameters(int plane)
             fmt::format("Invalid map plane: {}", plane));
 }
 
-MaRC::MapParameters::MapParameters()
-    : MapParameters(0)
+MaRC::map_parameters::map_parameters()
+    : map_parameters(0)
 {
 }
 
 void
-MaRC::MapParameters::author(std::string a)
+MaRC::map_parameters::author(std::string a)
 {
     this->author_ = std::move(a);
 }
 
 void
-MaRC::MapParameters::bitpix(int n)
+MaRC::map_parameters::bitpix(int n)
 {
     if (!valid_bitpix(n))
         throw std::invalid_argument(
@@ -101,7 +101,7 @@ MaRC::MapParameters::bitpix(int n)
 }
 
 int
-MaRC::MapParameters::bitpix() const
+MaRC::map_parameters::bitpix() const
 {
     // This should never happen!
     if (!valid_bitpix(this->bitpix_))
@@ -111,14 +111,14 @@ MaRC::MapParameters::bitpix() const
 }
 
 void
-MaRC::MapParameters::blank(blank_type blank)
+MaRC::map_parameters::blank(blank_type blank)
 {
 
     this->blank_ = blank;
 }
 
 void
-MaRC::MapParameters::bscale(MaRC::optional<double> scale)
+MaRC::map_parameters::bscale(MaRC::optional<double> scale)
 {
     /**
      * @todo Verify that @a scale is valid, i.e. not the @c NaN
@@ -128,13 +128,13 @@ MaRC::MapParameters::bscale(MaRC::optional<double> scale)
 }
 
 void
-MaRC::MapParameters::bunit(std::string unit)
+MaRC::map_parameters::bunit(std::string unit)
 {
     this->bunit_ = std::move(unit);
 }
 
 void
-MaRC::MapParameters::bzero(MaRC::optional<double> zero)
+MaRC::map_parameters::bzero(MaRC::optional<double> zero)
 {
     /**
      * @todo Verify that @a zero is valid, i.e. not the @c NaN
@@ -145,7 +145,7 @@ MaRC::MapParameters::bzero(MaRC::optional<double> zero)
 }
 
 void
-MaRC::MapParameters::datamax(MaRC::optional<double> max)
+MaRC::map_parameters::datamax(MaRC::optional<double> max)
 {
     /**
      * @todo Verify that @a max is valid, i.e. not the @c NaN
@@ -156,7 +156,7 @@ MaRC::MapParameters::datamax(MaRC::optional<double> max)
 }
 
 void
-MaRC::MapParameters::datamin(MaRC::optional<double> min)
+MaRC::map_parameters::datamin(MaRC::optional<double> min)
 {
     /**
      * @todo Verify that @a min is valid, i.e. not the @c NaN
@@ -167,7 +167,7 @@ MaRC::MapParameters::datamin(MaRC::optional<double> min)
 }
 
 void
-MaRC::MapParameters::equinox(MaRC::optional<double> e)
+MaRC::map_parameters::equinox(MaRC::optional<double> e)
 {
     /**
      * @todo Verify that @a e is valid, i.e. not the @c NaN constant.
@@ -177,49 +177,49 @@ MaRC::MapParameters::equinox(MaRC::optional<double> e)
 }
 
 void
-MaRC::MapParameters::instrument(std::string i)
+MaRC::map_parameters::instrument(std::string i)
 {
     this->instrument_ = std::move(i);
 }
 
 void
-MaRC::MapParameters::object(std::string o)
+MaRC::map_parameters::object(std::string o)
 {
     this->object_ = std::move(o);
 }
 
 void
-MaRC::MapParameters::observer(std::string o)
+MaRC::map_parameters::observer(std::string o)
 {
     this->observer_ = std::move(o);
 }
 
 void
-MaRC::MapParameters::origin(std::string o)
+MaRC::map_parameters::origin(std::string o)
 {
     this->origin_ = std::move(o);
 }
 
 void
-MaRC::MapParameters::reference(std::string r)
+MaRC::map_parameters::reference(std::string r)
 {
     this->reference_ = std::move(r);
 }
 
 void
-MaRC::MapParameters::telescope(std::string t)
+MaRC::map_parameters::telescope(std::string t)
 {
     this->telescope_ = std::move(t);
 }
 
 void
-MaRC::MapParameters::push_comment(comment_list_type::value_type comment)
+MaRC::map_parameters::push_comment(comment_list_type::value_type comment)
 {
     this->comments_.push_back(std::move(comment));
 }
 
 void
-MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
+MaRC::map_parameters::push_xcomment(comment_list_type::value_type comment)
 {
     this->xcomments_.push_back(std::move(comment));
 }
@@ -231,7 +231,7 @@ MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
  * calling function (@c merge()) to return immediately on error, and
  * continue otherwise.
  *
- * @param[in] parameter @c MapParameter member, e.g. (@c origin_).
+ * @param[in] parameter @c map_parameters member, e.g. (@c origin_).
  */
 #define MARC_MERGE_OPTIONAL(parameter)              \
     if (!this->merge_optional(#parameter,           \
@@ -240,7 +240,7 @@ MaRC::MapParameters::push_xcomment(comment_list_type::value_type comment)
         return false
 
 bool
-MaRC::MapParameters::merge(MaRC::MapParameters & p)
+MaRC::map_parameters::merge(MaRC::map_parameters & p)
 {
     // Merge required parameters.
     if (p.bitpix_ != 0
@@ -313,9 +313,9 @@ MaRC::MapParameters::merge(MaRC::MapParameters & p)
 }
 
 bool
-MaRC::MapParameters::merge_optional(char const * key,
-                                    MaRC::optional<double> & to,
-                                    MaRC::optional<double> & from)
+MaRC::map_parameters::merge_optional(char const * key,
+                                     MaRC::optional<double> & to,
+                                     MaRC::optional<double> & from)
 {
     if (!from.has_value() || std::isnan(*from))
         return true;
@@ -364,9 +364,9 @@ MaRC::MapParameters::merge_optional(char const * key,
 }
 
 bool
-MaRC::MapParameters::merge_optional(char const * key,
-                                    MaRC::blank_type & to,
-                                    MaRC::blank_type & from)
+MaRC::map_parameters::merge_optional(char const * key,
+                                     MaRC::blank_type & to,
+                                     MaRC::blank_type & from)
 {
     if (!from.has_value())
         return true;
@@ -414,9 +414,9 @@ MaRC::MapParameters::merge_optional(char const * key,
 }
 
 bool
-MaRC::MapParameters::merge_optional(char const * /* key */,
-                                    std::string & to,
-                                    std::string from)
+MaRC::map_parameters::merge_optional(char const * /* key */,
+                                     std::string & to,
+                                     std::string from)
 {
     if (to.empty())
         to = std::move(from);

@@ -9,7 +9,7 @@
  */
 
 #include "LatitudeImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include "marc/LatitudeImage.h"
 #include "marc/DefaultConfiguration.h"
@@ -29,7 +29,7 @@ MaRC::LatitudeImageFactory::LatitudeImageFactory(
 
 bool
 MaRC::LatitudeImageFactory::populate_parameters(
-    MaRC::MapParameters &p) const
+    MaRC::map_parameters &p) const
 {
     /**
      * @note "deg" is used is instead of "degree" per %FITS standard
