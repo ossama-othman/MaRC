@@ -146,11 +146,16 @@ dnl AS_IF([test "x$ax_pthread_clang" = "xyes"],
 dnl       [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
 dnl        AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
 
-AC_CACHE_CHECK([for fmt library],
+dnl @todo Switch to std::format once C++20 is supported by MaRC.
+AC_CACHE_CHECK([for fmt library >= 6.1.2],
   [marc_cv_lib_fmt],
   [
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <fmt/format.h>
+
+#if FMT_VERSION < 60102
+# error "fmt >= 6.1.2 is required"
+#endif
 
 void vlog_info(char const * format, fmt::format_args args)
 {
@@ -180,7 +185,7 @@ dnl  ])
 AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
       [],
       [AC_MSG_WARN([fmt library not found, or it is old - using fallback])
-       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-5.3.0/include"
+       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-6.1.2/include"
        AC_SUBST([FMTLIB_CPPFLAGS])
       ])
 
