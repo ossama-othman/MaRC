@@ -182,7 +182,7 @@ bool test_mu()
 
     constexpr double sub_observ_lat = 42  * C::degree;
     constexpr double sub_observ_lon = 247 * C::degree;
-    constexpr double lat            = -75  * C::degree;
+    constexpr double lat            = -75 * C::degree;
     constexpr double lon            = 185 * C::degree;
     constexpr double range          = a * 200;  // Multiple of
                                                 // equatorial radius.
