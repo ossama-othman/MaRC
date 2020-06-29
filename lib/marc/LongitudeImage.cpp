@@ -27,11 +27,9 @@ MaRC::LongitudeImage::read_data_i(double /* lat */,
 {
     using namespace MaRC::default_configuration;
 
-    data = lon / C::degree;  // Convert radians to degrees.
-
     // Make sure the longitude is in the +/-360 degree range.  Note
     // that fmod() retains the sign of its first argument.
-    data = std::fmod(data, 360);
+    data = std::fmod(lon, C::circle) / C::degree;
 
     // Data is now in the +/-360 range but we need it to be between
     // [0, 360] or [-180, 180], for example, depending on the
@@ -44,10 +42,11 @@ MaRC::LongitudeImage::read_data_i(double /* lat */,
      *       [-180,180], which is why we have the "@c else @c if"
      *       clause below.
      */
+    constexpr int circle_degrees = 360;
     if (data < longitude_low)
-        data += 360;
+        data += circle_degrees;
     else if (data > longitude_high)
-        data -= 360;
+        data -= circle_degrees;
 
     return data >= longitude_low && data <= longitude_high;
 }

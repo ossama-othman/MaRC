@@ -34,7 +34,7 @@
 
 namespace
 {
-    static constexpr double not_a_number =
+    static constexpr auto not_a_number =
         std::numeric_limits<double>::signaling_NaN();
 
 #ifndef NDEBUG
@@ -315,12 +315,10 @@ MaRC::ViewingGeometry::finalize_setup(std::size_t samples,
                            this->observ2body_,
                            this->body2observ_);
     } else {
-        double lon;
+        double lon = this->sub_observ_lon_ - this->lon_at_center_;
 
-        if (this->body_->prograde())
-            lon = this->sub_observ_lon_ - this->lon_at_center_;
-        else
-            lon = this->lon_at_center_ - this->sub_observ_lon_;
+        if (!this->body_->prograde())
+            lon = -lon;
 
         double const radius =
             this->body_->centric_radius(this->lat_at_center_);
@@ -831,7 +829,8 @@ void
 MaRC::ViewingGeometry::emi_ang_limit(double angle)
 {
     // Any emission angle beyond 90 degrees isn't visible.
-    if (angle < -90 || angle > 90)
+    constexpr decltype(angle) max_emission_angle = 90;
+    if (std::abs(angle) > max_emission_angle)
         throw std::domain_error("invalid emission angle limit");
 
     this->mu_limit_ = std::cos(angle * C::degree);
@@ -968,7 +967,8 @@ MaRC::ViewingGeometry::body_mask(std::size_t samples,
         std::size_t const offset = k * samples;
 
         for (std::size_t i = 0; i < samples; ++i) {
-            double lat, lon;
+            auto lat = not_a_number;
+            auto lon = not_a_number;
 
             if (this->pix2latlon(i, k, lat, lon)) {
                 // On body

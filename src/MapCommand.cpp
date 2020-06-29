@@ -438,9 +438,10 @@ MaRC::MapCommand::populate_map_parameters()
 int
 MaRC::MapCommand::number_of_digits(std::size_t num)
 {
+    constexpr int base = 10;
     int digits = 0;
 
-    for ( ; num != 0; num /= 10)
+    for ( ; num != 0; num /= base)
         ++digits;
 
     /**
