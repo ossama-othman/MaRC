@@ -347,7 +347,7 @@ MaRC::map_parameters::merge_optional(char const * key,
                *from);
 
     if (this->user_supplied_)
-        MaRC::warn("User supplied value {} will be used.", *to);
+        MaRC::warn("User supplied value ({}) will be used.", *to);
     else {
         MaRC::warn("Neither will be used.");
 
@@ -397,7 +397,7 @@ MaRC::map_parameters::merge_optional(char const * key,
                *from);
 
     if (this->user_supplied_)
-        MaRC::warn("User supplied value {} will be used.", *to);
+        MaRC::warn("User supplied value ({}) will be used.", *to);
     else {
         MaRC::warn("Neither will be used.");
 
