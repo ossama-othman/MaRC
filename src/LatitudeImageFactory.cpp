@@ -61,8 +61,8 @@ MaRC::LatitudeImageFactory::make(scale_offset_functor calc_so)
 {
     using namespace MaRC::default_configuration;
 
-    double scale;
-    double offset;
+    double scale  = 1;
+    double offset = 0;
 
     if (!calc_so(latitude_low, latitude_high, scale, offset)) {
         throw std::range_error("Cannot store latitudes in map of "

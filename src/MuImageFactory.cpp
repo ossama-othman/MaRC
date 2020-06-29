@@ -56,8 +56,8 @@ MaRC::MuImageFactory::make(scale_offset_functor calc_so)
 {
     using namespace MaRC::default_configuration;
 
-    double scale;
-    double offset;
+    double scale  = 1;
+    double offset = 0;
 
     if (!calc_so(mu_low, mu_high, scale, offset)) {
         throw std::range_error("Cannot store mu (cosines) in map of "

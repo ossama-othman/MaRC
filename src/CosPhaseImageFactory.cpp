@@ -61,8 +61,8 @@ MaRC::CosPhaseImageFactory::make(scale_offset_functor calc_so)
 {
     using namespace MaRC::default_configuration;
 
-    double scale;
-    double offset;
+    double scale  = 1;
+    double offset = 0;
 
     if (!calc_so(cos_phase_low, cos_phase_high, scale, offset)) {
         throw std::range_error("Cannot store cosine of phase angles in "

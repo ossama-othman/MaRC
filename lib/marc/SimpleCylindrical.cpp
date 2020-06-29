@@ -17,6 +17,7 @@
 #include <limits>
 #include <cmath>
 #include <algorithm>
+#include <type_traits>
 
 
 namespace
@@ -107,23 +108,23 @@ MaRC::SimpleCylindrical::plot_map(std::size_t samples,
                                   plot_type const & plot) const
 {
     // Latitudes (radians) per line.
-    double const cf = (this->hi_lat_ - this->lo_lat_) / lines;
+    auto const cf = (this->hi_lat_ - this->lo_lat_) / lines;
 
     // Longitudes (radians) per sample.
-    double const lon_cf = (this->hi_lon_ - this->lo_lon_) / samples;
+    auto const lon_cf = (this->hi_lon_ - this->lo_lon_) / samples;
 
     std::size_t offset = 0;
 
     for (std::size_t k = 0; k < lines; ++k) {
         // Compute latitude at center of pixel.
-        double lat = (k + 0.5) * cf + this->lo_lat_;
+        auto lat = (k + 0.5) * cf + this->lo_lat_;
 
         // Convert to CENTRIC Latitude
         if (this->graphic_lat_)
             lat = this->body_->centric_latitude(lat);
 
         for (std::size_t i = 0; i < samples; ++i, ++offset) {
-            double const lon = this->get_longitude(i, lon_cf);
+            auto const lon = this->get_longitude(i, lon_cf);
 
             plot(lat, lon, offset);
         }
@@ -138,22 +139,27 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
                                    grid_type & grid) const
 {
     // Convert back to degrees
-    double const lo_lat = this->lo_lat_ / C::degree;
-    double const hi_lat = this->hi_lat_ / C::degree;
-    double const lo_lon = this->lo_lon_ / C::degree;
-    double const hi_lon = this->hi_lon_ / C::degree;
+    auto const lo_lat = this->lo_lat_ / C::degree;
+    auto const hi_lat = this->hi_lat_ / C::degree;
+    auto const lo_lon = this->lo_lon_ / C::degree;
+    auto const hi_lon = this->hi_lon_ / C::degree;
 
     // Lines per degree of latitude.
-    double const lr = lines / (hi_lat - lo_lat);
+    auto const lr = lines / (hi_lat - lo_lat);
 
     static constexpr auto white =
         std::numeric_limits<typename grid_type::value_type>::max();
 
     // Draw latitude lines
-    for (double n = -90 + lat_interval; n < 90; n += lat_interval) {
-        double const k = std::round((n - lo_lat) * lr);
+    constexpr int north_pole = 90;
+    constexpr int south_pole = 90;
+    for (double n = -south_pole + lat_interval;
+         n < north_pole;
+         n += lat_interval) {
+        auto const k = std::round((n - lo_lat) * lr);
 
-        if (k >= 0 && k < static_cast<double>(lines)) {
+        using k_type = std::remove_const_t<decltype(k)>;
+        if (k >= 0 && k < static_cast<k_type>(lines)) {
             auto const first =
                 std::begin(grid)
                 + static_cast<decltype(samples)>(k * samples);
@@ -165,7 +171,7 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
     }
 
     // Samples per degree of longitude.
-    double const sr = samples / (hi_lon - lo_lon);
+    auto const sr = samples / (hi_lon - lo_lon);
 
     /**
      * @todo Why do we count down grid longitudes from 360 instead of
@@ -176,12 +182,10 @@ MaRC::SimpleCylindrical::plot_grid(std::size_t samples,
     // Draw longitude lines.
     for (double m = 360; m > 0; m -= lon_interval) {
         // lo_lon_2 is a work-around for lo_lon_ > hi_lon_ problems
-        double lo_lon_2;
+        auto lo_lon_2 = lo_lon;
 
         if (m - lo_lon > 360)
-            lo_lon_2 = lo_lon + 360;
-        else
-            lo_lon_2 = lo_lon;
+            lo_lon_2 += 360;
 
         decltype(samples) i = std::round((m - lo_lon_2) * sr);
 
