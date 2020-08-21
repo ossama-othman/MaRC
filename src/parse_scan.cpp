@@ -13,7 +13,7 @@
 
 #include <stdexcept>
 
-#include <fmt/format.h>
+#include <marc/details/format.h>
 
 
 MaRC::ParseParameter::ParseParameter()

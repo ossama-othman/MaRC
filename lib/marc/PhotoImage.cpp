@@ -24,8 +24,6 @@
 #include <stdexcept>
 #include <cassert>
 
-#include <fmt/format.h>
-
 
 namespace
 {
