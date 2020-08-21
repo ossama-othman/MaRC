@@ -17,11 +17,21 @@
 #ifndef MARC_DETAILS_FORMAT_H
 #define MARC_DETAILS_FORMAT_H
 
+// See https://github.com/fmtlib/fmt/issues/947
+#ifdef __GNUG__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
+
 /// Avoid having to link the fmt library.
 #ifndef FMT_HEADER_ONLY
 # define FMT_HEADER_ONLY
 #endif
 
 #include <fmt/format.h>
+
+#ifdef __GNUG__
+# pragma GCC diagnostic pop
+#endif
 
 #endif  // MARC_DETAILS_FORMAT_H
