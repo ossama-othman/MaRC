@@ -17,12 +17,12 @@
 #include "InterpolationStrategy.h"
 #include "PhotometricCorrection.h"
 
+#include "details/format.h"
+
 #include "config.h"  // For NDEBUG.
 
 #include <stdexcept>
 #include <cassert>
-
-#include <fmt/format.h>
 
 
 namespace

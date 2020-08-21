@@ -17,10 +17,10 @@
 // # include "Log.h"
 #endif
 
+#include "details/format.h"
+
 #include <limits>
 #include <cmath>
-
-#include <fmt/format.h>
 
 
 namespace

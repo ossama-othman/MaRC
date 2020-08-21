@@ -19,7 +19,7 @@
 #include <marc/MapFactory.h>
 #include <marc/scale_and_offset.h>
 
-#include <fmt/format.h>
+#include <marc/details/format.h>
 
 #include <type_traits>
 

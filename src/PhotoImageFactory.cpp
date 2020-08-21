@@ -32,7 +32,7 @@
 #include <cmath>
 #include <cassert>
 
-#include <fmt/format.h>
+#include <marc/details/format.h>
 
 
 MaRC::PhotoImageFactory::PhotoImageFactory(char const * filename)
