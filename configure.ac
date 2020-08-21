@@ -150,7 +150,8 @@ dnl @todo Switch to std::format once C++20 is supported by MaRC.
 AC_CACHE_CHECK([for fmt library >= 6.1.2],
   [marc_cv_lib_fmt],
   [
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 #if FMT_VERSION < 60102
