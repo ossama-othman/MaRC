@@ -40,6 +40,8 @@ bool test_bad_extrema(T minimum, T maximum)
 {
     try {
         MaRC::extrema<int> e(minimum, maximum);
+        (void) e; // Unused, and should not be reached!
+        throw std::logic_error("extreama Constructor didn't throw.");
     } catch(std::invalid_argument &) {
         return true;
     } catch(...) {
