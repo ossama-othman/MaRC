@@ -1,4 +1,4 @@
-## Copyright (C) 1999, 2004, 2017  Ossama Othman
+## Copyright (C) 1999, 2004, 2017, 2020  Ossama Othman
 ##
 ## SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -30,6 +30,7 @@ check_PROGRAMS =            \
   Mercator_Test             \
   Orthographic_Test         \
   PolarStereographic_Test   \
+  log_test                  \
   optional_test             \
   root_find_test            \
   utility_test              \
@@ -131,6 +132,11 @@ Orthographic_Test_LDADD = \
 
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = \
+  $(top_builddir)/lib/marc/libMaRC.la \
+  $(CODE_COVERAGE_LIBS)
+
+log_test_SOURCES = log_test.cpp
+log_test_LDADD   = \
   $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
