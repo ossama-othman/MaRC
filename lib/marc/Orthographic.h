@@ -2,7 +2,7 @@
 /**
  * @file Orthographic.h
  *
- * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2018  Ossama Othman
+ * Copyright (C) 1996-1997, 1999, 2003-2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -21,6 +21,9 @@ namespace MaRC
 {
     class OblateSpheroid;
     struct OrthographicCenter;
+
+    class ortho_map_parameters;
+    class ortho_grid_parameters;
 
     /**
      * @enum GeometryType
@@ -101,26 +104,20 @@ namespace MaRC
 
     private:
 
-        /// Retrieve map size dependent parameters.
         /**
+         * @brief Retrieve map size dependent parameters.
+         *
          * Retrieve map parameters that may depend on the map
          * dimensions.
          *
-         * @param[in]  samples       Number of samples in the map.
-         * @param[in]  lines         Number of lines in the map.
-         * @param[out] km_per_pixel  The number of kilometers per
-         *                           pixel in the orthographic
-         *                           projection.
-         * @param[out] sample_center Body center sample in projection
-         *                           (measured from left edge).
-         * @param[out] line_center   Body center line in projection
-         *                           (measured from bottom edge).
+         * @param[in]  samples    Number of samples in the map.
+         * @param[in]  lines      Number of lines in the map.
+         * @param[out] parameters Map parameters corresponding to the
+         *                        provided @a samples and @a lines.
          */
         void map_parameters(std::size_t samples,
                             std::size_t lines,
-                            double & km_per_pixel,
-                            double & sample_center,
-                            double & line_center) const;
+                            ortho_map_parameters & parameters) const;
 
         /**
          * Create the Orthographic map projection.
@@ -141,6 +138,18 @@ namespace MaRC
                        double lat_interval,
                        double lon_interval,
                        grid_type & grid) const override;
+
+        /// Plot the Orthographic map latitude lines.
+        void plot_lat_lines(std::size_t samples,
+                            std::size_t lines,
+                            ortho_grid_parameters const & p,
+                            grid_type & grid) const;
+
+        /// Plot the Orthographic map longitude lines.
+        void plot_lon_lines(std::size_t samples,
+                            std::size_t lines,
+                            ortho_grid_parameters const & p,
+                            grid_type & grid) const;
 
     private:
 
@@ -172,7 +181,8 @@ namespace MaRC
         /// edge).
         double lat_at_center_;
 
-        /// Line center of projection (measured from bottom edge).
+        /// Longitude at center of projection (measured from bottom
+        /// edge).
         double lon_at_center_;
 
         /// True if creating polar projection.
