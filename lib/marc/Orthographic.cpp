@@ -124,7 +124,7 @@ namespace MaRC
         }
 
         /// Value to be plotted on map grid.
-        constexpr auto white() const
+        static constexpr auto white()
         {
             return std::numeric_limits<
                 typename Orthographic::grid_type::value_type>::max();
