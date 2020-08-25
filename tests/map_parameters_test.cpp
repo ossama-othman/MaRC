@@ -47,24 +47,24 @@ bool test_initialization()
     return false;
 }
 
-#define MARC_TEST_STRING_PARAM(parameter)        \
+#define MARC_TEST_STRING_PARAM(parameter)         \
 bool test_ ## parameter(MaRC::map_parameters & p) \
-{                                                \
-    if (!p.parameter().empty())                  \
-        return false;                            \
-    p.parameter(#parameter);                     \
-    return p.parameter() == #parameter;          \
+{                                                 \
+    if (!p.parameter().empty())                   \
+        return false;                             \
+    p.parameter(#parameter);                      \
+    return p.parameter() == #parameter;           \
 }
 
-#define MARC_TEST_REAL_PARAM(parameter)          \
+#define MARC_TEST_REAL_PARAM(parameter)           \
 bool test_ ## parameter(MaRC::map_parameters & p) \
-{                                                \
-    if (p.parameter().has_value())               \
-        return false;                            \
-    constexpr double x = __LINE__;               \
-    p.parameter(x);                              \
-    auto const y = p.parameter().value();        \
-    return MaRC::almost_equal(x, y, ulps);       \
+{                                                 \
+    if (p.parameter().has_value())                \
+        return false;                             \
+    constexpr double x = __LINE__;                \
+    p.parameter(x);                               \
+    auto const y = p.parameter().value();         \
+    return MaRC::almost_equal(x, y, ulps);        \
 }
 
 MARC_TEST_STRING_PARAM(author)
