@@ -1,3 +1,7 @@
+# Copyright (C) 2019, 2020  Ossama Othmna
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
@@ -8,4 +12,4 @@ Description: The MaRC library
 URL: @PACKAGE_URL@
 Version: @VERSION@
 Cflags: -I${includedir}
-Libs: -L${libdir} -lmarc
+Libs: -L${libdir} -lMaRC
