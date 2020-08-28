@@ -371,96 +371,93 @@ bool test_merge_blank(MaRC::map_parameters & u,
         && u.merge(p1)  && u.blank()  == uv;
 }
 
-/*
 bool test_merge_comments_impl(
     std::function<void(comments_type::value_type const &)> const & u_push,
-    comments_type const & comments)
+    std::function<void(comments_type::value_type const &)> const & p2_push,
+    comments_type const & u_comments,
+    comments_type const & p1_comments,
+    MaRC::map_parameters & u,
+    MaRC::map_parameters & p1,
+    MaRC::map_parameters & p2)
 {
-    if (!comments.empty())
-        return false;
+    assert(u_comments.empty());
+    assert(p1_comments.empty());
 
-    using comment_type = comments_type::value_type;
+    // Add user supplied comments for merge testing.
+    std::string const uc[] = { "u: 1", "u: 2" };
+    for (auto const & c : uc)
+        u_push(c);
 
-    comment_type const p2c[] = { "p2: 1", "p2: 2" };
-
-    assert(!u.comments().empty());
-    assert(!p1.comments().empty());
-    assert(!p2.comments().empty());
-
-    // Pre-merge copies.
-    auto u_comments  = u.comments();
-    auto p1_comments = p1.comments();
+    // Add plane 2 comments for merge testing.
+    std::string const p2c[] = { "p2: 1", "p2: 2" };
+    for (auto const & c : p2c)
+        p2_push(c);
 
     // Expected contents of p1 comment list after merge.
+    MaRC::map_parameters::comment_list_type p1_expected;
     for (auto const & c: p2c)
-        p1_comments.push_back(c);
+        p1_expected.push_back(c);
 
-    // Add comments for merge testing.
-    for (auto const & c : p2c)
-        p2.push_comment(c);
+    // Pre-merge copy.
+    auto const u_expected = u_comments;
 
     // Merge and test.
-    return p1.merge(p2) && p1.comments() == p1_comments  // Updated
-        && u.merge(p1) && u.comments() == user_comments; // No change
+    return p1.merge(p2) && p1_comments == p1_expected  // Updated
+        && u.merge(p1)  && u_comments  == u_expected;  // No change
 }
-*/
 
 bool test_merge_comments(MaRC::map_parameters & u,
                          MaRC::map_parameters & p1,
                          MaRC::map_parameters & p2)
 {
-    assert(u.comments().empty());
-    assert(p1.comments().empty());
     assert(p2.comments().empty());
 
-    // Add user supplied comments for merge testing.
-    std::string const uc[] = { "u: 1", "u: 2" };
-    for (auto const & c : uc)
-        u.push_comment(c);
+    auto const & u_push =
+        [&u](comments_type::value_type const & c)
+        {
+            u.push_comment(c);
+        };
 
-    // Add plane 2 comments for merge testing.
-    std::string const p2c[] = { "p2: 1", "p2: 2" };
-    for (auto const & c : p2c)
-        p2.push_comment(c);
+    auto const & p2_push =
+        [&p2](comments_type::value_type const & c)
+        {
+            p2.push_comment(c);
+        };
 
-    // Expected contents of p1 comment list after merge.
-    MaRC::map_parameters::comment_list_type p1_comments;
-    for (auto const & c: p2c)
-        p1_comments.push_back(c);
-
-    // Pre-merge copy.
-    auto const u_comments  = u.comments();
-
-    // Merge and test.
-    return p1.merge(p2) && p1.comments() == p1_comments  // Updated
-        && u.merge(p1)  && u.comments()  == u_comments;  // No change
+    return test_merge_comments_impl(u_push,
+                                    p2_push,
+                                    u.comments(),
+                                    p1.comments(),
+                                    u,
+                                    p1,
+                                    p2);
 }
 
 bool test_merge_xcomments(MaRC::map_parameters & u,
                           MaRC::map_parameters & p1,
                           MaRC::map_parameters & p2)
 {
-    std::string const p2c[] = { "p2: 1", "p2: 2" };
-
-    assert(u.xcomments().empty());
-    assert(p1.xcomments().empty());
     assert(p2.xcomments().empty());
 
-    // Pre-merge copies.
-    auto u_comments  = u.xcomments();
-    auto p1_comments = p1.xcomments();
+    auto const & u_push =
+        [&u](comments_type::value_type const & c)
+        {
+            u.push_xcomment(c);
+        };
 
-    // Expected contents of p1 xcomment list after merge.
-    for (auto const & c: p2c)
-        p1_comments.push_back(c);
+    auto const & p2_push =
+        [&p2](comments_type::value_type const & c)
+        {
+            p2.push_xcomment(c);
+        };
 
-    // Add comments for merge testing.
-    for (auto const & c : p2c)
-        p2.push_xcomment(c);
-
-    // Merge and test.
-    return p1.merge(p2) && p1.xcomments() == p1_comments  // Updated
-        && u.merge(p1)  && u.xcomments()  == u_comments;  // No change
+    return test_merge_comments_impl(u_push,
+                                    p2_push,
+                                    u.xcomments(),
+                                    p1.xcomments(),
+                                    u,
+                                    p1,
+                                    p2);
 }
 
 bool test_merge()
