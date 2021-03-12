@@ -45,11 +45,19 @@ dnl Generate a header file with all settings.
 AC_CONFIG_HEADERS([lib/marc/config.h])
 
 dnl Checks for programs.
-AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX_14
 AC_PROG_LN_S
 AX_PROG_BISON
 AM_PROG_LEX
+
+AC_PROG_CXX
+
+AC_LANG([C++])
+
+dnl Check and enable C++14 support.
+AX_CXX_COMPILE_STDCXX_14
+
+dnl Check for SIMD CPU instructions.
+AX_EXT
 
 MARC_CLANG_TIDY
 
@@ -73,8 +81,6 @@ DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
 
 AC_ARG_VAR([PANDOC],[location of pandoc program])
 AC_PATH_PROG([PANDOC], [pandoc])
-
-AC_LANG([C++])
 
 dnl
 dnl config.h template
