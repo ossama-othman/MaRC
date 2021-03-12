@@ -42,7 +42,7 @@ marc_SOURCES = \
   parse.yy \
   lexer.ll
 
-marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
+marc_CXXFLAGS = $(SIMD_FLAGS) $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
 marc_LDADD    = \
   $(CFITSIO_LIBS) \
   $(ARGP_LIBS) \

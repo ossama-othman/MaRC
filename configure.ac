@@ -51,6 +51,11 @@ AC_PROG_LN_S
 AX_PROG_BISON
 AM_PROG_LEX
 
+AC_LANG([C++])
+
+dnl Check for SIMD CPU instructions.
+AX_EXT
+
 MARC_CLANG_TIDY
 
 MARC_CODE_COVERAGE
@@ -73,8 +78,6 @@ DX_INIT_DOXYGEN([marc], [Doxyfile], [doc/doxygen])
 
 AC_ARG_VAR([PANDOC],[location of pandoc program])
 AC_PATH_PROG([PANDOC], [pandoc])
-
-AC_LANG([C++])
 
 dnl
 dnl config.h template
