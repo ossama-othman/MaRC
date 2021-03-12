@@ -1,8 +1,8 @@
-//   -*- C++ -*-
+// -*- C++ -*-
 /**
- * @file MapParameters.h
+ * @file map_parameters.h
  *
- * Copyright (C) 2018  Ossama Othman
+ * Copyright (C) 2018-2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -17,19 +17,13 @@
 #include <list>
 #include <string>
 #include <memory>
+#include <set>
 
 
 namespace MaRC
 {
     /**
-     * Type used to store a %FITS @c BLANK integer value.
-     *
-     * @todo Use @c std::optional once %MaRC requires C++17.
-     */
-    using blank_type = MaRC::plot_info::blank_type;
-
-    /**
-     * @class MapParameters
+     * @class map_parameters
      *
      * @brief Map configuration parameters.
      *
@@ -37,19 +31,39 @@ namespace MaRC
      * populated automatically from relevant values in the source
      * images being mapped.
      */
-    class MapParameters
+    class map_parameters
     {
     public:
+        /// %FITS file comment list type.
+        using comment_list_type = std::list<std::string>;
 
-        /// Constructor
-        MapParameters();
+        /**
+         * @brief Constructor
+         *
+         * @param[in] plane User-supplied parameters @plane == 0,
+         *                  otherwise @a plane > 0 for plane-specific
+         *                  (automatically populated parameters).
+         *
+         * @todo Revise the design so that this constructor and the
+         *       @c plane_ are not needed.
+         */
+        explicit map_parameters(int plane);
+
+        /**
+         * @brief Default Coonstructor
+         *
+         * Convenience constructor used when creating user supplied
+         * map parameters.
+         *
+         */
+        map_parameters();
 
         /// Destructor.
-        ~MapParameters() = default;
+        ~map_parameters() = default;
 
         // Disallow copying.
-        MapParameters(MapParameters const &) = delete;
-        void operator=(MapParameters const &) = delete;
+        map_parameters(map_parameters const &) = delete;
+        void operator=(map_parameters const &) = delete;
 
         /// Set map author.
         void author(std::string a);
@@ -123,10 +137,10 @@ namespace MaRC
          *     (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void bscale(double scale);
+        void bscale(MaRC::optional<double> scale);
 
         /// Get the value for the map %FITS @c BSCALE keyword.
-        double bscale() const { return this->bscale_; }
+        MaRC::optional<double> bscale() const { return this->bscale_; }
 
         /**
          * @brief Set the unit of physical data.
@@ -167,28 +181,28 @@ namespace MaRC
          *     (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void bzero(double zero);
+        void bzero(MaRC::optional<double> zero);
 
         /// Get the value for the map %FITS @c BZERO keyword.
-        double bzero() const { return this->bzero_; }
+        MaRC::optional<double> bzero() const { return this->bzero_; }
 
         /// Set the %FITS @c DATAMAX value.
-        void datamax(double max);
+        void datamax(MaRC::optional<double> max);
 
         /// Get the value for the map %FITS @c DATAMAX keyword.
-        double datamax() const { return this->datamax_; }
+        MaRC::optional<double> datamax() const { return this->datamax_; }
 
         /// Set the %FITS @c DATAMIN value.
-        void datamin(double min);
+        void datamin(MaRC::optional<double> min);
 
         /// Get the value for the map %FITS @c DATAMIN keyword.
-        double datamin() const { return this->datamin_; }
+        MaRC::optional<double> datamin() const { return this->datamin_; }
 
         /// Set the %FITS @c EQUINOX value.
-        void equinox(double e);
+        void equinox(MaRC::optional<double> e);
 
         /// Get the value for the map %FITS @c EQUINOX keyword.
-        double equinox() const { return this->equinox_; }
+        MaRC::optional<double> equinox() const { return this->equinox_; }
 
                 /// Set name of object being mapped.
         void instrument(std::string i);
@@ -254,7 +268,94 @@ namespace MaRC
         /// Get telescope used to acquire the source data.
         std::string const & telescope() const { return this->telescope_; }
 
+        /**
+         * @brief Add map image comment.
+         *
+         * Push a map image comment to the comment list to be embedded
+         * in the map image %FITS header data unit.  Each comment will
+         * be placed in its own %FITS @c COMMENT.
+         *
+         * @param[in] comment Comment to be added to the map image
+         *                    HDU.
+         */
+        void push_comment(comment_list_type::value_type comment);
+
+        /// Get map image comments.
+        comment_list_type const & comments() const
+        {
+            return this->comments_;
+        }
+
+        /**
+         * @brief Add map image extension comment.
+         *
+         * Push a map image extension comment to the comment list to
+         * be embedded in the map image extension %FITS header data
+         * unit.  Each comment will be placed in its own %FITS
+         * @c COMMENT.
+         *
+         * @note This set of %FITS image extension comments is
+         *       only used for documenting the grid image generated by
+         *       %MaRC.
+         *
+         * @param[in] comment Comment to be added to the map grid
+         *                    image extension HDU.
+         */
+        void push_xcomment(comment_list_type::value_type comment);
+
+        /// Get map image extension comments.
+        comment_list_type const & xcomments() const
+        {
+            return this->xcomments_;
+        }
+
+        /**
+         * @brief Merge map paremeters.
+         *
+         * Merge the given set of map parameters, @a p, with this
+         * one.  Map parameters in this object will generally override
+         * those in the map parameters @a p.  The goal is to provide a
+         * simple way for user supplied map parameters to override
+         * those that are automatically populated from the image (map
+         * plane) factories.
+         *
+         * @param[in,out] p Map parameters to be merged.  @a p may be
+         *                  modified during the merge, e.g. via
+         *                  @c std::move().
+         *
+         * @return @c true if the map parameter merge was successful,
+         *         and @c false otherwise.
+         */
+        bool merge(map_parameters & p);
+
     private:
+
+        bool merge_optional(char const * key,
+                            MaRC::optional<double> & to,
+                            MaRC::optional<double> & from);
+
+        bool merge_optional(char const * key,
+                            MaRC::blank_type & to,
+                            MaRC::blank_type & from);
+
+        bool merge_optional(char const * key,
+                            std::string & to,
+                            std::string from);
+
+    private:
+
+        /**
+         *
+         */
+        std::set<std::string> locked_keywords_;
+
+        /**
+         *
+         */
+        bool user_supplied_;
+
+        /// Map plane to which these parameters belong.
+        int const plane_;
 
         /**
          * @brief Source data author.
@@ -288,7 +389,7 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "BSCALE" keyword.
          */
-        double bscale_;
+        MaRC::optional<double> bscale_;
 
         /**
          * @brief Unit of physical data.
@@ -318,7 +419,7 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "BZERO" keyword.
          */
-        double bzero_;
+        MaRC::optional<double> bzero_;
 
         /**
          * @brief Maximum valid physical value.
@@ -335,7 +436,7 @@ namespace MaRC
          *      Special handling will be need to be implemented to
          *      handle such a case.
          */
-        double datamax_;
+        MaRC::optional<double> datamax_;
 
         /**
          * @brief Minimum valid physical value.
@@ -352,7 +453,7 @@ namespace MaRC
          *      Special handling will be need to be implemented to
          *      handle such a case.
          */
-        double datamin_;
+        MaRC::optional<double> datamin_;
 
         /**
          * @brief Epoch of the mean equator and equinox in years.
@@ -361,7 +462,7 @@ namespace MaRC
          * @note This value corresponds to the %FITS "EQUINOX"
          *       keyword.
          */
-        double equinox_;
+        MaRC::optional<double> equinox_;
 
         /**
          * @brief Instrument used to acquire the data.
@@ -415,6 +516,40 @@ namespace MaRC
          *       keyword.
          */
         std::string telescope_;
+
+        /**
+         * @brief User supplied map comments.
+         *
+         * The user may provide map comments to document various
+         * aspects of the data being mapped, and/or the map itself.
+         *
+         * @note The comments correspond to the %FITS "COMMENT"
+         *       keyword.
+         */
+        comment_list_type comments_;
+
+        /**
+         * @brief User supplied map grid comments.
+         *
+         * The user may provide map comments to document various
+         * aspects of the grid being mapped.
+         *
+         * @note The comments correspond to the %FITS "COMMENT"
+         *       keyword in the "GRID" %FITS image extension.
+         */
+        comment_list_type xcomments_;
+
+        /**
+         * @brief Map documentation created by %MaRC.
+         *
+         * In some cases %MaRC will document some aspects of the map
+         * it has decided to use without user involvement in history
+         * comments.
+         *
+         * @note The history comments correspond to the %FITS
+         *       "HISTORY" keyword.
+         */
+        comment_list_type histories_;
 
     };
 }

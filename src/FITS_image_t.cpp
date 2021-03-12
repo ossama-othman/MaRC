@@ -16,7 +16,7 @@
 #include <marc/Log.h>
 #include <marc/utility.h>
 
-#include "fitsio.h"
+#include <fitsio.h>
 
 
 template <typename T>
@@ -49,7 +49,7 @@ MaRC::FITS::image::blank(blank_type blank)
         /**
          * @todo Should we bother checking if the blank value fits
          *       within the range of type @c T.  The
-         *       @c MaRC::MapCommand::make_map() call already does
+         *       @c MaRC::MapFactory::make_map() call already does
          *       that.
          */
         this->template update_fits_key<T>(
@@ -58,6 +58,30 @@ MaRC::FITS::image::blank(blank_type blank)
             blank_value,
             "value of pixels with undefined physical value");
     }
+}
+
+template <typename T>
+void
+MaRC::FITS::image::datamin(T min)
+{
+    if (!std::isnan(min))
+        this->template update_fits_key<T>(
+            this->fptr_.get(),
+            "DATAMIN",
+            min,
+            "minimum valid physical data value");
+}
+
+template <typename T>
+void
+MaRC::FITS::image::datamax(T max)
+{
+    if (!std::isnan(max))
+        this->template update_fits_key<T>(
+            this->fptr_.get(),
+            "DATAMAX",
+            max,
+            "maximum valid physical data value");
 }
 
 template <typename T>
@@ -70,7 +94,9 @@ MaRC::FITS::image::write(T const & img)
         return false;
     } else if(static_cast<LONGLONG>(MaRC::size(img))
               != this->nelements_) {
-        MaRC::error("FITS image and data array size do not match..");
+        MaRC::error("FITS image and data array sizes, "
+                    "{} and {}, do not match.",
+                    this->nelements_, MaRC::size(img));
 
         return false;
     }

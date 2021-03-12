@@ -102,13 +102,11 @@ bool test_make_map()
      *       account the body rotation.
      */
 
-    constexpr auto minimum = std::numeric_limits<data_type>::lowest();
-    constexpr auto maximum = std::numeric_limits<data_type>::max();
-
-    MaRC::plot_info info(*image, minimum, maximum);
+    MaRC::extrema<data_type> const minmax;
+    MaRC::plot_info<data_type> info(samples, lines);
 
     auto const map =
-        projection->template make_map<data_type>(info, samples, lines);
+        projection->template make_map<data_type>(*image, minmax, info);
 
     if (map.empty())
         return false;
@@ -133,11 +131,11 @@ bool test_make_map()
      *       order of 1e-15.  Can we somehow get even closer to zero
      *       so that we can reduce this @c ulps value?
      */
-    constexpr int ulps = 30;
+    constexpr int epsilons = 30;
 
     return
         !map.empty()
-        && MaRC::almost_zero(equator_data, ulps);
+        && MaRC::almost_zero(equator_data, epsilons);
 }
 
 /**

@@ -1,7 +1,7 @@
 /**
- * @file PhotoImage.cpp
+ * @file PhotoImageParameters.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -13,7 +13,6 @@
 #include "NullInterpolation.h"
 
 #include <stdexcept>
-// #include <sstream>
 
 #ifndef MARC_DEFAULT_PHOTO_CORR_STRATEGY
 # define MARC_DEFAULT_PHOTO_CORR_STRATEGY MaRC::NullPhotometricCorrection
@@ -33,7 +32,6 @@ MaRC::PhotoImageParameters::PhotoImageParameters()
         std::make_unique<MARC_DEFAULT_PHOTO_CORR_STRATEGY>())
     , interpolation_strategy_(
         std::make_unique<MARC_DEFAULT_INTERPOLATION_STRATEGY>())
-    , unit_()
     , remove_sky_(false)
 {
 }
@@ -70,15 +68,14 @@ MaRC::PhotoImageParameters::nibble(std::size_t n)
     //     std::min(this->samples_, this->lines_);
 
     // if (n < (minimum_dimension / 2)) {
-      this->nibble_left_   = n;
-      this->nibble_right_  = n;
-      this->nibble_top_    = n;
-      this->nibble_bottom_ = n;
+        this->nibble_left_   = n;
+        this->nibble_right_  = n;
+        this->nibble_top_    = n;
+        this->nibble_bottom_ = n;
     // } else {
-    //   std::ostringstream s;
-    //   s << "Invalid overall nibble value (" << n << ")";
+    //     auto s = fmt::format("Invalid overall nibble value ({}).", n);
 
-    //   throw std::invalid_argument(s.str());
+    //     throw std::invalid_argument(s);
     // }
 }
 
@@ -88,10 +85,9 @@ MaRC::PhotoImageParameters::nibble_left(std::size_t n)
     // if (n < (this->samples_ - this->nibble_right_))
         this->nibble_left_ = n;
     // else {
-    //     std::ostringstream s;
-    //     s << "Invalid nibble left value (" << n << ")";
+    //     auto s = fmt::format("Invalid nibble left value ({}).", n);
 
-    //     throw std::invalid_argument(s.str());
+    //     throw std::invalid_argument(s);
     // }
 }
 
@@ -101,10 +97,9 @@ MaRC::PhotoImageParameters::nibble_right(std::size_t n)
     // if (n < (this->samples_ - this->nibble_left_))
         this->nibble_right_ = n;
     // else {
-    //     std::ostringstream s;
-    //     s << "Invalid nibble right value (" << n << ")";
+    //     auto s = fmt::format("Invalid nibble right value ({}).", n);
 
-    //     throw std::invalid_argument(s.str());
+    //     throw std::invalid_argument(s);
     // }
 }
 
@@ -114,10 +109,9 @@ MaRC::PhotoImageParameters::nibble_top(std::size_t n)
     // if (n < (this->lines_ - this->nibble_bottom_))
         this->nibble_top_ = n;
     // else {
-    //     std::ostringstream s;
-    //     s << "Invalid nibble top value (" << n << ")";
+    //     auto s = fmt::format("Invalid nibble top value ({}).", n);
 
-    //     throw std::invalid_argument(s.str());
+    //     throw std::invalid_argument(s);
     // }
 }
 
@@ -127,17 +121,10 @@ MaRC::PhotoImageParameters::nibble_bottom(std::size_t n)
     // if (n < (this->lines_ - this->nibble_top_))
         this->nibble_bottom_ = n;
     // else {
-    //     std::ostringstream s;
-    //     s << "Invalid nibble bottom value (" << n << ")";
+    //     auto s = fmt::format("Invalid nibble bottom value ({}).", n);
 
-    //     throw std::invalid_argument(s.str());
+    //     throw std::invalid_argument(s);
     // }
-}
-
-void
-MaRC::PhotoImageParameters::unit(std::string const & u)
-{
-    this->unit_ = u;
 }
 
 void

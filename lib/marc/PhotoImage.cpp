@@ -1,7 +1,7 @@
 /**
  * @file PhotoImage.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -17,10 +17,11 @@
 #include "InterpolationStrategy.h"
 #include "PhotometricCorrection.h"
 
+#include "details/format.h"
+
 #include "config.h"  // For NDEBUG.
 
 #include <stdexcept>
-#include <sstream>
 #include <cassert>
 
 
@@ -63,12 +64,12 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
-        std::ostringstream s;
-        s << "Source image samples (" << samples
-          << ") and lines (" << lines
-          << ") must both be greater than one.";
+        auto s = fmt::format("Source image samples ({}) and lines ({}) "
+                             "must both be greater than one.",
+                             samples,
+                             lines);
 
-        throw std::invalid_argument(s.str());
+        throw std::invalid_argument(s);
     }
 
     if (this->image_.size() != samples * lines) {
@@ -163,12 +164,6 @@ MaRC::PhotoImage::read_data(double lat,
         this->data_weight(i, k, weight);
 
     return true;  // Success
-}
-
-char const *
-MaRC::PhotoImage::unit() const
-{
-    return this->config_->unit();
 }
 
 void

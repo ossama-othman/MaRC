@@ -14,7 +14,7 @@
 
 #include "FITS_file.h"
 #include "SourceImageFactory.h"
-#include "MapParameters.h"
+#include "map_parameters.h"
 
 #include <marc/MapFactory.h>
 
@@ -37,9 +37,6 @@ namespace MaRC
         /// Grid image type.
         using grid_type = MaRC::MapFactory::grid_type;
 
-        /// %FITS file comment list type.
-        using comment_list_type = std::list<std::string>;
-
         /// Source image factories type.
         using image_factories_type =
             std::list<std::unique_ptr<MaRC::SourceImageFactory>>;
@@ -57,7 +54,7 @@ namespace MaRC
                    long samples,
                    long lines,
                    std::unique_ptr<MapFactory> factory,
-                   std::unique_ptr<MapParameters> params);
+                   std::unique_ptr<map_parameters> params);
 
         // Disallow copying.
         MapCommand(MapCommand const &) = delete;
@@ -70,16 +67,10 @@ namespace MaRC
         int execute();
 
         /// Get map file name.
-        char const * filename() const  { return this->filename_.c_str(); }
+        std::string const & filename() const { return this->filename_; }
 
         /// Get name of projection.
         char const * projection_name() const;
-
-        /// Set list of map comments to be written to %FITS file.
-        void comment_list (comment_list_type comments);
-
-        /// Set list of grid comments to be written to %FITS file.
-        void xcomment_list(comment_list_type comments);
 
         /**
          * @brief Set the latitude and longitude grid intervals.
@@ -155,7 +146,7 @@ namespace MaRC
         /**
          * @brief Automatically populate map parameters.
          *
-         * Populate optional parameters automatically, such as from
+         * Populate parameters automatically, such as from
          * @c SourceImage parameters, where possible.
          *
          * @return @c true if map parameter population succeded, and
@@ -168,6 +159,11 @@ namespace MaRC
          *       flagged prior to mapping.
          */
         bool populate_map_parameters();
+
+        /**
+         * @brief Return the number of digits in an unsigned integer.
+         */
+        static int number_of_digits(std::size_t num);
 
     private:
 
@@ -191,12 +187,6 @@ namespace MaRC
 
         /// Map filename.
         std::string const filename_;
-
-        /// Map comments.
-        std::list<std::string> comments_;
-
-        /// Grid comments.
-        std::list<std::string> xcomments_;
 
         /// Latitude grid line interval.
         double lat_interval_;
@@ -224,8 +214,8 @@ namespace MaRC
         /// Flag that determines if a grid is created.
         bool create_grid_;
 
-        /// %FITS related map parameters.
-        std::unique_ptr<MapParameters> parameters_;
+        /// User supplied map parameters.
+        std::unique_ptr<map_parameters> parameters_;
 
     };
 

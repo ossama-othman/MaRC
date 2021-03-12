@@ -232,8 +232,8 @@ namespace MaRC
          * @note We do not use signum() here since @c signum(b) when
          *       @c b is zero would return @c 0, resulting in
          *       incorrect root results @c (0, &infin;) due to the
-         *       square root of the discrimant term being dropped from
-         *       the calculation.
+         *       square root of the discriminant term being dropped
+         *       from the calculation.
          */
         double const q =
             -(b + sgn(b) * std::sqrt(discriminant)) / 2;

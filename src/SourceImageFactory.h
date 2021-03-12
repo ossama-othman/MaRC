@@ -2,7 +2,7 @@
 /**
  * @file SourceImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2019-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -15,23 +15,36 @@
 #include <memory>
 #include <functional>
 
+#include <marc/extrema.h>
+
 
 namespace MaRC
 {
     class SourceImage;
+    class map_parameters;
 
     /**
      * @class SourceImageFactory
      *
-     * @brief Abstract factory class containing interface for image
-     *        factories.
+     * @brief Abstract factory class containing interface for source
+     *        image factories.
      *
-     * @note An @c ImageFactory can be considered a map plane factory as
-     *       well.
+     * @note An @c SourceImageFactory can be considered a map plane
+     *       factory as well.
      */
     class SourceImageFactory
     {
     public:
+
+        /**
+         * @brief Convenience type alias for physical data extrema.
+         *
+         * @bug A @c double typed extremum is not appropriate for 64
+         *      bit integer values more than 53 bits wide, i.e. the
+         *      width of the significand in 64 bit IEEE 754 floating
+         *      point values.
+         */
+        using extrema_type = extrema<double>;
 
         /**
          * Type of functor used for determining scale and offset
@@ -43,7 +56,7 @@ namespace MaRC
             std::function<bool(double, double, double &, double &)>;
 
         /// Constructor.
-        SourceImageFactory();
+        SourceImageFactory() = default;
 
         // Disallow copying.
         SourceImageFactory(SourceImageFactory const &) = delete;
@@ -52,6 +65,20 @@ namespace MaRC
 
         /// Destructor.
         virtual ~SourceImageFactory() = default;
+
+        /**
+         * @brief Populate map parameters.
+         *
+         * Set map parameters based on @c SourceImage
+         * characteristics.
+         *
+         * @param[in,out] parameters Map parameters to be populated.
+         *
+         * @return @c true if parameters were successfully populated,
+         *         @c false otherwise.
+         */
+        virtual bool populate_parameters(
+            map_parameters & parameters) const = 0;
 
         /// Create a @c SourceImage for a map of given data type.
         /**
@@ -72,49 +99,54 @@ namespace MaRC
         virtual std::unique_ptr<SourceImage> make(
             scale_offset_functor calc_so) = 0;
 
-        /// Set minimum allowed physical data value in map plane.
         /**
-         * Set the minimum allowed physical data value, i.e.
-         * data >= minimum, in the map plane to which an image will be
-         * mapped.
+         * @brief Set the minimum physical data value.
          *
-         * @throw std::invalid_argument Supplied minimum is either
-         *                              not-a-number (NaN) or greater
-         *                              than the maximum.
+         * Set the minimum physical data value if it hasn't already
+         * been set.
+         *
+         * @param[in] datum Physical data value.
          */
-        void minimum(double m);
+        void minimum(double datum);
 
-        /// Set maximum allowed physical data value in map plane.
         /**
-         * Set the maximum allowed physical data value, i.e.
-         * data =< maximum, in the map plane to which an image will be
-         * mapped.
+         * @brief Set the maximum physical data value.
          *
-         * @throw std::invalid_argument Supplied maximum is either
-         *                              not-a-number (NaN) or less
-         *                              than the minimum.
+         * Set the maximum physical data value if it hasn't already
+         * been set.
+         *
+         * @param[in] datum Physical data value.
          */
-        void maximum(double m);
+        void maximum(double datum);
 
-        /// Return minimum allowed physical data value in map plane.
-        double minimum() const { return this->minimum_; }
-
-        /// Return maximum allowed physical data value in map plane.
-        double maximum() const { return this->maximum_; }
+        /**
+         * @brief Get the minimum and maximum physical data values.
+         *
+         * @note Only a @c const reference is accessible to prevent
+         *       @c SourceImageFactory subclasses from potentially
+         *       overriding previously set extrema, in particular
+         *       those specified by the user in a %MaRC configuration
+         *       or input file.
+         */
+        extrema_type const & minmax() const { return this->extrema_; }
 
     private:
 
         /**
-         * @brief Minimum allowed physical data value in map plane
-         *        (data >= minimum).
+         * @brief Minimum and maximum physical data values.
+         *
+         * Minimum and maximum physical data values in the
+         * source image. (minimum <= data <= maximum).
+         *
+         * @note Both, one, or none of the extrema may be set.
+         *
+         * @note This member is private to prevent
+         *       @c SourceImageFactory subclasses from potentially
+         *       overriding previously set extrema, in particular
+         *       those specified by the user in a %MaRC configuration
+         *       or input file.
          */
-        double minimum_;
-
-        /**
-         * @brief Maximum allowed physical data value in map plane
-         *        (data =< maximum)
-         */
-        double maximum_;
+        extrema_type extrema_;
 
     };
 

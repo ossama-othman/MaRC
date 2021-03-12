@@ -15,7 +15,7 @@
  */
 bool test_root_find()
 {
-    constexpr int ulps = 2;
+    constexpr int epsilons = 2;
 
     auto f =
         [](double x)
@@ -38,8 +38,8 @@ bool test_root_find()
         // Since the value we're looking for is zero, check for
         // "almost zero" rather than "almost equal to zero", since
         // MaRC::almost_equal() is not suitable for the latter.
-        MaRC::almost_zero(MaRC::root_find(y, xl, xh, f), ulps)
-        && MaRC::almost_zero(MaRC::root_find(y, x0, f), ulps);
+        MaRC::almost_zero(MaRC::root_find(y, xl, xh, f), epsilons)
+        && MaRC::almost_zero(MaRC::root_find(y, x0, f), epsilons);
 }
 
 /// The canonical main entry point.

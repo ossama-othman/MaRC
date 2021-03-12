@@ -20,17 +20,7 @@
 
 #include "marc/config.h"  // For NDEBUG
 
-// See https://github.com/fmtlib/fmt/issues/947
-#ifdef __GNUG__
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wformat-nonliteral"
-#endif
-/// Avoid having to link the fmt library.
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
-#ifdef __GNUG__
-# pragma GCC diagnostic pop
-#endif
+#include "marc/details/format.h"
 
 /**
  * @def MARC_DEBUG_ARGS(x)

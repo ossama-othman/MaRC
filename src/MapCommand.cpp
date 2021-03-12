@@ -1,7 +1,7 @@
 /**
  * @file MapCommand.cpp
  *
- * Copyright (C) 2004, 2017-2019  Ossama Othman
+ * Copyright (C) 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -23,7 +23,6 @@
 #include <fitsio.h>
 
 #include <iostream>
-#include <sstream>
 #include <iomanip>
 #include <memory>
 #include <type_traits>  // For sanity check below.
@@ -52,100 +51,14 @@ namespace
             fits_width < double_width ? fits_width : double_width;
 
         // Avoid writing "-0".  It's harmless but rather unsightly.
-        constexpr double ulps = 1;
-        if (MaRC::almost_zero(value, ulps))
+        constexpr int epsilons = 1;
+        if (MaRC::almost_zero(value, epsilons))
             value = 0;
 
-        /**
-         * @todo Replace this std::ostringstream based conversion with
-         *       a fmt library based approach using, such as one that
-         *       leverages @c fmt::memory_buffer.
-         */
         // Work around inability to change precision in
-        // std::to_string().  Yes, this is ugly.
-        std::ostringstream os;
-
-        os << std::setprecision(width) << value;
-
-        return os.str();
+        // std::to_string() by using fmt::format().
+        return fmt::format("{:.{}g}", value, width);
     }
-
-    // -------------------------------------------------------------------
-
-#if 0
-    template <typename T>
-    struct parameter_matcher
-    {
-        static bool
-        match(T const & lhs, T const & rhs)
-        {
-            return lhs == rhs;
-        }
-    };
-
-    template <>
-    struct parameter_matcher<double>
-    {
-        static bool
-        match(double lhs, double rhs)
-        {
-            constexpr int ulps = 2;
-            return MaRC::almost_equal(lhs, rhs, ulps);
-        }
-    };
-
-    template <typename T>
-    bool
-    match_parameter(T const & lhs, T const & rhs)
-    {
-        return parameter_matcher<T>::match(lhs, rhs);
-    }
-
-    template <typename T>
-    bool
-    populate_param(
-        char const * keyword,
-        T && param,
-        MaRC::MapCommand::image_factories_type const & factories,
-        std::function<void(T const &)> set_param,
-        bool require_match)
-    {
-        T new_param;
-
-        for (auto const & plane : factories) {
-            auto const & plane_param = plane->param();
-
-            if (new_param.empty()) {
-                new_param = plane_param;
-            } else if (!match_param(new_param, plane_param)) {
-                MaRC::info("Different {} values between map planes:",
-                           keyword);
-                MaRC::info("\t'{}' and '{}'.", new_param, plane_param);
-
-                if (require_match) {
-                    /**
-                     * @todo Should we treat this case as a soft error,
-                     *       and simply warn the user instead?
-                     */
-                    MaRC::error("They must match.");
-
-                    return false;
-                } else {
-                    MaRC::info("{} will only be embedded in the map "
-                               "file in a HISTORY comment.",
-                               keyword);
-
-                    return true;
-                }
-            }
-        }
-
-        set_param = std::move(new_param);
-
-        return true;
-    }
-#endif  // 0
-
 }
 
 
@@ -155,14 +68,12 @@ MaRC::MapCommand::MapCommand(std::string filename,
                              long samples,
                              long lines,
                              std::unique_ptr<MapFactory> factory,
-                             std::unique_ptr<MapParameters> params)
+                             std::unique_ptr<map_parameters> params)
     : samples_(samples)
     , lines_(lines)
     , factory_(std::move(factory))
     , image_factories_()
     , filename_(std::move(filename))
-    , comments_()
-    , xcomments_()
     , lat_interval_(0)
     , lon_interval_(0)
     , transform_data_(false)
@@ -212,6 +123,8 @@ MaRC::MapCommand::MapCommand(std::string filename,
         && std::is_floating_point<FITS::double_type>(),
 
         "Underlying types do not satisfy FITS data type requirements.");
+
+    assert(this->parameters_);
 }
 
 int
@@ -219,12 +132,10 @@ MaRC::MapCommand::execute()
 {
     std::cout << "\nCreating map: " << this->filename_ << '\n';
 
-#if 0
     // All necessary map configuration parameters should now be in
     // place.  Populate other parameters automatically, if possible.
     if (!populate_map_parameters())
         return -1;
-#endif  // 0
 
     (void) unlink(this->filename_.c_str());
 
@@ -272,6 +183,8 @@ MaRC::MapCommand::execute()
     // Write the map grid if requested.
     this->write_grid(f);
 
+    std::cout << "Created map: " << this->filename_ << '\n';
+
     return 0;
 }
 
@@ -310,7 +223,7 @@ MaRC::MapCommand::write_grid(MaRC::FITS::output_file & map_file)
                             extname);
 
     // Write the grid comments.
-    for (auto const & xcomment : this->xcomments_)
+    for (auto const & xcomment : this->parameters_->xcomments())
         grid_image->comment(xcomment);
 
     std::string const xhistory =
@@ -347,18 +260,6 @@ MaRC::MapCommand::write_grid(MaRC::FITS::output_file & map_file)
 
     if(!grid_image->template write<grid_type>(grid))
         MaRC::error("Unable to write grid image to map file.");
-}
-
-void
-MaRC::MapCommand::comment_list(comment_list_type comments)
-{
-    this->comments_= std::move(comments);
-}
-
-void
-MaRC::MapCommand::xcomment_list(comment_list_type comments)
-{
-    this->xcomments_ = std::move(comments);
 }
 
 void
@@ -411,12 +312,16 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 
     double scale  = v->scale();
     double offset = v->offset();
-    std::string unit = v->unit();
 
     // Avoid writing "-0".  It's harmless but rather unsightly.
-    constexpr double ulps = 1;
-    if (MaRC::almost_zero(offset, ulps))
+    constexpr int epsilons = 1;
+    if (MaRC::almost_zero(offset, epsilons))
         offset = 0;
+
+    // -------------------------------------------
+    // Set physical value unit of the array values
+    // -------------------------------------------
+    map_image.bunit(this->parameters_->bunit());
 
     /**
      * @todo Write the BSCALE, BZERO and BUNIT value if a multi-plane
@@ -425,9 +330,11 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
      *       single plane maps in that case.
      */
     if (num_planes == 1) {
-        // We're the sole plane in the map meaning we can update
-        // actual FITS BSCALE and BZERO cards instead of writing
-        // freeform text in a COMMENT or HISTORY card.
+        /*
+          We're the sole plane in the map meaning we can update
+          actual FITS BSCALE and BZERO cards instead of writing
+          freeform text in a COMMENT or HISTORY card.
+        */
 
         if (this->transform_data_)
             MaRC::warn("computed scale and offset will override "
@@ -452,67 +359,40 @@ MaRC::MapCommand::write_virtual_image_facts(MaRC::FITS::image & map_image,
 
         /*
           Set CFITSIO internal scaling factors for the current
-          primary array of image extension.  They are independent
+          primary array or image extension.  They are independent
           of the FITS BSCALE and BZERO values set above.
         */
         map_image.internal_scale(internal_scale, internal_offset);
-
-        // -------------------------------------------
-        // Set physical value unit of the array values
-        // -------------------------------------------
-        map_image.bunit(unit);
     } else {
-        comment_list_type facts;
 
         /**
          * @todo Improve appearance of map plane facts in %FITS file.
          */
-        facts.emplace_back("Plane "
-                           + std::to_string(plane)
-                           + " characteristics:");
-        facts.emplace_back("    BSCALE: " + double_to_string(scale));
-        facts.emplace_back("    BZERO:  " + double_to_string(offset));
 
+        // Write some MaRC-specific HISTORY comments.
+        map_image.history(fmt::format("Plane {} characteristics:",
+                                      plane));
+
+        map_image.history("    BSCALE: " + double_to_string(scale));
+        map_image.history("    BZERO:  " + double_to_string(offset));
+
+        /**
+         * @bug Regression.  Map plane units are no longer written to
+         *      @c HISTORY comments in the map %FITS file.
+         */
+        /*
         if (!unit.empty()) {
             // Single quote the unit string per FITS string value
             // conventions.
-            facts.emplace_back("    BUNIT:  '" + unit + "'");
+            map_image.history("    BUNIT:  '" + unit + "'");
         }
-
-        for (auto & f : facts) {
-            // Write some MaRC-specific HISTORY comments.
-            map_image.history(f);
-        }
+        */
     }
 }
 
-#if 0
 bool
 MaRC::MapCommand::populate_map_parameters()
 {
-    bool populated = true;
-
-    /**
-     * Populate the following parameters from source image factories
-     * if possible:
-     * @li AUTHOR
-     * @li BITPIX
-     * @li BLANK
-     * @li BSCALE
-     * @li BUNIT
-     * @li BZERO
-     * @li DATAMAX
-     * @li DATAMIN
-     * @li EQUINOX
-     * @li INSTRUME
-     * @li NAXES
-     * @li OBJECT
-     * @li OBSERVER
-     * @li ORIGIN
-     * @li REFERENC
-     * @li TELESCOP
-     */
-
     /*
       Iterate through the list of source images (map planes) in an
       attempt to automatically set each of the map parameters.
@@ -523,17 +403,51 @@ MaRC::MapCommand::populate_map_parameters()
           NAXIS2)
      */
 
-    populated =
-        populate_param(
-            "AUTHOR",
-            this->parameters_->author(),
-            [&](auto value)
-            {
-                this->parameters_->author(std::forward(value));
-            },
-            false);
+    // Automatically populated map parameters.
+    map_parameters to_merge;
 
+    int plane = 1;
 
-    return populated;
+    for (auto const & image : this->image_factories_) {
+        // Automatically populated map plane parameters.
+        map_parameters pp(plane++);
+
+        if (!image->populate_parameters(pp))
+            return false;
+
+        /*
+          Merge map plane parameters in to previously populated
+          parameters.
+        */
+        if (!to_merge.merge(pp))
+            return false;
+    }
+
+    /*
+      Merge automatically populated map parameters with the user
+      supplied parameters.  Some user supplied parameters, such as
+      bitpix (map data type), are given priority over automatically
+      populated ones.
+    */
+    /**
+     * @todo Implement user override semantics.
+     */
+    return this->parameters_->merge(to_merge);
 }
-#endif  // 0
+
+int
+MaRC::MapCommand::number_of_digits(std::size_t num)
+{
+    constexpr int base = 10;
+    int digits = 0;
+
+    for ( ; num != 0; num /= base)
+        ++digits;
+
+    /**
+     * @note We could also determine the number of digits in the
+     *       integer using std::log10(num) + 1, instead.
+     */
+
+    return digits;
+}

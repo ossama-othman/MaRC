@@ -1,7 +1,7 @@
 /**
  * @file command_line.h
  *
- * MaRC command line option parsing.
+ * %MaRC command line option parsing.
  *
  * Copyright (C) 2018  Ossama Othman
  *

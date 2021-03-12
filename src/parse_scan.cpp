@@ -1,7 +1,7 @@
 /**
  * @file parse_scan.cpp
  *
- * Copyright (C) 1999, 2004, 2017  Ossama Othman
+ * Copyright (C) 1999, 2004, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -12,16 +12,16 @@
 #include "MapCommand.h"
 
 #include <stdexcept>
-#include <sstream>
-#include <limits>
+
+#include <marc/details/format.h>
 
 
 MaRC::ParseParameter::ParseParameter()
     : filename(nullptr)
     , lat_interval(10)
     , lon_interval(10)
-    , minimum(std::numeric_limits<decltype(this->minimum)>::signaling_NaN())
-    , maximum(std::numeric_limits<decltype(this->maximum)>::signaling_NaN())
+    , minimum()
+    , maximum()
     , nibble_left  (0)
     , nibble_right (0)
     , nibble_top   (0)
@@ -64,15 +64,19 @@ MaRC::Radii::validate()
         ++count;
 
     if (count < 2) {
-        std::ostringstream s;
-        s << count << " valid oblate spheroid "
-          << "characteristic(s) specified:"
-          << "\n  Equatorial radius: " << this->eq_rad
-          << "\n  Polar radius:      " << this->pol_rad
-          << "\n  Flattening:        " << this->flattening
-          << "\nTwo are required.";
+        auto s =
+            fmt::format("{} valid oblate spheroid "
+                        "characteristic(s) specified:\n"
+                        "  Equatorial radius: {}\n"
+                        "  Polar radius:      {}\n"
+                        "  Flattening:        {}\n"
+                        "Two are required.",
+                        count,
+                        this->eq_rad,
+                        this->pol_rad,
+                        this->flattening);
 
-        throw std::invalid_argument(s.str());
+        throw std::invalid_argument(s);
     }
 
     // At least two components have been set.  Set the third.
@@ -81,13 +85,14 @@ MaRC::Radii::validate()
     else if (this->pol_rad < 0)
         this->pol_rad = this->eq_rad * (1 - this->flattening);
 
-    // MaRC currently only support oblate spheroids.
+    // MaRC currently only supports oblate spheroids.
     if (this->eq_rad < this->pol_rad) {
-        std::ostringstream s;
-        s << "Equatorial radius (" << this->eq_rad
-          << ") is less than polar radius (" << this->pol_rad << ")";
+        auto s = fmt::format("Equatorial radius ({}) is less than "
+                             "polar radius ({})",
+                             this->eq_rad,
+                             this->pol_rad);
 
-        throw std::invalid_argument(s.str());
+        throw std::invalid_argument(s);
     }
 }
 

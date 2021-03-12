@@ -143,12 +143,12 @@ namespace MaRC
 
         constexpr const T && operator*() const &&
         {
-            return this->value_.first;
+            return std::move(this->value_.first);
         }
 
         constexpr T && operator*() &&
         {
-            return this->value_.first;
+            return std::move(this->value_.first);
         }
 
         constexpr explicit operator bool() const noexcept
@@ -182,7 +182,7 @@ namespace MaRC
             if (!this->has_value())
                 throw bad_optional_access();
 
-            return this->value_.first;
+            return std::move(this->value_.first);
         }
 
         constexpr T const && value() const &&
@@ -190,7 +190,7 @@ namespace MaRC
             if (!this->has_value())
                 throw bad_optional_access();
 
-            return this->value_.first;
+            return std::move(this->value_.first);
         }
 
         template<typename U>
@@ -463,7 +463,7 @@ namespace MaRC
     //@}
 
     /**
-     * @brief Swap contents of MaRC::optional objects.
+     * @brief Swap contents of @c MaRC::optional objects.
      *
      * @relates MaRC::optional
      */

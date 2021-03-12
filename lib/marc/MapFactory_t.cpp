@@ -22,12 +22,28 @@
 
 
 template <typename T>
-MaRC::MapFactory::map_type<T>
-MaRC::MapFactory::make_map(plot_info & info,
-                           std::size_t samples,
-                           std::size_t lines)
+MaRC::extrema<T>
+MaRC::MapFactory::parameters<T>::get_extrema(extrema<T> const & e)
 {
-    T blank = Map_traits<T>::empty_value();
+    auto const & minimum = e.minimum();
+    auto const & maximum = e.maximum();
+
+    extrema<T> ex(minimum ? *minimum : std::numeric_limits<T>::lowest(),
+                  maximum ? *maximum : std::numeric_limits<T>::max());
+
+    return ex;
+}
+
+// -----------------------------------------------------------------------
+
+template <typename T>
+MaRC::MapFactory::map_type<T>
+MaRC::MapFactory::make_map(SourceImage const & image,
+                           extrema<T> const & minmax,
+                           plot_info<T> & info) const
+{
+    // Set up blank value for the map.
+    auto blank = Map_traits<T>::empty_value();
 
     if (std::is_integral<T>::value && info.blank()) {
         if (info.blank() < std::numeric_limits<T>::lowest()
@@ -39,24 +55,19 @@ MaRC::MapFactory::make_map(plot_info & info,
         blank = static_cast<T>(*info.blank());
     }
 
-    T const actual_min = Map_traits<T>::minimum(info.minimum());
-    T const actual_max = Map_traits<T>::maximum(info.maximum());
-    info.minimum(actual_min);
-    info.maximum(actual_max);
+    // Set up physical data value extrema.
+    map_type<T> map(info.samples() * info.lines(), blank);
 
-    map_type<T> map(samples * lines, blank);
+    // Begin mapping.
+    parameters<T> p(image, minmax, info, map);
 
-    using namespace std::placeholders;
+    auto plot =
+        [this, &p](double lat, double lon, std::size_t offset)
+        {
+            this->plot(p, lat, lon, offset);
+        };
 
-    auto plot = std::bind(&MapFactory::plot<T>,
-                          this,
-                          std::cref(info),
-                          _1,   // lat
-                          _2,   // lon
-                          _3,   // map array offset
-                          std::ref(map));
-
-    this->plot_map(samples, lines, plot);
+    this->plot_map(info.samples(), info.lines(), plot);
 
     // Inform "observers" of map completion.
     info.notifier().notify_done(map.size());
@@ -66,23 +77,33 @@ MaRC::MapFactory::make_map(plot_info & info,
 
 template <typename T>
 void
-MaRC::MapFactory::plot(plot_info const & info,
+MaRC::MapFactory::plot(parameters<T> & p,
                        double lat,
                        double lon,
-                       std::size_t offset,
-                       map_type<T> & map)
+                       std::size_t offset) const
 {
     // Clip datum to fit within map data type range, if necessary.
     double datum = 0;
 
+    auto const & source = p.source();
+    auto const & e      = p.minmax();
+    auto & info         = p.info();
+    auto & map          = p.map();
+
     bool const found_data =
-        (info.source().read_data(lat, lon, datum)
-         && datum >= info.minimum()
-         && datum <= info.maximum());
+        (source.read_data(lat, lon, datum)
+         && datum >= e.minimum()
+         && datum <= e.maximum());
 
-    if (found_data)
+    if (found_data) {
         map[offset] = static_cast<T>(datum);
+        info.update_extrema(map[offset]);
+    }
 
+    /**
+     * @todo Should we only notify observers if data was actually
+     *       plotted?
+     */
     // Inform "observers" of mapping progress.
     info.notifier().notify_plotted(map.size());
 }
