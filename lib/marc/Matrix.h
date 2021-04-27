@@ -58,7 +58,7 @@ namespace MaRC
     public:
 
         /**
-         * STL style container typedefs.
+         * @name STL Style Container Type Aliases
          */
         ///@{
         using value_type      = T;

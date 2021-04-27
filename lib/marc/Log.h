@@ -65,7 +65,7 @@ namespace MaRC
     namespace details
     {
         /**
-         * @name Internal logging functions.
+         * @name Internal Logging Functions
          */
         ///@{
         void debug(char const * format, fmt::format_args args);
