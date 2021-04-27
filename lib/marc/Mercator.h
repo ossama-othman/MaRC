@@ -76,9 +76,9 @@ namespace MaRC
          *
          * @see @c MapFactory
          */
-        //@{
+        ///@{
         char const * projection_name() const override;
-        //@}
+        ///@}
 
         /**
          * @brief Scale distortion at given planetographic latitude

@@ -60,7 +60,7 @@ namespace MaRC
         /**
          * STL style container typedefs.
          */
-        //@{
+        ///@{
         using value_type      = T;
         using element_type    = T;
         using reference       = T &;
@@ -69,7 +69,7 @@ namespace MaRC
         using transpose_type  = Matrix<T, N, M>;
         using iterator        = T *;
         using const_iterator  = T const *;
-        //@}
+        ///@}
 
         /// Constructor.
         Matrix()

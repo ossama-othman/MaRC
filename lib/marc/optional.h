@@ -104,7 +104,7 @@ namespace MaRC
          * These are members found in the C++17 @c std::optional
          * class template, implemented for @c MaRC::optional.
          */
-        //@{
+        ///@{
         using value_type = T;
 
         constexpr optional() = default;
@@ -222,7 +222,7 @@ namespace MaRC
         {
             this->value_ = decltype(this->value_)();
         }
-        //@}
+        ///@}
 
     private:
 
@@ -255,7 +255,7 @@ namespace MaRC
      *
      * @relates MaRC::optional
      */
-    //@{
+    ///@{
     template<typename T, typename U>
     constexpr bool operator==(optional<T> const & lhs,
                               optional<U> const & rhs)
@@ -460,7 +460,7 @@ namespace MaRC
     {
         return opt ? value >= *opt : true;
     }
-    //@}
+    ///@}
 
     /**
      * @brief Swap contents of MaRC::optional objects.

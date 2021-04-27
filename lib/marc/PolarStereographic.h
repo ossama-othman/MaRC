@@ -79,9 +79,9 @@ namespace MaRC
          *
          * @see @c MapFactory
          */
-        //@{
+        ///@{
         char const * projection_name() const override;
-        //@}
+        ///@}
 
         ///
         /**

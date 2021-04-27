@@ -76,7 +76,7 @@ namespace MaRC
              *       code is allowed to alter the command line
              *       argument vector.
              */
-            //@{
+            ///@{
             const_iterator begin() const noexcept { return this->argv_; }
             const_iterator cbegin() const noexcept { return this->begin(); }
             const_iterator end() const noexcept
@@ -84,7 +84,7 @@ namespace MaRC
                 return this->argv_ + this->argc_;
             }
             const_iterator cend() const noexcept { return this->end(); }
-            //@}
+            ///@}
 
         private:
 

@@ -437,13 +437,13 @@ namespace MaRC
          *
          * The location of the optical axis (boresight) on the photo.
          */
-        //@{
+        ///@{
         /// Sample component of optical axis.
         double OA_s_;
 
         /// Line component of optical axis.
         double OA_l_;
-        //@}
+        ///@}
 
         /// Range vector in body coordinates, measured from the center
         /// of the body to the observer.
@@ -463,13 +463,13 @@ namespace MaRC
          * Object space (e.g. corrected for lens aberration) center of
          * body in the input image/photo.
          */
-        //@{
+        ///@{
         /// Horizontal center of body in photo.
         double sample_center_;
 
         /// Vertical center of body in photo.
         double line_center_;
-        //@}
+        ///@}
 
         /// Planetocentric latitude at picture center.
         double lat_at_center_;

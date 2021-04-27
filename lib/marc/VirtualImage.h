@@ -111,7 +111,7 @@ namespace MaRC
          * The default implementation returns values that causes no
          * transformation to occur.
          */
-        //@{
+        ///@{
         /**
          * @brief Data scale.
          *
@@ -131,7 +131,7 @@ namespace MaRC
          * @return Data offset.
          */
         double offset() const { return this->scale() * -this->offset_; }
-        //@}
+        ///@}
 
     private:
 

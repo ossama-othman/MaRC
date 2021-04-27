@@ -56,12 +56,12 @@ namespace MaRC
          * Virtual methods required by the GeometricCorrection abstract
          * base class.
          */
-        //@{
+        ///@{
         void image_to_object(double & line,
                              double & sample) const override;
         void object_to_image(double & line,
                              double & sample) const override;
-        //@}
+        ///@}
 
         /// Return current summation mode
         bool summation_mode() const { return this->summation_mode_; }

@@ -73,7 +73,7 @@ namespace MaRC
              * keywords, e.g. @c author() corresponds to the standard
              * %FITS @c AUTHOR keyword.
              */
-            //@{
+            ///@{
             /// Set author.
             void author(std::string const & a);
 
@@ -165,7 +165,7 @@ namespace MaRC
              *        creating the map.
              */
             void origin(std::string const & o);
-            //@}
+            ///@}
 
             /**
              * @brief Write a %FITS comment to the image.

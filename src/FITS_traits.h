@@ -35,7 +35,7 @@ namespace MaRC
          * Types suitable for storing the numerical data types listed
          * in the %FITS standard.
          */
-        //@{
+        ///@{
         /// 8-bit unsigned integer type.
         using byte_type     = std::uint8_t;
 
@@ -53,7 +53,7 @@ namespace MaRC
 
         /// 64-bit floating point type.
         using double_type   = double;
-        //@}
+        ///@}
 
         /**
          * @struct traits
@@ -103,10 +103,10 @@ namespace MaRC
              *
              * @c byte_type traits specializations.
              */
-            //@{
+            ///@{
             static constexpr int  bitpix   = BYTE_IMG;
             static constexpr int  datatype = TBYTE;
-            //@}
+            ///@}
         };
 
         /**
@@ -122,10 +122,10 @@ namespace MaRC
              *
              * @c short_type traits specializations.
              */
-            //@{
+            ///@{
             static constexpr int  bitpix   = SHORT_IMG;
             static constexpr int  datatype = TSHORT;
-            //@}
+            ///@}
         };
 
         /**
@@ -141,7 +141,7 @@ namespace MaRC
              *
              * @c long_type traits specializations.
              */
-            //@{
+            ///@{
             static constexpr int  bitpix   = LONG_IMG;
             /**
              * @note @c long may be 8 bytes on some 64 bit platforms
@@ -150,7 +150,7 @@ namespace MaRC
              *       using an array of 4 byte integers.
              */
             static constexpr int  datatype = TINT;
-            //@}
+            ///@}
         };
 
         /**
@@ -166,10 +166,10 @@ namespace MaRC
              *
              * @c longlong_type traits specializations.
              */
-            //@{
+            ///@{
             static constexpr int  bitpix   = LONGLONG_IMG;
             static constexpr int  datatype = TLONGLONG;
-            //@}
+            ///@}
         };
 
         /**
@@ -185,10 +185,10 @@ namespace MaRC
              *
              * @c float traits specializations.
              */
-            //@{
+            ///@{
             static constexpr int  bitpix   = FLOAT_IMG;
             static constexpr int  datatype = TFLOAT;
-            //@}
+            ///@}
         };
 
         /**
@@ -204,10 +204,10 @@ namespace MaRC
              *
              * @c double traits specializations.
              */
-            //@{
+            ///@{
             static constexpr int  bitpix   = DOUBLE_IMG;
             static constexpr int  datatype = TDOUBLE;
-            //@}
+            ///@}
         };
 
     }  // FITS

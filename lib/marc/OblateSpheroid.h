@@ -87,7 +87,7 @@ namespace MaRC
          * Methods required by the MaRC::BodyData abstract base
          * class.
          */
-        //@{
+        ///@{
         double centric_radius(double lat) const override;
 
         double centric_latitude(double latg) const override;
@@ -112,7 +112,7 @@ namespace MaRC
                          double lat,
                          double lon,
                          double range) const override;
-        //@}
+        ///@}
 
         /// Radius of curvature of the meridian.
         /**

@@ -30,7 +30,7 @@ namespace MaRC
         /**
          * @name Map Latitude Constants
          */
-        //@{
+        ///@{
         /**
          * @brief Lowest latitude in degrees to be potentially mapped.
          *
@@ -52,12 +52,12 @@ namespace MaRC
          * @note This value should never be greater than 180.
          */
         constexpr double latitude_range =  latitude_high - latitude_low;
-        //@}
+        ///@}
 
         /**
          * @name Map Longitude Constants
          */
-        //@{
+        ///@{
         /**
          * @brief Lowest longitude in degrees to be potentially mapped.
          *
@@ -79,7 +79,7 @@ namespace MaRC
          * @note This value should never be greater than 360.
          */
         constexpr double longitude_range = longitude_high - longitude_low;
-        //@}
+        ///@}
 
         /**
          * @name Map Cosine Virtual Image Constants
@@ -87,7 +87,7 @@ namespace MaRC
          * @note As these values are cosines, the allowable range is
          *       [-1, 1].
          */
-        //@{
+        ///@{
         constexpr double mu_low  = -1;
         constexpr double mu_high =  1;
 
@@ -96,7 +96,7 @@ namespace MaRC
 
         constexpr double cos_phase_low  = -1;
         constexpr double cos_phase_high =  1;
-        //@}
+        ///@}
 
     }
 
