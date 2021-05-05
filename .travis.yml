@@ -35,12 +35,12 @@ matrix:
       compiler: clang
       addons:
         homebrew:
-	  packages:
-	  - bison
-	  - flex
-	  - texinfo
-	  - autoconf-archive
-	  - fmt
+          packages:
+          - bison
+          - flex
+          - texinfo
+          - autoconf-archive
+          - fmt
 
 before_script:
     - ./bootstrap
