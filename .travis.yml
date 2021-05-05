@@ -33,6 +33,14 @@ matrix:
 
     - os: osx
       compiler: clang
+      addons:
+        homebrew:
+	  packages:
+	  - bison
+	  - flex
+	  - texinfo
+	  - autoconf-archive
+	  - fmt
 
 before_script:
     - ./bootstrap
@@ -49,10 +57,6 @@ before_install:
     - eval "${MATRIX_EVAL}"
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$CXX" == "g++" ]]; then
         pip install --user cpp-coveralls;
-      fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-          brew install bison flex texinfo autoconf-archive fmt;
       fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
           for p in bison gettext flex texinfo; do
