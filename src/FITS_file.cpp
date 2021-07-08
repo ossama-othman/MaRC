@@ -72,14 +72,14 @@ namespace MaRC
          *
          * @return Value corresponding to @a key.  If no such key
          *         exists in the %FITS file the
-         *         @c MaRC::optional::has_value() method of the
+         *         @c std::optional::has_value() method of the
          *         returned value will return @c false.
          */
         template <typename T>
-        MaRC::optional<T>
+        std::optional<T>
         read_fits_key(fitsfile * fptr, char const * key)
         {
-            MaRC::optional<T> optional_value;
+            std::optional<T> optional_value;
 
             int status = 0;
             T value = 0;
@@ -89,7 +89,7 @@ namespace MaRC
                               &value,
                               nullptr, // comment
                               &status) == 0)
-                optional_value = MaRC::make_optional(value);
+                optional_value = std::make_optional(value);
             else if (status != KEY_NO_EXIST) {
                 FITS::throw_on_error(status);
             }
@@ -176,7 +176,7 @@ MaRC::FITS::file::bitpix() const
     return bp;
 }
 
-MaRC::optional<MaRC::FITS::longlong_type>
+std::optional<MaRC::FITS::longlong_type>
 MaRC::FITS::file::blank() const
 {
     constexpr char const key[] = "BLANK";
@@ -184,7 +184,7 @@ MaRC::FITS::file::blank() const
     return read_fits_key<longlong_type>(this->fptr_.get(), key);
 }
 
-MaRC::optional<double>
+std::optional<double>
 MaRC::FITS::file::bscale() const
 {
     constexpr char const key[] = "BSCALE";
@@ -200,7 +200,7 @@ MaRC::FITS::file::bunit() const
     return read_fits_string_key(this->fptr_.get(), key);
 }
 
-MaRC::optional<double>
+std::optional<double>
 MaRC::FITS::file::bzero() const
 {
     constexpr char const key[] = "BZERO";
@@ -208,7 +208,7 @@ MaRC::FITS::file::bzero() const
     return read_fits_key<double>(this->fptr_.get(), key);
 }
 
-MaRC::optional<double>
+std::optional<double>
 MaRC::FITS::file::datamax() const
 {
     constexpr char const key[] = "DATAMAX";
@@ -216,7 +216,7 @@ MaRC::FITS::file::datamax() const
     return read_fits_key<double>(this->fptr_.get(), key);
 }
 
-MaRC::optional<double>
+std::optional<double>
 MaRC::FITS::file::datamin() const
 {
     constexpr char const key[] = "DATAMIN";
@@ -224,7 +224,7 @@ MaRC::FITS::file::datamin() const
     return read_fits_key<double>(this->fptr_.get(), key);
 }
 
-MaRC::optional<double>
+std::optional<double>
 MaRC::FITS::file::equinox() const
 {
     constexpr char const key[] = "EQUINOX";

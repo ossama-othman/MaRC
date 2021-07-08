@@ -14,8 +14,8 @@
 
 #include <marc/Export.h>
 #include <marc/Notifier.h>
-#include <marc/optional.h>
 
+#include <optional>
 #include <utility>
 #include <cstdint>
 #include <cmath>
@@ -42,7 +42,7 @@ namespace MaRC
         using notifier_type = Progress::Notifier;
 
         /// Convenience alias for the blank integer type.
-        using blank_type = MaRC::optional<std::intmax_t>;
+        using blank_type = std::optional<std::intmax_t>;
 
         /**
          * @brief Constructor used when no blank value is provided.
