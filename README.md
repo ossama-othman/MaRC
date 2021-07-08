@@ -73,9 +73,9 @@ MaRC is currently only supported on Unix-like platforms, and has the
 following build dependencies:
 
 * C++ compiler
-  * The C++ compiler should support the C++14 standard or better.
+  * The C++ compiler should support the C++17 standard or better.
     MaRC is known to build with g++ and clang++, but it should work
-    with other C++14 conforming compilers.
+    with other C++17 conforming compilers.
 
 * CFITSIO library
   * Often available as prepackaged binaries on various platforms.
