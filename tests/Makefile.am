@@ -31,7 +31,6 @@ check_PROGRAMS =            \
   Orthographic_Test         \
   PolarStereographic_Test   \
   log_test                  \
-  optional_test             \
   root_find_test            \
   utility_test              \
   validate_test
@@ -137,11 +136,6 @@ PolarStereographic_Test_LDADD = \
 
 log_test_SOURCES = log_test.cpp
 log_test_LDADD   = \
-  $(top_builddir)/lib/marc/libMaRC.la \
-  $(CODE_COVERAGE_LIBS)
-
-optional_test_SOURCES = optional_test.cpp
-optional_test_LDADD   = \
   $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 

@@ -23,8 +23,6 @@ namespace MaRC
 {
     /**
      * Type used to store a %FITS @c BLANK integer value.
-     *
-     * @todo Use @c std::optional once %MaRC requires C++17.
      */
     using blank_type = MaRC::plot_info::blank_type;
 
