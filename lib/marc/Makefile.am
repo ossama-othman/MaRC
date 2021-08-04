@@ -72,6 +72,8 @@ nobase_pkginclude_HEADERS = \
   Mathematics.h   \
   Matrix.h \
   Vector.h \
+  matrix_formatter.h \
+  vector_formatter.h \
   \
   Geometry.h \
   \
