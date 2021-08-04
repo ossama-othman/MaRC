@@ -62,19 +62,7 @@ MaRC::PhotoImageFactory::populate_parameters(
 {
     MARC_SET_PARAM(author);
     MARC_SET_PARAM(bitpix);
-#if __cplusplus < 201703L
-    /*
-      Work around lack of a converting constructor in the
-      C++14 based MaRC::optional<> implementation.
-    */
-    auto const fits_blank = this->file_.blank();
-    if (fits_blank.has_value()) {
-        MaRC::blank_type::value_type const blank = *fits_blank;
-        p.blank(blank);
-    }
-#else
     MARC_SET_PARAM(blank);
-#endif  // __cplusplus < 201703L
     MARC_SET_PARAM(bunit);
 
     /**

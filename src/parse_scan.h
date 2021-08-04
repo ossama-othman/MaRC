@@ -15,7 +15,7 @@
 
 #include "calc.h"
 
-#include <marc/optional.h>
+#include <optional>
 
 #include <list>
 #include <memory>
@@ -83,10 +83,10 @@ namespace MaRC
         double lon_interval;
 
         /// Default source image minimum cutoff value.
-        MaRC::optional<double> minimum;
+        std::optional<double> minimum;
 
         /// Default source image maximum cutoff value.
-        MaRC::optional<double> maximum;
+        std::optional<double> maximum;
 
         /// Default source image left side "nibble" value.
         unsigned int nibble_left;

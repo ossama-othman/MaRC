@@ -138,8 +138,8 @@ bool test_swap()
  */
 bool test_update(MaRC::extrema<extremum_type> & e,
                  extremum_type datum,
-                 MaRC::optional<extremum_type> expected_minimum,
-                 MaRC::optional<extremum_type> expected_maximum)
+                 std::optional<extremum_type> expected_minimum,
+                 std::optional<extremum_type> expected_maximum)
 {
     e.update(datum);
 
@@ -153,8 +153,8 @@ bool test_update(MaRC::extrema<extremum_type> & e,
  */
 bool test_update(MaRC::extrema<extremum_type> & to,
                  MaRC::extrema<extremum_type> const & from,
-                 MaRC::optional<extremum_type> expected_minimum,
-                 MaRC::optional<extremum_type> expected_maximum)
+                 std::optional<extremum_type> expected_minimum,
+                 std::optional<extremum_type> expected_maximum)
 {
     to.update(from);
 

@@ -355,8 +355,8 @@ std::size_t num_planes = 0;
 // Used to ensure num_planes are defined in sequence
 std::size_t expected_plane = 1;
 
-MaRC::optional<double> minimum;
-MaRC::optional<double> maximum;
+std::optional<double> minimum;
+std::optional<double> maximum;
 
 double sample_center = not_a_number;
 double line_center   = not_a_number;

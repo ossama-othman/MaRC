@@ -118,7 +118,7 @@ MaRC::map_parameters::blank(blank_type blank)
 }
 
 void
-MaRC::map_parameters::bscale(MaRC::optional<double> scale)
+MaRC::map_parameters::bscale(std::optional<double> scale)
 {
     /**
      * @todo Verify that @a scale is valid, i.e. not the @c NaN
@@ -134,7 +134,7 @@ MaRC::map_parameters::bunit(std::string unit)
 }
 
 void
-MaRC::map_parameters::bzero(MaRC::optional<double> zero)
+MaRC::map_parameters::bzero(std::optional<double> zero)
 {
     /**
      * @todo Verify that @a zero is valid, i.e. not the @c NaN
@@ -145,7 +145,7 @@ MaRC::map_parameters::bzero(MaRC::optional<double> zero)
 }
 
 void
-MaRC::map_parameters::datamax(MaRC::optional<double> max)
+MaRC::map_parameters::datamax(std::optional<double> max)
 {
     /**
      * @todo Verify that @a max is valid, i.e. not the @c NaN
@@ -156,7 +156,7 @@ MaRC::map_parameters::datamax(MaRC::optional<double> max)
 }
 
 void
-MaRC::map_parameters::datamin(MaRC::optional<double> min)
+MaRC::map_parameters::datamin(std::optional<double> min)
 {
     /**
      * @todo Verify that @a min is valid, i.e. not the @c NaN
@@ -167,7 +167,7 @@ MaRC::map_parameters::datamin(MaRC::optional<double> min)
 }
 
 void
-MaRC::map_parameters::equinox(MaRC::optional<double> e)
+MaRC::map_parameters::equinox(std::optional<double> e)
 {
     /**
      * @todo Verify that @a e is valid, i.e. not the @c NaN constant.
@@ -314,8 +314,8 @@ MaRC::map_parameters::merge(MaRC::map_parameters & p)
 
 bool
 MaRC::map_parameters::merge_optional(char const * key,
-                                     MaRC::optional<double> & to,
-                                     MaRC::optional<double> & from)
+                                     std::optional<double> & to,
+                                     std::optional<double> & from)
 {
     if (!from.has_value() || std::isnan(*from))
         return true;

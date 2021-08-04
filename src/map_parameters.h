@@ -14,6 +14,7 @@
 
 #include <marc/plot_info.h>
 
+#include <optional>
 #include <list>
 #include <string>
 #include <memory>
@@ -137,10 +138,10 @@ namespace MaRC
          *     (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void bscale(MaRC::optional<double> scale);
+        void bscale(std::optional<double> scale);
 
         /// Get the value for the map %FITS @c BSCALE keyword.
-        MaRC::optional<double> bscale() const { return this->bscale_; }
+        std::optional<double> bscale() const { return this->bscale_; }
 
         /**
          * @brief Set the unit of physical data.
@@ -181,28 +182,28 @@ namespace MaRC
          *     (FITS value) = ((physical value) - BZERO) / BSCALE
          * @endcode
          */
-        void bzero(MaRC::optional<double> zero);
+        void bzero(std::optional<double> zero);
 
         /// Get the value for the map %FITS @c BZERO keyword.
-        MaRC::optional<double> bzero() const { return this->bzero_; }
+        std::optional<double> bzero() const { return this->bzero_; }
 
         /// Set the %FITS @c DATAMAX value.
-        void datamax(MaRC::optional<double> max);
+        void datamax(std::optional<double> max);
 
         /// Get the value for the map %FITS @c DATAMAX keyword.
-        MaRC::optional<double> datamax() const { return this->datamax_; }
+        std::optional<double> datamax() const { return this->datamax_; }
 
         /// Set the %FITS @c DATAMIN value.
-        void datamin(MaRC::optional<double> min);
+        void datamin(std::optional<double> min);
 
         /// Get the value for the map %FITS @c DATAMIN keyword.
-        MaRC::optional<double> datamin() const { return this->datamin_; }
+        std::optional<double> datamin() const { return this->datamin_; }
 
         /// Set the %FITS @c EQUINOX value.
-        void equinox(MaRC::optional<double> e);
+        void equinox(std::optional<double> e);
 
         /// Get the value for the map %FITS @c EQUINOX keyword.
-        MaRC::optional<double> equinox() const { return this->equinox_; }
+        std::optional<double> equinox() const { return this->equinox_; }
 
                 /// Set name of object being mapped.
         void instrument(std::string i);
@@ -331,8 +332,8 @@ namespace MaRC
     private:
 
         bool merge_optional(char const * key,
-                            MaRC::optional<double> & to,
-                            MaRC::optional<double> & from);
+                            std::optional<double> & to,
+                            std::optional<double> & from);
 
         bool merge_optional(char const * key,
                             MaRC::blank_type & to,
@@ -389,7 +390,7 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "BSCALE" keyword.
          */
-        MaRC::optional<double> bscale_;
+        std::optional<double> bscale_;
 
         /**
          * @brief Unit of physical data.
@@ -419,7 +420,7 @@ namespace MaRC
          *
          * @note This value corresponds to the %FITS "BZERO" keyword.
          */
-        MaRC::optional<double> bzero_;
+        std::optional<double> bzero_;
 
         /**
          * @brief Maximum valid physical value.
@@ -436,7 +437,7 @@ namespace MaRC
          *      Special handling will be need to be implemented to
          *      handle such a case.
          */
-        MaRC::optional<double> datamax_;
+        std::optional<double> datamax_;
 
         /**
          * @brief Minimum valid physical value.
@@ -453,7 +454,7 @@ namespace MaRC
          *      Special handling will be need to be implemented to
          *      handle such a case.
          */
-        MaRC::optional<double> datamin_;
+        std::optional<double> datamin_;
 
         /**
          * @brief Epoch of the mean equator and equinox in years.
@@ -462,7 +463,7 @@ namespace MaRC
          * @note This value corresponds to the %FITS "EQUINOX"
          *       keyword.
          */
-        MaRC::optional<double> equinox_;
+        std::optional<double> equinox_;
 
         /**
          * @brief Instrument used to acquire the data.

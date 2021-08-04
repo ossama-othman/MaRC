@@ -13,8 +13,8 @@
 #define MARC_EXTREMA_H
 
 #include <marc/Map_traits.h>
-#include <marc/optional.h>
 
+#include <optional>
 #include <limits>
 #include <type_traits>
 #include <stdexcept>
@@ -116,14 +116,14 @@ namespace MaRC
         void minimum(U m) { this->minimum_ = validate_minimum(m); }
 
         /// Get minimum physical data value.
-        optional<T> const & minimum() const { return this->minimum_; }
+        std::optional<T> const & minimum() const { return this->minimum_; }
 
         /// Set maximum physical data value.
         template <typename U>
         void maximum(U m) { this->maximum_ = validate_maximum(m); }
 
         /// Get maximum physical data value.
-        optional<T> const & maximum() const { return this->maximum_; }
+        std::optional<T> const & maximum() const { return this->maximum_; }
 
         /// Is the current pair of extrema valid?
         bool is_valid() const
@@ -274,10 +274,10 @@ namespace MaRC
     private:
 
         /// Minimum value.
-        optional<T> minimum_;
+        std::optional<T> minimum_;
 
         /// Maximum value.
-        optional<T> maximum_;
+        std::optional<T> maximum_;
 
     };
 
