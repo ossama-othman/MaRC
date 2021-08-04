@@ -17,10 +17,10 @@
 #include "Log.h"
 #include "config.h"  // For NDEBUG
 
-/**
- * @todo Should this be an equivalent %MaRC include directive?
- */
-#include <fmt/ostream.h>
+#ifndef NDEBUG
+# include "matrix_formatter.h"
+# include "vector_formatter.h"
+#endif  // NDEBUG
 
 #include <cmath>
 #include <limits>
