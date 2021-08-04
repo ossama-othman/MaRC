@@ -25,5 +25,9 @@ jobs:
       run: make check
     - name: make distcheck
       run: make distcheck
+    - name: make install
+      run: sudo make install
     - name: make installcheck
-      run: sudo make installcheck
+      run: LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH make installcheck
+    - name: make uninstall
+      run: sudo make uninstall
