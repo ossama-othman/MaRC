@@ -4,7 +4,7 @@
  *
  * %MaRC mathematical vector class and operations.
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2018, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -444,24 +444,6 @@ bool operator!=(MaRC::Vector<T, M> const & lhs,
                 MaRC::Vector<T, M> const & rhs)
 {
     return !(lhs == rhs);
-}
-
-// ---------------------------------------------------------
-
-/**
- * @brief Stream insertion operator.
- *
- * @relates MaRC::Vector
- */
-template <typename T, std::size_t M>
-std::ostream & operator<<(std::ostream & s, MaRC::Vector<T, M> const & v)
-{
-    s << "(" << M << ")\n";
-
-    for (std::size_t row = 0; row < M; ++row)
-        s << " " << v[row] << '\n';
-
-    return s;
 }
 
 

@@ -4,7 +4,7 @@
  *
  * %MaRC matrix class and operations.
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2018, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -473,30 +473,6 @@ bool operator!=(MaRC::Matrix<T, M, N> const & lhs,
                 MaRC::Matrix<T, M, N> const & rhs)
 {
     return !(lhs == rhs);
-}
-
-// ---------------------------------------------------------
-
-/**
- * @brief Stream insertion operator
- *
- * @relates MaRC::Matrix
- */
-template <typename T, std::size_t M, std::size_t N>
-std::ostream & operator<<(std::ostream & s,
-                          MaRC::Matrix<T, M, N> const & m)
-{
-    s << "(" << M << " x " << N << ")\n";
-
-    for (std::size_t row = 0; row < M; ++row) {
-        for (std::size_t col = 0; col < N; ++col) {
-            s << " " << m(row, col);
-        }
-
-        s << '\n';
-    }
-
-    return s;
 }
 
 
