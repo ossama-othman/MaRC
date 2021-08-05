@@ -20,8 +20,9 @@
 #include "config.h"  // For NDEBUG.
 
 #include <stdexcept>
-#include <sstream>
 #include <cassert>
+
+#include <fmt/format.h>
 
 
 namespace
@@ -63,12 +64,14 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
-        std::ostringstream s;
-        s << "Source image samples (" << samples
-          << ") and lines (" << lines
-          << ") must both be greater than one.";
+        fmt::memory_buffer out;
+        format_to(out,
+                  "Source image samples ({}) and lines ({}) "
+                  "must both be greater than one.",
+                  samples,
+                  lines);
 
-        throw std::invalid_argument(s.str());
+        throw std::invalid_argument(to_string(out));
     }
 
     if (this->image_.size() != samples * lines) {

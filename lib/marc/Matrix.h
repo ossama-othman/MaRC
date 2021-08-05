@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
-#include <ostream>
 
 
 namespace MaRC

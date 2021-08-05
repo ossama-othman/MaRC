@@ -16,11 +16,12 @@
 #include "Validate.h"
 #include "Log.h"
 
-#include <sstream>
 #include <cmath>
 #include <stdexcept>
 #include <algorithm>
 #include <memory>
+
+#include <fmt/format.h>
 
 
 MaRC::Orthographic::Orthographic (
@@ -98,11 +99,13 @@ MaRC::Orthographic::Orthographic (
             * std::tan(this->sub_observ_lat_);
 
         if (cosine < -1) {
-            std::ostringstream s;
-            s << "Desired LATITUDE (" << center.sample_lat_center
-              << ") at center of image is not visible.";
+            fmt::memory_buffer out;
+            format_to(out,
+                      "Desired LATITUDE ({}) at center of "
+                      "image is not visible.",
+                      center.sample_lat_center);
 
-            throw std::invalid_argument(s.str());
+            throw std::invalid_argument(to_string(out));
         }
 
         double lower = this->sub_observ_lon_ - C::pi;
@@ -123,11 +126,13 @@ MaRC::Orthographic::Orthographic (
 
         if (this->lon_at_center_ < lower
             || this->lon_at_center_ > upper) {
-            std::ostringstream s;
-            s << "Desired LONGITUDE (" << center.line_lon_center
-              << ") at center of image is not visible.";
+            fmt::memory_buffer out;
+            format_to(out,
+                      "Desired LONGITUDE ({}) at center of "
+                      "image is not visible.",
+                      center.line_lon_center);
 
-            throw std::invalid_argument(s.str());
+            throw std::invalid_argument(to_string(out));
         }
 
         double const shift = this->sub_observ_lon_ - this->lon_at_center_;

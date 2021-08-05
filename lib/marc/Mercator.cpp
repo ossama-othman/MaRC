@@ -21,7 +21,8 @@
 
 #include <limits>
 #include <cmath>
-#include <sstream>
+
+#include <fmt/format.h>
 
 
 namespace
@@ -71,14 +72,16 @@ MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body)
                                 "longitude range.");
 
     // static_assert(default_max_lat < 90,
-    //               "Default maximum latitude must be less than 90.");
+    //               "Default maximum latitude must be less than
+    //               90.");
 
     // if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
-    //     std::ostringstream s;
-    //     s << "Maximum Mercator projection latitude ("
-    //       << max_lat << ") >= 90.";
+    //     fmt::memory_buffer out;
+    //     format_to(out,
+    //               "Maximum Mercator projection latitude ({}) >= 90.",
+    //               max_lat);
 
-    //     throw std::invalid_argument(s.str());
+    //     throw std::invalid_argument(to_string(out));
     // }
 }
 

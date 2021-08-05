@@ -22,7 +22,6 @@
 #include <numeric>
 #include <iterator>
 #include <stdexcept>
-#include <ostream>
 
 
 namespace MaRC
