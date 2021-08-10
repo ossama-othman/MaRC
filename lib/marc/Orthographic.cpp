@@ -21,7 +21,7 @@
 #include <algorithm>
 #include <memory>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 
 MaRC::Orthographic::Orthographic (
@@ -99,13 +99,10 @@ MaRC::Orthographic::Orthographic (
             * std::tan(this->sub_observ_lat_);
 
         if (cosine < -1) {
-            fmt::memory_buffer out;
-            format_to(out,
-                      "Desired LATITUDE ({}) at center of "
-                      "image is not visible.",
-                      center.sample_lat_center);
-
-            throw std::invalid_argument(to_string(out));
+            throw std::invalid_argument(
+                fmt::format("Desired LATITUDE ({}) at center of "
+                            "image is not visible.",
+                            center.sample_lat_center));
         }
 
         double lower = this->sub_observ_lon_ - C::pi;
@@ -126,13 +123,10 @@ MaRC::Orthographic::Orthographic (
 
         if (this->lon_at_center_ < lower
             || this->lon_at_center_ > upper) {
-            fmt::memory_buffer out;
-            format_to(out,
-                      "Desired LONGITUDE ({}) at center of "
-                      "image is not visible.",
-                      center.line_lon_center);
-
-            throw std::invalid_argument(to_string(out));
+            throw std::invalid_argument(
+                fmt::format("Desired LONGITUDE ({}) at center of "
+                            "image is not visible.",
+                            center.line_lon_center));
         }
 
         double const shift = this->sub_observ_lon_ - this->lon_at_center_;

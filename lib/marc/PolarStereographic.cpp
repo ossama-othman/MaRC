@@ -20,7 +20,7 @@
 #include <limits>
 #include <cmath>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 
 namespace
@@ -123,13 +123,10 @@ MaRC::PolarStereographic::PolarStereographic(
     , north_pole_(north_pole)
 {
     if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
-        fmt::memory_buffer out;
-        format_to(out,
-                  "Maximum Polar Stereographic projection "
-                  "latitude ({}) >= 90.",
-                  max_lat);
-
-        throw std::invalid_argument(to_string(out));
+        throw std::invalid_argument(
+            fmt::format("Maximum Polar Stereographic projection "
+                        "latitude ({}) >= 90.",
+                        max_lat));
     }
 }
 

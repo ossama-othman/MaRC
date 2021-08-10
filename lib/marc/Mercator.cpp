@@ -22,7 +22,7 @@
 #include <limits>
 #include <cmath>
 
-#include <fmt/format.h>
+// #include <fmt/core.h>
 
 
 namespace
@@ -76,12 +76,9 @@ MaRC::Mercator::Mercator(std::shared_ptr<OblateSpheroid> body)
     //               90.");
 
     // if (!std::isnan(max_lat) && std::abs(max_lat) >= 90) {
-    //     fmt::memory_buffer out;
-    //     format_to(out,
-    //               "Maximum Mercator projection latitude ({}) >= 90.",
-    //               max_lat);
-
-    //     throw std::invalid_argument(to_string(out));
+    //     throw std::invalid_argument(
+    //         fmt::format("Maximum Mercator projection latitude ({}) >= 90.",
+    //                     max_lat));
     // }
 }
 

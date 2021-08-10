@@ -27,7 +27,7 @@
 #endif
 /// Avoid having to link the fmt library.
 #define FMT_HEADER_ONLY
-#include <fmt/format.h>
+#include <fmt/core.h>
 #ifdef __GNUG__
 # pragma GCC diagnostic pop
 #endif

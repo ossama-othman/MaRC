@@ -22,7 +22,7 @@
 #include <stdexcept>
 #include <cassert>
 
-#include <fmt/format.h>
+#include <fmt/core.h>
 
 
 namespace
@@ -64,14 +64,11 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
-        fmt::memory_buffer out;
-        format_to(out,
-                  "Source image samples ({}) and lines ({}) "
-                  "must both be greater than one.",
-                  samples,
-                  lines);
-
-        throw std::invalid_argument(to_string(out));
+        throw std::invalid_argument(
+            fmt::format("Source image samples ({}) and lines ({}) "
+                        "must both be greater than one.",
+                        samples,
+                        lines));
     }
 
     if (this->image_.size() != samples * lines) {
