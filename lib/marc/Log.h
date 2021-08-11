@@ -4,7 +4,7 @@
  *
  * @brief %MaRC logging interface.
  *
- * Copyright (C) 2018  Ossama Othman
+ * Copyright (C) 2018, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -18,15 +18,13 @@
 #ifndef MARC_LOG_H
 #define MARC_LOG_H
 
-#include "marc/config.h"  // For NDEBUG
+#include "marc/config.h"  // For NDEBUG and FMT_HEADER_ONLY
 
 // See https://github.com/fmtlib/fmt/issues/947
 #ifdef __GNUG__
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
-/// Avoid having to link the fmt library.
-#define FMT_HEADER_ONLY
 #include <fmt/core.h>
 #ifdef __GNUG__
 # pragma GCC diagnostic pop
