@@ -15,6 +15,7 @@
 #define MARC_VECTOR_FORMATTER_H
 
 #include "marc/Vector.h"
+#include "marc/config.h"  // For FMT_HEADER_ONLY
 
 #include <fmt/format.h>
 

@@ -15,6 +15,7 @@
 #define MARC_MATRIX_FORMATTER_H
 
 #include "marc/Matrix.h"
+#include "marc/config.h"  // For FMT_HEADER_ONLY
 
 #include <fmt/format.h>
 

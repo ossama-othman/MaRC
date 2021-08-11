@@ -14,6 +14,7 @@
 #include "Mathematics.h"
 #include "root_find.h"
 #include "OblateSpheroid.h"
+// #include "marc/config.h"  // For NDEBUG and FMT_HEADER_ONLY
 
 #ifndef NDEBUG
 // # include "Log.h"

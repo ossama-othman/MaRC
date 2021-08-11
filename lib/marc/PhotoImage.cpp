@@ -17,12 +17,12 @@
 #include "InterpolationStrategy.h"
 #include "PhotometricCorrection.h"
 
-#include "config.h"  // For NDEBUG.
+#include "config.h"  // For NDEBUG and FMT_HEADER_ONLY.
+
+#include <fmt/core.h>
 
 #include <stdexcept>
 #include <cassert>
-
-#include <fmt/core.h>
 
 
 namespace

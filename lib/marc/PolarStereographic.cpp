@@ -12,15 +12,16 @@
 #include "OblateSpheroid.h"
 #include "Constants.h"
 #include "root_find.h"
+#include "config.h"  // For NDEBUG and FMT_HEADER_ONLY
 
 #ifndef NDEBUG
 // # include "Log.h"
 #endif
 
+#include <fmt/core.h>
+
 #include <limits>
 #include <cmath>
-
-#include <fmt/core.h>
 
 
 namespace

@@ -21,8 +21,6 @@
 #include <algorithm>
 #include <memory>
 
-#include <fmt/core.h>
-
 
 MaRC::Orthographic::Orthographic (
     std::shared_ptr<OblateSpheroid> body,
