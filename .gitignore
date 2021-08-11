@@ -53,6 +53,7 @@ depcomp
 install-sh
 libtool
 ltmain.sh
+.dirstamp
 .libs
 stamp*
 config.*
