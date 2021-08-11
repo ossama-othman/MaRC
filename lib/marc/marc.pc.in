@@ -1,4 +1,4 @@
-# Copyright (C) 2019, 2020  Ossama Othmna
+# Copyright (C) 2019-2021  Ossama Othmna
 #
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
@@ -13,3 +13,4 @@ URL: @PACKAGE_URL@
 Version: @VERSION@
 Cflags: -I${includedir}
 Libs: -L${libdir} -lMaRC
+Libs.private: @LIBS@

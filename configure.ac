@@ -1,7 +1,7 @@
 dnl                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-dnl Copyright 1996-1999, 2003-2004, 2017-2019  Ossama Othman
+dnl Copyright 1996-1999, 2003-2004, 2017-2019, 2021  Ossama Othman
 dnl
 dnl SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -147,15 +147,16 @@ dnl       [MARC_UNUSED_ARGUMENT_LDFLAGS="-Xcompiler -Qunused-arguments"
 dnl        AC_SUBST([MARC_UNUSED_ARGUMENT_LDFLAGS])])
 
 dnl @todo Switch to std::format once C++20 is supported by MaRC.
-AC_CACHE_CHECK([for fmt library >= 6.1.2],
+AC_CACHE_CHECK([for fmt library >= 7.1.3],
   [marc_cv_lib_fmt],
   [
+    MARC_SAVE_LIBS=$LIBS
+    LIBS="$LIBS -lfmt"
     AC_LINK_IFELSE([AC_LANG_PROGRAM([[
-#define FMT_HEADER_ONLY
-#include <fmt/format.h>
+#include <fmt/core.h>
 
-#if FMT_VERSION < 60102
-# error "fmt >= 6.1.2 is required"
+#if FMT_VERSION < 70103
+# error "fmt >= 7.1.3 is required"
 #endif
 
 void vlog_info(char const * format, fmt::format_args args)
@@ -179,6 +180,7 @@ log_info("{}", "foo");
     ],
     [
      marc_cv_lib_fmt=no
+     LIBS=$MARC_SAVE_LIBS
     ])
   ])
 dnl  ])
@@ -186,7 +188,11 @@ dnl  ])
 AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
       [],
       [AC_MSG_WARN([fmt library not found, or it is old - using fallback])
-       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-6.1.2/include"
+       AC_DEFINE([FMT_HEADER_ONLY],[1],[Use fmt library in header-only form])
+       dnl Do not add -DFMT_HEADER_ONLY to the CPPFLAGS so that we can
+       dnl catch potential issues with fmt library headers that are
+       dnl indirectly exposed through the public MaRC API.
+       FMTLIB_CPPFLAGS="-I\$(top_srcdir)/opt/fmt-8.0.1/include"
        AC_SUBST([FMTLIB_CPPFLAGS])
       ])
 
