@@ -25,6 +25,12 @@ AC_ARG_ENABLE([arch-detect],
      [],
      [enable_arch_detect=no])
 
+AC_ARG_WITH([progressbar],
+     [AS_HELP_STRING([--with-progressbar],
+                     [use progressbar library for improved progress tracking @<:@default=check@:>@])],
+     [],
+     [with_progressbar=check])
+
 dnl AC_ARG_WITH([spdlog],
 dnl      [AS_HELP_STRING([--with-spdlog],
 dnl                      [support improved logging through the spdlog library @<:@default=check@:>@])],
@@ -33,7 +39,7 @@ dnl      [with_spdlog=check])
 
 dnl Check what platform we are running on.
 dnl AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options readme-alpha -Wall -Werror -Wno-portability])
+AM_INIT_AUTOMAKE([1.14.1 check-news silent-rules std-options readme-alpha subdir-objects -Wall -Werror -Wno-portability])
 AM_SILENT_RULES([yes])
 LT_INIT([disable-static])
 
@@ -113,21 +119,80 @@ AC_SEARCH_LIBS([cos],[m])
 MARC_SAVE_LIBS=$LIBS
 ARGP_LIBS=
 AC_SEARCH_LIBS([argp_parse],
-               [argp],
+	       [argp],
 	       [AC_DEFINE([HAVE_ARGP], [1], [Define if you have Argp])
-	        dnl Prevent the Argp library from being link to all
+		dnl Prevent the Argp library from being linked to all
 		dnl MaRC binaries.  It is only used by the MaRC
 		dnl program.
-	        AS_IF([test "x$ac_cv_search_argp_parse" != "xno" \
+		AS_IF([test "x$ac_cv_search_argp_parse" != "xno" \
 		       -a "x$ac_cv_search_argp_parse" != "xnone required"],
 		       [ARGP_LIBS="$ac_cv_search_argp_parse"
-		        LIBS="$MARC_SAVE_LIBS"
-		        AC_SUBST([ARGP_LIBS])
+			LIBS="$MARC_SAVE_LIBS"
+			AC_SUBST([ARGP_LIBS])
 		       ])
 	       ],
 	       [dnl BSD-style EX_* exit codes.
-                AC_CHECK_HEADERS([sysexits.h])
-               ])
+		AC_CHECK_HEADERS([sysexits.h])
+	       ])
+
+AS_IF([test "x$with_progressbar" != "xno"],
+      [MARC_SAVE_LIBS=$LIBS
+       PROGRESSBAR_LIBS=
+       AC_SEARCH_LIBS([progressbar_new],
+		      [progressbar],
+		      [AC_DEFINE([HAVE_PROGRESSBAR],
+				 [1],
+				 [Define if you have libprogressbar])
+		       dnl Prevent the progressbar library from being
+		       dnl linked to all MaRC binaries.	 It is only
+		       dnl used by the MaRC program.
+		       AS_IF([test "x$ac_cv_search_progressbar_new" != "xno" \
+				-a "x$ac_cv_search_progressbar_new" != "xnone required"],
+			     [NCURSES_LIBS="$ac_cv_search_progressbar_new"
+			      LIBS="$MARC_SAVE_LIBS"
+			      AC_SUBST([PROGRESSBAR_LIBS])
+			     ])
+		       with_progressbar=yes
+		      ],
+		      [])
+      ])
+
+dnl If no system libprogressbar library found, check for libncurses so
+dnl that we can use MaRC's local copy of libprogressbar.
+AS_IF([test "x$with_progressbar" == "xcheck"],
+      [NCURSES_LIBS=
+       AC_SEARCH_LIBS([tgetent],
+		      [ncurses],
+		      [AC_DEFINE([HAVE_PROGRESSBAR],
+				 [1],
+				 [Define if you have libprogressbar])
+		       dnl Prevent the ncurses library from being
+		       dnl linked to all MaRC binaries.	 It is only
+		       dnl used by the MaRC program.
+		       AS_IF([test "x$ac_cv_search_tgetent" != "xno" \
+				-a "x$ac_cv_search_tgetent" != "xnone required"],
+			     [
+			      dnl Use local copy of libprogressbar.
+			      NCURSES_LIBS="$ac_cv_search_tgetent"
+			      LIBS="$MARC_SAVE_LIBS"
+			      AC_SUBST([NCURSES_LIBS])
+
+			      PROGRESSBAR_CPPFLAGS="-I\$(top_srcdir)/opt/progressbar/include"
+			      AC_SUBST([PROGRESSBAR_CPPFLAGS])
+
+			      PROGRESSBAR_LIBS="\$(top_builddir)/opt/progressbar/lib/libprogressbar.la"
+			      AC_SUBST([PROGRESSBAR_LIBS])
+			     ])
+		       with_ncurses=yes
+		       with_progressbar=yes
+		      ],
+		      [with_ncurses=no
+		       with_progressbar=no
+		      ])
+      ])
+AM_CONDITIONAL([WITH_NCURSES], [test "x$with_ncurses" = xyes])
+AM_CONDITIONAL([WITH_PROGRESSBAR], [test "x$with_ncurses" = xyes \
+                                      -o "x$with_progressbar" = xyes])
 
 PKG_CHECK_MODULES([CFITSIO], [cfitsio])
 AC_SUBST([CFITSIO_LIBS])
@@ -243,6 +308,8 @@ AC_CONFIG_FILES([
   lib/Makefile
   lib/marc/Makefile
   lib/marc/marc.pc
+  opt/Makefile
+  opt/progressbar/Makefile
   src/Makefile
   tests/Makefile
 ])

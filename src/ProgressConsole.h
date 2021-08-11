@@ -30,11 +30,7 @@ namespace MaRC
         public:
 
             /// Constructor
-            Console()
-                : Observer()
-                , percent_complete_old_(0)
-            {
-            }
+            Console(int plane_count, std::size_t num_planes);
 
             // Disallow copying.
             Console(Console const &) = delete;

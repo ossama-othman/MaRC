@@ -4,7 +4,7 @@
 
 ##  Process this file with automake to create Makefile.in
 
-SUBDIRS = doc lib src tests
+SUBDIRS = doc lib opt src tests
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -26,8 +26,7 @@ EXTRA_DIST =		\
 	Doxyfile	\
 	marc.dox	\
 	CODE_OF_CONDUCT.md \
-	README.md       \
-	opt
+	README.md
 
 include $(top_srcdir)/aminclude_static.am
 

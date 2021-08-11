@@ -15,6 +15,16 @@
 #include <iostream>
 #include <cassert>
 
+
+MaRC::Progress::Console::Console(int plane_count, std::size_t num_planes)
+    : Observer()
+    , percent_complete_old_(0)
+{
+    std::cout << "Plane "
+              << plane_count << " / " << num_planes
+              <<" : " << std::flush;
+}
+
 void
 MaRC::Progress::Console::notify(std::size_t map_size,
                                 std::size_t plot_count)

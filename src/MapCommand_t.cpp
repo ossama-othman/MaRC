@@ -14,14 +14,18 @@
 #include "MapCommand.h"
 #include "FITS_traits.h"
 #include "FITS_image.h"
-#include "ProgressConsole.h"
+
+#ifdef HAVE_PROGRESSBAR
+# include "progress_console_fancy.h"
+#else
+# include "ProgressConsole.h"
+#endif  // HAVE_PROGRESSBAR
 
 #include <marc/MapFactory.h>
 #include <marc/scale_and_offset.h>
 
 #include <cassert>
 #include <type_traits>
-#include <iostream>
 
 #include <fitsio.h>
 
@@ -138,10 +142,6 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         if (!image)
             continue;  // Problem creating SourceImage.  Move on.
 
-        std::cout << "Plane "
-                  << plane_count << " / " << num_planes
-                  <<" : " << std::flush;
-
         // Add description of the source image.
         // comment_list_type descriptions;
 
@@ -179,7 +179,15 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         plot_info info(*image, minimum, maximum, blank);
 
         using namespace MaRC::Progress;
-        info.notifier().subscribe(std::make_unique<Console>());
+#ifdef HAVE_PROGRESSBAR
+        info.notifier().subscribe(std::make_unique<console_fancy>(
+                                      plane_count,
+                                      num_planes,
+                                      this->samples_ * this->lines_));
+#else
+        info.notifier().subscribe(std::make_unique<Console>(plane_count,
+                                                            num_planes));
+#endif  // HAVE_PROGRESSBAR
 
         // Create the map plane.
         auto map(this->factory_->template make_map<T>(info,

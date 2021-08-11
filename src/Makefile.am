@@ -11,20 +11,27 @@
 
 include $(top_srcdir)/aminclude_static.am
 
-AM_CPPFLAGS =           \
-  -I$(top_builddir)/lib \
-  -I$(top_srcdir)/lib   \
-  $(FMTLIB_CPPFLAGS)    \
+AM_CPPFLAGS =             \
+  -I$(top_builddir)/lib   \
+  -I$(top_srcdir)/lib     \
+  $(FMTLIB_CPPFLAGS)      \
+  $(PROGRESSBAR_CPPFLAGS) \
   $(CODE_COVERAGE_CPPFLAGS)
 
 bin_PROGRAMS = marc
 
 AM_YFLAGS = -d
 
+if WITH_PROGRESSBAR
+  MAYBE_PROGRESS_CONSOLE = progress_console_fancy.cpp
+else
+  MAYBE_PROGRESS_CONSOLE = ProgressConsole.cpp
+endif
+
 marc_SOURCES = \
   FITS_file.cpp \
   FITS_image.cpp \
-  ProgressConsole.cpp \
+  $(MAYBE_PROGRESS_CONSOLE) \
   SourceImageFactory.cpp \
   MuImageFactory.cpp \
   Mu0ImageFactory.cpp \
@@ -46,6 +53,7 @@ marc_CXXFLAGS = $(CFITSIO_CFLAGS) $(CODE_COVERAGE_CXXFLAGS)
 marc_LDADD    = \
   $(CFITSIO_LIBS) \
   $(ARGP_LIBS) \
+  $(PROGRESSBAR_LIBS) \
   $(top_builddir)/lib/marc/libMaRC.la \
   $(CODE_COVERAGE_LIBS)
 
