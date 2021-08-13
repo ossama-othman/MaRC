@@ -4,7 +4,7 @@
  *
  * @brief %MaRC convenience wrapper around fmtlib.
  *
- * Copyright (C) 2020  Ossama Othman
+ * Copyright (C) 2020, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
