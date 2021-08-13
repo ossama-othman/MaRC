@@ -15,10 +15,10 @@
 #include <marc/plot_info.h>
 
 #include <optional>
-#include <list>
 #include <string>
-#include <memory>
-#include <set>
+#include <list>
+#include <bitset>
+#include <climits>  // For CHAR_BIT
 
 
 namespace MaRC
@@ -315,10 +315,11 @@ namespace MaRC
          *
          * Merge the given set of map parameters, @a p, with this
          * one.  Map parameters in this object will generally override
-         * those in the map parameters @a p.  The goal is to provide a
-         * simple way for user supplied map parameters to override
-         * those that are automatically populated from the image (map
-         * plane) factories.
+         * those in the map parameters @a p, unless they haven't been
+         * previously set.  The goal is to provide a simple way for
+         * user supplied map parameters to override those that are
+         * automatically populated from the image (map plane)
+         * factories.
          *
          * @param[in,out] p Map parameters to be merged.  @a p may be
          *                  modified during the merge, e.g. via
@@ -331,29 +332,91 @@ namespace MaRC
 
     private:
 
-        bool merge_optional(char const * key,
+        /// Convenience type alias for parameter key enumeration.
+        using bitset_type = unsigned int;
+
+        /// Convenience enumeration for identifying a given parameter.
+        enum class param_key : bitset_type {
+            author = 0,
+            blank,
+            bscale,
+            bunit,
+            bzero,
+            datamax,
+            datamin,
+            equinox,
+            instrument,
+            object,
+            observer,
+            origin,
+            reference,
+            telescope,
+            comment,
+            xcomment
+        };
+
+        /**
+         * @brief Lock parameter corresponding to @a key.
+         *
+         * @param[in] key Parameter key.
+         */
+        void lock_parameter(param_key key);
+
+        /**
+         * @brief Is the parameter corresponding to @a key mergeable?
+         *
+         * @param[in] key Parameter key.
+         */
+        bool is_mergeable(param_key key) const;
+
+        /**
+         * @brief Merge optional floating point value.
+         *
+         * @param[in]     key  Parameter key.
+         * @param[in]     name Parameter name.
+         * @param[in,out] to   Merge destination parameter value.
+         * @param[in,out] ftom Merge source parameter value.
+         */
+        bool merge_optional(param_key key,
+                            char const * name,
                             std::optional<double> & to,
                             std::optional<double> & from);
 
-        bool merge_optional(char const * key,
+        /**
+         * @brief Merge optional blank integer value.
+         *
+         * @param[in]     key  Parameter key.
+         * @param[in]     name Parameter name.
+         * @param[in,out] to   Merge destination parameter value.
+         * @param[in,out] ftom Merge source parameter value.
+         */
+        bool merge_optional(param_key key,
+                            char const * name,
                             MaRC::blank_type & to,
                             MaRC::blank_type & from);
 
-        bool merge_optional(char const * key,
+        /**
+         * @brief Merge optional string value.
+         *
+         * @param[in]     key  Parameter key.
+         * @param[in]     name Parameter name.
+         * @param[in,out] to   Merge destination parameter value.
+         * @param[in,out] ftom Merge source parameter value.
+         */
+        bool merge_optional(param_key key,
+                            char const * name,
                             std::string & to,
                             std::string from);
+
+        /// Was this set of map parameters supplied by the user?
+        bool user_supplied() const { return this->plane_ == 0; }
 
     private:
 
         /**
-         *
+         * Bit set used to track which parameters have been locked.
          */
-        std::set<std::string> locked_keywords_;
-
-        /**
-         *
-         */
-        bool user_supplied_;
+        std::bitset<sizeof(bitset_type) * CHAR_BIT> locked_parameters_;
 
         /// Map plane to which these parameters belong.
         int const plane_;
@@ -551,7 +614,6 @@ namespace MaRC
          *       "HISTORY" keyword.
          */
         comment_list_type histories_;
-
     };
 }
 
