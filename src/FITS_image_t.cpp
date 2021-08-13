@@ -18,6 +18,8 @@
 
 #include <fitsio.h>
 
+#include <cmath>
+
 
 template <typename T>
 void
