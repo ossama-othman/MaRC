@@ -93,12 +93,12 @@ Matrix_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 Geometry_Test_SOURCES = Geometry_Test.cpp
 Geometry_Test_LDADD = \
-   $(top_builddir)/lib/marc/libMaRC.la \
+   $(MARC_LIB) \
    $(CODE_COVERAGE_LIBS)
 
 OblateSpheroid_Test_SOURCES = OblateSpheroid_Test.cpp
 OblateSpheroid_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 Scale_Offset_Test_SOURCES = Scale_Offset_Test.cpp
@@ -106,42 +106,42 @@ Scale_Offset_Test_LDADD   = $(CODE_COVERAGE_LIBS)
 
 LatitudeImage_Test_SOURCES = LatitudeImage_Test.cpp
 LatitudeImage_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 LongitudeImage_Test_SOURCES = LongitudeImage_Test.cpp
 LongitudeImage_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 ViewingGeometry_Test_SOURCES = ViewingGeometry_Test.cpp
 ViewingGeometry_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 Mercator_Test_SOURCES = Mercator_Test.cpp
 Mercator_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 Orthographic_Test_SOURCES = Orthographic_Test.cpp
 Orthographic_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 log_test_SOURCES = log_test.cpp
 log_test_LDADD   = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 root_find_test_SOURCES = root_find_test.cpp
 root_find_test_LDADD   = \
-  $(top_builddir)/lib/marc/libMaRC.la \
+  $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
 
 utility_test_SOURCES = utility_test.cpp
