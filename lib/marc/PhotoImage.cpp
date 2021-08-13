@@ -1,7 +1,7 @@
 /**
  * @file PhotoImage.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -163,12 +163,6 @@ MaRC::PhotoImage::read_data(double lat,
         this->data_weight(i, k, weight);
 
     return true;  // Success
-}
-
-char const *
-MaRC::PhotoImage::unit() const
-{
-    return this->config_->unit();
 }
 
 void

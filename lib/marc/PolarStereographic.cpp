@@ -1,7 +1,7 @@
 /**
  * @file PolarStereographic.cpp
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2019  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -140,7 +140,7 @@ MaRC::PolarStereographic::projection_name() const
 void
 MaRC::PolarStereographic::plot_map(std::size_t samples,
                                    std::size_t lines,
-                                   plot_type plot) const
+                                   plot_type const & plot) const
 {
     std::size_t offset = 0;
 

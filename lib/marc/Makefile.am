@@ -7,8 +7,8 @@
 include $(top_srcdir)/aminclude_static.am
 
 if BUILDING_DLL
-# libMaRC is being built as a shared library.  Export all symbols in
-# public API.
+## libMaRC is being built as a shared library.  Export all symbols in
+## public API.
 DLL_CPPFLAGS = -DMARC_DLL -DMARC_DLL_EXPORTS
 endif
 
@@ -112,6 +112,7 @@ nobase_pkginclude_HEADERS = \
   PolarStereographic.h \
   SimpleCylindrical.h \
   Validate.h \
+  extrema.h \
   plot_info.h \
   root_find.h \
   scale_and_offset.h \
@@ -121,10 +122,11 @@ nobase_pkginclude_HEADERS = \
   \
   Export.h \
   \
+  details/format.h \
   details/scale_and_offset.h \
   details/vector.h
 
-# noinst_HEADERS =
+## noinst_HEADERS =
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = marc.pc

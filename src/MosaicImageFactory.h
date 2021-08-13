@@ -2,7 +2,7 @@
 /**
  * @file MosaicImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -51,6 +51,10 @@ namespace MaRC
 
         /// Destructor.
         ~MosaicImageFactory() override = default;
+
+        /// Populate map parameters.
+        bool populate_parameters(
+            map_parameters & parameters) const override;
 
         /// Create a @c MosaicImage.
         std::unique_ptr<SourceImage> make(

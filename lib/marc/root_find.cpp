@@ -50,8 +50,9 @@ namespace
           "Numerical Recipes in C" by Press, Teukolsky, Vetterling and
           Flannery.
          */
-        constexpr int ulps = 2;
-        constexpr auto e = ulps * std::numeric_limits<double>::epsilon();
+        constexpr int epsilons = 2;
+        constexpr auto e =
+            epsilons * std::numeric_limits<double>::epsilon();
         auto const h = (x < 1 ? e : e * x);
 
         // Center divided difference numerical method of computing
@@ -66,11 +67,12 @@ namespace
     is_almost_equal(double lhs, double rhs)
     {
         constexpr int ulps = 2;
+        constexpr int epsilons = 2;
 
         return
             MaRC::almost_equal(lhs, rhs, ulps)
-            || (MaRC::almost_zero(lhs, ulps)
-                && MaRC::almost_zero(rhs, ulps));
+            || (MaRC::almost_zero(lhs, epsilons)
+                && MaRC::almost_zero(rhs, epsilons));
     }
 
     double
@@ -254,8 +256,8 @@ MaRC::root_find(double y,
         }
 
         // Convergence criterion.
-        constexpr int ulps = 2;
-        if (MaRC::almost_zero(dx, ulps))
+        constexpr int epsilons = 2;
+        if (MaRC::almost_zero(dx, epsilons))
             return x0;
 
         y0 = f(x0);

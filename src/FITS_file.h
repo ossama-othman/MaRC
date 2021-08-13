@@ -25,8 +25,6 @@
 
 namespace MaRC
 {
-    class MapParameters;
-
     namespace FITS
     {
         class image;
@@ -183,11 +181,11 @@ namespace MaRC
 
             std::optional<double> datamin() const;
 
+            /// Get the date of the observation.
+            std::string date_obs() const;
+
             /// Get the equinox of the celestial coordinate system.
             std::optional<double> equinox() const;
-
-            /// Get the data of the observation.
-            std::string date_obs() const;
 
             /**
              * @brief Get the name of the instrument that acquired the
@@ -275,11 +273,14 @@ namespace MaRC
             ~output_file() = default;
 
             /**
-             * @brief Create %FITS image array HDU.
+             * @brief Create a %FITS image array HDU.
              *
              * Create an image array in the %FITS file represented
-             * this @c output_file.
+             * by this @c output_file.
              *
+             * @param[in] bitpix  Bits-per-pixel in the image,
+             *                    corresponding to the %FITS @c BITPIX
+             *                    keyword.
              * @param[in] samples The number of columns in the %FITS
              *                    image.
              * @param[in] lines   The number of rows in the %FITS

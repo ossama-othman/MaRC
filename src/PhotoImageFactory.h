@@ -2,7 +2,7 @@
 /**
  * @file PhotoImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -13,6 +13,7 @@
 #define MARC_PHOTO_IMAGE_FACTORY_H
 
 #include "SourceImageFactory.h"
+#include "FITS_file.h"
 
 #include "marc/PhotoImageParameters.h"
 #include "marc/ViewingGeometry.h"
@@ -51,6 +52,17 @@ namespace MaRC
 
         /// Destructor.
         ~PhotoImageFactory() override = default;
+
+        /**
+         * @brief Populate map parameters.
+         *
+         * @param[in,out] p Map parameters to be populated.
+         *
+         * return @c true if population of map parameters succeeded,
+         *        and @c false otherwise.
+         */
+        bool populate_parameters(
+            map_parameters & p) const override;
 
         /// Create a @c PhotoImage.
         std::unique_ptr<SourceImage> make(
@@ -99,8 +111,8 @@ namespace MaRC
 
     private:
 
-        /// Name of photo/image to be mapped.
-        std::string const filename_;
+        /// %FITS file containing photo/image data.
+        FITS::input_file const file_;
 
         /// Name of flat field image to be substracted from the
         /// photo/image containing the actual data.
@@ -108,8 +120,8 @@ namespace MaRC
 
         /// Enable/disable geometric correction.
         /**
-         * @note Only GLL spacecraft geometric lens abberration
-         *       correct is currently supported.
+         * @note Only GLL spacecraft geometric lens aberration
+         *       correction is currently supported.
          */
         bool geometric_correction_;
 

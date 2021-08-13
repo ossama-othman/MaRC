@@ -11,6 +11,7 @@
 #include "FITS_image.h"
 
 #include <cmath>
+#include <cstring>
 
 
 MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
@@ -82,16 +83,16 @@ MaRC::FITS::image::image(MaRC::FITS::file::shared_ptr fptr,
                     PACKAGE_STRING,
                     "software that created this FITS image");
 
+    // Write the current date and time (i.e. the creation time) into
+    // the map FITS file.
+    fits_write_date(this->fptr_.get(), &status);
+
     MaRC::FITS::throw_on_error(status);
 }
 
 MaRC::FITS::image::~image()
 {
     int status = 0;
-
-    // Write the current date and time (i.e. the creation time) into
-    // the map FITS file.
-    fits_write_date(this->fptr_.get(), &status);
 
     // Write a checksum for the image.
     fits_write_chksum(this->fptr_.get(), &status);
@@ -136,26 +137,6 @@ MaRC::FITS::image::bunit(std::string const & unit)
                           "BUNIT",
                           unit,
                           "physical unit of the array values");
-}
-
-void
-MaRC::FITS::image::datamin(double min)
-{
-    if (!std::isnan(min))
-        this->update_fits_key(this->fptr_.get(),
-                              "DATAMIN",
-                              min,
-                              "minimum valid physical data value");
-}
-
-void
-MaRC::FITS::image::datamax(double max)
-{
-    if (!std::isnan(max))
-        this->update_fits_key(this->fptr_.get(),
-                              "DATAMAX",
-                              max,
-                              "maximum valid physical data value");
 }
 
 void
@@ -212,15 +193,16 @@ MaRC::FITS::image::update_fits_key(fitsfile * fptr,
                                    std::string const & value,
                                    char const * comment)
 {
-    int status = 0;
+    if (value.empty())
+        return;
 
-    if (!value.empty())
-        fits_update_key(fptr,
-                        TSTRING,
-                        key,
-                        const_cast<char *>(value.c_str()),
-                        comment,
-                        &status);
+    int status = 0;
+    fits_update_key(fptr,
+                    TSTRING,
+                    key,
+                    const_cast<char *>(value.c_str()),
+                    comment,
+                    &status);
 
     MaRC::FITS::throw_on_error(status);
 }
@@ -231,15 +213,16 @@ MaRC::FITS::image::update_fits_key(fitsfile * fptr,
                                    char const * value,
                                    char const * comment)
 {
-    int status = 0;
+    if (value == nullptr || std::strlen(value) == 0)
+        return;
 
-    if (value != nullptr)
-        fits_update_key(fptr,
-                        TSTRING,
-                        key,
-                        const_cast<char *>(value),
-                        comment,
-                        &status);
+    int status = 0;
+    fits_update_key(fptr,
+                    TSTRING,
+                    key,
+                    const_cast<char *>(value),
+                    comment,
+                    &status);
 
     MaRC::FITS::throw_on_error(status);
 }

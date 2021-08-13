@@ -224,6 +224,14 @@ MaRC::FITS::file::datamin() const
     return read_fits_key<double>(this->fptr_.get(), key);
 }
 
+std::string
+MaRC::FITS::file::date_obs() const
+{
+    constexpr char const key[] = "DATE-OBS";
+
+    return read_fits_string_key(this->fptr_.get(), key);
+}
+
 std::optional<double>
 MaRC::FITS::file::equinox() const
 {

@@ -2,7 +2,7 @@
 /**
  * @file calc.cpp
  *
- * Copyright (C) 1996-1998, 2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1998, 2004, 2017, 2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -18,16 +18,16 @@
 
 // ---------------------------------------------------------------
 
-MaRC::sym_entry::sym_entry(double (*fnct)(double))
-    : type(FNCT)
+MaRC::sym_entry::sym_entry(MaRC::sym_entry::function_type fnct)
+    : value(fnct)
+    , type(FNCT)
 {
-    value.fnctptr = fnct;
 }
 
 MaRC::sym_entry::sym_entry(double var)
-    : type(VAR)
+    : value(var)
+    , type(VAR)
 {
-    value.var = var;
 }
 
 // ---------------------------------------------------------------
@@ -38,13 +38,13 @@ MaRC::symrec::symrec()
     struct init
     {
         char const * const fname;
-        double (*fnct)(double);
+        MaRC::sym_entry::function_type fnct;
     };
 
     /**
      * @todo Add other useful functions like @c pow(), etc.
      */
-    static init const arith_fncts[] =
+    constexpr init const arith_fncts[] =
     {
         { "sin",  sin  },
         { "cos",  cos  },
