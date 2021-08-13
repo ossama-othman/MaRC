@@ -206,23 +206,23 @@ bool test_parameters()
         && test_xcomments(p);
 }
 
-#define MARC_TEST_MERGE_STRING(parameter)               \
+#define MARC_TEST_MERGE_STRING(parameter)                \
 bool test_merge_ ## parameter(MaRC::map_parameters & u,  \
                               MaRC::map_parameters & p1, \
                               MaRC::map_parameters & p2) \
-{                                                       \
-    constexpr char const uv[] = #parameter;             \
-    constexpr char const pv[] = #parameter "_plane";    \
-    u.parameter(uv);                                    \
-    p2.parameter(pv);                                   \
-    return p1.merge(p2) && p1.parameter() == pv         \
-        && u.merge(p1)  && u.parameter()  == uv;        \
+{                                                        \
+    constexpr char const uv[] = #parameter;              \
+    constexpr char const pv[] = #parameter "_plane";     \
+    u.parameter(uv);                                     \
+    p2.parameter(pv);                                    \
+    return p1.merge(p2) && p1.parameter() == pv          \
+        && u.merge(p1)  && u.parameter()  == uv;         \
 }
 
 #define MARC_TEST_MERGE_REAL(parameter)                   \
-bool test_merge_ ## parameter(MaRC::map_parameters & u,    \
-                              MaRC::map_parameters & p1,   \
-                              MaRC::map_parameters & p2)   \
+bool test_merge_ ## parameter(MaRC::map_parameters & u,   \
+                              MaRC::map_parameters & p1,  \
+                              MaRC::map_parameters & p2)  \
 {                                                         \
     constexpr double uv = __LINE__;                       \
     constexpr double pv = uv + 2;                         \
@@ -246,8 +246,6 @@ MARC_TEST_MERGE_STRING(telescope)
 
 MARC_TEST_MERGE_REAL(bscale)
 MARC_TEST_MERGE_REAL(bzero)
-MARC_TEST_MERGE_REAL(datamax)
-MARC_TEST_MERGE_REAL(datamin)
 MARC_TEST_MERGE_REAL(equinox)
 
 bool test_merge_bitpix(MaRC::map_parameters & u,
@@ -474,8 +472,6 @@ bool test_merge()
         && test_merge_bscale(u, p1, p2)
         && test_merge_bunit(u, p1, p2)
         && test_merge_bzero(u, p1, p2)
-        // && test_merge_datamax(u, p1, p2)
-        // && test_merge_datamin(u, p1, p2)
         && test_merge_equinox(u, p1, p2)
         && test_merge_instrument(u, p1, p2)
         && test_merge_object(u, p1, p2)
