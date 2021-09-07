@@ -209,17 +209,16 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     if (this->body_mask_.empty())
         return;
 
-    auto const body_iter = this->body_mask_.cbegin();
+    // -----------------------------------------------------
 
-    auto const index = k * this->samples_ + i;
+    // Scan across samples on line k.
 
-    // Scan across samples.
+    auto const offset    = k * this->samples_;
+    auto       body_iter = std::cbegin(this->body_mask_) + offset;
 
-    // Search from the left side of the image to i.
-    //   Beginning of line: index - i
-    auto begin = body_iter + (index - i + this->left_);
-    auto end   = body_iter + (index + 1);  // one past column "i"
-
+    // Search the half-open interval [left, i).
+    auto begin  = body_iter + this->left_;
+    auto end    = body_iter + i;
     auto result = std::find(begin, end, true);
 
     assert(begin <= result);
@@ -232,11 +231,9 @@ MaRC::PhotoImage::data_weight(std::size_t i,
                     std::distance(begin, result)),
                 shortest_distance);
 
-    // Search from i to the right side of the image.
-    //   "index" offsets to "i".
-    begin = body_iter + index;
-    end   = body_iter + (index + this->right_);
-
+    // Search the half-open interval [i, right).
+    begin  = end;
+    end    = body_iter + this->right_;
     result = std::find(begin, end, true);
 
     assert(begin <= result);
@@ -251,29 +248,35 @@ MaRC::PhotoImage::data_weight(std::size_t i,
 
     // -----------------------------------------------------
 
-    // Scan across lines.  Line numbers increase from top to bottom.
+    // Scan across lines on sample i.
+    // Line numbers increase from top to bottom.
 
-    // Search from the top of the image to k.
+    // Search the half-open interval [top, k).
+    body_iter =
+        std::cbegin(this->body_mask_) + (this->top_ * this->samples_) + i;
+
     auto first = this->top_;
     auto last  = k;
-    auto line  = first;
+    auto line = first;
 
-    for (;
-         line < last && this->body_mask_[line * this->samples_ + i];
-         ++line)
-        ; // Nothing
+    for (; line < last && *body_iter; ++line)
+        std::advance(body_iter, this->samples_); // Sample i in next
+                                                 // line in mask.
 
     if (line != last)
         shortest_distance = std::min(line - first, shortest_distance);
 
-    // Search from k to the bottom of the image.
-    first = k;
-    last  = this->bottom_;
+    // Search the half-open interval [k, bottom).
+    body_iter =
+        std::cbegin(this->body_mask_) + (k * this->samples_) + i;
 
-    for (line = first;
-         line < last && this->body_mask_[line * this->samples_ + i];
-         ++line)
-        ; // Nothing
+    first = last;
+    last  = this->bottom_;
+    line = first;
+
+    for (; line < last && *body_iter; ++line)
+        std::advance(body_iter, this->samples_); // Sample i in next
+                                                 // line in mask.
 
     if (line != last)
         shortest_distance = std::min(line - first, shortest_distance);
