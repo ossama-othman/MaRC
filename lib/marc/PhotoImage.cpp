@@ -55,6 +55,10 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     , image_    (std::move(image))
     , samples_  (samples)
     , lines_    (lines)
+    , left_     (config->nibble_left())
+    , right_    (samples - config->nibble_right())
+    , top_      (config->nibble_top())
+    , bottom_   (lines - config->nibble_bottom())
     , config_   (std::move(config))
     , geometry_ (std::move(geometry))
     , body_mask_(body_mask(samples,
@@ -136,10 +140,10 @@ MaRC::PhotoImage::read_data(double lat,
      * @todo Check for a user-specified "blank" value as
      *       well.
      */
-    if (i < config->nibble_left()
-        || i >= this->samples_ - config->nibble_right()
-        || k < config->nibble_top()
-        || k >= this->lines_ - config->nibble_bottom()
+    if (   i <  this->left_
+        || i >= this->right_
+        || k <  this->top_
+        || k >= this->bottom_
         || (!this->body_mask_.empty() && !this->body_mask_[index])
         || std::isnan(data))
         return false;
@@ -207,15 +211,13 @@ MaRC::PhotoImage::data_weight(std::size_t i,
 
     auto const body_iter = this->body_mask_.cbegin();
 
-    auto const & config = this->config_;
-
     auto const index = k * this->samples_ + i;
 
     // Scan across samples.
 
-    // Search from nibble_left to i.
+    // Search from the left side of the image to i.
     //   Beginning of line: index - i
-    auto begin = body_iter + (index - i + config->nibble_left());
+    auto begin = body_iter + (index - i + this->left_);
     auto end   = body_iter + (index + 1);  // one past column "i"
 
     auto result = std::find(begin, end, true);
@@ -230,11 +232,10 @@ MaRC::PhotoImage::data_weight(std::size_t i,
                     std::distance(begin, result)),
                 shortest_distance);
 
-    // Search from i to nibble_right.
+    // Search from i to the right side of the image.
     //   "index" offsets to "i".
     begin = body_iter + index;
-    end   =
-        body_iter + (index + (this->samples_ - config->nibble_right()));
+    end   = body_iter + (index + this->right_);
 
     result = std::find(begin, end, true);
 
@@ -252,8 +253,8 @@ MaRC::PhotoImage::data_weight(std::size_t i,
 
     // Scan across lines.  Line numbers increase from top to bottom.
 
-    // Search from nibble_top to k.
-    auto first = config->nibble_top();
+    // Search from the top of the image to k.
+    auto first = this->top_;
     auto last  = k;
     auto line  = first;
 
@@ -265,9 +266,9 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     if (line != last)
         shortest_distance = std::min(line - first, shortest_distance);
 
-    // Search from k to nibble_bottom.
+    // Search from k to the bottom of the image.
     first = k;
-    last  = this->lines_ - config->nibble_bottom();
+    last  = this->bottom_;
 
     for (line = first;
          line < last && this->body_mask_[line * this->samples_ + i];

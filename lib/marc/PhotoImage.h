@@ -136,6 +136,18 @@ namespace MaRC
         /// Number of lines in the image.
         std::size_t const lines_;
 
+        /// Left side of image.
+        std::size_t const left_;
+
+        /// Right side of image.
+        std::size_t const right_;
+
+        /// Top side of image.
+        std::size_t const top_;
+
+        /// Bottom side of image.
+        std::size_t const bottom_;
+
         /// @c PhotoImage configuration parameters.
         std::unique_ptr<PhotoImageParameters const> const config_;
 
