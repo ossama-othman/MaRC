@@ -109,6 +109,40 @@ namespace MaRC
     private:
 
         /**
+         * @brief Scan across samples for the data weight.
+         *
+         * Scan samples across the given line for the data weight in
+         * the half-open interval [left, right).
+         *
+         * @param[in]  line   Image line across which scan should
+         *                    occur.
+         * @param[in]  left   Sample at which scan should be started.
+         * @param[in]  right  Sample at which scan should be stopped.
+         * @param[out] weight Data weight for the given image line.
+         */
+        void scan_samples(std::size_t line,
+                          std::size_t left,
+                          std::size_t right,
+                          std::size_t & weight) const;
+
+        /**
+         * @brief Scan across lines for the data weight.
+         *
+         * Scan lines across the given sample for the data weight in
+         * in the half-open interval [top, bottom).
+         *
+         * @param[in]  sample Image sample across which scan should
+         *                    occur.
+         * @param[in]  top    Line at which scan should be started.
+         * @param[in]  bottom Line at which scan should be stopped.
+         * @param[out] weight Data weight for the given image sample.
+         */
+        void scan_lines(std::size_t sample,
+                        std::size_t top,
+                        std::size_t bottom,
+                        std::size_t & weight) const;
+
+        /**
          * @brief Obtain data weight for given image pixel.
          *
          * Obtain the data weight based on how close the pixel at
@@ -135,6 +169,18 @@ namespace MaRC
 
         /// Number of lines in the image.
         std::size_t const lines_;
+
+        /// Left side of image.
+        std::size_t const left_;
+
+        /// Right side of image.
+        std::size_t const right_;
+
+        /// Top side of image.
+        std::size_t const top_;
+
+        /// Bottom side of image.
+        std::size_t const bottom_;
 
         /// @c PhotoImage configuration parameters.
         std::unique_ptr<PhotoImageParameters const> const config_;

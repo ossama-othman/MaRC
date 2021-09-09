@@ -55,6 +55,10 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     , image_    (std::move(image))
     , samples_  (samples)
     , lines_    (lines)
+    , left_     (config->nibble_left())
+    , right_    (samples - config->nibble_right())
+    , top_      (config->nibble_top())
+    , bottom_   (lines - config->nibble_bottom())
     , config_   (std::move(config))
     , geometry_ (std::move(geometry))
     , body_mask_(body_mask(samples,
@@ -136,10 +140,10 @@ MaRC::PhotoImage::read_data(double lat,
      * @todo Check for a user-specified "blank" value as
      *       well.
      */
-    if (i < config->nibble_left()
-        || i >= this->samples_ - config->nibble_right()
-        || k < config->nibble_top()
-        || k >= this->lines_ - config->nibble_bottom()
+    if (   i <  this->left_
+        || i >= this->right_
+        || k <  this->top_
+        || k >= this->bottom_
         || (!this->body_mask_.empty() && !this->body_mask_[index])
         || std::isnan(data))
         return false;
@@ -166,6 +170,57 @@ MaRC::PhotoImage::read_data(double lat,
 }
 
 void
+MaRC::PhotoImage::scan_samples(std::size_t line,
+                               std::size_t left,
+                               std::size_t right,
+                               std::size_t & weight) const
+{
+    // Scan across samples on given line.
+
+    auto const offset    = line * this->samples_;
+    auto       body_iter = std::cbegin(this->body_mask_) + offset;
+
+    // Search the half-open interval [left, right).
+    auto const begin  = body_iter + left;
+    auto const end    = body_iter + right;
+    auto const result = std::find(begin, end, true);
+
+    assert(begin <= result);
+
+    // The weight is the shortest distance.
+    if (result != end)
+        weight =
+            std::min(
+                static_cast<
+                std::remove_reference<decltype(weight)>::type>(
+                    std::distance(begin, result)),
+                weight);
+
+}
+
+void
+MaRC::PhotoImage::scan_lines(std::size_t i,
+                             std::size_t top,
+                             std::size_t bottom,
+                             std::size_t & weight) const
+{
+    // Search the half-open interval [top, bottom).
+    auto body_iter =
+        std::cbegin(this->body_mask_) + (top * this->samples_) + i;
+
+    auto const first = top;
+    auto const last  = bottom;
+    auto       line = first;
+
+    for (; line < last && *body_iter; ++line)
+        std::advance(body_iter, this->samples_); // Sample i in next
+                                                 // line in mask.
+
+    if (line != last)
+        weight = std::min(line - first, weight);
+}
+
+void
 MaRC::PhotoImage::data_weight(std::size_t i,
                               std::size_t k,
                               std::size_t & weight) const
@@ -174,11 +229,7 @@ MaRC::PhotoImage::data_weight(std::size_t i,
      * @note This method assumes at "i" is in the range
      *       [nibble_left, samples - nibble_right), "k" is in the
      *       range [nibble_top, lines - nibble_bottom).
-     *
-     * @todo Reduce redundant code in this method.
      */
-
-    auto & shortest_distance = weight;
 
     // Give less weight to pixels close to an edge of the image.
     //
@@ -194,7 +245,8 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     // Note that a weight is computed regardless of whether or not sky
     // removal is enabled.
 
-    shortest_distance =
+    // The weight is the shortest distance.
+    weight =
         std::min(i,
                  std::min(this->samples_ - i,
                           std::min(k,
@@ -205,75 +257,21 @@ MaRC::PhotoImage::data_weight(std::size_t i,
     if (this->body_mask_.empty())
         return;
 
-    auto const body_iter = this->body_mask_.cbegin();
+    // -----------------------------------------------------
 
-    auto const & config = this->config_;
+    // Scan across the half-open interval [left, i) on line k.
+    this->scan_samples(k, this->left_, i, weight);
 
-    auto const index = k * this->samples_ + i;
-
-    // Scan across samples.
-
-    // Search from nibble_left to i.
-    //   Beginning of line: index - i
-    auto begin = body_iter + (index - i + config->nibble_left());
-    auto end   = body_iter + (index + 1);  // one past column "i"
-
-    auto result = std::find(begin, end, true);
-
-    assert(begin <= result);
-
-    if (result != end)
-        shortest_distance =
-            std::min(
-                static_cast<
-                std::remove_reference<decltype(shortest_distance)>::type>(
-                    std::distance(begin, result)),
-                shortest_distance);
-
-    // Search from i to nibble_right.
-    //   "index" offsets to "i".
-    begin = body_iter + index;
-    end   =
-        body_iter + (index + (this->samples_ - config->nibble_right()));
-
-    result = std::find(begin, end, true);
-
-    assert(begin <= result);
-
-    if (result != end)
-        shortest_distance =
-            std::min(
-                static_cast<
-                std::remove_reference<decltype(shortest_distance)>::type>(
-                    std::distance(begin, result)),
-                shortest_distance);
+    // Scan across the half-open interval [i, right) on line k.
+    this->scan_samples(k, i, this->right_, weight);
 
     // -----------------------------------------------------
 
-    // Scan across lines.  Line numbers increase from top to bottom.
+    // Line numbers increase from top to bottom.
 
-    // Search from nibble_top to k.
-    auto first = config->nibble_top();
-    auto last  = k;
-    auto line  = first;
+    // Scan across the half-open interval [top, k) on sample i.
+    this->scan_lines(i, this->top_, k, weight);
 
-    for (;
-         line < last && this->body_mask_[line * this->samples_ + i];
-         ++line)
-        ; // Nothing
-
-    if (line != last)
-        shortest_distance = std::min(line - first, shortest_distance);
-
-    // Search from k to nibble_bottom.
-    first = k;
-    last  = this->lines_ - config->nibble_bottom();
-
-    for (line = first;
-         line < last && this->body_mask_[line * this->samples_ + i];
-         ++line)
-        ; // Nothing
-
-    if (line != last)
-        shortest_distance = std::min(line - first, shortest_distance);
+    // Scan across the half-open interval [k, bottom) on sample i.
+    this->scan_lines(i, k, this->bottom_, weight);
 }
