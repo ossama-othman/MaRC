@@ -2,7 +2,7 @@
 /**
  * @file MosaicImage.h
  *
- * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -47,6 +47,11 @@ namespace MaRC
          * given latitude and longitude.
          */
         enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
+
+        typedef bool (*avg_func_type)(list_type const & images,
+                                      double lat,
+                                      double lon,
+                                      double & data);
 
         /// Constructor.
         /**
@@ -93,9 +98,20 @@ namespace MaRC
         /// Set of images
         list_type const images_;
 
-        /// The type of averaging to perform on data retrieved from
-        /// multiple images.
-        average_type const average_type_;
+        /**
+         * @brief Data averaging strategy.
+         *
+         * This function performs an average on data retrieved from
+         * multiple images.  The type of average (e.g. none,
+         * unweighted, or weighted) corresponds to the one specified
+         * by the user when instantiating this class.
+         *
+         * @todo Currently this is a simple pointer to function.
+         *       An alternative approach would be to implement a class
+         *       hiearchy, similar to what is done for interpolation
+         *       in MaRC (see @c MaRC::InterpolationStrategy).
+         */
+        avg_func_type const average_;
 
     };
 
