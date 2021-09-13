@@ -30,6 +30,7 @@ namespace MaRC
     {
     public:
 
+        /// Constructor.
         InterpolationStrategy() = default;
 
         // Disallow copying.
