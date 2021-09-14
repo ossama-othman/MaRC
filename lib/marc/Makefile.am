@@ -43,6 +43,10 @@ libMaRC_la_SOURCES = \
   BilinearInterpolation.cpp \
   NullInterpolation.cpp \
   \
+  first_read.cpp \
+  unweighted_average.cpp \
+  weighted_average.cpp \
+  \
   SourceImage.cpp \
   VirtualImage.cpp \
   MuImage.cpp \
@@ -97,12 +101,17 @@ nobase_pkginclude_HEADERS = \
   GLLGeometricCorrection.h \
   NullGeometricCorrection.h \
   \
+  PhotometricCorrection.h \
+  NullPhotometricCorrection.h \
+  \
   InterpolationStrategy.h \
   BilinearInterpolation.h \
   NullInterpolation.h \
   \
-  PhotometricCorrection.h \
-  NullPhotometricCorrection.h \
+  compositing_strategy.h \
+  first_read.h \
+  unweighted_average.h \
+  weighted_average.h \
   \
   Map_traits.h \
   MapFactory.h \
