@@ -45,9 +45,18 @@ namespace MaRC
          */
         using list_type = std::list<std::unique_ptr<PhotoImageFactory>>;
 
+        /**
+         * @enum average_type
+         *
+         * The type of averaging to be performed on physical data
+         * retrieved from multiple images that contain data at a
+         * given latitude and longitude.
+         *
+         */
+        enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
+
         /// Constructor.
-        MosaicImageFactory(list_type && factories,
-                           MosaicImage::average_type type);
+        MosaicImageFactory(list_type && factories, average_type type);
 
         /// Destructor.
         ~MosaicImageFactory() override = default;
@@ -65,9 +74,15 @@ namespace MaRC
         /// List of PhotoImageFactory objects.
         list_type factories_;
 
-        /// The type of averaging to be performed when multiple images
-        /// overlap.
-        MosaicImage::average_type const average_type_;
+        /**
+         * @brief The type of averaging to be performed when multiple
+         *        images overlap.
+         *
+         * @todo Rather than "average type" use "compositor type"
+         *       since not all mosaic compositing strategies perform
+         *       averaging on image data.
+         */
+        average_type const average_type_;
 
   };
 
