@@ -14,9 +14,7 @@
 
 #include <marc/SourceImage.h>
 #include <marc/Export.h>
-
-#include <memory>
-#include <vector>
+#include <marc/compositing_strategy.h>
 
 
 namespace MaRC
@@ -37,31 +35,16 @@ namespace MaRC
          * Type of list containing source images that comprise the
          * mosaic.
          */
-        using list_type = std::vector<std::unique_ptr<SourceImage>>;
-
-        /**
-         * @enum average_type
-         *
-         * The type of averaging to be performed on physical data
-         * retrieved from multiple images that contain data at the
-         * given latitude and longitude.
-         */
-        enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
-
-        typedef bool (*avg_func_type)(list_type const & images,
-                                      double lat,
-                                      double lon,
-                                      double & data);
+        using list_type = MaRC::compositing_strategy::list_type;
 
         /// Constructor.
         /**
-         * @param[in,out] images The list of images to be mosaiced.
-         *                       Ownership of the list is transferred
-         *                       to the @c MosaicImage by peforming a
-         *                       C++11 move.
-         * @param[in]     type   The type of averaging to be performed.
+         * @param[in,out] images     The list of images to be
+         *                           mosaiced.
+         * @param[in,out] compositor Data compositing strategy.
          */
-        MosaicImage(list_type && images, average_type type);
+        MosaicImage(list_type && images,
+                    std::unique_ptr<compositing_strategy> compositor);
 
         // Disallow copying and moving.
         MosaicImage(MosaicImage const &) = delete;
@@ -98,20 +81,8 @@ namespace MaRC
         /// Set of images
         list_type const images_;
 
-        /**
-         * @brief Data averaging strategy.
-         *
-         * This function performs an average on data retrieved from
-         * multiple images.  The type of average (e.g. none,
-         * unweighted, or weighted) corresponds to the one specified
-         * by the user when instantiating this class.
-         *
-         * @todo Currently this is a simple pointer to function.
-         *       An alternative approach would be to implement a class
-         *       hiearchy, similar to what is done for interpolation
-         *       in MaRC (see @c MaRC::InterpolationStrategy).
-         */
-        avg_func_type const average_;
+        /// Data compositing strategy.
+        std::unique_ptr<compositing_strategy const> const compositor_;
 
     };
 
