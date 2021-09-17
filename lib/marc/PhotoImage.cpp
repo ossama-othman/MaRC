@@ -1,7 +1,7 @@
 /**
  * @file PhotoImage.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -28,10 +28,10 @@
 namespace
 {
     /// Create body mask vector for use in "sky removal".
-    auto body_mask(std::size_t samples,
-                   std::size_t lines,
-                   MaRC::PhotoImageParameters const * config,
-                   MaRC::ViewingGeometry const * geometry)
+    auto make_body_mask(std::size_t samples,
+                        std::size_t lines,
+                        MaRC::PhotoImageParameters const * config,
+                        MaRC::ViewingGeometry const * geometry)
     {
         if (!config || !geometry) {
             throw std::invalid_argument(
@@ -61,10 +61,10 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     , bottom_   (lines - config->nibble_bottom())
     , config_   (std::move(config))
     , geometry_ (std::move(geometry))
-    , body_mask_(body_mask(samples,
-                           lines,
-                           config_.get(),
-                           geometry_.get()))
+    , body_mask_(make_body_mask(samples,
+                                lines,
+                                config_.get(),
+                                geometry_.get()))
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
