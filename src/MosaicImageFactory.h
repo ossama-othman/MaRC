@@ -25,15 +25,15 @@ namespace MaRC
     /**
      * @class MosaicImageFactory
      *
-     * @brief Factory class that create MosaicImage objects.
+     * @brief Factory class that creates @c MosaicImage objects.
      *
-     * This class creates MosaicImage objects.  It is designed to
+     * This class creates @c MosaicImage objects.  It is designed to
      * decouple %FITS (for example) file and image operations from the
      * MosaicImage class.  It also exists to decouple the %MaRC parser
-     * grammar from the MosaicImage class.  This allows MosaicImage
-     * object creation to be delayed until it is time for the data in
-     * the MosaicImage to be mapped, which reduces run-time memory
-     * requirements.
+     * grammar from the @c MosaicImage class.  This allows
+     * @c MosaicImage object creation to be delayed until it is time
+     * for the data in the @c MosaicImage to be mapped, which reduces
+     * run-time memory requirements.
      */
     class MosaicImageFactory final : public SourceImageFactory
     {

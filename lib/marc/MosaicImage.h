@@ -55,13 +55,14 @@ namespace MaRC
         /// Destructor.
         ~MosaicImage() override = default;
 
-        /// Retrieve physical data from mosaic images.
         /**
+         * @brief Retrieve physical data from mosaic images.
+         *
          * Retrieve physical data from all mosaic images that have
          * data at the given latitude and longitude.  The configured
-         * data averaging strategy will be applied in cases where
-         * multiple images have data at the given longitude and
-         * latitude.
+         * data compositing strategy will be applied in cases where
+         * multiple images have data at the specified latitude and
+         * longitude.
          *
          * @param[in]  lat  Planetocentric latitude in radians.
          * @param[in]  lon  Longitude in radians.
