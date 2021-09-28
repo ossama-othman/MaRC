@@ -105,7 +105,7 @@ namespace MaRC
         bool read_data(double lat,
                        double lon,
                        double & data,
-                       std::size_t & weight,
+                       double & weight,
                        bool scan = true) const override;
 
         /// Left side of image.
@@ -143,7 +143,7 @@ namespace MaRC
         void scan_samples(std::size_t line,
                           std::size_t left,
                           std::size_t right,
-                          std::size_t & weight) const;
+                          double & weight) const;
 
         /**
          * @brief Scan across lines for the data weight.
@@ -160,7 +160,7 @@ namespace MaRC
         void scan_lines(std::size_t sample,
                         std::size_t top,
                         std::size_t bottom,
-                        std::size_t & weight) const;
+                        double & weight) const;
 
         /**
          * @brief Obtain data weight for given image pixel.
@@ -177,7 +177,7 @@ namespace MaRC
          */
         void data_weight(std::size_t i,
                          std::size_t k,
-                         std::size_t & weight) const;
+                         double & weight) const;
 
     private:
 

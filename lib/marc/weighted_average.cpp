@@ -21,16 +21,11 @@ MaRC::weighted_average::composite(list_type const & images,
     // given latitude and longitude.
     long double weighted_data_sum = 0;
 
-    // Sum of shortest distances.
-    unsigned long long weight_sum = 0;
+    long double weight_sum = 0;
 
     for (auto const & i : images) {
-        /*
-          Shortest distance to an edge of the source image or a blank
-          value in the source image.  This is used as a weight for the
-          datum.
-        */
-        std::size_t weight = 1;
+        // Physical data weight.
+        double weight = 1;
 
         // Scan for data weight.
         static constexpr bool scan = true;
@@ -45,8 +40,9 @@ MaRC::weighted_average::composite(list_type const & images,
         }
     }
 
-    // Perform the average.
-    if (weight_sum > 0)  {
+    // Perform the weighted average if more than one image
+    // contributed.
+    if (weight_sum > 0) {
         data = static_cast<double>(weighted_data_sum / weight_sum);
 
         return true;
