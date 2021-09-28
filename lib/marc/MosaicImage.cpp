@@ -25,5 +25,6 @@ MaRC::MosaicImage::read_data(double lat,
                              double lon,
                              double & data) const
 {
-    return this->compositor_->composite(this->images_, lat, lon, data);
+    return
+        this->compositor_->composite(this->images_, lat, lon, data) > 0;
 }

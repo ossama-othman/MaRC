@@ -11,7 +11,7 @@
 #include "weighted_average.h"
 
 
-bool
+int
 MaRC::weighted_average::composite(list_type const & images,
                                   double lat,
                                   double lon,
@@ -23,6 +23,9 @@ MaRC::weighted_average::composite(list_type const & images,
 
     long double weight_sum = 0;
 
+    // Datum count.
+    int count = 0;
+
     for (auto const & i : images) {
         // Physical data weight.
         double weight = 1;
@@ -30,23 +33,17 @@ MaRC::weighted_average::composite(list_type const & images,
         // Scan for data weight.
         static constexpr bool scan = true;
 
-        /**
-         * @todo Move weight calculation code from @c PhotoImage
-         *       to @c MosaicImage.
-         */
         if (i->read_data(lat, lon, data, weight, scan)) {
             weighted_data_sum += weight * data;
             weight_sum += weight;
+            ++count;
         }
     }
 
     // Perform the weighted average if more than one image
     // contributed.
-    if (weight_sum > 0) {
+    if (weight_sum > 0)
         data = static_cast<double>(weighted_data_sum / weight_sum);
 
-        return true;
-    }
-
-    return false;
+    return count;
 }

@@ -11,7 +11,7 @@
 #include "unweighted_average.h"
 
 
-bool
+int
 MaRC::unweighted_average::composite(list_type const & images,
                                     double lat,
                                     double lon,
@@ -54,9 +54,7 @@ MaRC::unweighted_average::composite(list_type const & images,
     if (count > 0) {
         // Calculate the average.
         data = static_cast<double>(sum / count);
-
-        return true;
     }
 
-    return false;
+    return count;
 }

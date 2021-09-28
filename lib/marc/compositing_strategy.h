@@ -61,12 +61,12 @@ namespace MaRC
          * @param[in]  lon    Longitude in radians.
          * @param[out] datum  Composited datum.
          *
-         * @return @c true if compositing succeeded.
+         * @return The number of images that were composited.
          */
-        virtual bool composite(list_type const & images,
-                               double lat,
-                               double lon,
-                               double & data) const = 0;
+        virtual int composite(list_type const & images,
+                              double lat,
+                              double lon,
+                              double & data) const = 0;
 
     };
 

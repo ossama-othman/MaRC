@@ -39,10 +39,10 @@ namespace MaRC
          *
          * @see @c compositing_strategy for parameter details.
          */
-        bool composite(list_type const & images,
-                       double lat,
-                       double lon,
-                       double & data) const override;
+        int composite(list_type const & images,
+                      double lat,
+                      double lon,
+                      double & data) const override;
 
     };
 

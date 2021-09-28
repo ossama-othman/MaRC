@@ -11,7 +11,7 @@
 #include "first_read.h"
 
 
-bool
+int
 MaRC::first_read::composite(list_type const & images,
                             double lat,
                             double lon,
@@ -20,7 +20,7 @@ MaRC::first_read::composite(list_type const & images,
     // Return the first found datum.
     for (auto const & i : images)
         if (i->read_data(lat, lon, data))
-            return true;
+            return 1;
 
-    return false;
+    return 0;
 }
