@@ -1,7 +1,7 @@
 /**
  * @file PhotoImage.cpp
  *
- * Copyright (C) 1998-1999, 2003-2005, 2017, 2019  Ossama Othman
+ * Copyright (C) 1998-1999, 2003-2005, 2017, 2019, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -28,10 +28,10 @@
 namespace
 {
     /// Create body mask vector for use in "sky removal".
-    auto body_mask(std::size_t samples,
-                   std::size_t lines,
-                   MaRC::PhotoImageParameters const * config,
-                   MaRC::ViewingGeometry const * geometry)
+    auto make_body_mask(std::size_t samples,
+                        std::size_t lines,
+                        MaRC::PhotoImageParameters const * config,
+                        MaRC::ViewingGeometry const * geometry)
     {
         if (!config || !geometry) {
             throw std::invalid_argument(
@@ -61,10 +61,10 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
     , bottom_   (lines - config->nibble_bottom())
     , config_   (std::move(config))
     , geometry_ (std::move(geometry))
-    , body_mask_(body_mask(samples,
-                           lines,
-                           config_.get(),
-                           geometry_.get()))
+    , body_mask_(make_body_mask(samples,
+                                lines,
+                                config_.get(),
+                                geometry_.get()))
 {
     if (samples < 2 || lines < 2) {
         // Why would there ever be a one pixel source image?
@@ -97,7 +97,7 @@ MaRC::PhotoImage::PhotoImage(std::vector<double> && image,
 bool
 MaRC::PhotoImage::read_data(double lat, double lon, double & data) const
 {
-    std::size_t weight = 1;  // Unused.
+    double weight = 1;  // Unused.
 
     static constexpr bool scan = false; // Do not scan for data weight.
 
@@ -108,7 +108,7 @@ bool
 MaRC::PhotoImage::read_data(double lat,
                             double lon,
                             double & data,
-                            std::size_t & weight,
+                            double & weight,
                             bool scan) const
 {
     /**
@@ -173,7 +173,7 @@ void
 MaRC::PhotoImage::scan_samples(std::size_t line,
                                std::size_t left,
                                std::size_t right,
-                               std::size_t & weight) const
+                               double & weight) const
 {
     // Scan across samples on given line.
 
@@ -202,7 +202,7 @@ void
 MaRC::PhotoImage::scan_lines(std::size_t i,
                              std::size_t top,
                              std::size_t bottom,
-                             std::size_t & weight) const
+                             double & weight) const
 {
     // Search the half-open interval [top, bottom).
     auto body_iter =
@@ -217,13 +217,17 @@ MaRC::PhotoImage::scan_lines(std::size_t i,
                                                  // line in mask.
 
     if (line != last)
-        weight = std::min(line - first, weight);
+        weight =
+            std::min(
+                static_cast<
+                std::remove_reference<decltype(weight)>::type>(line - first),
+                weight);
 }
 
 void
 MaRC::PhotoImage::data_weight(std::size_t i,
                               std::size_t k,
-                              std::size_t & weight) const
+                              double & weight) const
 {
     /**
      * @note This method assumes at "i" is in the range

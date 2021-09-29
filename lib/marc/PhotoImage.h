@@ -2,7 +2,7 @@
 /**
  * @file PhotoImage.h
  *
- * Copyright (C) 1999, 2003-2005, 2017-2018  Ossama Othman
+ * Copyright (C) 1999, 2003-2005, 2017-2018, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -37,6 +37,8 @@ namespace MaRC
     class MARC_API PhotoImage final : public SourceImage
     {
     public:
+
+        using body_mask_type = std::vector<bool>;
 
         /// Constructor
         /**
@@ -103,8 +105,26 @@ namespace MaRC
         bool read_data(double lat,
                        double lon,
                        double & data,
-                       std::size_t & weight,
+                       double & weight,
                        bool scan = true) const override;
+
+        /// Left side of image.
+        std::size_t left() const { return this->left_; }
+
+        /// Right side of image.
+        std::size_t right() const { return this->right_; }
+
+        /// Top side of image.
+        std::size_t top() const { return this->top_; }
+
+        /// Bottom side of image.
+        std::size_t bottom() const { return this->bottom_; }
+
+        /// Mask used when "removing" sky from source image.
+        body_mask_type const & body_mask() const
+        {
+            return this->body_mask_;
+        }
 
     private:
 
@@ -123,7 +143,7 @@ namespace MaRC
         void scan_samples(std::size_t line,
                           std::size_t left,
                           std::size_t right,
-                          std::size_t & weight) const;
+                          double & weight) const;
 
         /**
          * @brief Scan across lines for the data weight.
@@ -140,7 +160,7 @@ namespace MaRC
         void scan_lines(std::size_t sample,
                         std::size_t top,
                         std::size_t bottom,
-                        std::size_t & weight) const;
+                        double & weight) const;
 
         /**
          * @brief Obtain data weight for given image pixel.
@@ -157,7 +177,7 @@ namespace MaRC
          */
         void data_weight(std::size_t i,
                          std::size_t k,
-                         std::size_t & weight) const;
+                         double & weight) const;
 
     private:
 
@@ -199,7 +219,7 @@ namespace MaRC
          *
          * @see MosaicImage
          */
-        std::vector<bool> body_mask_;
+        body_mask_type body_mask_;
 
     };
 

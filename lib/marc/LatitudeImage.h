@@ -85,7 +85,7 @@ namespace MaRC
         /// returned instead of planetocentric latitudes.
         bool const graphic_latitudes_;
 
-  };
+    };
 
 } // End MaRC namespace
 

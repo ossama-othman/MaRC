@@ -16,24 +16,25 @@ AM_CPPFLAGS =               \
 AM_CXXFLAGS = $(CODE_COVERAGE_CXXFLAGS)
 AM_LIBS = $(CODE_COVERAGE_LIBS)
 
-library_tests = \
-  DefaultConfiguration_Test \
-  Math_Test                 \
-  Vector_Test               \
-  Matrix_Test               \
-  Geometry_Test             \
-  OblateSpheroid_Test       \
-  Scale_Offset_Test         \
-  LatitudeImage_Test        \
-  LongitudeImage_Test       \
-  ViewingGeometry_Test      \
-  Mercator_Test             \
-  Orthographic_Test         \
-  PolarStereographic_Test   \
-  extrema_test              \
-  log_test                  \
-  root_find_test            \
-  utility_test              \
+library_tests =                 \
+  DefaultConfiguration_Test     \
+  Math_Test                     \
+  Vector_Test                   \
+  Matrix_Test                   \
+  Geometry_Test                 \
+  OblateSpheroid_Test           \
+  Scale_Offset_Test             \
+  LatitudeImage_Test            \
+  LongitudeImage_Test           \
+  ViewingGeometry_Test          \
+  Mercator_Test                 \
+  Orthographic_Test             \
+  PolarStereographic_Test       \
+  compositing_strategy_test     \
+  extrema_test                  \
+  log_test                      \
+  root_find_test                \
+  utility_test                  \
   validate_test
 
 program_tests = \
@@ -84,6 +85,14 @@ nobase_dist_check_DATA = \
   test_map.marc          \
   test.fits.gz           \
   $(BAD_MARC_FILES)
+
+## -------------------------------------------------------------------
+
+check_LTLIBRARIES = libMaRC_test_images.la
+
+libMaRC_test_images_la_SOURCES = \
+  fixed_value_image.h            \
+  fixed_value_image.cpp
 
 ## -------------------------------------------------------------------
 
@@ -141,6 +150,13 @@ PolarStereographic_Test_SOURCES = PolarStereographic_Test.cpp
 PolarStereographic_Test_LDADD = \
   $(MARC_LIB) \
   $(CODE_COVERAGE_LIBS)
+
+compositing_strategy_test_SOURCES = compositing_strategy_test.cpp
+compositing_strategy_test_LDADD   = \
+  -lMaRC_test_images \
+  $(MARC_LIB) \
+  $(CODE_COVERAGE_LIBS)
+compositing_strategy_test_DEPENDENCIES = libMaRC_test_images.la
 
 extrema_test_SOURCES = extrema_test.cpp
 extrema_test_LDADD   = \

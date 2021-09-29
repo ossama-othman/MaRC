@@ -10,18 +10,54 @@
 
 #include "MosaicImageFactory.h"
 
-#include <stdexcept>
+#include <marc/first_read.h>
+#include <marc/unweighted_average.h>
+#include <marc/weighted_average.h>
 
+#include <stdexcept>
+#include <cassert>
+
+
+namespace
+{
+    std::unique_ptr<MaRC::compositing_strategy>
+    make_compositor(std::size_t count,
+                    MaRC::MosaicImageFactory::average_type type)
+    {
+        // Compositing should not be used for single images.
+        assert(count > 1);
+
+        /**
+         * @todo Drop the hard coding.  Make mosaic compositor
+         *       selection extensible, such as through a compositor
+         *       abstract factory.
+         */
+        switch (type) {
+        case MaRC::MosaicImageFactory::AVG_NONE:
+        default:
+            return std::make_unique<MaRC::first_read>();
+        case MaRC::MosaicImageFactory::AVG_UNWEIGHTED:
+            return std::make_unique<MaRC::unweighted_average>();
+        case MaRC::MosaicImageFactory::AVG_WEIGHTED:
+            return std::make_unique<MaRC::weighted_average>();
+        }
+    }
+}
+
+// ----------------------------------------------------------------
 
 MaRC::MosaicImageFactory::MosaicImageFactory (
     list_type && factories,
-    MosaicImage::average_type type)
+    average_type type)
     : SourceImageFactory()
     , factories_(std::move(factories))
     , average_type_(type)
 {
-    if (this->factories_.empty())
-        throw std::invalid_argument("Empty PhotoImageFactory list.");
+    // No need to mosaic a single image.  This also covers the empty
+    // factory list case.
+    if (this->factories_.size() < 2)
+        throw std::invalid_argument(
+            "MosaicImageFactory used for less than two images.");
 }
 
 bool
@@ -78,7 +114,9 @@ MaRC::MosaicImageFactory::make(scale_offset_functor calc_so)
     if (valid_maximum)
         this->maximum(*ex.maximum());
 
+    auto compositor = make_compositor(photos.size(), this->average_type_);
+
     return
         std::make_unique<MosaicImage>(std::move(photos),
-                                      this->average_type_);
+                                      std::move(compositor));
 }

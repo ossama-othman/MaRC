@@ -333,7 +333,7 @@ double lon_interval;
 
 std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
 MaRC::MosaicImageFactory::list_type photo_factories;
-MaRC::MosaicImage::average_type averaging_type;
+MaRC::MosaicImageFactory::average_type averaging_type;
 
 std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
 std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
@@ -621,7 +621,7 @@ map_entry:
 
             image_factories.clear();
 
-            averaging_type = MaRC::MosaicImage::AVG_WEIGHTED;
+            averaging_type = MaRC::MosaicImageFactory::AVG_WEIGHTED;
 
             /**
              * @deprecated Remove once deprecated plane number support
@@ -1995,11 +1995,11 @@ options_common:
 averaging:
         %empty
         | AVERAGING ':' UNWEIGHTED {
-              averaging_type = MaRC::MosaicImage::AVG_UNWEIGHTED; }
+              averaging_type = MaRC::MosaicImageFactory::AVG_UNWEIGHTED; }
         | AVERAGING ':' WEIGHTED {
-              averaging_type = MaRC::MosaicImage::AVG_WEIGHTED; }
+              averaging_type = MaRC::MosaicImageFactory::AVG_WEIGHTED; }
         | AVERAGING ':' _NONE {
-              averaging_type = MaRC::MosaicImage::AVG_NONE; }
+              averaging_type = MaRC::MosaicImageFactory::AVG_NONE; }
 ;
 
 /* ----------------------- General Subroutines ---------------------------- */
