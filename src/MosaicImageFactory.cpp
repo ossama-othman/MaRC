@@ -15,18 +15,13 @@
 #include <marc/weighted_average.h>
 
 #include <stdexcept>
-#include <cassert>
 
 
 namespace
 {
     std::unique_ptr<MaRC::compositing_strategy>
-    make_compositor(std::size_t count,
-                    MaRC::MosaicImageFactory::average_type type)
+    make_compositor(MaRC::MosaicImageFactory::average_type type)
     {
-        // Compositing should not be used for single images.
-        assert(count > 1);
-
         /**
          * @todo Drop the hard coding.  Make mosaic compositor
          *       selection extensible, such as through a compositor
@@ -114,7 +109,7 @@ MaRC::MosaicImageFactory::make(scale_offset_functor calc_so)
     if (valid_maximum)
         this->maximum(*ex.maximum());
 
-    auto compositor = make_compositor(photos.size(), this->average_type_);
+    auto compositor = make_compositor(this->average_type_);
 
     return
         std::make_unique<MosaicImage>(std::move(photos),
