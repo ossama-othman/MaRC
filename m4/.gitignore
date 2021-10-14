@@ -1,4 +1,5 @@
-# Ignore everything but this file and autoconf archive macros
+# Ignore everything in this directory
 *
+# Except these files
 !.gitignore
-!ax*.m4
+!marc_clang_tidy.m4
