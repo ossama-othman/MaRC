@@ -51,7 +51,13 @@ MaRC::unweighted_average::composite(list_type const & images,
         }
     }
 
-    if (count > 0) {
+    /*
+      Perform the average only if more than one image contributed to
+      avoid introducing floating point error, such as a datum of 200
+      for one image vs. 199.999999999996 obtained from the average
+      calculation.
+    */
+    if (count > 1) {
         // Calculate the average.
         data = static_cast<double>(sum / count);
     }
