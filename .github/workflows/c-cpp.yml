@@ -39,7 +39,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: dependencies
-      run: brew install automake autoconf-archive fmt
+      run: brew install automake autoconf-archive fmt cfitsio
     - name: bootstrap
       run: ./bootstrap
     - name: configure
