@@ -39,11 +39,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: dependencies
-      run: |
-           brew install bison flex texinfo autoconf-archive fmt
-           for p in bison gettext flex texinfo; do
-              export PATH="/usr/local/opt/$p/bin:$PATH";
-           done;
+      run: brew install automake autoconf-archive fmt
     - name: bootstrap
       run: ./bootstrap
     - name: configure
