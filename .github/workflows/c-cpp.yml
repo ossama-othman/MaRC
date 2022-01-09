@@ -39,7 +39,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: dependencies
-      run: brew install automake autoconf-archive fmt cfitsio bison
+      run: brew install automake autoconf-archive fmt cfitsio bison texinfo
     - name: bootstrap
       run: ./bootstrap
     - name: configure
