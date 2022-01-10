@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  Ubuntu:
 
     runs-on: ubuntu-latest
 
@@ -31,3 +31,26 @@ jobs:
       run: LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH make installcheck
     - name: make uninstall
       run: sudo make uninstall
+
+  macOS:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: dependencies
+      run: brew install automake autoconf-archive fmt cfitsio bison texinfo
+    - name: bootstrap
+      run: ./bootstrap
+    - name: configure
+      run: CXX=$(brew --prefix llvm)/bin/clang++ ./configure --disable-debug  --disable-silent-rules
+    - name: make
+      run: make
+    - name: make check
+      run: make check
+    - name: make install
+      run: make install
+    - name: make installcheck
+      run: LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH make installcheck
+    - name: make uninstall
+      run: make uninstall
