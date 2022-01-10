@@ -43,7 +43,7 @@ jobs:
     - name: bootstrap
       run: ./bootstrap
     - name: configure
-      run: CXX=$(brew --prefix llvm)/bin/clang++ ./configure --disable-debug
+      run: CXX=$(brew --prefix llvm)/bin/clang++ ./configure --disable-debug  --disable-silent-rules
     - name: make
       run: make
     - name: make check
