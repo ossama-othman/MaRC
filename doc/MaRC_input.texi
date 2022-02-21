@@ -416,7 +416,7 @@ is first, then the geometry, and then the direction of rotation.
 The data stored in the output file can be stored in several formats.
 Data being mapped may have been transformed in some way.  Only linear
 transformations may be specified in the input file.  MaRC provides two
-optional keywords to specify how the data was transformed.  They are the
+optional keywords to specify how the data is transformed.  They are the
 @code{DATA_OFFSET} and @code{DATA_SCALE} keywords.  Both of these
 keywords expect a mathematical expression as their semantic value.  Data
 described by these keywords would be of the form:
