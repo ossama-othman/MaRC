@@ -203,7 +203,7 @@ namespace MaRC
          */
         void swap(extrema & other) noexcept(
             std::is_nothrow_move_constructible<T>::value
-            /* && std::is_nothrow_swappable<T>::value */)
+            && std::is_nothrow_swappable<T>::value)
         {
             using std::swap;
 
