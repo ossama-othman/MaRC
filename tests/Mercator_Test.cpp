@@ -1,7 +1,7 @@
 /**
  * @file Mercator_Test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -11,6 +11,7 @@
 #include <marc/LatitudeImage.h>
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
+#include <marc/Mathematics.h>
 #include <marc/scale_and_offset.h>
 
 #include <memory>
@@ -112,8 +113,8 @@ bool test_make_map()
         return false;
 
     /*
-      Pick a random sample along the center line (equator) in the
-      projection.  There is no need for a non-deterministically
+      Pick a pseudo-random sample along the center line (equator) in
+      the projection.  There is no need for a non-deterministically
       generated seed value for the purposes of this test.
     */
     std::mt19937 generator(std::time(nullptr));
