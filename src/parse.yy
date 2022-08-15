@@ -51,6 +51,7 @@
 #include <stdexcept>
 #include <limits>
 #include <memory>
+#include <array>  // For std::size().
 #include <cstring>
 #include <cerrno>
 #include <cmath>
@@ -295,7 +296,7 @@ namespace
             char buf[BUFLEN] = {};
 
             char const * const err =
-                MaRC::strerror(errno, buf, MaRC::size(buf));
+                MaRC::strerror(errno, buf, std::size(buf));
 
             errno = 0;
 
