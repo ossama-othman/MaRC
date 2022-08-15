@@ -4,7 +4,7 @@
  *
  * %MaRC utility functions.
  *
- * Copyright (C) 2017, 2018  Ossama Othman
+ * Copyright (C) 2017, 2018, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -21,76 +21,6 @@
 
 namespace MaRC
 {
-#if __cplusplus < 201703L
-    /**
-     * @brief Get pointer to memory containing the container
-     *
-     * @deprecated This is an implementation of the C++17
-     *             @c std::data() function.  It will be removed when
-     *             %MaRC requires C++17.
-     */
-    template <class C>
-    constexpr auto data(C & c) -> decltype(c.data())
-    {
-        return c.data();
-    }
-
-    /**
-     * @brief Get pointer to memory containing the container
-     *
-     * @deprecated This is an implementation of the C++17
-     *             @c std::data() function.  It will be removed when
-     *             %MaRC requires C++17.
-     */
-    template <class C>
-    constexpr auto data(C const & c) -> decltype(c.data())
-    {
-        return c.data();
-    }
-
-    /**
-     * @brief Get pointer to memory containing the array.
-     *
-     * @deprecated This is an implementation of the C++17
-     *             @c std::data() function.  It will be removed when
-     *             %MaRC requires C++17.
-     */
-    template <typename T, std::size_t N>
-    constexpr T * data(T (&array)[N]) noexcept
-    {
-        return array;
-    }
-
-    /**
-     * @brief Get the size of a container.
-     *
-     * @deprecated This is an implementation of the C++17
-     *             @c std::size() function.  It will be removed when
-     *             %MaRC requires C++17.
-     */
-    template <class C>
-    constexpr auto size(C const & c) -> decltype(c.size())
-    {
-        return c.size();
-    }
-
-    /**
-     * @brief Get the length of an array.
-     *
-     * @deprecated This is an implementation of the C++17
-     *             @c std::size() function.  It will be removed when
-     *             %MaRC requires C++17.
-     */
-    template <typename T, std::size_t N>
-    constexpr std::size_t size(T const (& /* array */)[N]) noexcept
-    {
-        return N;
-    }
-#else
-    using std::data;
-    using std::size;
-#endif  // __cplusplus < 201703L
-
     /**
      * @brief Invert image samples (columns).
      *
@@ -112,7 +42,7 @@ namespace MaRC
                    std::size_t samples,
                    std::size_t lines)
     {
-        if (MaRC::size(image) != samples * lines)
+        if (std::size(image) != samples * lines)
             throw std::invalid_argument("Image size does not match "
                                         "number of samples and lines.");
 
@@ -145,7 +75,7 @@ namespace MaRC
                  std::size_t samples,
                  std::size_t lines)
     {
-        if (MaRC::size(image) != samples * lines)
+        if (std::size(image) != samples * lines)
             throw std::invalid_argument("Image size does not match "
                                         "number of samples and lines.");
 

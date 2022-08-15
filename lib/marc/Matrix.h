@@ -4,7 +4,7 @@
  *
  * %MaRC matrix class and operations.
  *
- * Copyright (C) 2004, 2017-2018, 2021  Ossama Othman
+ * Copyright (C) 2004, 2017-2018, 2021-2022,  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -128,7 +128,7 @@ namespace MaRC
          * @return Reference to element at given @c Matrix @a row and
          *         @a column.
          */
-        inline reference operator()(std::size_t row, std::size_t column)
+        constexpr reference operator()(std::size_t row, std::size_t column)
         {
             return this->matrix_[row][column];
         }
@@ -144,8 +144,8 @@ namespace MaRC
          * @return Reference to @c const element at given @c Matrix
          *         @a row and @a column.
          */
-        inline const_reference operator()(std::size_t row,
-                                          std::size_t column) const
+        constexpr const_reference operator()(std::size_t row,
+                                             std::size_t column) const
         {
             return this->matrix_[row][column];
         }
@@ -161,7 +161,7 @@ namespace MaRC
          * @return Reference to element at given @c Matrix @a row and
          *         @a column.
          */
-        inline reference at(std::size_t row, std::size_t column)
+        constexpr reference at(std::size_t row, std::size_t column)
         {
             if (row >= M || column >= N) {
                 throw std::out_of_range("Out of range matrix index "
@@ -182,8 +182,8 @@ namespace MaRC
          * @return Reference to @c const element at given @c Matrix
          *         @a row and @a column.
          */
-        inline const_reference at(std::size_t row,
-                                  std::size_t column) const
+        constexpr const_reference at(std::size_t row,
+                                     std::size_t column) const
         {
             if (row >= M || column >= N) {
                 throw std::out_of_range("Out of range matrix index "
@@ -332,7 +332,7 @@ namespace MaRC
      * @relates MaRC::Matrix
      */
     template <typename T, std::size_t M, std::size_t N>
-    Matrix<T, N, M> transpose(Matrix<T, M, N> const & m)
+    constexpr Matrix<T, N, M> transpose(Matrix<T, M, N> const & m)
     {
         Matrix<T, N, M> t;
 

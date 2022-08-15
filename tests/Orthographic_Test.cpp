@@ -9,6 +9,7 @@
 #include <marc/Orthographic.h>
 #include <marc/OblateSpheroid.h>
 #include <marc/LatitudeImage.h>
+#include <marc/Mathematics.h>
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
 #include <marc/scale_and_offset.h>

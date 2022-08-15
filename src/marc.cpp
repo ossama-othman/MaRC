@@ -17,9 +17,9 @@
 
 #include <marc/config.h>
 #include <marc/Log.h>
-#include <marc/utility.h>
 
 #include <string>
+#include <array>  // For std::size().
 #include <cstdio>
 #include <cerrno>
 #include <cstdlib>
@@ -104,7 +104,7 @@ namespace MaRC
             char buf[BUFLEN] = {};
 
             char const * const error =
-                MaRC::strerror(errno, buf, MaRC::size(buf));
+                MaRC::strerror(errno, buf, std::size(buf));
 
             MaRC::debug("Unable to open input file '{}': {}",
                         filename,

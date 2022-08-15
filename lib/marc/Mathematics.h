@@ -2,7 +2,7 @@
 /**
  * @file Mathematics.h
  *
- * Copyright (C) 2017  Ossama Othman
+ * Copyright (C) 2017, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -24,50 +24,6 @@
 
 namespace MaRC
 {
-#if __cplusplus < 201703L
-    /**
-     * @brief Distance of (x,y,z) from the origin.
-     *
-     * Compute the distance of the point in space (@a x, @a y, @a z)
-     * from the origin (0, 0, 0).  This function is implemented in
-     * terms of the two-parameter @c std::hypot() to leverage its
-     * ability to perform the operation without floating point
-     * underflow or overflow, as well as its excellent floating point
-     * error characteristics.
-     *
-     * @param[in] x,y,z Coordinate in space.
-     *
-     * @return Distance from the origin to the point in space (@a x,
-     *         @a y, @a z), i.e. the equivalent of the square root of
-     *         the sum of the squares of each coordinate
-     *         \f$\sqrt{x^2+y^2+z^2}\f$.
-     *
-     * @deprecated This implementation of the three-parameter
-     *             @c std::hypot() will be dropped once we start
-     *             using C++17 features in %MaRC.
-     */
-    template <typename T>
-    auto hypot(T x, T y, T z)
-    {
-        /*
-          Implement the missing three parameter std::hypot() function
-          by nesting two std::hypot() calls.  This works since:
-          Given:
-              std::hypot(x,y)   = sqrt(x*x + y*y)
-          and:
-              std::hypot(x,y,z) = sqrt(x*x + y*y + z*z)
-          We have:
-              std::hypot(std::hypot(x, y), z)
-                  = sqrt((sqrt(x*x + y*y) * sqrt(x*x + y*y)) + z*z)
-                  = sqrt(x*x + y*y + z*z) =
-                  = std::hypot(x, y, z)
-        */
-        return std::hypot(std::hypot(x, y), z);
-    }
-#endif  // __cplusplus < 201703L
-
-    using std::hypot;
-
     /**
      * @brief Compare two floating point numbers for equality.
      *

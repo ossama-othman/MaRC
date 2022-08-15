@@ -711,7 +711,7 @@ MaRC::ViewingGeometry::set_km_per_pixel()
 
     this->km_per_pixel_ =
         this->range_ /
-        MaRC::hypot(this->OA_s_ - this->sample_center_,
+        std::hypot(this->OA_s_ - this->sample_center_,
                     this->focal_length_pixels_,
                     this->OA_l_ - this->line_center_);
 }

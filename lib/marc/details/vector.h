@@ -14,7 +14,7 @@
 #ifndef MARC_DETAILS_VECTOR_H
 #define MARC_DETAILS_VECTOR_H
 
-#include "marc/Mathematics.h"
+#include <cmath>
 
 
 namespace MaRC
@@ -67,9 +67,9 @@ namespace MaRC
          * @return Magnitude of vector @a v.
          */
         template <typename T>
-        constexpr auto magnitude(T const (&v)[3])
+        auto magnitude(T const (&v)[3])
         {
-            return MaRC::hypot(v[0], v[1], v[2]);
+            return std::hypot(v[0], v[1], v[2]);
         }
 
         /**
@@ -84,7 +84,7 @@ namespace MaRC
          * @return Magnitude of vector @a v.
          */
         template <typename T>
-        constexpr auto magnitude(T const (&v)[2])
+        auto magnitude(T const (&v)[2])
         {
             return std::hypot(v[0], v[1]);
         }

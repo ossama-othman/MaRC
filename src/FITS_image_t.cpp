@@ -18,6 +18,7 @@
 
 #include <fitsio.h>
 
+#include <array>  // For std::size().
 #include <cmath>
 
 
@@ -94,11 +95,11 @@ MaRC::FITS::image::write(T const & img)
         MaRC::error("FITS image array is already fully written.");
 
         return false;
-    } else if(static_cast<LONGLONG>(MaRC::size(img))
+    } else if(static_cast<LONGLONG>(std::size(img))
               != this->nelements_) {
         MaRC::error("FITS image and data array sizes, "
                     "{} and {}, do not match.",
-                    this->nelements_, MaRC::size(img));
+                    this->nelements_, std::size(img));
 
         return false;
     }
@@ -113,7 +114,7 @@ MaRC::FITS::image::write(T const & img)
          Plane 4: ... etc ...
     */
 
-    auto data = MaRC::data(img);
+    auto data = std::data(img);
 
     /*
       CFITSIO expects the data to passed as a non-const pointer to
