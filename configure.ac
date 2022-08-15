@@ -196,9 +196,6 @@ AS_IF([test "x$marc_cv_lib_fmt" = "xyes"],
        AC_SUBST([FMTLIB_CPPFLAGS])
       ])
 
-dnl Checks for header files.
-AC_HEADER_STDC
-
 dnl System specific configuration
 AS_IF([test "x$ax_enable_debug" != "xyes"],
       [
