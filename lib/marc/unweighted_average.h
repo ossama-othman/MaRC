@@ -2,7 +2,7 @@
 /**
  * @file unweighted_average.h
  *
- * Copyright (C) 2021  Ossama Othman
+ * Copyright (C) 2021, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -29,6 +29,15 @@ namespace MaRC
     class MARC_API unweighted_average final : public compositing_strategy
     {
     public:
+
+        // Disallow copying.
+        unweighted_average(unweighted_average const &) = delete;
+        unweighted_average & operator=(
+            unweighted_average const &) = delete;
+
+        // Disallow moving.
+        unweighted_average(unweighted_average &&) = delete;
+        unweighted_average & operator=(unweighted_average &&) = delete;
 
         /// Destructor.
         ~unweighted_average() override = default;

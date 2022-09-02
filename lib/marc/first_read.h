@@ -2,7 +2,7 @@
 /**
  * @file first_read.h
  *
- * Copyright (C) 2021  Ossama Othman
+ * Copyright (C) 2021, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -30,6 +30,14 @@ namespace MaRC
     class MARC_API first_read final : public compositing_strategy
     {
     public:
+
+        // Disallow copying.
+        first_read(first_read const &) = delete;
+        first_read & operator=(first_read const &) = delete;
+
+        // Disallow moving.
+        first_read(first_read &&) = delete;
+        first_read & operator=(first_read &&) = delete;
 
         /// Destructor.
         ~first_read() override = default;
