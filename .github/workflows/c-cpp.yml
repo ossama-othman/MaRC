@@ -11,14 +11,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        cxx: [g++, clang++]
+
     steps:
     - uses: actions/checkout@v2
     - name: dependencies
-      run: sudo apt install g++ libcfitsio-dev autoconf-archive lcov texinfo texlive pandoc
+      run: sudo apt-get -y install g++ clang libcfitsio-dev autoconf-archive texinfo texlive pandoc
     - name: bootstrap
       run: ./bootstrap
     - name: configure
-      run: ./configure
+      run: ./configure CXX=${{ matrix.cxx }}
     - name: make
       run: make
     - name: make check

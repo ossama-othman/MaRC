@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: dependencies
-      run: sudo apt install g++ libcfitsio-dev autoconf-archive lcov
+      run: sudo apt-get -y install g++ libcfitsio-dev autoconf-archive lcov
     - name: bootstrap
       run: ./bootstrap
     - name: configure
