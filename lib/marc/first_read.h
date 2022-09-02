@@ -31,6 +31,9 @@ namespace MaRC
     {
     public:
 
+        /// Constructor.
+        first_read() = default;
+
         // Disallow copying.
         first_read(first_read const &) = delete;
         first_read & operator=(first_read const &) = delete;

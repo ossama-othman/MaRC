@@ -30,6 +30,9 @@ namespace MaRC
     {
     public:
 
+        /// Constructor.
+        weighted_average() = default;
+
         // Disallow copying.
         weighted_average(weighted_average const &) = delete;
         weighted_average & operator=(weighted_average const &) = delete;
