@@ -2,7 +2,7 @@
 /**
  * @file weighted_average.h
  *
- * Copyright (C) 2021  Ossama Othman
+ * Copyright (C) 2021, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -29,6 +29,17 @@ namespace MaRC
     class MARC_API weighted_average final : public compositing_strategy
     {
     public:
+
+        /// Constructor.
+        weighted_average() = default;
+
+        // Disallow copying.
+        weighted_average(weighted_average const &) = delete;
+        weighted_average & operator=(weighted_average const &) = delete;
+
+        // Disallow moving.
+        weighted_average(weighted_average &&) = delete;
+        weighted_average & operator=(weighted_average &&) = delete;
 
         /// Destructor.
         ~weighted_average() override = default;
