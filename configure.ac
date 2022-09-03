@@ -55,6 +55,11 @@ MARC_CLANG_TIDY
 
 AX_CODE_COVERAGE
 
+AX_VALGRIND_DFLT([helgrind], [off])
+AX_VALGRIND_DFLT([drd],      [off])
+AX_VALGRIND_DFLT([sgcheck],  [off])
+AX_VALGRIND_CHECK
+
 dnl Check for pkg-config
 PKG_PROG_PKG_CONFIG
 
