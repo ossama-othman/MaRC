@@ -4,7 +4,7 @@
 /**
  * @file GLLGeometricCorrection.h
  *
- * Copyright (C) 1999, 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 1999, 2003-2004, 2017, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -22,12 +22,6 @@
 #include <cstddef>
 
 
-//   // Kludge to "automatically" detect summation mode images
-//   if (Samples_ > OA_SAMP)
-//     this->summation_mode_ = 1; // Full frame
-//   else
-//     this->summation_mode_ = 2; // Summation mode frame
-
 namespace MaRC
 {
     /**
@@ -35,20 +29,26 @@ namespace MaRC
      *
      * @brief Galileo Spacecraft lens aberration correction strategy.
      *
-     * Galileo specific concrete geometric correction strategy.
+     * Galileo specific geometric correction strategy.
      */
     class MARC_API GLLGeometricCorrection final
         : public GeometricCorrection
     {
     public:
 
-        /// Constructor
         /**
+         * @brief Constructor
+         *
          * @param[in] samples Number of samples in the PhotoImage.
          *                    Only used to determine whether summation
-         *                    mode should be enabled.
+         *                    mode should be enabled.  Full frame
+         *                    images are 800x800. Summation mode
+         *                    images are 400x400.
          */
         GLLGeometricCorrection(std::size_t samples);
+
+        /// Destructor.
+        ~GLLGeometricCorrection() override = default;
 
         /**
          * @name GeometricCorrection Methods
@@ -56,12 +56,12 @@ namespace MaRC
          * Virtual methods required by the GeometricCorrection abstract
          * base class.
          */
-        //@{
+        ///@{
         void image_to_object(double & line,
                              double & sample) const override;
         void object_to_image(double & line,
                              double & sample) const override;
-        //@}
+        ///@}
 
         /// Return current summation mode
         bool summation_mode() const { return this->summation_mode_; }
