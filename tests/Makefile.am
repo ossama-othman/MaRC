@@ -239,3 +239,7 @@ clean-local: code-coverage-clean
 #     LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib make installcheck
 installcheck-local:
 	$(DESTDIR)$(bindir)/marc$(EXEEXT) $(srcdir)/test_map.marc > /dev/null
+
+@VALGRIND_CHECK_RULES@
+#VALGRIND_SUPPRESSIONS_FILES = marc.supp
+#EXTRA_DIST = marc.supp
