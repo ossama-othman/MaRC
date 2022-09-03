@@ -1,7 +1,7 @@
 /**
  * @file GLLGeometricCorrection.cpp
  *
- * Copyright (C) 2003-2004, 2017  Ossama Othman
+ * Copyright (C) 2003-2004, 2017, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -25,20 +25,15 @@ namespace MaRC
         static constexpr double DISTORTION = 0.00000000658;
 
         /// Default optical axis line.
-        static constexpr double OA_LINE = 400;
+        static constexpr std::size_t OA_LINE = 400;
 
         /// Default optical axis sample.
-        static constexpr double OA_SAMPLE = 400;
+        static constexpr std::size_t OA_SAMPLE = 400;
     }
 }
 
-
-// Base summation mode detection on (samples > 1.1 * OA_SAMPLE)
-// instead of (samples > OA_SAMPLE) to avoid potential inexact
-// comparisons of two equal values e.g. (400.0 > 400.0000001).
 MaRC::GLLGeometricCorrection::GLLGeometricCorrection(std::size_t samples)
-    : summation_mode_(samples > 1.1 * MaRC::GLL::OA_SAMPLE
-                      ? false : true)
+    : summation_mode_(samples <= MaRC::GLL::OA_SAMPLE)
 {
 }
 
