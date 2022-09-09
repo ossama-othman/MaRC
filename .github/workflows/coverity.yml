@@ -1,0 +1,25 @@
+name: Coverity Scan
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  coverity:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: dependencies
+      run: sudo apt-get -y install g++ libcfitsio-dev autoconf-archive
+    - name: bootstrap
+      run: ./bootstrap
+    - name: configure
+      run: ./configure
+
+    - uses: vapier/coverity-scan-action@v1
+      with:
+        command: make
+        email: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        token: ${{ secrets.COVERITY_SCAN_TOKEN }}
