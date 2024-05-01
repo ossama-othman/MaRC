@@ -230,7 +230,7 @@ namespace
      * @note This is an implementation detail.  Use @c from_string().
      */
     void
-    from_string(char const * str, char ** end, std::intmax_t & num)
+    from_string(char const * str, char ** end, long long & num)
     {
         constexpr int base = 10;
 
@@ -432,10 +432,10 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 
 
 %union
- {
+{
      bool bval;           // For returning boolean values.
      char * sval;         // For returning string values.
-     std::intmax_t ival;  // For returning integer values.
+     long long ival;      // For returning integer values.
      double val;          // For returning floating point values.
      MaRC::sym_entry * tptr;  // For returning symbol-table pointers.
      MaRC::SubObserv sub_observ_data; // Sub-observation point.
