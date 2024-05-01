@@ -42,16 +42,16 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     map_image->template blank<T>(blank);
 
     // Write the author name if supplied.
-    auto const author = this->parameters_->author();
+    auto const & author = this->parameters_->author();
     map_image->author(author);
 
     // Write the name of the organization or institution responsible
     // for creating the FITS file, if supplied.
-    auto const origin = this->parameters_->origin();
+    auto const & origin = this->parameters_->origin();
     map_image->origin(origin);
 
     // Write the name of the object being mapped.
-    auto const object = this->parameters_->object();
+    auto const & object = this->parameters_->object();
 
     if (object.empty()) {
         /**
