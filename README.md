@@ -4,7 +4,7 @@
 
 [![C/C++ CI](https://github.com/ossama-othman/MaRC/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/ossama-othman/MaRC/actions/workflows/c-cpp.yml)
 [![Coverity Status](https://scan.coverity.com/projects/13233/badge.svg)](https://scan.coverity.com/projects/ossama-othman-marc)
-[![Coverage Status](https://coveralls.io/repos/github/ossama-othman/MaRC/badge.svg?branch=master&service=github)](https://coveralls.io/github/ossama-othman/MaRC?branch=master&service=github)
+[![Coverage Status](https://coveralls.io/repos/github/ossama-othman/MaRC/badge.svg?branch=main&service=github)](https://coveralls.io/github/ossama-othman/MaRC?branch=main&service=github)
 
 # MaRC
 
