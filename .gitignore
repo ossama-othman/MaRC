@@ -53,6 +53,7 @@ depcomp
 install-sh
 libtool
 ltmain.sh
+.dirstamp
 .libs
 stamp*
 config.*
@@ -99,10 +100,14 @@ tests/ViewingGeometry_Test
 tests/Mercator_Test
 tests/Orthographic_Test
 tests/PolarStereographic_Test
+tests/compositing_strategy_test
+tests/extrema_test
+tests/log_test
 tests/optional_test
 tests/root_find_test
 tests/utility_test
 tests/validate_test
+tests/map_parameters_test
 tests/test-suite.log
 tests/test_*map*.fits
 

@@ -15,7 +15,7 @@ MaRC::MapFactory::grid_type
 MaRC::MapFactory::make_grid(std::size_t samples,
                             std::size_t lines,
                             double lat_interval,
-                            double lon_interval)
+                            double lon_interval) const
 {
     /**
      * @todo Verify that @a lat_interval falls within the maximum

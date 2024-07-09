@@ -1,13 +1,13 @@
 /**
  * @file Vector_Test.cpp
  *
- * Copyright (C) 2017 Ossama Othman
+ * Copyright (C) 2017, 2022, Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
 #include <marc/Vector.h>
-
+#include <marc/Mathematics.h>   // For MaRC::almost_equal()
 
 namespace
 {

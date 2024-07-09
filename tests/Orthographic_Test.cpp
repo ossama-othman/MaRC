@@ -9,6 +9,7 @@
 #include <marc/Orthographic.h>
 #include <marc/OblateSpheroid.h>
 #include <marc/LatitudeImage.h>
+#include <marc/Mathematics.h>
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
 #include <marc/scale_and_offset.h>
@@ -130,14 +131,16 @@ bool test_make_map()
     // Latitudes in degrees, scaled accordingly.
     auto const minimum = -90 * scale + offset;
     auto const maximum =  90 * scale + offset;
+    MaRC::extrema<data_type> const minmax(minimum, maximum);
 
     // Ignored in the floating point data type case.
     auto const blank = std::numeric_limits<data_type>::lowest();
 
-    MaRC::plot_info info(*image, minimum, maximum, blank);
+
+    MaRC::plot_info<data_type> info(samples, lines, blank);
 
     auto const map =
-        projection->template make_map<data_type>(info, samples, lines);
+        projection->template make_map<data_type>(*image, minmax, info);
 
     if (map.empty())
         return false;

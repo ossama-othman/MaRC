@@ -4,7 +4,7 @@
  *
  * Parser for %MaRC input files.  Requires GNU Bison 1.35 or greater.
  *
- * Copyright (C) 1999, 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 1999, 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -51,10 +51,10 @@
 #include <stdexcept>
 #include <limits>
 #include <memory>
+#include <array>  // For std::size().
 #include <cstring>
 #include <cerrno>
 #include <cmath>
-#include <sstream>
 
 
 YY_DECL;
@@ -230,7 +230,7 @@ namespace
      * @note This is an implementation detail.  Use @c from_string().
      */
     void
-    from_string(char const * str, char ** end, std::intmax_t & num)
+    from_string(char const * str, char ** end, long long & num)
     {
         constexpr int base = 10;
 
@@ -296,7 +296,7 @@ namespace
             char buf[BUFLEN] = {};
 
             char const * const err =
-                MaRC::strerror(errno, buf, MaRC::size(buf));
+                MaRC::strerror(errno, buf, std::size(buf));
 
             errno = 0;
 
@@ -317,10 +317,7 @@ std::string map_filename;
 
 std::shared_ptr<MaRC::OblateSpheroid> oblate_spheroid;
 
-std::unique_ptr<MaRC::MapParameters> map_params;
-
-std::list<std::string> comment_list;
-std::list<std::string> xcomment_list;
+std::unique_ptr<MaRC::map_parameters> map_params;
 
 using namespace MaRC;
 
@@ -337,7 +334,7 @@ double lon_interval;
 
 std::unique_ptr<MaRC::PhotoImageFactory> photo_factory;
 MaRC::MosaicImageFactory::list_type photo_factories;
-MaRC::MosaicImage::average_type averaging_type;
+MaRC::MosaicImageFactory::average_type averaging_type;
 
 std::unique_ptr<MaRC::PhotoImageParameters> photo_parameters;
 std::unique_ptr<MaRC::ViewingGeometry> viewing_geometry;
@@ -359,8 +356,8 @@ std::size_t num_planes = 0;
 // Used to ensure num_planes are defined in sequence
 std::size_t expected_plane = 1;
 
-double minimum = not_a_number;
-double maximum = not_a_number;
+std::optional<double> minimum;
+std::optional<double> maximum;
 
 double sample_center = not_a_number;
 double line_center   = not_a_number;
@@ -435,10 +432,10 @@ using auto_free = std::unique_ptr<T, deallocate_with_free>;
 
 
 %union
- {
+{
      bool bval;           // For returning boolean values.
      char * sval;         // For returning string values.
-     std::intmax_t ival;  // For returning integer values.
+     long long ival;      // For returning integer values.
      double val;          // For returning floating point values.
      MaRC::sym_entry * tptr;  // For returning symbol-table pointers.
      MaRC::SubObserv sub_observ_data; // Sub-observation point.
@@ -549,10 +546,10 @@ user_file_parse:
           pp.lat_interval = lat_interval;
           pp.lon_interval = lon_interval;
 
-          if (!std::isnan(minimum))
+          if (!minimum)
               pp.minimum = minimum;
 
-          if (!std::isnan(maximum))
+          if (!maximum)
               pp.maximum = maximum;
         }
 ;
@@ -604,9 +601,6 @@ map_setup:
                         std::move(map_factory),
                         std::move(map_params));
 
-                command->comment_list(comment_list);
-                command->xcomment_list(xcomment_list);
-
                 if (create_grid)
                     command->grid_intervals(lat_interval, lon_interval);
 
@@ -622,18 +616,13 @@ map_entry:
             auto_free<char> str($3);
             map_filename = $3;
 
-            map_params = std::make_unique<MaRC::MapParameters>();
-
-            // Reset items that may have been set for the previous
-            // map.
-            comment_list.clear();
-            xcomment_list.clear();
+            map_params = std::make_unique<MaRC::map_parameters>();
 
             create_grid = false;
 
             image_factories.clear();
 
-            averaging_type = MaRC::MosaicImage::AVG_WEIGHTED;
+            averaging_type = MaRC::MosaicImageFactory::AVG_WEIGHTED;
 
             /**
              * @deprecated Remove once deprecated plane number support
@@ -672,7 +661,7 @@ comment:
 comment_setup:
         _COMMENT ':' _STRING
         {
-            auto_free<char> str($3); comment_list.push_back($3);
+            auto_free<char> str($3); map_params->push_comment($3);
         }
 ;
 
@@ -684,7 +673,7 @@ xcomment:
 xcomment_setup:
         XCOMMENT ':' _STRING
         {
-            auto_free<char> str($3); xcomment_list.push_back($3);
+            auto_free<char> str($3); map_params->push_xcomment($3);
         }
 ;
 
@@ -778,11 +767,11 @@ grid_intervals:
 grid_interval:
         GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
-                std::ostringstream s;
-                s << "Grid interval value (" << $3 << ") "
-                  << "must be greater than zero.";
+                auto s = fmt::format("Grid interval value ({}) "
+                                     "must be greater than zero.",
+                                     $3);
 
-                throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s);
             } else {
               lat_interval = $3;
               lon_interval = $3;
@@ -793,11 +782,11 @@ grid_interval:
 lat_grid_interval:
         LAT_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
-                std::ostringstream s;
-                s << "Latitude grid interval value (" << $3 << ") "
-                  << "must be greater than zero.";
+                auto s = fmt::format("Latitude grid interval value ({}) "
+                                     "must be greater than zero.",
+                                     $3);
 
-                throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s);
             } else {
                 lat_interval = $3;
             }
@@ -807,11 +796,11 @@ lat_grid_interval:
 lon_grid_interval:
         LON_GRID_INTERVAL ':' expr {
             if ($3 <= 0) {
-                std::ostringstream s;
-                s << "Longitude grid interval value (" << $3 << ") "
-                  << "must be greater than zero.";
+                auto s = fmt::format("Longitude grid interval value ({}) "
+                                     "must be greater than zero.",
+                                     $3);
 
-                throw std::invalid_argument(s.str ());
+                throw std::invalid_argument(s);
             } else {
                 lon_interval = $3;
             }
@@ -967,11 +956,11 @@ plane_setup:
         plane_size
         plane_data_range
         plane_type      {
-            if (!std::isnan(minimum))
-                image_factory->minimum(minimum);
+            if (minimum)
+                image_factory->minimum(*minimum);
 
-            if (!std::isnan(maximum))
-                image_factory->maximum(maximum);
+            if (maximum)
+                image_factory->maximum(*maximum);
 
             image_factories.push_back(std::move(image_factory));
 
@@ -2007,11 +1996,11 @@ options_common:
 averaging:
         %empty
         | AVERAGING ':' UNWEIGHTED {
-              averaging_type = MaRC::MosaicImage::AVG_UNWEIGHTED; }
+              averaging_type = MaRC::MosaicImageFactory::AVG_UNWEIGHTED; }
         | AVERAGING ':' WEIGHTED {
-              averaging_type = MaRC::MosaicImage::AVG_WEIGHTED; }
+              averaging_type = MaRC::MosaicImageFactory::AVG_WEIGHTED; }
         | AVERAGING ':' _NONE {
-              averaging_type = MaRC::MosaicImage::AVG_NONE; }
+              averaging_type = MaRC::MosaicImageFactory::AVG_NONE; }
 ;
 
 /* ----------------------- General Subroutines ---------------------------- */

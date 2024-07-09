@@ -2,7 +2,7 @@
 /**
  * @file PhotoImage.h
  *
- * Copyright (C) 1999, 2003-2005, 2017-2018  Ossama Othman
+ * Copyright (C) 1999, 2003-2005, 2017-2018, 2021  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -37,6 +37,8 @@ namespace MaRC
     class MARC_API PhotoImage final : public SourceImage
     {
     public:
+
+        using body_mask_type = std::vector<bool>;
 
         /// Constructor
         /**
@@ -103,18 +105,62 @@ namespace MaRC
         bool read_data(double lat,
                        double lon,
                        double & data,
-                       std::size_t & weight,
+                       double & weight,
                        bool scan = true) const override;
 
-        /**
-         * @brief Get unit of physical data in the photo.
-         *
-         * @return Unit name, or empty string (@c "") if no unit is
-         *         available.
-         */
-        char const * unit() const override;
+        /// Left side of image.
+        std::size_t left() const { return this->left_; }
+
+        /// Right side of image.
+        std::size_t right() const { return this->right_; }
+
+        /// Top side of image.
+        std::size_t top() const { return this->top_; }
+
+        /// Bottom side of image.
+        std::size_t bottom() const { return this->bottom_; }
+
+        /// Mask used when "removing" sky from source image.
+        body_mask_type const & body_mask() const
+        {
+            return this->body_mask_;
+        }
 
     private:
+
+        /**
+         * @brief Scan across samples for the data weight.
+         *
+         * Scan samples across the given line for the data weight in
+         * the half-open interval [left, right).
+         *
+         * @param[in]  line   Image line across which scan should
+         *                    occur.
+         * @param[in]  left   Sample at which scan should be started.
+         * @param[in]  right  Sample at which scan should be stopped.
+         * @param[out] weight Data weight for the given image line.
+         */
+        void scan_samples(std::size_t line,
+                          std::size_t left,
+                          std::size_t right,
+                          double & weight) const;
+
+        /**
+         * @brief Scan across lines for the data weight.
+         *
+         * Scan lines across the given sample for the data weight in
+         * in the half-open interval [top, bottom).
+         *
+         * @param[in]  sample Image sample across which scan should
+         *                    occur.
+         * @param[in]  top    Line at which scan should be started.
+         * @param[in]  bottom Line at which scan should be stopped.
+         * @param[out] weight Data weight for the given image sample.
+         */
+        void scan_lines(std::size_t sample,
+                        std::size_t top,
+                        std::size_t bottom,
+                        double & weight) const;
 
         /**
          * @brief Obtain data weight for given image pixel.
@@ -131,7 +177,7 @@ namespace MaRC
          */
         void data_weight(std::size_t i,
                          std::size_t k,
-                         std::size_t & weight) const;
+                         double & weight) const;
 
     private:
 
@@ -143,6 +189,18 @@ namespace MaRC
 
         /// Number of lines in the image.
         std::size_t const lines_;
+
+        /// Left side of image.
+        std::size_t const left_;
+
+        /// Right side of image.
+        std::size_t const right_;
+
+        /// Top side of image.
+        std::size_t const top_;
+
+        /// Bottom side of image.
+        std::size_t const bottom_;
 
         /// @c PhotoImage configuration parameters.
         std::unique_ptr<PhotoImageParameters const> const config_;
@@ -161,7 +219,7 @@ namespace MaRC
          *
          * @see MosaicImage
          */
-        std::vector<bool> body_mask_;
+        body_mask_type body_mask_;
 
     };
 

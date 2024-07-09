@@ -16,7 +16,10 @@
 #include <marc/Log.h>
 #include <marc/utility.h>
 
-#include "fitsio.h"
+#include <fitsio.h>
+
+#include <array>  // For std::size().
+#include <cmath>
 
 
 template <typename T>
@@ -49,7 +52,7 @@ MaRC::FITS::image::blank(blank_type blank)
         /**
          * @todo Should we bother checking if the blank value fits
          *       within the range of type @c T.  The
-         *       @c MaRC::MapCommand::make_map() call already does
+         *       @c MaRC::MapFactory::make_map() call already does
          *       that.
          */
         this->template update_fits_key<T>(
@@ -61,6 +64,30 @@ MaRC::FITS::image::blank(blank_type blank)
 }
 
 template <typename T>
+void
+MaRC::FITS::image::datamin(T min)
+{
+    if (!std::isnan(min))
+        this->template update_fits_key<T>(
+            this->fptr_.get(),
+            "DATAMIN",
+            min,
+            "minimum valid physical data value");
+}
+
+template <typename T>
+void
+MaRC::FITS::image::datamax(T max)
+{
+    if (!std::isnan(max))
+        this->template update_fits_key<T>(
+            this->fptr_.get(),
+            "DATAMAX",
+            max,
+            "maximum valid physical data value");
+}
+
+template <typename T>
 bool
 MaRC::FITS::image::write(T const & img)
 {
@@ -68,9 +95,11 @@ MaRC::FITS::image::write(T const & img)
         MaRC::error("FITS image array is already fully written.");
 
         return false;
-    } else if(static_cast<LONGLONG>(MaRC::size(img))
+    } else if(static_cast<LONGLONG>(std::size(img))
               != this->nelements_) {
-        MaRC::error("FITS image and data array size do not match..");
+        MaRC::error("FITS image and data array sizes, "
+                    "{} and {}, do not match.",
+                    this->nelements_, std::size(img));
 
         return false;
     }
@@ -85,7 +114,7 @@ MaRC::FITS::image::write(T const & img)
          Plane 4: ... etc ...
     */
 
-    auto data = MaRC::data(img);
+    auto data = std::data(img);
 
     /*
       CFITSIO expects the data to passed as a non-const pointer to

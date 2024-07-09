@@ -13,9 +13,9 @@
 #define MARC_MAP_FACTORY_H
 
 #include <marc/Export.h>
+#include <marc/extrema.h>
 
 #include <vector>
-#include <limits>
 #include <functional>
 #include <cstdint>
 
@@ -23,7 +23,8 @@
 namespace MaRC
 {
     class SourceImage;
-    class plot_info;
+    template <typename T> class extrema;
+    template <typename T> class plot_info;
 
     /**
      * @class MapFactory MapFactory.h <marc/MapFactory.h>
@@ -48,6 +49,12 @@ namespace MaRC
          *
          * Concrete map factories will call a function of this type in
          * their @c plot_map() implementation.
+         *
+         * @param[in] lat    Planetocentric latitude in radians.
+         * @param[in] lon    Planetocentric longitude in radians.
+         * @param[in] offset Map offset corresponding to the location
+         *                   in the underlying map array where the
+         *                   data will be plotted.
          *
          * @see @c plot()
          *
@@ -81,15 +88,21 @@ namespace MaRC
          * underlying map array, and delegates actual mapping to the
          * subclass implementation of @c plot_map().
          *
-         * @tparam        T       Map element data type.
-         * @param[in,out] info    Map plotting information, such as
-         *                        the source image, min/max allowed
-         *                        data values, etc.  Some fields, such
-         *                        as the minimum and maximum, may be
-         *                        updated to reflect the actual values
-         *                        used when creating the map.
-         * @param[in]     samples Number of samples in map.
-         * @param[in]     lines   Number of lines   in map.
+         * @tparam        T      Map element data type.
+         * @param[in]     image  Image from which data to be
+         *                       plotted to the map will be read.
+         * @param[in]     minmax User-specified minimum and maximum
+         *                       allowed physical data values on the
+         *                       map.
+         * @param[in,out] info   Map plotting information, such as
+         *                       the number of samples and lines in
+         *                       the map, the desired mininimum and
+         *                       maximum allowed physical data
+         *                       values, etc.  Some fields, such as
+         *                       the minimum and maximum (not the
+         *                       desired ones), may be updated to
+         *                       reflect the actual values used when
+         *                       creating the map.
          *
          * @return The generated map image.
          *
@@ -97,9 +110,9 @@ namespace MaRC
          *       the returned map.
          */
         template <typename T>
-        map_type<T> make_map(plot_info & info,
-                             std::size_t samples,
-                             std::size_t lines);
+        map_type<T> make_map(SourceImage const & image,
+                             extrema<T> const & minmax,
+                             plot_info<T> & info) const;
 
         /**
          * @brief Create the latitude/longitude grid for the map
@@ -128,9 +141,92 @@ namespace MaRC
         grid_type make_grid(std::size_t samples,
                             std::size_t lines,
                             double lat_interval,
-                            double lon_interval);
+                            double lon_interval) const;
 
     private:
+
+        /**
+         * @class parameters
+         *
+         * @brief Group map parameters under a single object.
+         *
+         * The purpose of this internal class is to group map
+         * parameters in one place to minimize the number of
+         * arguments passed to the map plot() method.
+         */
+        template <typename T>
+        class parameters
+        {
+        public:
+
+            /**
+             * @brief Constructor
+             *
+             * @param[in]     source Map source image.
+             * @param[in]     minmax The minimum and maximum allowed
+             *                       physical data values on the map,
+             *                       i.e. data >= desired minimum and
+             *                       data <= desired maximum.
+             * @param[in,out] info   Map plotting information.
+             * @param[in,out] map    Map image container.
+             */
+            parameters(SourceImage const & source,
+                       extrema<T> const & minmax,
+                       plot_info<T> & info,
+                       map_type<T> & map)
+                : source_(source)
+                , minmax_(get_extrema(minmax))
+                , info_(info)
+                , map_(map)
+            {
+            }
+
+            /// Get the map source image.
+            auto const & source() const { return this->source_; }
+
+            /// Get user-specified min/max map data values.
+            auto const & minmax() const { return this->minmax_; }
+
+            /// Get the map plotting information.
+            auto & info() { return this->info_; }
+
+            /// Get the map image container.
+            auto & map() { return map_; }
+
+        private:
+
+            /**
+             * @brief Get valid extrema.
+             *
+             * Obtain @c extrema<> object with the underlying minimum
+             * and maximum both set with suitable values.  In
+             * particular, if @a e.minimum() is not set, the returned
+             * @c extrema<> will contain a minimum set to
+             * @c std::numeric_limits<T>::lowest().  Similarly, the
+             * maximum will be set to @c std::numeric_limits<T>::max()
+             * if @a e.maximum() is not set.
+             *
+             * @param[in] e User-specified min/max map data values.
+             *
+             * @return Suitably initialized extrema.
+             */
+            MaRC::extrema<T> get_extrema(extrema<T> const & e);
+
+        private:
+
+            /// Map source image.
+            SourceImage const & source_;
+
+            /// User-specified allowed min/max map data values.
+            extrema<T> const minmax_;
+
+            /// Map plotting information.
+            plot_info<T> & info_;
+
+            /// Map image container.
+            map_type<T> & map_;
+
+        };
 
         /**
          * @brief Create the desired map projection.
@@ -142,7 +238,7 @@ namespace MaRC
          */
         virtual void plot_map(std::size_t samples,
                               std::size_t lines,
-                              plot_type plot) const = 0;
+                              plot_type const & plot) const = 0;
 
         /**
          * @brief Plot the data on the map.
@@ -155,10 +251,10 @@ namespace MaRC
          * @see @c plot_type
          * @see @c plot_map()
          *
-         * @tparam        T       Map element data type.
-         * @param[in]     info   Map plotting information.
-         * @param[in]     lat    Planetocentric latitude.
-         * @param[in]     lon    Planetocentric longitude.
+         * @tparam        T      Map element data type.
+         * @param[in]     p      Map parameters.
+         * @param[in]     lat    Planetocentric latitude in radians.
+         * @param[in]     lon    Planetocentric longitude in radians.
          * @param[in]     offset Map offset corresponding to the
          *                       location in the underlying map array
          *                       where the data will be plotted.
@@ -170,17 +266,12 @@ namespace MaRC
          *       rather roundabout way of mapping the data.  Ideally
          *       @c make_map() should handle the map array iteration
          *       as well as calling this @c plot() method.
-         *
-         * @todo This method has too many parameters.  Move most,
-         *       if not all, of the parameters to a structure that
-         *       will be passed in as a single parameter instead.
          */
         template <typename T>
-        void plot(plot_info const & info,
+        void plot(parameters<T> & p,
                   double lat,
                   double lon,
-                  std::size_t offset,
-                  map_type<T> & map);
+                  std::size_t offset) const;
 
         /**
          * @brief Plot latitude/longitude grid for the map.

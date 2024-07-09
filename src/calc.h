@@ -1,7 +1,7 @@
 /**
  * @file calc.h
  *
- * Copyright (C) 1996-1998, 2004, 2017  Ossama Othman
+ * Copyright (C) 1996-1998, 2004, 2017, 2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -12,7 +12,7 @@
 #define MARC_CALC_H
 
 #include <map>
-#include <string>   // Standard C++ Library string class
+#include <string>
 
 
 namespace MaRC
@@ -25,11 +25,13 @@ namespace MaRC
      */
     struct sym_entry
     {
+        using function_type = double (*)(double);
+
         // Disable default construction.
         sym_entry() = delete;
 
         /// Construct a function @c sym_entry.
-        explicit sym_entry(double (*fnctptr)(double));
+        explicit sym_entry(function_type fnct);
 
         /// Construct a variable @c sym_entry.
         explicit sym_entry(double var);
@@ -38,16 +40,22 @@ namespace MaRC
          * @brief The underlying symbol table value, either a variable
          *        or a function.
          *
-         * @todo This should be private
+         * @todo This should be private.
          */
-        union
+        union sym_value
         {
+            explicit sym_value(double v) : var(v) {}
+            explicit sym_value(function_type f) : fnctptr(f) {}
+
             /// Value of a @c VAR.
             double var;
 
             /// Value of a @c FNCT.
-            double (*fnctptr)(double);
-        } value;
+            function_type fnctptr;
+        };
+
+        /// Symbol value.
+        sym_value value;
 
         /// Type of symbol: either VAR or FNCT.
         int type;

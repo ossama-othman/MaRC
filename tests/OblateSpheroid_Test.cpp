@@ -135,7 +135,7 @@ bool test_centric_radius()
         &&  MaRC::almost_equal(c, o->centric_radius(south_pole), ulps)
         && !MaRC::almost_equal(c, o->centric_radius(equator),    ulps)
 
-        && MaRC::almost_equal(r, MaRC::hypot(x, y, z), ulps);
+        && MaRC::almost_equal(r, std::hypot(x, y, z), ulps);
 }
 
 /**

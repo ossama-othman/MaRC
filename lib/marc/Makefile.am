@@ -7,8 +7,8 @@
 include $(top_srcdir)/aminclude_static.am
 
 if BUILDING_DLL
-# libMaRC is being built as a shared library.  Export all symbols in
-# public API.
+## libMaRC is being built as a shared library.  Export all symbols in
+## public API.
 DLL_CPPFLAGS = -DMARC_DLL -DMARC_DLL_EXPORTS
 endif
 
@@ -43,6 +43,10 @@ libMaRC_la_SOURCES = \
   BilinearInterpolation.cpp \
   NullInterpolation.cpp \
   \
+  first_read.cpp \
+  unweighted_average.cpp \
+  weighted_average.cpp \
+  \
   SourceImage.cpp \
   VirtualImage.cpp \
   MuImage.cpp \
@@ -72,6 +76,8 @@ nobase_pkginclude_HEADERS = \
   Mathematics.h   \
   Matrix.h \
   Vector.h \
+  matrix_formatter.h \
+  vector_formatter.h \
   \
   Geometry.h \
   \
@@ -95,12 +101,17 @@ nobase_pkginclude_HEADERS = \
   GLLGeometricCorrection.h \
   NullGeometricCorrection.h \
   \
+  PhotometricCorrection.h \
+  NullPhotometricCorrection.h \
+  \
   InterpolationStrategy.h \
   BilinearInterpolation.h \
   NullInterpolation.h \
   \
-  PhotometricCorrection.h \
-  NullPhotometricCorrection.h \
+  compositing_strategy.h \
+  first_read.h \
+  unweighted_average.h \
+  weighted_average.h \
   \
   Map_traits.h \
   MapFactory.h \
@@ -110,7 +121,7 @@ nobase_pkginclude_HEADERS = \
   PolarStereographic.h \
   SimpleCylindrical.h \
   Validate.h \
-  optional.h \
+  extrema.h \
   plot_info.h \
   root_find.h \
   scale_and_offset.h \
@@ -120,10 +131,11 @@ nobase_pkginclude_HEADERS = \
   \
   Export.h \
   \
+  details/format.h \
   details/scale_and_offset.h \
   details/vector.h
 
-# noinst_HEADERS =
+## noinst_HEADERS =
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = marc.pc

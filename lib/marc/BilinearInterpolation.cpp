@@ -87,5 +87,5 @@ MaRC::BilinearInterpolation::interpolate(double const * data,
         return true;
     }
 
-  return false;
+    return false;
 }

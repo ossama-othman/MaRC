@@ -1,7 +1,7 @@
 /**
  * @file Mercator_Test.cpp
  *
- * Copyright (C) 2018 Ossama Othman
+ * Copyright (C) 2018, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
@@ -11,6 +11,7 @@
 #include <marc/LatitudeImage.h>
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
+#include <marc/Mathematics.h>
 #include <marc/scale_and_offset.h>
 
 #include <memory>
@@ -102,20 +103,18 @@ bool test_make_map()
      *       account the body rotation.
      */
 
-    constexpr auto minimum = std::numeric_limits<data_type>::lowest();
-    constexpr auto maximum = std::numeric_limits<data_type>::max();
-
-    MaRC::plot_info info(*image, minimum, maximum);
+    MaRC::extrema<data_type> const minmax;
+    MaRC::plot_info<data_type> info(samples, lines);
 
     auto const map =
-        projection->template make_map<data_type>(info, samples, lines);
+        projection->template make_map<data_type>(*image, minmax, info);
 
     if (map.empty())
         return false;
 
     /*
-      Pick a random sample along the center line (equator) in the
-      projection.  There is no need for a non-deterministically
+      Pick a pseudo-random sample along the center line (equator) in
+      the projection.  There is no need for a non-deterministically
       generated seed value for the purposes of this test.
     */
     std::mt19937 generator(std::time(nullptr));
@@ -133,11 +132,11 @@ bool test_make_map()
      *       order of 1e-15.  Can we somehow get even closer to zero
      *       so that we can reduce this @c ulps value?
      */
-    constexpr int ulps = 30;
+    constexpr int epsilons = 30;
 
     return
         !map.empty()
-        && MaRC::almost_zero(equator_data, ulps);
+        && MaRC::almost_zero(equator_data, epsilons);
 }
 
 /**

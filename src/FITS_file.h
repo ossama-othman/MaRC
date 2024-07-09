@@ -14,8 +14,7 @@
 
 #include "FITS_traits.h"
 
-#include <marc/optional.h>
-
+#include <optional>
 #include <array>
 #include <vector>
 #include <string>
@@ -26,8 +25,6 @@
 
 namespace MaRC
 {
-    class MapParameters;
-
     namespace FITS
     {
         class image;
@@ -90,10 +87,8 @@ namespace MaRC
 
             /**
              * Type used to store a %FITS @c BLANK integer value.
-             *
-             * @todo Use @c std::optional once %MaRC requires C++17.
              */
-            using blank_type = MaRC::optional<FITS::longlong_type>;
+            using blank_type = std::optional<FITS::longlong_type>;
 
             /// Default constructor.
             file() = delete;
@@ -146,10 +141,10 @@ namespace MaRC
             int bitpix() const;
 
             /// Get the value for the map %FITS @c BZERO keyword.
-            MaRC::optional<double> bzero() const;
+            std::optional<double> bzero() const;
 
             /// Get the value for the map %FITS @c BSCALE keyword.
-            MaRC::optional<double> bscale() const;
+            std::optional<double> bscale() const;
 
             /// Get the value for the map %FITS @c BLANK keyword.
             blank_type blank() const;
@@ -169,7 +164,7 @@ namespace MaRC
              *      value is only 53 bits wide.  Special handling will
              *      be need to be implemented to handle such a case.
              */
-            MaRC::optional<double> datamax() const;
+            std::optional<double> datamax() const;
 
             /**
              * @brief Get the minimum valid physical value.
@@ -184,13 +179,13 @@ namespace MaRC
              *      be need to be implemented to handle such a case.
              */
 
-            MaRC::optional<double> datamin() const;
+            std::optional<double> datamin() const;
+
+            /// Get the date of the observation.
+            std::string date_obs() const;
 
             /// Get the equinox of the celestial coordinate system.
-            MaRC::optional<double> equinox() const;
-
-            /// Get the data of the observation.
-            std::string date_obs() const;
+            std::optional<double> equinox() const;
 
             /**
              * @brief Get the name of the instrument that acquired the
@@ -277,11 +272,14 @@ namespace MaRC
             ~output_file() = default;
 
             /**
-             * @brief Create %FITS image array HDU.
+             * @brief Create a %FITS image array HDU.
              *
              * Create an image array in the %FITS file represented
-             * this @c output_file.
+             * by this @c output_file.
              *
+             * @param[in] bitpix  Bits-per-pixel in the image,
+             *                    corresponding to the %FITS @c BITPIX
+             *                    keyword.
              * @param[in] samples The number of columns in the %FITS
              *                    image.
              * @param[in] lines   The number of rows in the %FITS

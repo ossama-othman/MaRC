@@ -4,7 +4,7 @@
  *
  * %MaRC mathematical vector class and operations.
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2018, 2021-2022,  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -22,7 +22,6 @@
 #include <numeric>
 #include <iterator>
 #include <stdexcept>
-#include <ostream>
 
 
 namespace MaRC
@@ -127,7 +126,7 @@ namespace MaRC
          *
          * @return Reference to element at given @c Vector @a row.
          */
-        inline reference operator[](std::size_t row)
+        constexpr reference operator[](std::size_t row)
         {
             return this->vector_[row];
         }
@@ -142,7 +141,7 @@ namespace MaRC
          * @return Reference to @c const element at given @c Vector
          *         @a row.
          */
-        inline const_reference operator[] (std::size_t row) const
+        constexpr const_reference operator[] (std::size_t row) const
         {
             return this->vector_[row];
         }
@@ -156,7 +155,7 @@ namespace MaRC
          *
          * @return Reference to element at given @c Vector @a row.
          */
-        inline reference at(std::size_t row)
+        constexpr reference at(std::size_t row)
         {
             if (row >= M)
                 throw std::out_of_range("Out of range vector index");
@@ -174,7 +173,7 @@ namespace MaRC
          * @return Reference to @c const element at given @c Vector
          *         @a row.
          */
-        inline const_reference at(std::size_t row) const
+        constexpr const_reference at(std::size_t row) const
         {
             if (row >= M)
                 throw std::out_of_range ("Out of range vector index");
@@ -191,7 +190,7 @@ namespace MaRC
          *       iteration of the vector.  It is not intended for
          *       general use.
          */
-        inline iterator begin()
+        constexpr iterator begin()
         {
             return &this->vector_[0];
         }
@@ -207,7 +206,7 @@ namespace MaRC
          *       iteration of the vector.  It is not intended for
          *       general use.
          */
-        inline const_iterator begin() const
+        constexpr const_iterator begin() const
         {
             return &this->vector_[0];
         }
@@ -221,7 +220,7 @@ namespace MaRC
          *       iteration of the vector.  It is not intended for
          *       general use.
          */
-        inline iterator end()
+        constexpr iterator end()
         {
             return &this->vector_[0] + M;
         }
@@ -235,7 +234,7 @@ namespace MaRC
          *       iteration of the vector.  It is not intended for
          *       general use.
          */
-        inline const_iterator end() const
+        constexpr const_iterator end() const
         {
             return &this->vector_[0] + M;
         }
@@ -345,8 +344,8 @@ namespace MaRC
      * @relates MaRC::Vector
      */
     template <typename T, std::size_t M>
-    auto dot_product(Vector<T, M> const & a,
-                     Vector<T, M> const & b)
+    constexpr auto dot_product(Vector<T, M> const & a,
+                               Vector<T, M> const & b)
     {
         return std::inner_product(std::cbegin(a),
                                   std::cend(a),
@@ -444,24 +443,6 @@ bool operator!=(MaRC::Vector<T, M> const & lhs,
                 MaRC::Vector<T, M> const & rhs)
 {
     return !(lhs == rhs);
-}
-
-// ---------------------------------------------------------
-
-/**
- * @brief Stream insertion operator.
- *
- * @relates MaRC::Vector
- */
-template <typename T, std::size_t M>
-std::ostream & operator<<(std::ostream & s, MaRC::Vector<T, M> const & v)
-{
-    s << "(" << M << ")\n";
-
-    for (std::size_t row = 0; row < M; ++row)
-        s << " " << v[row] << '\n';
-
-    return s;
 }
 
 

@@ -1,7 +1,7 @@
 /**
- * @file MapCommand_T.cpp
+ * @file MapCommand_t.cpp
  *
- * Copyright (C) 2004, 2017-2019  Ossama Othman
+ * Copyright (C) 2004, 2017-2020  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -19,9 +19,9 @@
 #include <marc/MapFactory.h>
 #include <marc/scale_and_offset.h>
 
-#include <cassert>
+#include <marc/details/format.h>
+
 #include <type_traits>
-#include <iostream>
 
 #include <fitsio.h>
 
@@ -37,42 +37,25 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
                         this->lines_,
                         this->image_factories_.size());
 
-    /*
-      The underlying integer type for the MaRC library "blank_type" is
-      potentially wider than the largest FITS integer type (64 bit
-      signed integer).  Explicitly convert to the FITS blank integer
-      type used in the MaRC program to address conversion related
-      errors at compile-time exhibited by some compilers.
-    */
-    auto blank = this->parameters_->blank();
-    if (blank.has_value()) {
-        using fits_blank_type = FITS::image::blank_type::value_type;
+    auto const blank = this->parameters_->blank();
 
-        /*
-          Truncation will not occur since the MaRC program will pass
-          at most pass a 64 bit signed integer to the MaRC library.
-        */
-        auto const fits_blank = static_cast<fits_blank_type>(*blank);
-
-        // Write the BLANK keyword and value into the map FITS file.
-        map_image->template blank<T>(fits_blank);
-    }
+    map_image->template blank<T>(blank);
 
     // Write the author name if supplied.
-    auto const author = this->parameters_->author();
+    auto const & author = this->parameters_->author();
     map_image->author(author);
 
     // Write the name of the organization or institution responsible
     // for creating the FITS file, if supplied.
-    auto const origin = this->parameters_->origin();
+    auto const & origin = this->parameters_->origin();
     map_image->origin(origin);
 
     // Write the name of the object being mapped.
-    auto const object = this->parameters_->object();
+    auto const & object = this->parameters_->object();
 
     if (object.empty()) {
         /**
-         * @todo s/BODY/OBJECT/ once MaRC supports mapping objects on
+         * @todo s/BODY/OBJECT/ once %MaRC supports mapping objects on
          *       the Celestial Sphere.
          */
         MaRC::error("BODY not specified.");
@@ -81,12 +64,12 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     map_image->object(object);
 
     // Write the map comments.
-    for (auto const & comment : this->comments_)
+    for (auto const & comment : this->parameters_->comments())
         map_image->comment(comment);
 
     std::string const history =
-        std::string(this->projection_name())
-        + " projection created by " PACKAGE_STRING ".";
+        fmt::format("{} projection created by " PACKAGE_STRING ".",
+                    this->projection_name());
 
     // Write some MaRC-specific HISTORY comments.
     map_image->history(history);
@@ -111,11 +94,14 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
          *       @c fits_set_bscale() as we do for @c VirtualImage map
          *       planes?
          */
-        double bscale = this->parameters_->bscale();
-        double bzero  = this->parameters_->bzero();
+        auto const bscale = this->parameters_->bscale();
+        auto const bzero  = this->parameters_->bzero();
 
-        map_image->bscale(bscale);
-        map_image->bzero(bzero);
+        if (bscale)
+            map_image->bscale(*bscale);
+
+        if (bzero)
+            map_image->bzero(*bzero);
     }
 
     /**
@@ -126,9 +112,16 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
     // Keep track of mapped planes for reporting to user.
     int plane_count = 1;
     std::size_t const num_planes = this->image_factories_.size();
+    auto const digits = this->number_of_digits(num_planes);
 
     SourceImageFactory::scale_offset_functor const sof =
         scale_and_offset<T>;
+
+    plot_info<T> info(this->samples_,
+                      this->lines_,
+                      blank);
+
+    info.notifier().subscribe(std::make_unique<Progress::Console>());
 
     // Create and write the map planes.
     for (auto const & i : this->image_factories_) {
@@ -138,15 +131,18 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
         if (!image)
             continue;  // Problem creating SourceImage.  Move on.
 
-        std::cout << "Plane "
-                  << plane_count << " / " << num_planes
-                  <<" : " << std::flush;
+        /**
+         * @todo Move to @c MaRC::Progess::Console.
+         */
+        fmt::print("Plane {:>{}} / {}: ",
+                   plane_count, digits, num_planes);
 
         // Add description of the source image.
         // comment_list_type descriptions;
 
         // std::string image_title =
-        //     "Plane " + std::to_string(plane_count) ": " + image->name();
+        //     fmt::format("Plane {:>{}}: {}",
+        //                 plane_count, digits, image->name());
 
         // descriptions.push_back();
 
@@ -161,44 +157,31 @@ MaRC::MapCommand::make_map_planes(MaRC::FITS::output_file & file)
                                         num_planes,
                                         image.get());
 
-        /**
-         * @bug These @c ImageFactory methods return a @c double
-         *      value, which is not appropriate for 64 bit integer
-         *      values greater than 2^53, i.e. the width of the
-         *      significand in 64 bit IEEE 754 floating point values.
-         */
-        auto minimum = i->minimum();
-        auto maximum = i->maximum();
-
-        if (std::isnan(minimum))
-            minimum = std::numeric_limits<T>::lowest();
-
-        if (std::isnan(maximum))
-            maximum = std::numeric_limits<T>::max();
-
-        plot_info info(*image, minimum, maximum, blank);
-
-        using namespace MaRC::Progress;
-        info.notifier().subscribe(std::make_unique<Console>());
-
         // Create the map plane.
-        auto map(this->factory_->template make_map<T>(info,
-                                                      this->samples_,
-                                                      this->lines_));
+        auto map =
+            this->factory_->template make_map<T>(*image,
+                                                 i->minmax(),
+                                                 info);
+
+        if (!info.data_mapped())
+            MaRC::warn("No data mapped for plane {}.", plane_count);
 
         if (!map_image->template write<decltype(map)>(map))
-            MaRC::error("Unable to write plane to map file.");
+            MaRC::error("Unable to write plane {} to map file.",
+                        plane_count);
 
         ++plane_count;
     }
 
-    /**
-     * @todo Set map DATAMIN and DATAMAX automatically based on actual
-     *       mapped data.
-     */
-    // Write DATAMIN and DATAMAX keywords.
-    // map_image->datamin(this->minimum_);
-    // map_image->datamax(this->maximum_);
+    if (info.data_mapped()) {
+        /*
+          Write DATAMIN and DATAMAX keywords.
+
+          At this point we know the extrema were set.
+        */
+        map_image->template datamin<T>(*info.minimum());
+        map_image->template datamax<T>(*info.maximum());
+    }
 }
 
 

@@ -9,6 +9,7 @@
 #include <marc/PolarStereographic.h>
 #include <marc/OblateSpheroid.h>
 #include <marc/LatitudeImage.h>
+#include <marc/Mathematics.h>
 #include <marc/Constants.h>
 #include <marc/DefaultConfiguration.h>
 #include <marc/scale_and_offset.h>
@@ -146,13 +147,11 @@ bool test_make_map()
      *       the projection.
      */
 
-    constexpr auto minimum = std::numeric_limits<data_type>::lowest();
-    constexpr auto maximum = std::numeric_limits<data_type>::max();
-
-    MaRC::plot_info info(*image, minimum, maximum);
+    MaRC::extrema<data_type> const minmax;
+    MaRC::plot_info<data_type> info(samples, lines);
 
     auto const map =
-        projection->template make_map<data_type>(info, samples, lines);
+        projection->template make_map<data_type>(*image, minmax, info);
 
     if (map.empty())
         return false;

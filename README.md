@@ -1,10 +1,10 @@
-<!-- Copyright (C) 1997-1999, 2003-2004, 2017-2018 Ossama Othman
+<!-- Copyright (C) 1997-1999, 2003-2004, 2017-2018, 2021-2022  Ossama Othman
 
      SPDX-License-Identifier: GFDL-1.3-or-later -->
 
-[![Build Status](https://travis-ci.com/ossama-othman/MaRC.svg?branch=master)](https://travis-ci.com/ossama-othman/MaRC)
+[![C/C++ CI](https://github.com/ossama-othman/MaRC/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/ossama-othman/MaRC/actions/workflows/c-cpp.yml)
 [![Coverity Status](https://scan.coverity.com/projects/13233/badge.svg)](https://scan.coverity.com/projects/ossama-othman-marc)
-[![Coverage Status](https://coveralls.io/repos/github/ossama-othman/MaRC/badge.svg?branch=master&service=github)](https://coveralls.io/github/ossama-othman/MaRC?branch=master&service=github)
+[![Coverage Status](https://coveralls.io/repos/github/ossama-othman/MaRC/badge.svg?branch=main&service=github)](https://coveralls.io/github/ossama-othman/MaRC?branch=main&service=github)
 
 # MaRC
 
@@ -72,9 +72,9 @@ MaRC is currently only supported on Unix-like platforms, and has the
 following build dependencies:
 
 * C++ compiler
-  * The C++ compiler should support the C++14 standard or better.
+  * The C++ compiler should support the C++17 standard or better.
     MaRC is known to build with g++ and clang++, but it should work
-    with other C++14 conforming compilers.
+    with other C++17 conforming compilers.
 
 * CFITSIO library
   * Often available as prepackaged binaries on various platforms.

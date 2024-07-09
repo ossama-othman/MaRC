@@ -10,12 +10,10 @@
 @comment @setchapternewpage odd
 
 @copying
-This is Edition @value{EDITION},
-last updated @value{UPDATED},
-of @cite{The MaRC Manual},
+This is Edition @value{EDITION} of @cite{The MaRC Manual},
 for @code{MaRC}, version @value{VERSION}.
 
-Copyright @copyright{} 1997-1999, 2003-2004, 2017-2018  Ossama Othman
+Copyright @copyright{} 1997-1999, 2003-2004, 2017-2018, 2022  Ossama Othman
 
 @quotation
 @c SPDX-License-Identifier: GFDL-1.3-or-later
@@ -32,7 +30,6 @@ Free Documentation License".
 @title MaRC Input Files
 @subtitle Creation of Input and User Configuration Files
 @subtitle Edition @value{EDITION}
-@subtitle @value{UPDATED-MONTH}
 @author Ossama Othman
 
 @c  The following two commands
@@ -416,7 +413,7 @@ is first, then the geometry, and then the direction of rotation.
 The data stored in the output file can be stored in several formats.
 Data being mapped may have been transformed in some way.  Only linear
 transformations may be specified in the input file.  MaRC provides two
-optional keywords to specify how the data was transformed.  They are the
+optional keywords to specify how the data is transformed.  They are the
 @code{DATA_OFFSET} and @code{DATA_SCALE} keywords.  Both of these
 keywords expect a mathematical expression as their semantic value.  Data
 described by these keywords would be of the form:

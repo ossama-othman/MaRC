@@ -2,7 +2,7 @@
 /**
  * @file details/scale_and_offset.h
  *
- * Copyright (C) 2017-2018  Ossama Othman
+ * Copyright (C) 2017-2018, 2024  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -14,6 +14,7 @@
 
 #include <limits>
 #include <cmath>
+#include <type_traits>
 
 
 namespace MaRC
@@ -90,13 +91,13 @@ namespace MaRC
                     "scale/offset calculation");
 
                 /*
-                  Avoid integer overflow by performing a floating point
-                  subtraction.  No overflow will occur since we already
-                  know:
-                  T_max - T_lowest < std::numeric_limits<double>::max()
+                  Avoid integer overflow when determining the range of a
+                  signed integer type (e.g. INT_MAX - INT_MIN) by
+                  taking advantage of the fact that the range for the
+                  corresponding unsigned integer type is the same.
                 */
-                constexpr double type_range =
-                    static_cast<double>(T_max) - T_lowest;
+                constexpr auto type_range =
+                    std::numeric_limits<std::make_unsigned_t<T>>::max();
 
                 double const data_range = max - min;
 

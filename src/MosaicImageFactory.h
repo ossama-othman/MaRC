@@ -2,7 +2,7 @@
 /**
  * @file MosaicImageFactory.h
  *
- * Copyright (C) 2004, 2017  Ossama Othman
+ * Copyright (C) 2004, 2017, 2019  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -25,15 +25,15 @@ namespace MaRC
     /**
      * @class MosaicImageFactory
      *
-     * @brief Factory class that create MosaicImage objects.
+     * @brief Factory class that creates @c MosaicImage objects.
      *
-     * This class creates MosaicImage objects.  It is designed to
+     * This class creates @c MosaicImage objects.  It is designed to
      * decouple %FITS (for example) file and image operations from the
      * MosaicImage class.  It also exists to decouple the %MaRC parser
-     * grammar from the MosaicImage class.  This allows MosaicImage
-     * object creation to be delayed until it is time for the data in
-     * the MosaicImage to be mapped, which reduces run-time memory
-     * requirements.
+     * grammar from the @c MosaicImage class.  This allows
+     * @c MosaicImage object creation to be delayed until it is time
+     * for the data in the @c MosaicImage to be mapped, which reduces
+     * run-time memory requirements.
      */
     class MosaicImageFactory final : public SourceImageFactory
     {
@@ -45,12 +45,25 @@ namespace MaRC
          */
         using list_type = std::list<std::unique_ptr<PhotoImageFactory>>;
 
+        /**
+         * @enum average_type
+         *
+         * The type of averaging to be performed on physical data
+         * retrieved from multiple images that contain data at a
+         * given latitude and longitude.
+         *
+         */
+        enum average_type { AVG_NONE, AVG_UNWEIGHTED, AVG_WEIGHTED };
+
         /// Constructor.
-        MosaicImageFactory(list_type && factories,
-                           MosaicImage::average_type type);
+        MosaicImageFactory(list_type && factories, average_type type);
 
         /// Destructor.
         ~MosaicImageFactory() override = default;
+
+        /// Populate map parameters.
+        bool populate_parameters(
+            map_parameters & parameters) const override;
 
         /// Create a @c MosaicImage.
         std::unique_ptr<SourceImage> make(
@@ -61,9 +74,15 @@ namespace MaRC
         /// List of PhotoImageFactory objects.
         list_type factories_;
 
-        /// The type of averaging to be performed when multiple images
-        /// overlap.
-        MosaicImage::average_type const average_type_;
+        /**
+         * @brief The type of averaging to be performed when multiple
+         *        images overlap.
+         *
+         * @todo Rather than "average type" use "compositor type"
+         *       since not all mosaic compositing strategies perform
+         *       averaging on image data.
+         */
+        average_type const average_type_;
 
   };
 
