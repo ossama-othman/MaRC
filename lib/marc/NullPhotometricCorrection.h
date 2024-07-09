@@ -42,7 +42,7 @@ namespace MaRC
          *
          * @see @c PhotometricCorrection::correct()
          */
-        //@{
+        ///@{
         /**
          * @brief Perform photometric correction.
          *
@@ -52,7 +52,7 @@ namespace MaRC
          */
         bool correct(ViewingGeometry const & geometry,
                      double & data) override;
-        //@}
+        ///@}
 
     };
 

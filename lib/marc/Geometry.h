@@ -29,10 +29,10 @@ namespace MaRC
      * @c Vector and @c Matrix types used heavily through out the
      * %MaRC library.
      */
-    //@{
+    ///@{
     using DVector = Vector<double, 3>;
     using DMatrix = Matrix<double, 3, 3>;
-    //@}
+    ///@}
 
     /**
      * @namespace Geometry
@@ -58,7 +58,7 @@ namespace MaRC
          *
          * All angles are in radians.
          */
-        //@{
+        ///@{
         /// Rotate vector about x-axis.
         /**
          * @param[in]  angle Angle about the x-axis through which the
@@ -124,7 +124,7 @@ namespace MaRC
          *         @a angle radians about the z-axis.
          */
         MARC_API DMatrix RotZMatrix(double angle);
-        //@}
+        ///@}
 
     }
 }

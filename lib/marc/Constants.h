@@ -104,7 +104,7 @@ namespace C
     /**
      * @name Irrationals
      */
-    //@{
+    ///@{
     /// &radic;2
     static constexpr double sqrt2 = 1.4142135623730950488;
 
@@ -116,12 +116,12 @@ namespace C
 
     /// 1/&radic;3
     static constexpr double _1_sqrt3 = 0.57735026918962576451;
-    //@}
+    ///@}
 
     /**
      *@name &pi; and functions thereof
      */
-    //@{
+    ///@{
     /// &pi;
     static constexpr double pi = 3.141592653589793238462643;
 
@@ -145,12 +145,12 @@ namespace C
 
     /// 2/&radic;&pi;
     static constexpr double _2_sqrtpi = 1.1283791670955125738961590;
-    //@}
+    ///@}
 
     /**
      * @name e and functions thereof
      */
-    //@{
+    ///@{
     /// e
     static constexpr double e = 2.718281828459045235360287;
 
@@ -165,12 +165,12 @@ namespace C
 
     /// log<SUB>10</SUB>(e)
     static constexpr double log10e = 0.4342944819032518276511289;
-    //@}
+    ///@}
 
     /**
      * @name gamma and functions thereof
      */
-    //@{
+    ///@{
     /// gamma
     static constexpr double gamma = 0.577215664901532860606512;
 
@@ -179,7 +179,7 @@ namespace C
 
     /// e<SUP>gamma</SUP>
     static constexpr double etogamma = 1.7810724179901979852;
-    //@}
+    ///@}
 
     // End Mathematical constants
 
@@ -199,7 +199,7 @@ namespace C
     /**
      * @name Fundamental physical constants (SI units)
      */
-    //@{
+    ///@{
     /// velocity of light
     static constexpr double c = 299792458;
 
@@ -223,12 +223,12 @@ namespace C
 
     /// proton mass / electron mass
     static constexpr double mp_me = 1836.152701;
-    //@}
+    ///@}
 
     /**
      * @name Derived physical constants (SI units)
      */
-    //@{
+    ///@{
     /// magnetic permeability of vacuum
     static constexpr double mu0 = 4.0e-7 * C::pi;
 
@@ -255,15 +255,15 @@ namespace C
 
     /// Bohr radius
     static constexpr double a0 = 5.2918e-11;
-    //@}
+    ///@}
 
     /**
      * @name Physical quantities (SI units)
      */
-    //@{
+    ///@{
     /// solar radius
     static constexpr double R0 = 6.9599e+08;
-    //@}
+    ///@}
 
     // End Physical constants, and quantities
 
@@ -273,7 +273,7 @@ namespace C
     /**
      * @name Numerical conversion factors
      */
-    //@{
+    ///@{
     /// 10<SUP>24</SUP> (Y)
     static constexpr double yotta = 1.0e+24;
 
@@ -333,12 +333,12 @@ namespace C
 
     /// 10<SUP>-24</SUP> (y)
     static constexpr double yocto = 1.0e-24;
-    //@}
+    ///@}
 
     /**
      * @name Angular measure
      */
-    //@{
+    ///@{
     /// radian
     static constexpr double radian = 1.0;
 
@@ -371,12 +371,12 @@ namespace C
 
     /// grad
     static constexpr double grad = (1.0 / 400.0) * C::circle;
-    //@}
+    ///@}
 
     /**
      * @name Solid angular measure
      */
-    //@{
+    ///@{
     /// steradian
     static constexpr double steradian = 1.0;
 
@@ -391,7 +391,7 @@ namespace C
 
     /// square arcsecond
     static constexpr double square_arcsec = C::arcsec * C::arcsec;
-    //@}
+    ///@}
 
     // End Numerical conversion factors
 
@@ -401,7 +401,7 @@ namespace C
     /**
      * @name Time interval [T]
      */
-    //@{
+    ///@{
     /// second
     static constexpr double second = 1.0;
 
@@ -419,20 +419,20 @@ namespace C
 
     /// fortnight
     static constexpr double fortnight = 2.0 * C::week;
-    //@}
+    ///@}
 
     /**
      * @name Frequency [1/T]
      */
-    //@{
+    ///@{
     /// Hertz
     static constexpr double Hertz = 1.0 / C::second;
-    //@}
+    ///@}
 
     /**
      * @name Length [L]
      */
-    //@{
+    ///@{
     /// metre
     static constexpr double metre = 1.0;
 
@@ -504,12 +504,12 @@ namespace C
 
     /// parsec
     static constexpr double parsec = 3.26156378 * C::light_year;
-    //@}
+    ///@}
 
     /**
      * @name Area [L*L]
      */
-    //@{
+    ///@{
     /// square metre
     static constexpr double square_metre = C::metre * C::metre;
 
@@ -545,12 +545,12 @@ namespace C
 
     /// square
     static constexpr double square = 100.0 * C::square_foot;
-    //@}
+    ///@}
 
     /**
      * @name Volume [L*L*L]
      */
-    //@{
+    ///@{
     /// cubic metre
     static constexpr double cubic_metre = C::metre * C::square_metre;
 
@@ -622,28 +622,28 @@ namespace C
 
     /// (US liq) minim
     static constexpr double USminim = (1.0 / 60.0) * C::USdram;
-    //@}
+    ///@}
 
     /**
      * @name Speed [L/T]
      */
-    //@{
+    ///@{
     /// nautical miles per hour
     static constexpr double knot = C::nautical_mile / C::hour;
-    //@}
+    ///@}
 
     /**
      * @name Acceleration (speed / time) [L/(T*T)]
      */
-    //@{
+    ///@{
     /// gravitational acceleration
     static constexpr double g = 9.80665 * C::metre / C::second / C::second;
-    //@}
+    ///@}
 
     /**
      * @name Mass [M]
      */
-    //@{
+    ///@{
     /// gram
     static constexpr double gram = 0.001;
 
@@ -682,23 +682,23 @@ namespace C
 
     /// short ton
     static constexpr double shortton = 20.0 * C::shortcwt;
-    //@}
+    ///@}
 
     /**
      * @name Force (mass * acceleration) [M*L/(T*T)]
      */
-    //@{
+    ///@{
     /// Newton
     static constexpr double Newton = C::kilo * C::gram * C::metre / C::second / C::second;
 
     /// dyne
     static constexpr double dyne = 1.0e-5 * C::Newton;
-    //@}
+    ///@}
 
     /**
      * @name Pressure (force / area) [M/(L*T*T)]
      */
-    //@{
+    ///@{
     /// Pascal
     static constexpr double Pascal = C::Newton / C::square_metre;
 
@@ -713,12 +713,12 @@ namespace C
 
     /// mm of Mercury
     static constexpr double mmHg = (13.5951 * C::g) * C::Pascal;
-    //@}
+    ///@}
 
     /**
      * @name Energy (force * length) [M*L*L/(T*T)]
      */
-    //@{
+    ///@{
     /// Joule
     static constexpr double Joule = C::Newton * C::metre;
 
@@ -739,12 +739,12 @@ namespace C
 
     /// electron volt
     static constexpr double eV = C::qe * C::Joule;
-    //@}
+    ///@}
 
     /**
      * @name Temperature difference (energy) [M*L*L/(T*T)]
      */
-    //@{
+    ///@{
     /// Kelvin
     static constexpr double Kelvin = C::Boltzmann * C::Joule;
 
@@ -759,12 +759,12 @@ namespace C
 
     /// Rankine
     static constexpr double Rankine = C::Fahrenheit;
-    //@}
+    ///@}
 
     /**
      * @name Temperature at 0 on each temperature scale
      */
-    //@{
+    ///@{
     /// Absolute Zero (Kelvins)
     static constexpr double Kelvin_0 = 0.0 * C::Kelvin;
 
@@ -779,34 +779,34 @@ namespace C
 
     /// Absolute Zero (Rankines)
     static constexpr double Rankine_0 = 0.0 * C::Fahrenheit;
-    //@}
+    ///@}
 
     /**
      * @name Power (energy / time) [M*L*L/(T*T*T)]
      */
-    //@{
+    ///@{
     /// Watt
     static constexpr double Watt = C::Joule / C::second;
 
     /// horsepower
     static constexpr double horsepower = 745.7 * C::Watt;
-    //@}
+    ///@}
 
     /**
      * @name Flux density (power / area / frequency) [M/(T*T)]
      */
-    //@{
+    ///@{
     /// Jansky
     static constexpr double Jansky = 1.0e-26 * C::Watt / C::square_metre / C::Hertz;
 
     /// flux units
     static constexpr double fu = C::Jansky;
-    //@}
+    ///@}
 
     /**
      * @name Electric charge [Q] (Coulomb)
      */
-    //@{
+    ///@{
     /// Coulomb
     static constexpr double Coulomb = 1.0;
 
@@ -815,12 +815,12 @@ namespace C
 
     /// statCoulomb (esu)
     static constexpr double statCoulomb = (0.1 / C::c) * C::Coulomb;
-    //@}
+    ///@}
 
     /**
      * @name Electric current (charge / time) [Q/T]
      */
-    //@{
+    ///@{
     /// Ampere
     static constexpr double Ampere = C::Coulomb / C::second;
 
@@ -829,14 +829,14 @@ namespace C
 
     /// statAmpere (esu)
     static constexpr double statAmpere = (0.1 / C::c) * C::Ampere;
-    //@}
+    ///@}
 
     // Electric field strength (force / charge) [M*L/(T*T*Q)]
 
     /**
      * @name Electric potential (energy / charge) [M*L*L/(T*T*Q)]
      */
-    //@{
+    ///@{
     /// Volt
     static constexpr double Volt = C::Joule / C::Coulomb;
 
@@ -845,12 +845,12 @@ namespace C
 
     /// statVolt (esu)
     static constexpr double statVolt = (C::c * 1.0e-6) * C::Volt;
-    //@}
+    ///@}
 
     /**
      * @name Electric resistance (potential / current) [M*L*L/(T*Q*Q)]]
      */
-    //@{
+    ///@{
     /// Ohm
     static constexpr double Ohm = C::Volt / C::Ampere;
 
@@ -859,23 +859,23 @@ namespace C
 
     /// starOhm (esu)
     static constexpr double statOhm = (3.0e+3 * C::c) * C::Ohm;
-    //@}
+    ///@}
 
     /**
      * @name Electric conductance (current / potential) [T*Q*Q/(M*L*L)]
      */
-    //@{
+    ///@{
     /// Siemens
     static constexpr double Siemens = C::Ampere / C::Volt;
 
     /// mho
     static constexpr double mho = C::Siemens;
-    //@}
+    ///@}
 
     /**
      * @name Electric capacitance (charge / potential) [T*T*Q*Q/(M*L*L)]
      */
-    //@{
+    ///@{
     /// Farad
     static constexpr double Farad = C::Coulomb / C::Volt;
 
@@ -884,12 +884,12 @@ namespace C
 
     /// statFarad (esu)
     static constexpr double statFarad = 1.0 / (3.0e+3 * C::c) * C::Farad;
-    //@}
+    ///@}
 
     /**
      * @name Electric inductance (potential * time / current) [M*L*L/(Q*Q)]
      */
-    //@{
+    ///@{
     /// Henry
     static constexpr double Henry = C::Volt * C::second / C::Ampere;
 
@@ -898,23 +898,23 @@ namespace C
 
     /// statHenry (esu)
     static constexpr double statHenry = (3.0e+3 * C::c) * C::Henry;
-    //@}
+    ///@}
 
     /**
      * @name Magnetic induction (force / charge / velocity) [M/(T*Q)]
      */
-    //@{
+    ///@{
     /// Tesla
     static constexpr double Tesla = C::Newton / C::Coulomb / (C::metre / C::second);
 
     /// Gauss (emu)
     static constexpr double Gauss = 1.0e-4 * C::Tesla;
-    //@}
+    ///@}
 
     /**
      * @name Magnetic flux (magnetic induction * area) [M*L*L/(T*Q)]
      */
-    //@{
+    ///@{
     /// Weber
     static constexpr double Weber = C::Tesla / C::square_metre;
 
@@ -923,12 +923,12 @@ namespace C
 
     /// line (emu)
     static constexpr double line = C::Maxwell;
-    //@}
+    ///@}
 
     /**
      * @name Magnetomotance = magnetomotive force (current) [Q/T]
      */
-    //@{
+    ///@{
     /// Ampere-turn
     static constexpr double Ampere_turn = C::Ampere;
 
@@ -940,43 +940,43 @@ namespace C
 
     /// praGilbert (emu)
     static constexpr double praGilbert = (4.0 * C::pi) * C::Ampere_turn;
-    //@}
+    ///@}
 
     // Magnetic field intensity (current / length) [Q/(T*L)]:
-    //@{
+    ///@{
     /// Oersted (emu)
     static constexpr double Oersted = 1000.0 / (4.0 * C::pi) * C::Ampere / C::metre;
 
     /// praOersted (emu)
     static constexpr double praOersted = (4.0 * C::pi) * C::Ampere / C::metre;
-    //@}
+    ///@}
 
     /**
      * @name Radioactivity (Bequerel)
      */
-    //@{
+    ///@{
     /// Bequerel
     static constexpr double Bequerel = 1.0;
-    //@}
+    ///@}
 
     /**
      * @name Luminous intensity [Iv]
      */
-    //@{
+    ///@{
     /// candela
     static constexpr double candela = 1.0;
-    //@}
+    ///@}
 
     /**
      * @name Amount of substance [N]
      */
-    //@{
+    ///@{
     /// mole
     static constexpr double mole = 1.0;
 
     /// number of molecules
     static constexpr double molecule = (1.0 / C::Avogadro) * C::mole;
-    //@}
+    ///@}
 
     // End Physical conversion factors
 

@@ -75,7 +75,7 @@ namespace MaRC
          *
          * Each of these values also has a program defined default.
          */
-        //@{
+        ///@{
         /// Default latitude grid line interval.
         double lat_interval;
 
@@ -99,7 +99,7 @@ namespace MaRC
 
         /// Default source image bottom side "nibble" value.
         unsigned int nibble_bottom;
-        //@}
+        ///@}
 
     private:
 

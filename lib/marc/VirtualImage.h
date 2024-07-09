@@ -111,7 +111,7 @@ namespace MaRC
          * The default implementation returns values that causes no
          * transformation to occur.
          */
-        //@{
+        ///@{
         /**
          * @brief Data scale.
          *
@@ -123,7 +123,8 @@ namespace MaRC
         double scale() const { return 1 / this->scale_; }
 
         /**
-         * @brief Data offset
+         * @brief Data offset.
+         *
          * Offset value that should be applied to all (scaled)
          * computed data.  This value corresponds to zero in the
          * virtual image.
@@ -131,7 +132,7 @@ namespace MaRC
          * @return Data offset.
          */
         double offset() const { return this->scale() * -this->offset_; }
-        //@}
+        ///@}
 
     private:
 

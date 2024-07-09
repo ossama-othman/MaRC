@@ -45,9 +45,9 @@ namespace MaRC
     public:
 
         /**
-         * STL style container type aliases.
+         * @name STL Style Container Type Aliases
          */
-        //@{
+        ///@{
         using value_type      = T;
         using element_type    = T;
         using reference       = T &;
@@ -55,7 +55,7 @@ namespace MaRC
         using vector_type     = Vector<T, M>;
         using iterator        = T *;
         using const_iterator  = T const *;
-        //@}
+        ///@}
 
         /**
          * @brief Default constructor.

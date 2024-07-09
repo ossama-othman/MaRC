@@ -126,7 +126,7 @@ namespace MaRC
          *
          * Members specialized for type @c double.
          */
-        //@{
+        ///@{
         static constexpr double empty_value()
         {
             return std::numeric_limits<double>::quiet_NaN();
@@ -145,7 +145,7 @@ namespace MaRC
             // same.
             return max;
         }
-        //@}
+        ///@}
     };
 
 }

@@ -235,7 +235,6 @@ namespace MaRC
 
             /// Get name of telescope used to acquire the data.
             std::string telescope() const;
-            //@}
 
         protected:
 

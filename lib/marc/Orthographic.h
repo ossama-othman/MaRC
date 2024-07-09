@@ -91,16 +91,16 @@ namespace MaRC
         ~Orthographic() override = default;
 
         /**
-         * @name @c MapFactory Methods
+         * @name MapFactory Methods
          *
          * Factory methods required by the @c MapFactory abstract base
          * class.
          *
          * @see @c MapFactory
          */
-        //@{
+        ///@{
         char const * projection_name() const override;
-        //@}
+        ///@}
 
     private:
 
