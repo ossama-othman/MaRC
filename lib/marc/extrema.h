@@ -2,7 +2,7 @@
 /**
  * @file extrema.h
  *
- * Copyright (C) 2019-2020  Ossama Othman
+ * Copyright (C) 2019-2020, 2024  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -124,6 +124,12 @@ namespace MaRC
 
         /// Get maximum physical data value.
         std::optional<T> const & maximum() const { return this->maximum_; }
+
+        /// Is value @a v in range of the extrema?
+        template <typename U>
+        bool in_range(U v) const {
+            return v >= this->minimum_ && v <= this->maximum_;
+        }
 
         /// Is the current pair of extrema valid?
         bool is_valid() const
