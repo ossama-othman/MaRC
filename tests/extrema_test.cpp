@@ -102,7 +102,7 @@ bool test_initialization()
 }
 
 /**
- * @test Test the MaRC::extrema<> swap.
+ * @test Test MaRC::make_extrema().
  */
 bool test_make_extrema()
 {
