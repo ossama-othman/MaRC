@@ -1,7 +1,7 @@
 /**
  * @file MapFactory_t.cpp
  *
- * Copyright (C) 2003-2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2003-2004, 2017-2018, 2024  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -82,18 +82,16 @@ MaRC::MapFactory::plot(parameters<T> & p,
                        double lon,
                        std::size_t offset) const
 {
+    auto const & source = p.source();
+    auto const & e      = p.minmax();
+    auto       & info   = p.info();
+    auto       & map    = p.map();
+
     // Clip datum to fit within map data type range, if necessary.
     double datum = 0;
 
-    auto const & source = p.source();
-    auto const & e      = p.minmax();
-    auto & info         = p.info();
-    auto & map          = p.map();
-
     bool const found_data =
-        (source.read_data(lat, lon, datum)
-         && datum >= e.minimum()
-         && datum <= e.maximum());
+        (source.read_data(lat, lon, datum) && e.in_range(datum));
 
     if (found_data) {
         map[offset] = static_cast<T>(datum);
