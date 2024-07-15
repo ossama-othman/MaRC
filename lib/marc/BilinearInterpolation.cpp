@@ -37,10 +37,10 @@ MaRC::BilinearInterpolation::interpolate(double const * data,
 {
     // Bilinear interpolation over 2x2 area of pixels.
 
-    auto const l = static_cast<std::size_t>(x); // floor(x)
-    auto const r = l + 1;                       // ceil (x);
-    auto const b = static_cast<std::size_t>(z); // floor(z)
-    auto const t = b + 1;                       // ceil (z);
+    auto const l = static_cast<std::size_t>(x); // floor(x) for x >= 0
+    auto const r = l + 1;                       // ceil (x) for x >= 0
+    auto const b = static_cast<std::size_t>(z); // floor(z) for z >= 0
+    auto const t = b + 1;                       // ceil (z) for z >= 0
 
     // Offsets
     auto const ob = b * this->samples_;  // Bottom line

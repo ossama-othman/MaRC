@@ -51,10 +51,10 @@ namespace MaRC
          * The interpolation technique will not include invalid data
          * (e.g. @c NaN) when computing interpolated values.
          *
-         * @param[in]  data    The array containing the data to be
-         *                     interpolated.
-         * @param[in]  x       Floating point sample in image.
-         * @param[in]  z       Floating point line in image.
+         * @param[in]  data  The array containing the data to be
+         *                   interpolated.
+         * @param[in]  x     Floating point sample in image (>= 0).
+         * @param[in]  z     Floating point line   in image (>= 0).
          * @param[out] datum Interpolated datum.
          *
          * @return @c true if interpolation succeeded.
