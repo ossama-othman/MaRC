@@ -120,7 +120,10 @@ bool test_in_range()
 {
     auto const e = MaRC::make_extrema(good_min, good_max);
 
-    auto const good = good_min + (good_max - good_min) / 2;  // midpoint
+    // Use midpoint as in-range value, being careful to avoid integer
+    // overflow.
+    constexpr auto good = good_min + ((good_max / 2) - (good_min / 2));
+
     auto const bad1 = *e.minimum() - 1;
     auto const bad2 = *e.maximum() + 1;
 
