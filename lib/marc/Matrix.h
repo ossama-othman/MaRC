@@ -4,7 +4,7 @@
  *
  * %MaRC matrix class and operations.
  *
- * Copyright (C) 2004, 2017-2018, 2021-2022,  Ossama Othman
+ * Copyright (C) 2004, 2017-2018, 2021-2022, 2024  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -303,7 +303,7 @@ namespace MaRC
         }
 
         /**
-         * @brief Get a @c const iterator to the endof the @c Matrix.
+         * @brief Get a @c const iterator to the end of the @c Matrix.
          *
          * @return @c const iterator to the end of the flattened
          *         form of this @c Matrix.

@@ -2,7 +2,7 @@
 /**
  * @file Map_traits.h
  *
- * Copyright (C) 2004, 2017-2018  Ossama Othman
+ * Copyright (C) 2004, 2017-2018, 2024  Ossama Othman
  *
  * SPDX-License-Identifier: LGPL-2.1-or-later
  *
@@ -29,9 +29,9 @@ namespace MaRC
      *
      * @brief @c Traits specific to a map data type.
      *
-     * These traits are used making a map projection to obtain map
-     * data type-specific characteristics, such as the default empty
-     * (blank) value, and map data "clipping" values.
+     * These traits are used when making a map projection to obtain
+     * map data type-specific characteristics, such as the default
+     * empty (blank) value, and map data "clipping" values.
      *
      * @tparam T Map data type.
      *

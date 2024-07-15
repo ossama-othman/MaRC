@@ -1,7 +1,7 @@
 /**
  * @file MapCommand.cpp
  *
- * Copyright (C) 2004, 2017-2020  Ossama Othman
+ * Copyright (C) 2004, 2017-2020, 2024  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  *
@@ -416,12 +416,13 @@ MaRC::MapCommand::populate_map_parameters()
             return false;
 
         /*
-          Merge map plane parameters in to previously populated
+          Merge map plane parameters to previously populated
           parameters.
         */
         if (!to_merge.merge(pp))
             return false;
     }
+
 
     /*
       Merge automatically populated map parameters with the user

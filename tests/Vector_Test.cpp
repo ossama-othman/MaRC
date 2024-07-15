@@ -1,7 +1,7 @@
 /**
  * @file Vector_Test.cpp
  *
- * Copyright (C) 2017, 2022, Ossama Othman
+ * Copyright (C) 2017, 2022  Ossama Othman
  *
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
