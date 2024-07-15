@@ -56,10 +56,10 @@ namespace MaRC
     private:
 
         /// Latitude in radians.
-        double const lat_;
+        double lat_;
 
         /// Longitude in radians.
-        double const lon_;
+        double lon_;
 
     };
 
