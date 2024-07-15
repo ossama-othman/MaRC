@@ -57,7 +57,7 @@ bool test_initialization(MaRC::ViewingGeometry & vg)
 bool test_visibility(MaRC::ViewingGeometry & vg)
 {
     // Point on the far side of the planet.  Not visible to the
-    // observer.  This is suitable for bodies modelled as oblate
+    // observer.  This is suitable for bodies modeled as oblate
     // spheroids.
     constexpr double far_lat = -sub_obs_lat * C::degree;
     constexpr double far_lon = (sub_obs_lon + 180) * C::degree;
